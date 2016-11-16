@@ -186,7 +186,7 @@ namespace RevenuePlanner.Controllers
                 var Selectedids = Values.Select(ids => int.Parse(ids.Id.ToString())).FirstOrDefault();
 
                 var SelectedBudgetDetail = (from details in db.Budget_Detail
-                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == false
+                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false
                                             select new
                                             {
                                                 details.Id,
@@ -199,7 +199,7 @@ namespace RevenuePlanner.Controllers
                 var BudgetDetailJoin = (from details in db.Budget_Detail
                                         join selectdetails in
                                             (from details in db.Budget_Detail
-                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == false
+                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false
                                              select new
                                              {
                                                  details.Id,
@@ -1818,7 +1818,7 @@ namespace RevenuePlanner.Controllers
                 var Selectedids = Values.Select(ids => int.Parse(ids.Id.ToString())).FirstOrDefault();
 
                 var SelectedBudgetDetail = (from details in db.Budget_Detail
-                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == false
+                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false
                                             select new
                                             {
                                                 details.Id,
@@ -1831,7 +1831,7 @@ namespace RevenuePlanner.Controllers
                 var BudgetDetailJoin = (from details in db.Budget_Detail
                                         join selectdetails in
                                             (from details in db.Budget_Detail
-                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == false
+                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false
                                              select new
                                              {
                                                  details.Id,
