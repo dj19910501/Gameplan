@@ -477,6 +477,87 @@ ORDER BY (CASE EntityType WHEN 'Campaign' THEN 1
 END
 GO
 
+IF (EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'TransactionLineItemMapping'))
+DROP TABLE [dbo].[TransactionLineItemMapping]
+
+IF (EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Transactions'))
+DROP TABLE [dbo].[Transactions]
+GO
+
+/****** Object:  Table [dbo].[Transactions]    Script Date: 11/15/2016 6:04:18 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[Transactions](
+	[TransactionId] [int] IDENTITY(1,1) NOT NULL,
+	[ClientID] [int] NOT NULL,
+	[ClientTransactionID] [varchar](150) NOT NULL,
+	[TransactionDescription] [varchar](250) NULL,
+	[Amount] [numeric](18, 0) NOT NULL,
+	[Account] [varchar](150) NULL,
+	[AccountDescription] [varchar](150) NULL,
+	[SubAccount] [varchar](150) NULL,
+	[Department] [varchar](150) NULL,
+	[TransactionDate] [datetime] NULL,
+	[AccountingDate] [datetime] NOT NULL,
+	[Vendor] [varchar](150) NULL,
+	[PurchaseOrder] [varchar](150) NULL,
+	[CustomField1] [varchar](150) NULL,
+	[CustomField2] [varchar](150) NULL,
+	[CustomField3] [varchar](150) NULL,
+	[CustomField4] [varchar](150) NULL,
+	[CustomField5] [varchar](150) NULL,
+	[CustomField6] [varchar](150) NULL,
+	[LineItemId] [int] NULL,
+	[DateCreated] [datetime] NOT NULL,
+	[AmountAttributed] [numeric](18, 0) NULL,
+	[LastProcessed] [datetime] NULL,
+ CONSTRAINT [PK_Transactions] PRIMARY KEY CLUSTERED 
+(
+	[TransactionId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+/****** Object:  Table [dbo].[TransactionLineItemMapping]    Script Date: 11/15/2016 6:01:21 PM ******/
+CREATE TABLE [dbo].[TransactionLineItemMapping](
+	[TransactionLineItemMappingId] [int] IDENTITY(1,1) NOT NULL,
+	[TransactionId] [int] NOT NULL,
+	[LineItemId] [int] NOT NULL,
+	[Amount] [numeric](18, 0) NULL,
+	[DateModified] [datetime] NOT NULL,
+	[ModifiedBy] [int] NOT NULL,
+	[DateProcessed] [datetime] NULL,
+ CONSTRAINT uc_PersonID UNIQUE (TransactionId,LineItemId),
+ CONSTRAINT [PK_TransactionLineItemMapping] PRIMARY KEY CLUSTERED 
+(
+	[TransactionLineItemMappingId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[TransactionLineItemMapping]  WITH CHECK ADD  CONSTRAINT [FK_TransactionLineItemMapping_Plan_Campaign_Program_Tactic_LineItem] FOREIGN KEY([LineItemId])
+REFERENCES [dbo].[Plan_Campaign_Program_Tactic_LineItem] ([PlanLineItemId])
+GO
+
+ALTER TABLE [dbo].[TransactionLineItemMapping] CHECK CONSTRAINT [FK_TransactionLineItemMapping_Plan_Campaign_Program_Tactic_LineItem]
+GO
+
+ALTER TABLE [dbo].[TransactionLineItemMapping]  WITH CHECK ADD  CONSTRAINT [FK_TransactionLineItemMapping_Transactions] FOREIGN KEY([TransactionId])
+REFERENCES [dbo].[Transactions] ([TransactionId])
+GO
+
+ALTER TABLE [dbo].[TransactionLineItemMapping] CHECK CONSTRAINT [FK_TransactionLineItemMapping_Transactions]
+GO
+
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
 -- ======================================================================================
