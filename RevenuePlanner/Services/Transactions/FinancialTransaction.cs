@@ -22,6 +22,11 @@ namespace RevenuePlanner.Services.Transactions
             throw new NotImplementedException();
         }
 
+        public List<LineItem> GetLinkedLineItemsForTransaction(int transactionId)
+        {
+            throw new NotImplementedException();
+        }
+
         public int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true)
         {
             throw new NotImplementedException();

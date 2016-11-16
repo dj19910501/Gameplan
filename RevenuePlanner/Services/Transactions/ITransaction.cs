@@ -12,7 +12,7 @@ namespace RevenuePlanner.Services.Transactions
         /// <summary>
         /// Hive9 Plan internal auto ID
         /// </summary>
-        public int TransactionID { get; set; }
+        public int TransactionId { get; set; }
 
         /// <summary>
         /// Required and unique per client 
@@ -67,6 +67,19 @@ namespace RevenuePlanner.Services.Transactions
         /// Date and time this transaction was processed by batch attribution process (step 3) 
         /// </summary>
         public DateTime DateProcessed { get; set; }
+    }
+
+    public class LineItem
+    {
+        public int LineItemId { get; set; }
+        public string Title { get; set; }
+        public double Cost { get; set; }
+        public double Actual { get; set; }
+
+        public string TacticTitle { get; set; }
+        public string ProgramTitle { get; set; }
+        public string CampaignTitle { get; set; }
+        public string PlanTitle { get; set; }
     }
 
     /// <summary>
@@ -127,6 +140,8 @@ namespace RevenuePlanner.Services.Transactions
         /// <param name="pageSize"></param>
         /// <returns></returns>
         List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null,  int pageIndex = 1, int pageSize = 10000);
+
+        List<LineItem> GetLinkedLineItemsForTransaction(int transactionId);
 
         /// <summary>
         /// Search for transactions that matches searchText in any textual field
