@@ -225,6 +225,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BAL\CustomDashboard.cs" />
     <Compile Include="Controllers\BoostController.cs" />
+    <Compile Include="Controllers\PlanPickerController.cs" />
     <Compile Include="Controllers\TransactionController.cs" />
     <Compile Include="Controllers\ColumnViewController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
@@ -315,6 +316,8 @@
     <Compile Include="Services\IPlanTactic.cs" />
     <Compile Include="Services\MarketingBudget\IMarketingBudget.cs" />
     <Compile Include="Services\MarketingBudget\MarketingBudget.cs" />
+    <Compile Include="Services\PlanPicker\IPlanPicker.cs" />
+    <Compile Include="Services\PlanPicker\PlanPicker.cs" />
     <Compile Include="Services\PlanTactic.cs" />
     <Compile Include="Services\ServiceRegistry.cs" />
     <Compile Include="Services\Transactions\ITransaction.cs" />

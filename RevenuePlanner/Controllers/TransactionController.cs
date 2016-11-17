@@ -17,7 +17,7 @@ namespace RevenuePlanner.Controllers
         ITransaction _transaction;
         TransactionController(ITransaction transaction)
         {
-            _transaction = transaction; //DI will take crea of populating this!
+            _transaction = transaction; //DI will take care of populating this!
         }
 
         public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings)
