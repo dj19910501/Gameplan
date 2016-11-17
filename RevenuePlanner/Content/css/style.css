@@ -3504,17 +3504,50 @@ a.link-gray {
 .reset_password.inputs-aligned-horizontal {
 	min-width: 350px;
 }
-.finance_grid_add {
-	display: inline-block;
-	padding-left: 7px;
+
+.grid_Delete, .finance_grid_add {
+    opacity: 1;
+    position: relative;
+    margin-right: 0;
+	padding-right: 0;
+	cursor: pointer;
+	width: 15px;
+	height: 15px;		
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 16px;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
-.grid_Delete {
+.finance_grid_add {
+	/*display: inline-block;
+	padding-left: 7px;*/
+    margin-right:7px;
+}
+.finance_grid_add:before, .grid_Delete:before{
+    content: "\f055";
+    color: #95989a;
+    position: absolute;
+    right: 1px;
+    top: 2px;
+}
+.grid_Delete:before{
+    content: "\f014";
+}
+.grid_Delete:hover:before{
+    color: #c1272d;
+}
+.finance_grid_add:hover:before{
+    color:#89CEDE;
+}
+/*.grid_Delete {
 	background-image: url(../images/Remove-icon-blue.png);
 	background-repeat: no-repeat;
+    background-position: center center;
 	width: 19px;
 	display: inline-block;
 	opacity: 1;
-	background-position: center center;
 	height: 22px;
 	position: relative;
 	margin-right: 22%;
@@ -3524,12 +3557,14 @@ a.link-gray {
 .grid_Delete:hover {
 	background-color: #c1272d;
 	background-image: url(../images/Remove-icon-white.png);
-	background-position: 4px 4px !important; /*#2312*/
+	background-position: 4px 4px !important; /*#2312
 	background-size: 12px auto;
 	border-radius: 36px;
 	height: 20px;
 	width: 19px;
-}
+}*/ /* #2805 Cahnge image to Fontawsom icon */
+
+
 #multipleselect_budget-select {
 	padding: 0;
 }
@@ -11049,7 +11084,8 @@ li.accordion-inner.close-list {
 	width: 100%;
 	border-top: 1px solid #a8a8a8;
 }
-.finance_grid_add, .grid_Search, .grid_add {
+/*.finance_grid_add,*/ 
+.grid_Search, .grid_add {
 	opacity: 1;
 	background-position: center center;
 	height: 22px;
@@ -11065,7 +11101,8 @@ li.accordion-inner.close-list {
 	float: left;
 	margin-top: 0; /*by bheru mehta 09-12-2015*/
 }
-.finance_grid_add, .grid_add {
+/*.finance_grid_add,*/ 
+.grid_add {
 	background-image: url(../../Content/images/icon-plus_in_circle.png);
 	background-repeat: no-repeat;
 	width: 22px;
