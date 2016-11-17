@@ -516,8 +516,9 @@ CREATE TABLE [dbo].[Transactions](
 	[CustomField6] [varchar](150) NULL,
 	[LineItemId] [int] NULL,
 	[DateCreated] [datetime] NOT NULL,
-	[AmountAttributed] [numeric](18, 0) NULL,
+	[AmountAttributed] [float] NULL,
 	[LastProcessed] [datetime] NULL,
+ CONSTRAINT uc_ClientID_ClientTransactionId UNIQUE (ClientID, ClientTransactionId),
  CONSTRAINT [PK_Transactions] PRIMARY KEY CLUSTERED 
 (
 	[TransactionId] ASC
@@ -531,7 +532,7 @@ CREATE TABLE [dbo].[TransactionLineItemMapping](
 	[TransactionLineItemMappingId] [int] IDENTITY(1,1) NOT NULL,
 	[TransactionId] [int] NOT NULL,
 	[LineItemId] [int] NOT NULL,
-	[Amount] [numeric](18, 0) NULL,
+	[Amount] [float] NULL,
 	[DateModified] [datetime] NOT NULL,
 	[ModifiedBy] [int] NOT NULL,
 	[DateProcessed] [datetime] NULL,
