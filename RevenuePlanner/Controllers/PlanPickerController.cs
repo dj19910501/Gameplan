@@ -22,7 +22,7 @@ namespace RevenuePlanner.Controllers
             return _planPicker.GetLineItems(tacticId);
         }
 
-        public List<PlanItem> GetPlans(int year)
+        public List<PlanItem> GetPlans(string year)
         {
             return _planPicker.GetPlans(Sessions.User.CID, year);
         }

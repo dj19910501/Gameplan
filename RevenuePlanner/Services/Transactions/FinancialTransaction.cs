@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RevenuePlanner.Models;
 
 namespace RevenuePlanner.Services.Transactions
 {
     public class FinancialTransaction : ITransaction
     {
+        private MRPEntities _database;
+        public FinancialTransaction(MRPEntities database)
+        {
+            _database = database;
+        }
+
         public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId)
         {
             throw new NotImplementedException();
@@ -22,7 +29,7 @@ namespace RevenuePlanner.Services.Transactions
             throw new NotImplementedException();
         }
 
-        public List<LineItem> GetLinkedLineItemsForTransaction(int transactionId)
+        public List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId)
         {
             throw new NotImplementedException();
         }
@@ -38,6 +45,11 @@ namespace RevenuePlanner.Services.Transactions
         }
 
         public List<Transaction> SearchForTransactions(int clientId, DateTime start, DateTime end, string searchText, bool unprocessdedOnly = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Transaction> GetTransactionsForLineItem(int lineItemId)
         {
             throw new NotImplementedException();
         }

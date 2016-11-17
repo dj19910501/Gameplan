@@ -82,6 +82,16 @@ namespace RevenuePlanner.Services.Transactions
         public string PlanTitle { get; set; }
     }
 
+    public class LineItemsGroupedByTactic
+    {
+        public int TacticId { get; set; }
+        public string Title { get; set; } //note: sys_gen_balance will be represented as if its a tactic
+        public double TotalLinkedCost{ get; set; }
+        public double PlannedCost { get; set; }
+        public double ActualCost { get; set; }   
+        public List<LineItem> LineItems {get; set;}
+    }
+
     /// <summary>
     /// TransactionLineItemMapping is to capture how a transaction is attributing towards a line item
     /// </summary>
@@ -141,7 +151,14 @@ namespace RevenuePlanner.Services.Transactions
         /// <returns></returns>
         List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null,  int pageIndex = 1, int pageSize = 10000);
 
-        List<LineItem> GetLinkedLineItemsForTransaction(int transactionId);
+        List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId);
+
+        /// <summary>
+        /// Reverse listing of transactions per line item 
+        /// </summary>
+        /// <param name="lineItemId"></param>
+        /// <returns></returns>
+        List<Transaction> GetTransactionsForLineItem(int lineItemId);
 
         /// <summary>
         /// Search for transactions that matches searchText in any textual field

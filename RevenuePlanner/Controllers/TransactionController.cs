@@ -35,7 +35,7 @@ namespace RevenuePlanner.Controllers
             return _transaction.GetHeaderMappings(Sessions.User.CID);
         }
 
-        public IEnumerable<LineItem> GetLinkedLineItemsForTransaction(int transactionId)
+        public IEnumerable<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId)
         {
             return _transaction.GetLinkedLineItemsForTransaction(transactionId);
         }
@@ -55,5 +55,11 @@ namespace RevenuePlanner.Controllers
         {
             return _transaction.SearchForTransactions(Sessions.User.CID, start, end, searchText, unprocessdedOnly);
         }
+
+        public IEnumerable<Transaction> GetTransactionsForLineItem(int lineItemId)
+        {
+            return _transaction.GetTransactionsForLineItem(lineItemId);
+        }
+
     }
 }

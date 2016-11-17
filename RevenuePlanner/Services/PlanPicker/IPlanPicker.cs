@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace RevenuePlanner.Services.PlanPicker
 {
@@ -13,7 +9,7 @@ namespace RevenuePlanner.Services.PlanPicker
 
     public interface IPlanPicker
     {
-        List<PlanItem> GetPlans(int clientId, int year);
+        List<PlanItem> GetPlans(int clientId, string year);
         List<PlanItem> GetCampaigns(int planId);
         List<PlanItem> GetPrograms(int campaignId);
         List<PlanItem> GetTatics(int programId);
