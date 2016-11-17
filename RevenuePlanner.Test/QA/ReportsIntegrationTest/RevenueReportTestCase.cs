@@ -259,7 +259,7 @@ namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
                 if (NewStartDate.Month <= i && NewEndDate.Month >= i)
                 {
                     decimal calculatePer = ((Convert.ToDecimal(ActualList[i - 1].ToString()) - GoalAmount) / GoalAmount) * 100;
-                    Assert.AreEqual(PerformanceList[i - 1].ToString(), Math.Round(calculatePer).ToString());
+                    Assert.AreEqual(PerformanceList[i - 1].ToString(), Math.Round(calculatePer,2).ToString());
                     Console.WriteLine("ReportController - GetRevenueData \n The assert value of performance  " + PerformanceList[i - 1].ToString() + " is not matching.");
                 }
                 else
@@ -310,6 +310,7 @@ namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
         #endregion
 
         #region Header calculation
+      
         public void VerifyHeaderValue(Projected_Goal objProjected_Goal, List<double> ActualList, List<double> GoalList, List<double> ProjectedList)
         {
             #region Actual
