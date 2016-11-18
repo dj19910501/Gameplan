@@ -124,7 +124,7 @@ namespace RevenuePlanner.Services.MarketingBudget
     /// <summary>
     /// Operational interface for budget related data retrieval or manipulations 
     /// </summary>
-    interface IMarketingBudget
+    public interface IMarketingBudget
     {
         List<BudgetItem> GetBudgetData(int budgetId, ViewByType viewByType, BudgetColumnFlag columnsRequested); //initial budget display
         BudgetSummary GetBudgetSummary(int budgetId); //HUD display 

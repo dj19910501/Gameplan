@@ -128,7 +128,7 @@ namespace RevenuePlanner.Services.Transactions
     /// <summary>
     /// Operational interface for transactions
     /// </summary>
-    interface ITransaction
+    public interface ITransaction
     {
         /// <summary>
         /// Returns total number of transactions  
