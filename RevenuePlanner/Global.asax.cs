@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Net;
+using System.Web.SessionState;
 
 namespace RevenuePlanner
 {
@@ -83,6 +84,15 @@ namespace RevenuePlanner
             ((IController)controller).Execute(new RequestContext(new HttpContextWrapper(httpContext), routeData));
             }
         }
+
+        /// <summary>
+        /// This is required for API method to sahre sessions with normal controllers - zz
+        /// </summary>
+        protected void Application_PostAuthorizeRequest()
+        {
+            HttpContext.Current.SetSessionStateBehavior(SessionStateBehavior.Required);
+        }
+
     }
 
 }
