@@ -8,7 +8,7 @@
       <FromTarget>RevenuePlanner.wpp.targets</FromTarget>
     </ExcludeFromPackageFiles>
   </ItemGroup>
-    <Target Name="AddWebAssets" BeforeTargets="_WPPCopyWebApplication">
+    <Target Name="AddWebAssets">
         <ItemGroup>
             <WebAssets Include="web-assets/dist/**" />
             <FilesForPackagingFromProject Include="@(WebAssets)">
