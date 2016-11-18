@@ -33,9 +33,13 @@
      </script>
     <script src="@Url.Content("~/Scripts/js/bootstrap-notify.min.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
-    
+
     @* Include the new Hive9 JS library after all the global 3rd party stuff from old code *@
-    <script src="~/web-assets/dist/libhive9.js"></script>
+    @if (File.Exists(HttpContext.Current.Server.MapPath("~/web-assets/dist/libhive9.min.js"))) {
+        <script src="@Url.Content("~/web-assets/dist/libhive9.min.js")"></script>
+    } else {
+        <script src="@Url.Content("~/web-assets/dist/libhive9.js")"></script>
+    }
     @* temporary script to test that libhive9 loads*@
     <script type="text/javascript">
         libhive9.displayTransactions();

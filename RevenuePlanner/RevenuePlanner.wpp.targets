@@ -8,4 +8,20 @@
       <FromTarget>RevenuePlanner.wpp.targets</FromTarget>
     </ExcludeFromPackageFiles>
   </ItemGroup>
+    <Target Name="AddWebAssets" BeforeTargets="_WPPCopyWebApplication">
+        <ItemGroup>
+            <WebAssets Include="web-assets/dist/**" />
+            <FilesForPackagingFromProject Include="@(WebAssets)">
+                <DestinationRelativePath>%(WebAssets.Identity)</DestinationRelativePath>
+                <FromTarget>WebAssetsDist</FromTarget>
+                <Category>Run</Category>
+            </FilesForPackagingFromProject>
+        </ItemGroup>
+    </Target>
+  <PropertyGroup>
+      <OnAfterPipelineTransformPhase>
+          $(OnAfterPipelineTransformPhase);
+          AddWebAssets
+      </OnAfterPipelineTransformPhase>  
+  </PropertyGroup>
 </Project>

@@ -327,7 +327,8 @@
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
     <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
-    <None Include="web-assets\build\prebuild.js" />
+    <None Include="web-assets\build\**" />
+    <None Include="web-assets\src\**" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left.gif" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left_abs.gif" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left_abs_dis.gif" />
@@ -827,9 +828,6 @@
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Content\Common\MarketingBudgetImportSample.xls" />
-    <None Include="web-assets\build\check-npm-install.js" />
-    <None Include="web-assets\build\check-npm-version.js" />
-    <None Include="web-assets\build\vsbuild.cmd" />
     <None Include="Properties\PublishProfiles\zhang-local.pubxml" />
     <Content Include="Scripts\MultiCurrency.js" />
     <Content Include="Scripts\Planhud.js" />
@@ -840,12 +838,6 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-    <Content Include="web-assets\dist\libhive9.js.map" />
-    <None Include="web-assets\src\main.js" />
-    <Content Include="web-assets\build\webpack.config.js" />
-    <Content Include="web-assets\dist\libhive9.js" />
-    <Content Include="web-assets\src\Transactions\renderGrid.js" />
-    <Content Include="web-assets\src\Transactions\displayTransactions.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
