@@ -409,7 +409,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
         $(".dhx_combo_edit").off("keydown");
         if (UpdateColumn == PlannedCostId || UpdateColumn == TargetStageGoalId) {
-
             $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
             HomeGrid.editor.obj.onkeypress = function (e) {
                 e = e || window.event;
@@ -489,6 +488,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             if (UpdateColumn == PlannedCostId) {
                 nValue = nValue.replace(CurrencySybmol, '');
                 oValue = oValue.replace(CurrencySybmol, '');
+                nValue = parseFloat(nValue);
             }
             if (UpdateColumn == EndDateId) {
                 var endyear = new Date(HomeGrid.cells(planid, StartDateColIndex).getValue()).getFullYear();
