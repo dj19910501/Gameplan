@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
+using System.Web.Mvc;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Services.PlanPicker;
 
 namespace RevenuePlanner.Controllers
 {
+    [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class PlanPickerController : ApiController
     {
         private IPlanPicker _planPicker; 
@@ -12,27 +15,27 @@ namespace RevenuePlanner.Controllers
         {
             _planPicker = planPicker;
         }
-        public List<PlanItem> GetCampaigns(int planId)
+        public IEnumerable<PlanItem> GetCampaigns(int planId)
         {
             return _planPicker.GetCampaigns(planId);
         }
 
-        public List<PlanItem> GetLineItems(int tacticId)
+        public IEnumerable<PlanItem> GetLineItems(int tacticId)
         {
             return _planPicker.GetLineItems(tacticId);
         }
 
-        public List<PlanItem> GetPlans(string year)
+        public IEnumerable<PlanItem> GetPlans(string year)
         {
             return _planPicker.GetPlans(Sessions.User.CID, year);
         }
 
-        public List<PlanItem> GetPrograms(int campaignId)
+        public IEnumerable<PlanItem> GetPrograms(int campaignId)
         {
             return _planPicker.GetPrograms(campaignId);
         }
 
-        public List<PlanItem> GetTatics(int programId)
+        public IEnumerable<PlanItem> GetTatics(int programId)
         {
             return _planPicker.GetTatics(programId);
         }
