@@ -10458,6 +10458,25 @@ END
 --Insertation End #2623 import multiple plan
 Go
 
+/* #2845 - H9_QA: Sys_gen_balance not showing up under Alertlogic client */
+/* Query to insert Sys_Gen_Balance for tactic*/
+
+;WITH CalculateCost AS(
+SELECT 
+	T.PlanTacticId,
+	Sys_GenCount = (SELECT COUNT(*) FROM Plan_Campaign_Program_Tactic_LineItem L1 WHERE L1.PlanTacticId = T.PlanTacticId AND L1.IsDeleted = 0 AND L1.LineItemTypeId IS NULL ),
+	SUM(T.Cost) - SUM(L.Cost) Diff,
+	MIN(T.CreatedBy) CreatedBy
+FROM Plan_Campaign_Program_Tactic T
+INNER JOIN Plan_Campaign_Program_Tactic_LineItem L ON L.PlanTacticId = T.PlanTacticId
+WHERE T.IsDeleted = 0 AND L.IsDeleted = 0 
+GROUP BY T.PlanTacticId
+)
+INSERT INTO Plan_Campaign_Program_Tactic_LineItem (PlanTacticId,Title,Cost,StartDate,EndDate,CreatedBy,IsDeleted,CreatedDate,ModifiedBy)
+SELECT DISTINCT A.PlanTacticId,'Sys_Gen_Balance' AS Title,A.Diff,NULL AS StartDate,NULL AS EndDate,A.CreatedBy,0 AS IsDeleted,GETDATE() AS CreatedDate,A.CreatedBy AS ModifiedBy 
+FROM CalculateCost A
+WHERE Sys_GenCount = 0
+
 GO
 
 
@@ -10479,7 +10498,7 @@ GO
 declare @version nvarchar(255)
 declare @release nvarchar(255)
 set @release = 'September.2016'
-set @version = 'September.2016.1'
+set @version = 'September.2016_Patch'
 declare @date as datetime
 set @date = getutcdate()
 
