@@ -629,6 +629,11 @@ BEGIN
 END
 
 GO
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Plan_Team]') AND type in (N'P', N'PC'))
+BEGIN
+DROP PROCEDURE [dbo].[Plan_Team]
+END
+GO
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version

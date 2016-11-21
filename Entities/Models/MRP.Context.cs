@@ -132,7 +132,6 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
-        public DbSet<Plan_Team> Plan_Team { get; set; }
         public DbSet<Plan_UserSavedViews> Plan_UserSavedViews { get; set; }
         public DbSet<ProcessedFQY> ProcessedFQies { get; set; }
         public DbSet<Report_Intergration_Conf> Report_Intergration_Conf { get; set; }

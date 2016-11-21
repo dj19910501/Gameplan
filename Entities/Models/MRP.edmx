@@ -1501,16 +1501,6 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.Logging' does not have a prim
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="Plan_Team">
-          <Key>
-            <PropertyRef Name="PlanId" />
-            <PropertyRef Name="TeamMemberId" />
-          </Key>
-          <Property Name="PlanId" Type="int" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="TeamMemberId" Type="int" Nullable="false" />
-          <Property Name="CreatedBy" Type="int" Nullable="false" />
-        </EntityType>
         <EntityType Name="Plan_UserSavedViews">
           <Key>
             <PropertyRef Name="Id" />
@@ -3377,18 +3367,6 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.vClientWise_Tactic' does not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Plan_Collaborator_Plan">
-          <End Role="Plan" Type="Self.Plan" Multiplicity="1" />
-          <End Role="Plan_Team" Type="Self.Plan_Team" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan">
-              <PropertyRef Name="PlanId" />
-            </Principal>
-            <Dependent Role="Plan_Team">
-              <PropertyRef Name="PlanId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Plan_Improvement_Campaign_Plan">
           <End Role="Plan" Type="Self.Plan" Multiplicity="1" />
           <End Role="Plan_Improvement_Campaign" Type="Self.Plan_Improvement_Campaign" Multiplicity="*" />
@@ -4851,7 +4829,6 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.vClientWise_Tactic' does not 
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic" EntityType="Self.Plan_Improvement_Campaign_Program_Tactic" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic_Comment" EntityType="Self.Plan_Improvement_Campaign_Program_Tactic_Comment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic_Share" EntityType="Self.Plan_Improvement_Campaign_Program_Tactic_Share" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Plan_Team" EntityType="Self.Plan_Team" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Plan_UserSavedViews" EntityType="Self.Plan_UserSavedViews" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProcessedFQY" EntityType="Self.ProcessedFQY" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Report_Intergration_Conf" EntityType="Self.Report_Intergration_Conf" Schema="dbo" store:Type="Tables" />
@@ -5433,10 +5410,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_TacticType" Association="Self.FK_Plan_Campaign_Program_Tactic_TacticType">
             <End Role="TacticType" EntitySet="TacticType" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Collaborator_Plan" Association="Self.FK_Plan_Collaborator_Plan">
-            <End Role="Plan" EntitySet="Plan" />
-            <End Role="Plan_Team" EntitySet="Plan_Team" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Improvement_Campaign_Plan" Association="Self.FK_Plan_Improvement_Campaign_Plan">
             <End Role="Plan" EntitySet="Plan" />
@@ -6253,7 +6226,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic" EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic" />
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic_Comment" EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Comment" />
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic_Share" EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Share" />
-          <EntitySet Name="Plan_Team" EntityType="MRPModel.Plan_Team" />
           <EntitySet Name="Plan_UserSavedViews" EntityType="MRPModel.Plan_UserSavedViews" />
           <EntitySet Name="ProcessedFQies" EntityType="MRPModel.ProcessedFQY" />
           <EntitySet Name="Report_Intergration_Conf" EntityType="MRPModel.Report_Intergration_Conf" />
@@ -6754,10 +6726,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <AssociationSet Name="FK_Plan_Campaign_Plan" Association="MRPModel.FK_Plan_Campaign_Plan">
             <End Role="Plan" EntitySet="Plans" />
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Collaborator_Plan" Association="MRPModel.FK_Plan_Collaborator_Plan">
-            <End Role="Plan" EntitySet="Plans" />
-            <End Role="Plan_Team" EntitySet="Plan_Team" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Improvement_Campaign_Plan" Association="MRPModel.FK_Plan_Improvement_Campaign_Plan">
             <End Role="Plan" EntitySet="Plans" />
@@ -8524,7 +8492,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="Model" Relationship="MRPModel.FK_Plan_Plan" FromRole="Plan" ToRole="Model" />
           <NavigationProperty Name="Plan_Budget" Relationship="MRPModel.FK_Plan_Budget_Plan" FromRole="Plan" ToRole="Plan_Budget" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan" ToRole="Plan_Campaign" />
-          <NavigationProperty Name="Plan_Team" Relationship="MRPModel.FK_Plan_Collaborator_Plan" FromRole="Plan" ToRole="Plan_Team" />
           <NavigationProperty Name="Plan_Improvement_Campaign" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Plan" FromRole="Plan" ToRole="Plan_Improvement_Campaign" />
         </EntityType>
         <EntityType Name="Plan_Budget">
@@ -8868,17 +8835,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CreatedBy" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" FromRole="Plan_Improvement_Campaign_Program_Tactic_Share" ToRole="Plan_Improvement_Campaign_Program_Tactic" />
-        </EntityType>
-        <EntityType Name="Plan_Team">
-          <Key>
-            <PropertyRef Name="PlanId" />
-            <PropertyRef Name="TeamMemberId" />
-          </Key>
-          <Property Name="PlanId" Type="Int32" Nullable="false" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="TeamMemberId" Type="Int32" Nullable="false" />
-          <Property Name="CreatedBy" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Plan" Relationship="MRPModel.FK_Plan_Collaborator_Plan" FromRole="Plan_Team" ToRole="Plan" />
         </EntityType>
         <EntityType Name="Plan_UserSavedViews">
           <Key>
@@ -10811,18 +10767,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               <PropertyRef Name="PlanId" />
             </Principal>
             <Dependent Role="Plan_Campaign">
-              <PropertyRef Name="PlanId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Collaborator_Plan">
-          <End Type="MRPModel.Plan" Role="Plan" Multiplicity="1" />
-          <End Type="MRPModel.Plan_Team" Role="Plan_Team" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan">
-              <PropertyRef Name="PlanId" />
-            </Principal>
-            <Dependent Role="Plan_Team">
               <PropertyRef Name="PlanId" />
             </Dependent>
           </ReferentialConstraint>
@@ -13335,16 +13279,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
                 <ScalarProperty Name="EmailId" ColumnName="EmailId" />
                 <ScalarProperty Name="ImprovementPlanTacticId" ColumnName="ImprovementPlanTacticId" />
                 <ScalarProperty Name="ImprovementPlanTacticShareId" ColumnName="ImprovementPlanTacticShareId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Plan_Team">
-            <EntityTypeMapping TypeName="MRPModel.Plan_Team">
-              <MappingFragment StoreEntitySet="Plan_Team">
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="TeamMemberId" ColumnName="TeamMemberId" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="PlanId" ColumnName="PlanId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
