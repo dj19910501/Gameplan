@@ -2642,20 +2642,24 @@ namespace RevenuePlanner.Controllers
             List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
             List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
 
-            //Added By Maitri Gandhi on 21/03/2016 for #1888 Observation : 1
-            if (LineItemidBudgetList.Count() > 0)
+            if (BudgetId > 0)
             {
-                LineItem_Budget LinkedTactic;
-                for (int i = 0; i < LineItemidBudgetList.Count(); i++)
+                //Added By Maitri Gandhi on 21/03/2016 for #1888 Observation : 1
+                if (LineItemidBudgetList.Count() > 0)
                 {
-                    LinkedTactic = new LineItem_Budget();
-                    LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
-                    if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                    LineItem_Budget LinkedTactic;
+                    for (int i = 0; i < LineItemidBudgetList.Count(); i++)
                     {
+                        LinkedTactic = new LineItem_Budget();
+
+                        LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
                         if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
                         {
-                            LineItemidBudgetList.RemoveAt(i);
-                            i--;
+                            if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                            {
+                                LineItemidBudgetList.RemoveAt(i);
+                                i--;
+                            }
                         }
                     }
                 }
