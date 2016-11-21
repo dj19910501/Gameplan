@@ -276,9 +276,9 @@ function SetColumUpdatedValue(CellInd, diff) {
     progActVal = HomeGrid.cells(progid, CellInd).getValue();
     CampActVal = HomeGrid.cells(campid, CellInd).getValue();
     PlanActVal = HomeGrid.cells(planid, CellInd).getValue();
-    newProgVal = parseInt(ReplaceCC(progActVal.toString())) + parseInt(diff);
-    newCampVal = parseInt(ReplaceCC(CampActVal.toString())) + parseInt(diff);
-    newPlanVal = parseInt(ReplaceCC(PlanActVal.toString())) + parseInt(diff); 
+    newProgVal = parseFloat(ReplaceCC(progActVal.toString())) + parseFloat(diff);
+    newCampVal = parseFloat(ReplaceCC(CampActVal.toString())) + parseFloat(diff);
+    newPlanVal = parseFloat(ReplaceCC(PlanActVal.toString())) + parseFloat(diff);
 }
 
 
@@ -423,7 +423,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         if (UpdateColumn == TargetStageGoalId) {
             var psv = HomeGrid.cells(rowId, TargetStageGoalColIndex).getValue().split(" ");
             //this.editor.obj.value = (psv[0].replace(/,/g, ""));
-            this.editor.obj.value = (ReplaceCC(psv[0]));
+            this.editor.obj.value = (ReplaceCC(psv[0].toString()));
         }
 
         if (UpdateColumn == PlannedCostId) {
@@ -433,7 +433,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
     }
     if (stage == 2) {
-
         if (nValue.trim() != null && nValue.trim() != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
             var oldAssetType = '';
             var NewValue = htmlDecode(nValue);
@@ -517,7 +516,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             if (UpdateColumn.toString().trim() == TargetStageGoalId) {
                 var splitoval = oValue.split(" ");
                 //if (nValue != splitoval[0].replace(/,/g, ""))
-                if (nValue != ReplaceCC(splitoval[0])) {
+                if (nValue != ReplaceCC(splitoval[0].toString())) {
                     var tactictypeindex = HomeGrid.getColIndexById('tactictype');
                     var tacticTypeId = HomeGrid.getUserData(rowId, "tactictype");
                     GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue, null);
@@ -666,17 +665,16 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                             else if (UpdateColumn == PlannedCostId) {
 
-                                diff = parseInt(states.lineItemCost) - parseInt(ReplaceCC(oValue));
+                                diff = parseInt(states.lineItemCost) - parseInt(ReplaceCC(oValue.toString()));
                                 for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                     if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") != "False") {
-                                        HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + (states.tacticCost - states.lineItemCost));
+                                        HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + number_format((states.tacticCost - states.lineItemCost), 2, '.', ','));
                                     }
                                 }
-
                                 RefershPlanHeaderCalc();
                                 ItemIndex = HomeGrid.getRowIndex(tactid);
                                 state0 = ItemIndex;
-                                HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(nValue)));
+                                HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + number_format(nValue, 2, '.', ',')));
                             }
                             if (UpdateColumn == PlannedCostId || UpdateColumn == TaskNameId) {
                                 if (states.linkTacticId > 0) {
@@ -806,19 +804,19 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 ComapreDate(updatetype, rowId, EndDateColIndex, nValue, UpdateColumn);
                             }
                             if (UpdateColumn == PlannedCostId) {
-                                var newcostValue = parseInt(ReplaceCC(nValue).replace(CurrencySybmol, ''));
-                                var oldcostValue = parseInt(ReplaceCC(oValue).replace(CurrencySybmol, ''));
+                                var newcostValue = parseFloat(ReplaceCC(nValue.toString()).replace(CurrencySybmol, ''));
+                                var oldcostValue = parseFloat(ReplaceCC(oValue.toString()).replace(CurrencySybmol, ''));
                                 diff = newcostValue - oldcostValue;
                                 SetColumUpdatedValue(PlannedCostColIndex, diff);
-                                HomeGrid.cells(progid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newProgVal)));
-                                HomeGrid.cells(campid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newCampVal)));
-                                HomeGrid.cells(planid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newPlanVal)));
-                                HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newcostValue)));
+                                HomeGrid.cells(progid, PlannedCostColIndex).setValue((CurrencySybmol + number_format(newProgVal, 2, '.', ',')));
+                                HomeGrid.cells(campid, PlannedCostColIndex).setValue((CurrencySybmol + number_format(newCampVal, 2, '.', ',')));
+                                HomeGrid.cells(planid, PlannedCostColIndex).setValue((CurrencySybmol + number_format(newPlanVal, 2, '.', ',')));
+                                HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + number_format(newcostValue, 2, '.', ',')));
                                 if (TotalRowIds != null && TotalRowIds != "" && TotalRowIds.length > 0) {
 
                                     for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                         if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") != "False") {
-                                            HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + numberWithCommas(newcostValue - states.lineItemCost));
+                                            HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + number_format(newcostValue - states.lineItemCost, 2, '.', ','));
                                         }
                                     }
                                 }
