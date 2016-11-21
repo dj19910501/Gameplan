@@ -226,6 +226,9 @@
     <Compile Include="Models\GetLineItemList_Result.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\GetLinkedLineItemsForTransaction_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\GetMeasures_Result.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -551,6 +554,12 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Tactic_Share.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Transaction.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TransactionLineItemMapping.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserSetting.cs">

@@ -29,6 +29,7 @@ namespace RevenuePlanner.Models
         public string ColorCode { get; set; }
         public bool IsDeleted { get; set; }
         public int CreatedBy { get; set; }
+        public string CustomFieldOptionIDX { get; set; }
     
         public virtual CustomField CustomField { get; set; }
         public virtual ICollection<CustomFieldDependency> CustomFieldDependencies { get; set; }
