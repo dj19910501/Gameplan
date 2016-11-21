@@ -664,7 +664,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 return false;
                             }
                             else if (UpdateColumn == PlannedCostId) {
-
                                 diff = parseInt(states.lineItemCost) - parseInt(ReplaceCC(oValue.toString()));
                                 for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                     if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") != "False") {
@@ -693,6 +692,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                         }
                     });
+                }
+                else {
+                    if (UpdateColumn == PlannedCostId) {
+                        HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + number_format(nValue, 2, '.', ',')));
+                    }
                 }
                 return true;
             }
@@ -875,6 +879,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 });
                 return true;
             }
+            else
+            {
+                if (UpdateColumn == PlannedCostId)
+                    HomeGrid.cells(rowId, cellInd).setValue((CurrencySybmol + number_format(nValue, 2, '.', ',')));
+
+}
             if (cellInd == TaskNameColIndex) {
                 if (value != undefined && value != "undefined" && value != null) {
                     HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
