@@ -605,6 +605,30 @@ BEGIN
 END 
 GO
 
+-- =============================================
+-- Author: Rahul Shah 
+-- Create date: 11/21/2016
+-- Description:	to Add TotalBudget & TotalForcast in Budget_Detail table to calculate unallocated cost.
+-- =============================================
+IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_NAME = 'Budget_Detail' AND COLUMN_NAME = 'TotalBudget')
+BEGIN
+
+    ALTER TABLE [dbo].[Budget_Detail] 
+	ADD [TotalBudget] float null 
+   
+END
+
+IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_NAME = 'Budget_Detail' AND COLUMN_NAME = 'TotalForcast')
+BEGIN
+
+    ALTER TABLE [dbo].[Budget_Detail] 
+	ADD [TotalForcast] float null 
+   
+END
+
+GO
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
