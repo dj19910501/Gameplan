@@ -24,7 +24,53 @@ namespace RevenuePlanner.UnitTest.Service
         private const string LineItemTitle = "Configuration Guide Development";
         #endregion Test Data
 
-        private bool ContainsTitle(List<PlanItem> list, string title)
+        public PlanPickerTest()
+        {
+            _planPicker = ObjectFactory.GetInstance<IPlanPicker>(); 
+        }
+
+        [TestMethod]
+        public void Test_PlanPicker_GetCampaigns()
+        {
+            var res = _planPicker.GetCampaigns(PlanId);
+            Assert.IsTrue(res.Count > 0 && res.ContainsTitle(CampaignTitle));
+        }
+
+        [TestMethod]
+        public void Test_PlanPicker_GetLineItems()
+        {
+            var res = _planPicker.GetLineItems(TacticId);
+            Assert.IsTrue(res.Count > 0 && res.ContainsTitle(LineItemTitle));
+        }
+
+        [TestMethod]
+        public void Test_PlanPicker_GetPlans()
+        {
+            var res = _planPicker.GetPlans(ClientId, Year);
+            Assert.IsTrue(res.Count > 0 && res.ContainsTitle(PlanTitle));
+        }
+
+        [TestMethod]
+        public void Test_PlanPicker_GetPrograms()
+        {
+            var res = _planPicker.GetPrograms(CampaignId);
+            Assert.IsTrue(res.Count > 0 && res.ContainsTitle(ProgramTitle));
+        }
+
+        [TestMethod]
+        public void Test_PlanPicker_GetTatics()
+        {
+            var res = _planPicker.GetTatics(ProgramId);
+            Assert.IsTrue(res.Count > 0 && res.ContainsTitle(TacticTitle));
+        }
+    }
+
+    /// <summary>
+    /// This extension makes code more readable!
+    /// </summary>
+    public static class TestExtension
+    {
+        public static bool ContainsTitle(this List<PlanItem> list, string title)
         {
             foreach (var item in list)
             {
@@ -35,46 +81,6 @@ namespace RevenuePlanner.UnitTest.Service
             }
 
             return false;
-        }
-
-        public PlanPickerTest()
-        {
-            _planPicker = ObjectFactory.GetInstance<IPlanPicker>(); 
-        }
-
-        [TestMethod]
-        public void Test_PlanPicker_GetCampaigns()
-        {
-            var res = _planPicker.GetCampaigns(PlanId);
-            Assert.IsTrue(res.Count > 0 && ContainsTitle(res, CampaignTitle));
-        }
-
-        [TestMethod]
-        public void Test_PlanPicker_GetLineItems()
-        {
-            var res = _planPicker.GetLineItems(TacticId);
-            Assert.IsTrue(res.Count > 0 && ContainsTitle(res, LineItemTitle));
-        }
-
-        [TestMethod]
-        public void Test_PlanPicker_GetPlans()
-        {
-            var res = _planPicker.GetPlans(ClientId, Year);
-            Assert.IsTrue(res.Count > 0 && ContainsTitle(res, PlanTitle));
-        }
-
-        [TestMethod]
-        public void Test_PlanPicker_GetPrograms()
-        {
-            var res = _planPicker.GetPrograms(CampaignId);
-            Assert.IsTrue(res.Count > 0 && ContainsTitle(res, ProgramTitle));
-        }
-
-        [TestMethod]
-        public void Test_PlanPicker_GetTatics()
-        {
-            var res = _planPicker.GetTatics(ProgramId);
-            Assert.IsTrue(res.Count > 0 && ContainsTitle(res, TacticTitle));
         }
     }
 }
