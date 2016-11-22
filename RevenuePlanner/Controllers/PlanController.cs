@@ -4609,6 +4609,7 @@ namespace RevenuePlanner.Controllers
             {
                 string MonthName = string.Empty;
                 string CellYear = string.Empty;
+                Common.RemoveGridCacheObject();
                 if (!string.IsNullOrEmpty(month))
                 {
                     string[] MonthYear = month.Split('-');
@@ -5257,6 +5258,7 @@ namespace RevenuePlanner.Controllers
             {
                 string MonthName = string.Empty;
                 string CellYear = string.Empty;
+                Common.RemoveGridCacheObject();
                 if (!string.IsNullOrEmpty(month))
                 {
                     string[] MonthYear = month.Split('-');
@@ -6758,12 +6760,12 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns partial view HomeGrid</returns>
         [CompressAttribute]
         public ActionResult GetHomeGridData()
-        {    
+        {
             return PartialView("_HomeGrid");
         }
 
         [CompressAttribute]
-        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy, bool isLoginFirst = false)
+        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy, bool isLoginFirst = false,string SearchText="", bool IsFromCache=false)
         {
             PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
             List<PlanOptionsTacticType> Tactictypelist = new List<PlanOptionsTacticType>();
@@ -6806,7 +6808,7 @@ namespace RevenuePlanner.Controllers
                 string PlanCurrencySymbol = Sessions.PlanCurrencySymbol;
                 double PlanExchangeRate = Sessions.PlanExchangeRate;
                 int UserID = Sessions.User.ID;
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, ClientID, ownerIds, TacticTypeid, StatusIds, customFieldIds, PlanCurrencySymbol, PlanExchangeRate, UserID, objPermission, lstSubordinatesIds, viewBy);
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, ClientID, ownerIds, TacticTypeid, StatusIds, customFieldIds, PlanCurrencySymbol, PlanExchangeRate, UserID, objPermission, lstSubordinatesIds, viewBy, SearchText, IsFromCache);
                 Tactictypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
                 LineItemtypelist = objGrid.GetLineItemTypeListForHeader(planIds, Sessions.User.CID);
             }
@@ -6825,7 +6827,7 @@ namespace RevenuePlanner.Controllers
             //return PartialView("_HomeGrid", objPlanMainDHTMLXGrid);
         }
         #endregion
-
+       
         #region Save gridview detail from home
         /// <summary>
         /// Added By:Devanshi Gandhi
@@ -6852,6 +6854,7 @@ namespace RevenuePlanner.Controllers
             List<CustomfieldIDValues> customfieldidvalues = new List<CustomfieldIDValues>();
             try
             {
+                Common.RemoveGridCacheObject();
                 #region update Plan Detail
                 if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.plan.ToString())
                 {
@@ -7779,7 +7782,6 @@ namespace RevenuePlanner.Controllers
                     {
                         // Modified by Arpita Soni for Ticket #2634 on 09/23/2016
                         double newLineItemCost = 0;
-
                         // Apply exchange rate on new value and perform operations in USD form
                         if (!string.IsNullOrEmpty(UpdateVal))
                             newLineItemCost = objCurrency.SetValueByExchangeRate(double.Parse(UpdateVal), PlanExchangeRate);
@@ -7909,6 +7911,7 @@ namespace RevenuePlanner.Controllers
                     return Json(new { lineItemCost = totalLineItemCost, tacticCost = objTactic.Cost, linkTacticId = LinkedTacticId, DependentCustomfield = customfieldidvalues }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
+               
             }
             catch (Exception e)
             {
@@ -10025,7 +10028,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="Year">selected year of plans from timeframe </param>
         /// <returns></returns>
         [CompressAttribute]
-        public ActionResult GetBudgetData(string PlanIds, string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "")
+        public ActionResult GetBudgetData(string PlanIds, string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "", string SearchText = "", bool IsFromCache = false)
         {
             IBudget Iobj = new RevenuePlanner.Services.Budget();
             int UserID = Sessions.User.ID;
@@ -10034,7 +10037,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBy = PlanGanttTypes.Tactic.ToString();
             }
-            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, ViewBy, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds);
+            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, ViewBy, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds,SearchText,IsFromCache);
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
             if (year.ToLower() == strThisMonth.ToLower())
             {

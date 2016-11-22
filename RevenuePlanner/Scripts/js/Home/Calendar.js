@@ -49,7 +49,8 @@ function GetCalendarDataInJsonFormat() {
     var strURL = urlContent + 'Home/GetCalendarData/';
     filters = GetFilterIds();
     var timeframe = $("#ddlUpComingActivites").val();
-var viewBy = $('#ddlTabViewBy').val();
+    var viewBy = $('#ddlTabViewBy').val();
+    var Searchtext = $('#txtGlobalSearch').val().trim();
     $.ajax({
         url: strURL,
         type: 'POST',
@@ -60,16 +61,24 @@ var viewBy = $('#ddlTabViewBy').val();
             statusIds: filters.StatusIds.toString(),
             customFieldIds: filters.customFieldIds.toString(),
             timeframe: timeframe,
-            viewBy: viewBy
+            viewBy: viewBy,
+            Searchtext: Searchtext
         },
         success: function (data) {
             var permission = Boolean($("#IsPlanEditable").val());
-            if (data.data.length > 0 || (NoPlanCreated.toString().toLowerCase()=='true' && permission.toString().toLowerCase()=='true' )) {
+            if (data.data.length > 0 || (NoPlanCreated.toString().toLowerCase() == 'true' && permission.toString().toLowerCase() == 'true') || $('#txtGlobalSearch').val().length > 0) {
             ConfigureGanttwithdefaultSettings();    // Configure Calendar with default configuration.
             SetGanttData(data.data);            // Render Calendar.
             $('#exp-serach').css('display', 'block');
-                $('#ChangeView').show();
-            } else {
+            $('#ChangeView').show();
+            if ($('#txtGlobalSearch').val().length > 0 && data.data.length == 0)
+            {
+                $("#errorMsg").css("display", "block");
+                        $("#spanMsgError").empty();
+                        $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+                    }
+            }
+            else {
                 $('#NodatawithfilterCalendar').show();
                 $('#ChangeView').show();
                 $('#exp-serach').css('display', 'none');
@@ -160,7 +169,7 @@ function SetGanttData(resultdata) {
         gantt.templates.task_class = function (start, end, task) {
             return getCSSForTask(task);
         };
-        if (json_length == 0) {
+        if (json_length == 0 && NoPlanCreated.toString().toLowerCase()=='true') {
             filteredTasks = AddCalenderBlankRow(startDate);
         }
         gantt.parse(filteredTasks);
@@ -216,7 +225,7 @@ function SetGanttData(resultdata) {
         gantt.templates.task_class = function (start, end, task) {
             return getCSSForTask(task);
         };
-        if (json_length == 0) {
+        if (json_length == 0 && NoPlanCreated.toString().toLowerCase() == 'true') {
             filteredTasks = AddCalenderBlankRow(startDate);
         }
         gantt.parse(filteredTasks);//Freezing of Application with Please Wait Dialog Box (This Month Option)
@@ -272,7 +281,7 @@ else if ( $.isNumeric(timeframe)) {
         gantt.templates.task_class = function (start, end, task) {
             return getCSSForTask(task);
         };
-        if (json_length == 0)
+        if (json_length == 0 && NoPlanCreated.toString().toLowerCase() == 'true')
         {
             tasks = AddCalenderBlankRow(startDate);
         }
@@ -312,7 +321,7 @@ else if ( $.isNumeric(timeframe)) {
         gantt.templates.task_class = function (start, end, task) {
             return getCSSForTask(task);
         };
-        if (json_length == 0) {
+        if (json_length == 0 && NoPlanCreated.toString().toLowerCase() == 'true') {
             tasks = AddCalenderBlankRow(startDate);
         }
         gantt.parse(tasks);
@@ -344,13 +353,18 @@ else if ( $.isNumeric(timeframe)) {
     AttachEventToTactic();
     AttachEventToonTaskRowClick();
     //GlobalSearch();
-  
+    if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+        gantt.eachTask(function (task) {
+            task.$open = true;
+        });
+    }   
     gantt.refreshData();   // Refresh Gantt to expand all tasks.
     if (scrollstate != null && scrollstate != undefined ) {
 
         var _scrollY = scrollstate.y
         gantt.scrollTo(0, _scrollY);
     }
+   
     SetTooltip();
 }
 //method to get open close state to load context from grid to calendar #2677

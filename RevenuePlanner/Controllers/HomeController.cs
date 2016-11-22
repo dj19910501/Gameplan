@@ -4136,7 +4136,7 @@ namespace RevenuePlanner.Controllers
         /// <returns> Return Calendar Json Result</returns>
         [HttpPost]
         [CompressAttribute]
-        public JsonResult GetCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string viewBy)
+        public JsonResult GetCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string viewBy, string Searchtext="")
         {
             #region "Declare local variables"
             string planYear = "";
@@ -4151,7 +4151,7 @@ namespace RevenuePlanner.Controllers
                     viewBy = PlanGanttTypes.Tactic.ToString();
 
                 // Get Calendar data through SP.
-                resultData = objGrid.GetPlanCalendarData(planIds, ownerIds, tactictypeIds, statusIds, customFieldIds, timeframe, planYear, viewBy);
+                resultData = objGrid.GetPlanCalendarData(planIds, ownerIds, tactictypeIds, statusIds, customFieldIds, timeframe, planYear, viewBy,Searchtext);
 
                 // Set Owner Name and permission for each required entity.
                 resultData = objGrid.SetOwnerNameAndPermission(resultData);

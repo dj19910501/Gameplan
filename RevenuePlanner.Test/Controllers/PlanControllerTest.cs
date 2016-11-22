@@ -677,9 +677,6 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         
-
-
-
         #region "Check Permission By Owner for Entity owner upation"
         /// <summary>
         /// To Check Permission By Owner for Entity owner upation
@@ -1894,6 +1891,45 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
+        #region get plan grid data
+         /// <summary>
+        /// To get budget grid data with search
+        /// <author>Devanshi gandhi</author>
+        /// <createddate>22 nov 2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_PlanGridData_WithSearch()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Budget Data with Search .\n");
+            MRPEntities db = new MRPEntities();
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objPlanController.Url = new UrlHelper(
+            new RequestContext(
+            objPlanController.HttpContext, new RouteData()
+            ),
+            routes
+            );
+            int PlanId = DataHelper.GetMultiYearPlanId();
+            string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(PlanId));
+            int ModelId = DataHelper.GetPlanModelId(PlanId);
+            List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
+            string TacticTypeIds = string.Join(",", lstTacticTypeIds);
+            List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
+            string StatusIds = string.Join(",", lstStatus);
+            string viewby = PlanGanttTypes.Tactic.ToString();
+            string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+            string PlanYear = DataHelper.GetPlanYear(PlanId);
+            string NextYear = Convert.ToString(Convert.ToInt32(PlanYear) + 1);
+            string SearchText = "tactic";
+            var result = objPlanController.GetHomeGridDataJSON(PlanId.ToString(), OwnerIds, TacticTypeIds, StatusIds, string.Empty,viewby,false, SearchText,false) as JsonResult;
+
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+
+        }
+       
+        #endregion
         #region Get Budget Allocation.
         /// <summary>
         /// To get budget allocated data
@@ -1994,6 +2030,42 @@ namespace RevenuePlanner.Test.Controllers
             string PlanYear = DataHelper.GetPlanYear(PlanId);
             string NextYear =Convert.ToString(Convert.ToInt32(PlanYear) + 1);
             var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, PlanYear+"-"+NextYear) as PartialViewResult;
+
+            Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+
+        }
+        /// <summary>
+        /// To get budget grid data with search
+        /// <author>Devanshi gandhi</author>
+        /// <createddate>22 nov 2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Budget_Data_WithSearch()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Budget Data with Search .\n");
+            MRPEntities db = new MRPEntities();
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objPlanController.Url = new UrlHelper(
+            new RequestContext(
+            objPlanController.HttpContext, new RouteData()
+            ),
+            routes
+            );
+            int PlanId = DataHelper.GetMultiYearPlanId();
+            string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(PlanId));
+            int ModelId = DataHelper.GetPlanModelId(PlanId);
+            List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
+            string TacticTypeIds = string.Join(",", lstTacticTypeIds);
+            List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
+            string StatusIds = string.Join(",", lstStatus);
+            string viewby = PlanGanttTypes.Tactic.ToString();
+            string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+            string PlanYear = DataHelper.GetPlanYear(PlanId);
+            string NextYear = Convert.ToString(Convert.ToInt32(PlanYear) + 1);
+            string SearchText = "tactic";
+            var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, PlanYear + "-" + NextYear, SearchText,true) as PartialViewResult;
 
             Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);

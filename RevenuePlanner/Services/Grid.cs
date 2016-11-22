@@ -198,7 +198,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Get plan grid data with default and custom fields columns 
         /// </summary>
-        public PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy)
+        public PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy, string SearchText = "", bool IsFromCache=false)
         {
             _ClientId = ClientId;
             _UserId = UserId;
@@ -218,6 +218,10 @@ namespace RevenuePlanner.Services
             List<AttributeDetail> UserColitems = null;
             Dictionary<int, string> usercolindex = new Dictionary<int, string>();
             List<string> lstusercolindex = new List<string>();
+                List<GridDefaultModel> lstSelectedColumnsData = new List<GridDefaultModel>();
+                GridCustomColumnData ListOfCustomData = new GridCustomColumnData();
+                EmptyCustomFieldsValuesEntity EntityEmptyCustomFieldsData = new EmptyCustomFieldsValuesEntity();
+
             if (objUserView != null && !string.IsNullOrEmpty(objUserView.GridAttribute))
             {
                 XDocument doc = XDocument.Parse(objUserView.GridAttribute);
@@ -240,9 +244,14 @@ namespace RevenuePlanner.Services
             }
             // Generate header columns for grid
             List<PlanHead> ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle, ref HiddenColumns, ref UserDefinedColumns, ref customColumnslist, UserId, ref IsUserView, objUserView);
-
+                List<GridDefaultModel> GridDataList=new List<GridDefaultModel>();
+                List<GridDefaultModel> GridHireachyData = new List<GridDefaultModel>();
+                if(IsFromCache)
+                 GridDataList = (List<GridDefaultModel>)objCache.Returncache(Enums.CacheObject.AllGidData.ToString());
+                if (GridDataList == null || GridDataList.Count()==0)
+                {
             //Get list of entities for plan grid
-            List<GridDefaultModel> GridHireachyData = GetGridDefaultData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds, viewBy);
+                 GridHireachyData = GetGridDefaultData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds, viewBy);
 
             //Filter custom field
             if (GridHireachyData != null && GridHireachyData.Count > 0 && !string.IsNullOrEmpty(customFieldIds))
@@ -253,7 +262,6 @@ namespace RevenuePlanner.Services
             // Update Plan Start and end date
             GridHireachyData = UpdatePlanStartEndDate(GridHireachyData);
             // Get List of custom fields and it's entity's values
-            GridCustomColumnData ListOfCustomData = new GridCustomColumnData();
             if (customColumnslist != null && customColumnslist.Count > 0)
             {
                 ListOfCustomData = GridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customColumnslist, UserId, IsUserView);
@@ -272,7 +280,6 @@ namespace RevenuePlanner.Services
 
             PivotcustomFieldData(ref customColumnslist, ListOfCustomData, ref IsUserView, EntityRowPermission);
 
-            EmptyCustomFieldsValuesEntity EntityEmptyCustomFieldsData = new EmptyCustomFieldsValuesEntity();
             // Get list of custom fields empty cell are editable or not with respective entities 
             if (customColumnslist != null && customColumnslist.Count > 0)
             {
@@ -299,7 +306,7 @@ namespace RevenuePlanner.Services
             GridHireachyData = RoundupValues(GridHireachyData, IsPlanCostColumn, IsRevenueColumn, IsMQLColumn);
 
             // Get selected columns data
-            List<GridDefaultModel> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
+                 lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
 
             // Merge header of plan grid with custom fields
             ListOfDefaultColumnHeader.AddRange(GridCustomHead(ListOfCustomData.CustomFields, customColumnslist));
@@ -315,6 +322,17 @@ namespace RevenuePlanner.Services
                 lstusercolindex = usercolindex.OrderBy(a => int.Parse(a.Key.ToString())).Select(a => a.Value.ToLower()).ToList();
 
             }
+                objCache.AddCache(Enums.CacheObject.AllGidData.ToString(), lstSelectedColumnsData);
+            }
+            else
+            {
+                lstSelectedColumnsData = GridDataList;
+            }
+                if (!string.IsNullOrEmpty(SearchText))
+                {
+                    // call common method to search grid data as per search text
+                    lstSelectedColumnsData = SearchGridData(lstSelectedColumnsData, SearchText);
+                }
             // Generate Hierarchy of Plan grid
             List<PlanDHTMLXGridDataModelHomeGrid> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
                    .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData, lstusercolindex, EntityEmptyCustomFieldsData))
@@ -513,6 +531,64 @@ namespace RevenuePlanner.Services
                     return objHomeGridProp.openstateone;
             }
           return string.Empty;
+        }
+        #endregion
+
+
+        #region method to get grid data for search
+        /// <summary>
+        /// Added by devanshi 
+        /// method to get filter data as search text #2597
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="searchtext"></param>
+        /// <returns></returns>
+        public List<GridDefaultModel> SearchGridData(List<GridDefaultModel> DataList, string searchtext)
+        {
+            List<GridDefaultModel> lstSelectedData = new List<GridDefaultModel>();
+            int HierarchyCount = 0; // to itreate from last level of entity type
+            int Ind = 0; // to find last index of taskid and based on that remove item from list
+            string ParrentTaskId = string.Empty;
+           
+                var parenttaskids = DataList.Where(a => a.EntityTitle.ToLower().Contains(HttpUtility.HtmlEncode(searchtext.ToLower()))).Select(a => new
+                {
+                    parenttaskid = a.ParentTaskId,
+                    TaskId = a.TaskId
+                }).ToList();
+                List<string> taskids = new List<string>();
+                foreach (var obj in parenttaskids)
+                {
+                    taskids.Add(obj.parenttaskid);
+                    if (obj.parenttaskid!=null)
+                        HierarchyCount = obj.parenttaskid.Split('_').Count();
+                    if (HierarchyCount > 0)
+                    {
+                        
+                         ParrentTaskId = obj.parenttaskid;
+                        for (int i = 1; i < HierarchyCount; i++)
+                        {
+                             Ind = ParrentTaskId.LastIndexOf('_');
+                            ParrentTaskId = ParrentTaskId.Remove(Ind);
+                            taskids.Add(ParrentTaskId);
+                        }
+                    }
+                    taskids.Add(obj.TaskId);
+                    //add all childerns
+                    var childernlist = DataList.Where(a => a.ParentTaskId != null && a.ParentTaskId.Contains(obj.TaskId)).ToList();
+                    if (childernlist != null && childernlist.Count > 0)
+                    {
+                        lstSelectedData.AddRange(childernlist);
+                    }
+                }
+                //add all parents
+                List<GridDefaultModel> parentlist = (from Data in DataList
+                                                     join ParentData in taskids
+                                                         on Data.TaskId equals ParentData
+                                                     select Data).ToList();
+                lstSelectedData.AddRange(parentlist);
+                return lstSelectedData.Distinct().ToList();
+           
+          
         }
         #endregion
 
@@ -1978,7 +2054,7 @@ namespace RevenuePlanner.Services
         /// Createdy By: Viral
         /// Created On: 09/19/2016
         // Desc: Return List of Plan, Campaign, Program, Tactic
-        public List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string planYear, string viewby)
+        public List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string planYear, string viewby,string Searchtext="")
         {
             #region "Declare Variables"
             SqlParameter[] para = new SqlParameter[7];
@@ -2012,6 +2088,11 @@ namespace RevenuePlanner.Services
                 calResultset = FilterPlanByTimeFrame(calResultset, timeframe); // Get filtered tactics based on timeframe.
             #endregion
 
+             #region "Filter data based on searchtext"
+            if (!string.IsNullOrEmpty(Searchtext) && calResultset != null && calResultset.Count > 0 && !string.IsNullOrEmpty(timeframe))
+                calResultset = SearchCalenderData(calResultset, Searchtext); // Get filtered tactics based on timeframe.
+            #endregion
+            
             return calResultset;
         }
 
@@ -2172,6 +2253,61 @@ namespace RevenuePlanner.Services
             return calendarDataModel;
         }
 
+        #region method to get calander data for search
+        /// <summary>
+        /// Added by devanshi 
+        /// method to get filter data as search text #2597
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="searchtext"></param>
+        /// <returns></returns>
+        public List<calendarDataModel> SearchCalenderData(List<calendarDataModel> DataList, string searchtext)
+        {
+            List<calendarDataModel> lstSelectedData = new List<calendarDataModel>();
+            int HierarchyCount = 0; // to itreate from last level of entity type
+            int Ind = 0; // to find last index of taskid and based on that remove item from list
+            string ParrentTaskId = string.Empty;
+           
+                //search data with entity name
+                var parenttaskids = DataList.Where(a => a.text.ToLower().Contains(HttpUtility.HtmlEncode(searchtext.ToLower()))).Select(a => new
+                {
+                    parenttaskid = a.parent,
+                    TaskId = a.id
+                }).ToList();
+                List<string> taskids = new List<string>();
+                foreach (var obj in parenttaskids)
+                {
+                    taskids.Add(obj.parenttaskid);
+                    if (obj.parenttaskid != null)
+                         HierarchyCount = obj.parenttaskid.Split('_').Count();
+                    if (HierarchyCount > 0)
+                    {
+                         ParrentTaskId = obj.parenttaskid;
+                        for (int i = 1; i < HierarchyCount; i++)
+                        {
+                             Ind = ParrentTaskId.LastIndexOf('_');
+                            ParrentTaskId = ParrentTaskId.Remove(Ind);
+                            taskids.Add(ParrentTaskId);
+                        }
+                    }
+                    taskids.Add(obj.TaskId);
+                    //add all childerns
+                    var childernlist = DataList.Where(a => a.parent != null && a.parent.Contains(obj.TaskId)).ToList();
+                    if (childernlist != null && childernlist.Count > 0)
+                    {
+                        lstSelectedData.AddRange(childernlist);
+                    }
+                }
+                //add all parents
+                List<calendarDataModel> parentlist = (from Data in DataList
+                                                     join ParentData in taskids
+                                                         on Data.id equals ParentData
+                                                     select Data).ToList();
+                lstSelectedData.AddRange(parentlist);
+                return lstSelectedData.Distinct().ToList();
+           
+        }
+        #endregion
         #endregion
 
         /// <summary>

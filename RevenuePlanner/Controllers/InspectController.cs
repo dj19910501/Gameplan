@@ -6305,6 +6305,7 @@ namespace RevenuePlanner.Controllers
             {
                 int EntityId = Convert.ToInt32(entityId);   // this is tactic or line item id
                 string AllocatedBy = string.Empty;
+                Common.RemoveGridCacheObject();
                 if (isquarter)
                 {
                     AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.quarters);

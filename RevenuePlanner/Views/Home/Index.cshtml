@@ -203,7 +203,7 @@
 @Html.Partial("~/Views/Plan/_PlanGridVariable.cshtml")
 @Html.Partial("~/Views/Home/_CalExportPDFHeaderHtml.cshtml")
 <div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
-<script src="~/Scripts/js/Home/HomeGrid_Min.js"></script>
+<script src="~/Scripts/js/Home/HomeGrid.js"></script>
 @Scripts.Render("~/bundles/Home_BudgetJs")
 
     <script type="text/javascript">
@@ -503,7 +503,6 @@
         if (PlanID == 0) {
             PlanID = 'null'
         }
-
         var dataRequest;
         if (fastmode) {
             // do not reload filters in "fastmode"
@@ -611,6 +610,7 @@
     var RevenueColIndex = 0;
     var StartDateColIndex = 0;
     var EndDateColIndex = 0;
+    var IsGridFromCahce = false;
 
     $(document).ready(function() {
         //BindHomeGrid();
@@ -641,6 +641,7 @@
     //var GridDataHomeGrid;
 
     function GetGridData(filters, viewBy) {
+        var seachtext = $('#txtGlobalSearch').val();
         return $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/GetHomeGridDataJSON/")', //urlContent + 'Plan/GetHomeGridDataJSON/',
@@ -652,7 +653,9 @@
                 StatusIds: filters.StatusIds.toString(),
                 customFieldIds: filters.customFieldIds.toString(),
                 viewBy: viewBy,
-                isLoginFirst: isFirstTimeOnGrid
+                isLoginFirst: isFirstTimeOnGrid,
+                SearchText: seachtext,
+                IsFromCache: IsGridFromCahce 
                 //ExpandedtacticIds: $('#ExpandedTacticIds').val()
             },
             cache: false
@@ -794,11 +797,33 @@
             $("#goalwrapper").show();
             $("#NodatawithfilterGrid").hide();
             $('#exp-serach').show();
-            $("div[id^='LinkIcon']").each(function() {
+            $("div[id^='LinkIcon']").each(function () {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
-
-        } else {
+            $("#errorMsg").css("display", "none");
+            $("#spanMsgError").empty();
+            if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) 
+            {
+                HomeGrid.expandAll();
+                $("#errorMsg").css("display", "none");
+                $("#spanMsgError").empty();
+            }
+        }
+        else if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+            // GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
+            if (parseInt(count) <= 0) {
+                    $("#errorMsg").css("display", "block");
+                    $("#spanMsgError").empty();
+                    $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+                $(window).scrollTop(0);
+            }
+            else {
+                HomeGrid.expandAll();
+                $("#errorMsg").css("display", "none");
+                $("#spanMsgError").empty();
+            }
+        }
+        else {
             var noplan = '@Sessions.IsNoPlanCreated';
             if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
                 AddBlankRow();
@@ -812,11 +837,10 @@
             }
             $('#exp-serach').hide();
         }
-        if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
-            GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
-        }
+        
         HomeGrid.enableEditEvents(true, false, true);
         SetTooltip();
+        IsGridFromCahce = false;
 
         var finish = performance.now();
         console.log("spent " + (finish - begin) + " ms to prepare grid");

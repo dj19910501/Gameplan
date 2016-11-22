@@ -185,7 +185,7 @@ function GetBudgetGridData() {
         selectedTimeFrame = currentDate.getFullYear().toString();
     }
     var viewBy = $('#ddlTabViewBy').val();
-
+    var searchtext = $('#txtGlobalSearch').val();
     return $.ajax({
         url: urlContent + 'Plan/GetBudgetData/',
         data: {
@@ -195,7 +195,9 @@ function GetBudgetGridData() {
             StatusIds: filters.StatusIds.toString(),
             customFieldIds: filters.customFieldIds.toString(),
             year: selectedTimeFrame.toString(),
-            ViewBy: viewBy
+            ViewBy: viewBy,
+            SearchText: searchtext,
+            IsFromCache: IsGridFromCahce
 
         }
     });
@@ -1584,10 +1586,13 @@ $(".searchDropdown li a").click(function () {
         $('#ExpClose').css('display', 'none');
     }
 });
+var SearchIds = [];
 
 //Search button click
 $('#ExpSearch').click(function () {
     if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != null) {
+        SearchIds = [];
+        IsGridFromCahce = true;
         GlobalSearch();
         if ($('#txtGlobalSearch').val().trim() != "") {
             $('#ExpSearch').css('display', 'none');
@@ -1604,6 +1609,8 @@ $('#ExpSearch').click(function () {
 $('#ExpClose').click(function () {
     $('#txtGlobalSearch').val("");
     $('#ExpClose').css('display', 'none');
+    SearchIds = [];
+    IsGridFromCahce = true;
     GlobalSearch();
     $('#ExpSearch').css('display', 'block');
     if ($('#errorMsg').css('display') == 'block') {
@@ -1629,108 +1636,20 @@ function OpenDropdown() {
 var SearchTextforcal = ""
 function GlobalSearch() {
     var SearchText = $('#txtGlobalSearch').val();
-    // if (SearchText != "" && SearchText != 'undefined') {
-    if ($('#IsGridView').val().toLowerCase() == 'true' || IsBudgetGrid) {
-
+    if ($('#IsGridView').val().toLowerCase() == 'true') {
+        BindHomeGrid();
+    }
+    else if( IsBudgetGrid)
+    {
         var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
-        GlobalSearchonGrid(SearchText, SearchDDLValue);
+        LoadBudgetGrid();
     }
     else {
-        gantt.refreshData();
-        gantt.render();
-        function contains(haystack, needle) {
-            var a = (haystack || "").toLowerCase(),
-                b = (needle || "").toLowerCase();
-
-            return !!(a.indexOf(b) > -1);
-        }
-        function hasValue(parent, value, searchcriteria) {
-            if (value == "") {
-                return true;
-            }
-            if (searchcriteria == glblsrchExternalName) {
-                if (contains(htmlDecode(gantt.getTask(parent).machineName), value))
-                    return true;
-            }
-            if (searchcriteria == glblsrchActivityName) {
-                if (contains(htmlDecode(gantt.getTask(parent).text), value))
-                    return true;
-            }
-
-            var child = gantt.getChildren(parent);
-            for (var i = 0; i < child.length; i++) {
-                if (hasValue(child[i], value, searchcriteria))
-                    return true;
-            }
-            return false;
-        }
-        gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
-
-            if (hasValue(id, $('#txtGlobalSearch').val().trim(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
-                return true;
-            } else {
-                return false;
-            }
-        });
-
-        gantt.eachTask(function (task) {
-            task.$open = true;
-        });
-        gantt.render(); // To expand in gantt
-        if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
-            if ($('#txtGlobalSearch').val().length > 0) {
-                SearchTextforcal = $('#txtGlobalSearch').val().trim();
-                $('#txtGlobalSearch').val("");
-                GlobalSearch();
-                $('#txtGlobalSearch').val(SearchTextforcal);
-                $('#SuccessMsg').css('display', 'none');
-                $("#spanMsgSuccess").empty();
-                //  if ($('#NodatawithfilterGrid').is(':hidden')) {
-                $("#errorMsg").css("display", "block");
-                $("#spanMsgError").empty();
-                $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
-                //}
-                gantt.render();
-            }
-        }
-    }
-    //}
-}
-
-function GlobalSearchonGrid(node, columnName) {
-    var colindex = 0;
-    var text = node;
-    HomeGrid.setFiltrationLevel(-2);
-    if (columnName.toUpperCase().toString() == glblsrchActivityName) {
-        colindex = HomeGrid.getColIndexById(TaskNameId);
-    }
-    else if (columnName.toUpperCase().toString() == glblsrchExternalName) {
-        colindex = HomeGrid.getColIndexById(MachineNameId);
-    }
-    HomeGrid.filterTreeBy(colindex, function (data) {
-        return htmlDecode(data).toLowerCase().toString().indexOf(text.toLowerCase()) != -1;
-    });
-    if (HomeGrid.rowsBuffer.length <= 0) {
-        $('#txtGlobalSearch').val("");
-        //BindHomeGrid();
-        $('#txtGlobalSearch').val(node.trim());
-
-        if ($('#NodatawithfilterGrid').is(':hidden')) {
-            $("#errorMsg").css("display", "block");
-            $("#spanMsgError").empty();
-            $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
-        }
-        $(window).scrollTop(0);
-    }
-    else {
-        if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
-            HomeGrid.expandAll();
-        }
-        $("#errorMsg").css("display", "none");
-        $("#spanMsgError").empty();
+        BindPlanCalendar();
+     
     }
 }
-//insertation start Added following method for open pop up to import file.
+
 //insertation start Added following method for open pop up to import file.
 function LoadFileInputModelBox() {
 
