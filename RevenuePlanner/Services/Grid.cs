@@ -2182,7 +2182,10 @@ namespace RevenuePlanner.Services
         {
             IBDSService objAuthService = new BDSServiceClient();
             List<User> lstUsers = objAuthService.GetUserListByClientIdEx(_ClientId);
+
             List<int> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(_ClientId, lstUsers.Where(i => i.IsDeleted == false).ToList());
+            //Added following Code for #2784 on 22/11/2016
+            lstClientUsers = objAuthService.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, Sessions.ApplicationId).Select(w => w.ID).ToList(); //PL #1532 Dashrath Prajapati                   
             return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new PlanOptions
             {
                 id = owner.ID,
