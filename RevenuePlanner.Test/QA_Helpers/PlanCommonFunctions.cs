@@ -33,6 +33,10 @@ namespace RevenuePlanner.Test.IntegrationHelpers
             {
                 return TacticINQAmount * INQConversion * AQLConversion * TALConversion;
             }
+            else if (CalculationFor == "CW")
+            {
+                return TacticINQAmount * TQLConversion * SALConversion * SQLConversion;
+            }
             else
             {
                 return TacticINQAmount * INQConversion * AQLConversion * TALConversion * TQLConversion * SALConversion * SQLConversion * Convert.ToInt32(drModel["ADS"].ToString());
