@@ -15,6 +15,7 @@ using System.Data;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using System.Reflection;
+using System.IO;
 
 
 
@@ -25,7 +26,7 @@ namespace RevenuePlanner.Test.QA
     {
         public TestContext TestContext { get; set; }
         LoginController objLoginController;
-        int PlanId; 
+        int PlanId;
 
         public Hive9CommonFunctions()
         {
@@ -42,13 +43,15 @@ namespace RevenuePlanner.Test.QA
             try
             {
                 OleDbConnection ExcelConnection; DataSet ds; OleDbDataAdapter Command;
-                var path = ConfigurationManager.ConnectionStrings[connectionString].ConnectionString;
+                var ExcelPath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get(connectionString);
+                var path = connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + ExcelPath + ";Extended Properties=\"Excel 8.0;HDR=YES;\"";
                 ExcelConnection = new OleDbConnection(path);
                 ExcelConnection.Open();
                 Command = new OleDbDataAdapter("select * from " + sheetName, ExcelConnection);
                 Command.TableMappings.Add("Table", "TestTable");
                 ds = new DataSet();
                 Command.Fill(ds);
+                ExcelConnection.Close();
                 return ds;
             }
             catch (Exception e)
@@ -61,12 +64,14 @@ namespace RevenuePlanner.Test.QA
         {
             try
             {
-                DataSet ds = GetExcelData("LoginExcelConn", "[Login$]");
+                DataSet ds = GetExcelData("LoginExcelConn", "[LogIn$]");
                 string UserEmail = ds.Tables[0].Rows[0]["USER"].ToString();
                 string Password = ds.Tables[0].Rows[0]["Password"].ToString();
 
                 //Set user permission 
                 HttpContext.Current = QA_DataHelper.SetUserAndPermission(true, UserEmail, Password);
+
+                Sessions.User = new BDSService.User();
                 Sessions.User.CID = DataHelper.GetClientId(PlanId);
                 string returnURL = string.Empty;
 

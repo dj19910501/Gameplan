@@ -478,9 +478,6 @@
     <Compile Include="Models\Plan_Improvement_Campaign_Program_Tactic_Share.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Plan_Team.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Plan_UserSavedViews.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

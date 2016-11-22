@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevenuePlanner", "RevenuePlanner\RevenuePlanner.csproj", "{9704E4CD-7AB2-418F-90F3-56A41C4D9E3F}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationWinService", "IntegrationWinService\IntegrationWinService.csproj", "{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevenuePlanner.Test", "RevenuePlanner.Test\RevenuePlanner.Test.csproj", "{EBED3F5B-D7F2-487D-AA96-23100D6BCAB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevenuePlanner.UnitTest", "RevenuePlanner.UnitTest\RevenuePlanner.UnitTest.csproj", "{209C39F3-5E7B-4218-AD6F-F6B0F215984E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +105,22 @@ Global
 		{EBED3F5B-D7F2-487D-AA96-23100D6BCAB4}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{EBED3F5B-D7F2-487D-AA96-23100D6BCAB4}.Test|Any CPU.ActiveCfg = Release|Any CPU
 		{EBED3F5B-D7F2-487D-AA96-23100D6BCAB4}.Test|Any CPU.Build.0 = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.BulldogProduction|Any CPU.ActiveCfg = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.BulldogProduction|Any CPU.Build.0 = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.BulldogStaging|Any CPU.ActiveCfg = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.BulldogStaging|Any CPU.Build.0 = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Prod|Any CPU.ActiveCfg = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Prod|Any CPU.Build.0 = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Staging|Any CPU.ActiveCfg = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Staging|Any CPU.Build.0 = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Test|Any CPU.ActiveCfg = Release|Any CPU
+		{209C39F3-5E7B-4218-AD6F-F6B0F215984E}.Test|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

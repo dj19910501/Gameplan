@@ -618,16 +618,29 @@ BEGIN
 	ADD [TotalBudget] float null 
    
 END
-
-IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.COLUMNS
+GO
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_NAME = 'Budget_Detail' AND COLUMN_NAME = 'TotalForcast')
 BEGIN
 
     ALTER TABLE [dbo].[Budget_Detail] 
-	ADD [TotalForcast] float null 
+	DROP Column [TotalForcast] 
    
 END
+GO
+IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_NAME = 'Budget_Detail' AND COLUMN_NAME = 'TotalForecast')
+BEGIN
 
+    ALTER TABLE [dbo].[Budget_Detail] 
+	ADD [TotalForecast] float null
+   
+END
+GO
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Plan_Team]') AND type in (N'P', N'PC'))
+BEGIN
+DROP PROCEDURE [dbo].[Plan_Team]
+END
 GO
 
 -- ===========================Please put your script above this script=============================
