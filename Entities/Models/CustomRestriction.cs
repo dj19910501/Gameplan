@@ -21,6 +21,7 @@ namespace RevenuePlanner.Models
         public System.DateTime CreatedDate { get; set; }
         public int UserId { get; set; }
         public int CreatedBy { get; set; }
+        public string CustomFieldOptionIDX { get; set; }
     
         public virtual CustomField CustomField { get; set; }
         public virtual CustomFieldOption CustomFieldOption { get; set; }

@@ -15,7 +15,7 @@ namespace RevenuePlanner.Controllers
     public class TransactionController : ApiController
     {
         ITransaction _transaction;
-        TransactionController(ITransaction transaction)
+        public TransactionController(ITransaction transaction)
         {
             _transaction = transaction; //DI will take care of populating this!
         }

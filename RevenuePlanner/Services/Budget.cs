@@ -18,6 +18,8 @@ namespace RevenuePlanner.Services
         private BDSService.BDSServiceClient objBDSServiceClient;
         private StoredProcedure objSp;
         private IColumnView objColumnView;
+        private CacheObject objCache;
+
         RevenuePlanner.Services.ICurrency objCurrency;
         public Budget()
         {
@@ -26,6 +28,7 @@ namespace RevenuePlanner.Services
             objSp = new StoredProcedure();
             objColumnView = new ColumnView();
             objCurrency = new RevenuePlanner.Services.Currency();
+            objCache = new CacheObject();
         }
         private const string manageviewicon = "<a href=javascript:void(0) onclick=OpenCreateNew(false) class=manageviewicon  title='Open Column Management'><i class='fa fa-edit'></i></a>";
         private const string Open = "1";
@@ -56,7 +59,7 @@ namespace RevenuePlanner.Services
         public bool isMultiYear = false;
 
 
-        public BudgetDHTMLXGridModel GetBudget(int ClientId, int UserID, string PlanIds, double PlanExchangeRate, string viewBy, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public BudgetDHTMLXGridModel GetBudget(int ClientId, int UserID, string PlanIds, double PlanExchangeRate, string viewBy, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "",string Searchtext="", bool IsFromCache=false)
         {
             string strThisQuarter = Enums.UpcomingActivities.ThisYearQuaterly.ToString();
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
@@ -78,53 +81,63 @@ namespace RevenuePlanner.Services
             {
                 isMultiYear =Common.IsMultiyearTimeframe(year);
             }
-
-            DataTable dt = objSp.GetBudget(PlanIds, UserID, viewBy, OwnerIds, TacticTypeids, StatusIds, year); //Get budget data for budget,planned cost and actual using store proc. GetplanBudget
-            
-            List<PlanBudgetModel> model = CreateBudgetDataModel(dt, PlanExchangeRate); //Convert datatable with budget data to PlanBudgetModel model
-            
-            model = FilterPlanByTimeFrame(model, year);//Except plan al entity be filter at Db level so we remove plan object by applying timeframe filter.  
-            
-            List<int> CustomFieldFilteredTacticIds = FilterCustomField(model, CustomFieldId);
-
-            //filter budget model by custom field filter list
-            if (CustomFieldFilteredTacticIds != null && CustomFieldFilteredTacticIds.Count > 0)
+            List<PlanBudgetModel> GridDataList = new List<PlanBudgetModel>();
+            List<PlanBudgetModel> model=new List<PlanBudgetModel>();
+            BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
+            if(IsFromCache)
+                GridDataList = (List<PlanBudgetModel>)objCache.Returncache(Enums.CacheObject.AllBudgetGridData.ToString());
+            if (GridDataList == null || GridDataList.Count() == 0)
             {
-                model.RemoveAll(a => string.Compare(a.ActivityType, ActivityType.ActivityTactic, true) == 0 && !CustomFieldFilteredTacticIds.Contains(Convert.ToInt32(a.Id)));
+                DataTable dt = objSp.GetBudget(PlanIds, UserID, viewBy, OwnerIds, TacticTypeids, StatusIds, year); //Get budget data for budget,planned cost and actual using store proc. GetplanBudget
+
+                model = CreateBudgetDataModel(dt, PlanExchangeRate); //Convert datatable with budget data to PlanBudgetModel model
+
+                model = FilterPlanByTimeFrame(model, year);//Except plan al entity be filter at Db level so we remove plan object by applying timeframe filter.  
+
+                List<int> CustomFieldFilteredTacticIds = FilterCustomField(model, CustomFieldId);
+
+                //filter budget model by custom field filter list
+                if (CustomFieldFilteredTacticIds != null && CustomFieldFilteredTacticIds.Count > 0)
+                {
+                    model.RemoveAll(a => string.Compare(a.ActivityType, ActivityType.ActivityTactic, true) == 0 && !CustomFieldFilteredTacticIds.Contains(Convert.ToInt32(a.Id)));
+                }
+                model = SetCustomFieldRestriction(model, UserID, ClientId);//Set customfield permission for budget cells. budget cell will editable or not.
+                //int ViewByID = (int)viewBy;
+
+                model = ManageLineItems(model);//Manage lineitems unallocated cost values in other line item
+
+                #region "Calculate Monthly Budget from Bottom to Top for Hierarchy level like: LineItem > Tactic > Program > Campaign > CustomField(if filtered) > Plan"
+
+                //// Set ViewBy data to model.
+                model = CalculateBottomUp(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem, viewBy);//// Calculate monthly Tactic budget from it's child budget i.e LineItem
+
+                model = CalculateBottomUp(model, ActivityType.ActivityProgram, ActivityType.ActivityTactic, viewBy);//// Calculate monthly Program budget from it's child budget i.e Tactic
+
+                model = CalculateBottomUp(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram, viewBy);//// Calculate monthly Campaign budget from it's child budget i.e Program
+
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, viewBy);//// Calculate monthly Plan budget from it's child budget i.e Campaign
+
+                #endregion
+                if (viewBy.Contains(PlanGanttTypes.Custom.ToString()))
+                {
+                    model = SetLineItemCostByWeightage(model, viewBy);//// Set LineItem monthly budget cost by it's parent tactic weightage.
+                }
+                objCache.AddCache(Enums.CacheObject.AllBudgetGridData.ToString(), model);
             }
-            model = SetCustomFieldRestriction(model, UserID, ClientId);//Set customfield permission for budget cells. budget cell will editable or not.
-            //int ViewByID = (int)viewBy;
-
-
+            else
+            {
+                model = GridDataList;
+            }
+            objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, year);
+            if (!string.IsNullOrEmpty(Searchtext))
+            {
+                // call common method to search budget data as per search text
+                model = SearchBudgetData(model, Searchtext);
+            }
+            objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy, UserID, ClientId, year, viewBy);//create model to bind data in grid as per DHTMLx grid format.
             //get number of tab views for user in column management
             bool isPlangrid = false;
             bool isSelectAll = false;
-
-            model = ManageLineItems(model);//Manage lineitems unallocated cost values in other line item
-            
-            #region "Calculate Monthly Budget from Bottom to Top for Hierarchy level like: LineItem > Tactic > Program > Campaign > CustomField(if filtered) > Plan"
-
-            //// Set ViewBy data to model.
-            model = CalculateBottomUp(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem, viewBy);//// Calculate monthly Tactic budget from it's child budget i.e LineItem
-
-            model = CalculateBottomUp(model, ActivityType.ActivityProgram, ActivityType.ActivityTactic, viewBy);//// Calculate monthly Program budget from it's child budget i.e Tactic
-
-            model = CalculateBottomUp(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram, viewBy);//// Calculate monthly Campaign budget from it's child budget i.e Program
-
-            model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, viewBy);//// Calculate monthly Plan budget from it's child budget i.e Campaign
-
-            #endregion
-            if (viewBy.Contains(PlanGanttTypes.Custom.ToString()))
-            {
-            model = SetLineItemCostByWeightage(model, viewBy);//// Set LineItem monthly budget cost by it's parent tactic weightage.
-            }
-
-            
-            BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-            objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, year);
-            
-            objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy, UserID, ClientId, year, viewBy);//create model to bind data in grid as per DHTMLx grid format.
-            
             List<ColumnViewEntity> userManagedColumns = objColumnView.GetCustomfieldModel(ClientId, isPlangrid, out isSelectAll, UserID);
             string hiddenTab = string.Empty;
             if (!userManagedColumns.Where(u => u.EntityIsChecked).Any())
@@ -1998,5 +2011,63 @@ namespace RevenuePlanner.Services
             }
             return BudgetModel;
         }
+        #region method to get grid data for search
+        /// <summary>
+        /// Added by devanshi 
+        /// method to get filter data as search text #2597
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="searchtext"></param>
+        /// <returns></returns>
+        public List<PlanBudgetModel> SearchBudgetData(List<PlanBudgetModel> DataList, string searchtext)
+        {
+            List<PlanBudgetModel> lstSelectedData = new List<PlanBudgetModel>();
+            int HierarchyCount = 0; // to itreate from last level of entity type
+            int Ind = 0; // to find last index of taskid and based on that remove item from list
+            string ParrentTaskId = string.Empty;
+          
+                var parenttaskids = DataList.Where(a => a.ActivityName.ToLower().Contains(HttpUtility.HtmlEncode(searchtext.ToLower()))).Select(a => new
+                {
+                    parenttaskid = a.ParentActivityId,
+                    TaskId = a.TaskId
+                }).ToList();
+                List<string> taskids = new List<string>();
+                foreach (var obj in parenttaskids)
+                {
+                    taskids.Add(obj.parenttaskid);
+                    if (obj.parenttaskid.Split('_') != null && obj.parenttaskid.Split('_').Count() > 0)
+                    {
+                        if (obj.parenttaskid != null)
+                            HierarchyCount = obj.parenttaskid.Split('_').Count();
+                        ParrentTaskId = obj.parenttaskid;
+                        for (int i = 1; i < HierarchyCount; i++)
+                        {
+                             Ind = ParrentTaskId.LastIndexOf('_');
+                            ParrentTaskId = ParrentTaskId.Remove(Ind);
+                            taskids.Add(ParrentTaskId);
+                        }
+                    }
+                    taskids.Add(obj.TaskId);
+                    //add all childerns
+                    List<PlanBudgetModel> childernlist = DataList.Where(a => a.ParentActivityId != null && a.ParentActivityId.Contains(obj.TaskId)).ToList();
+                    if (childernlist != null && childernlist.Count > 0)
+                    {
+                        lstSelectedData.AddRange(childernlist);
+                    }
+                }
+
+                //add all parents
+                List<PlanBudgetModel> parentlist = (from Data in DataList
+                                                     join ParentData in taskids
+                                                         on Data.TaskId equals ParentData
+                                                     select Data).ToList();
+                lstSelectedData.AddRange(parentlist);
+                return lstSelectedData.Distinct().ToList();
+           
+           
+        }
+        #endregion
+
     }
+
 }

@@ -90,7 +90,7 @@ namespace RevenuePlanner.Helpers
                     proj.Model = null;
                     proj.Plan_Improvement_Campaign = null;
                     proj.Plan_Budget = proj.Plan_Budget.ToList();
-                    proj.Plan_Team = null;
+                    //proj.Plan_Team = null;
                     //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1127
                     proj.ModifiedDate = null;
                     proj.ModifiedBy = 0;

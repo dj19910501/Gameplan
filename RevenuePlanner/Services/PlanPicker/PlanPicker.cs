@@ -18,7 +18,7 @@ namespace RevenuePlanner.Services.PlanPicker
             var sqlQuery =
                 from campaign in _database.Plan_Campaign
                 where campaign.PlanId == planId
-                select new PlanItem { Id = campaign.PlanId, Title = campaign.Title };
+                select new PlanItem { Id = campaign.PlanCampaignId, Title = campaign.Title };
             return sqlQuery.ToList();
         }
 

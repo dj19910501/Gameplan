@@ -1580,7 +1580,9 @@ namespace RevenuePlanner.Helpers
             ROIPackageTactics,
             ClientEntityList,
             UserPlanCurrency,
-            ListUserReportCurrency
+            ListUserReportCurrency,
+            AllGidData,
+            AllBudgetGridData
         }
 
         public enum CurrencyComponent

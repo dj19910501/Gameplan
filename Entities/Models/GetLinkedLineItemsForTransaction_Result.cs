@@ -10,15 +10,13 @@
 namespace RevenuePlanner.Models
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class Plan_Team
+    public partial class GetLinkedLineItemsForTransaction_Result
     {
-        public int PlanId { get; set; }
-        public System.DateTime CreatedDate { get; set; }
-        public int TeamMemberId { get; set; }
-        public int CreatedBy { get; set; }
-    
-        public virtual Plan Plan { get; set; }
+        public int TacticId { get; set; }
+        public string Title { get; set; }
+        public double PlannedCost { get; set; }
+        public Nullable<double> TotalLinkedCost { get; set; }
+        public Nullable<double> TotalActual { get; set; }
     }
 }

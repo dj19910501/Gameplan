@@ -2912,7 +2912,7 @@ namespace RevenuePlanner.Controllers
                         objModel.IntegrationInstanceIdMQL = objBaselineModel.IntegrationInstanceIdMQL;
                         objModel.IntegrationInstanceIdProjMgmt = objBaselineModel.IntegrationInstanceIdProjMgmt; //added Brad Gray 22 July 2015 for PL#1448
                         objModel.IntegrationInstanceEloquaId = objBaselineModel.IntegrationInstanceEloquaId; //added Bhavesh Dobariya #1534
-                        objModel.IntegrationInstanceMarketoID = objBaselineModel.IntegrationInstanceMarketoID; //added Komal Rawal #2190
+                        objModel.IntegrationInstanceMarketoID = objBaselineModel.IntegrationInstanceMarketoID == 0 ? null : objBaselineModel.IntegrationInstanceMarketoID; //added Komal Rawal #2190
                         objModel.ModifiedBy = Sessions.User.ID;
                         objModel.ModifiedDate = DateTime.Now;
                         objDbMrpEntities.Entry(objModel).State = EntityState.Modified;

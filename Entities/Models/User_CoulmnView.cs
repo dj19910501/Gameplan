@@ -21,7 +21,7 @@ namespace RevenuePlanner.Models
         public Nullable<bool> IsDefault { get; set; }
         public string GridAttribute { get; set; }
         public string BudgetAttribute { get; set; }
-        public int CreatedBy { get; set; }
-        public int ModifyBy { get; set; }
+        public Nullable<int> CreatedBy { get; set; }
+        public Nullable<int> ModifyBy { get; set; }
     }
 }

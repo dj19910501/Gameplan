@@ -8755,6 +8755,21 @@ namespace RevenuePlanner.Helpers
             QuarterMonths.Add(PeriodPrefix + Convert.ToString(MonthNumber + 2));
             return QuarterMonths;
         }
+        //remove plan grid and budget grid cache object when update cell value in the grid or update value from inspection popup.
+        public static void RemoveGridCacheObject()
+        {
+            var obj = HttpRuntime.Cache.Get(Enums.CacheObject.AllGidData.ToString() + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());// Plan grid object
+            if (obj != null)
+            {
+                HttpRuntime.Cache.Remove(Enums.CacheObject.AllGidData.ToString() + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
+            }
+            obj = HttpRuntime.Cache.Get(Enums.CacheObject.AllBudgetGridData.ToString() + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());// Budget grid object
+            if (obj != null)
+            {
+                HttpRuntime.Cache.Remove(Enums.CacheObject.AllBudgetGridData.ToString() + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
+            }
+        }
+
 
     }
 
@@ -8862,7 +8877,6 @@ namespace RevenuePlanner.Helpers
     }
     #endregion
 
-
-
+    
 
 }

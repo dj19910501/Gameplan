@@ -84,140 +84,157 @@
 
         var GridRowId = '@GridFirstrowId';
         $('#divgridview').addClass('budget-grid');
-        if (GridRowId != '' || noplan.toLowerCase() == 'true') {
+        ColumnIds = '@Model.ColumnIds';
+        HomeGrid = new dhtmlXGridObject('gridbox');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        HomeGrid.setImagePath(imgpath);
+        HomeGrid.setImageSize(1, 1);
+        header = '@Html.Raw(Model.SetHeader.Replace("&amp;", "&").Replace("\\", "\\\\").Replace("'", "\\'"))';
+        HomeGrid.setHeader(header);
+        //assigned header to export to excel
+        HomeGrid.setColTypes('@Model.ColType');
+        HomeGrid.setInitWidths('@Model.Width');
+        HomeGrid.setColSorting('@Model.ColSorting');
+        HomeGrid.setColumnIds('@Model.ColumnIds');
+        HomeGrid.enableAutoHeight(false);
+        HomeGrid.enableAutoWidth(false);
+        HomeGrid.enableEditTabOnly(true);
 
-            ColumnIds = '@Model.ColumnIds';
-            HomeGrid = new dhtmlXGridObject('gridbox');
-            var imgpath = '@Url.Content("~/codebase/imgs/")';
-            HomeGrid.setImagePath(imgpath);
-            HomeGrid.setImageSize(1, 1);
-            header = '@Html.Raw(Model.SetHeader.Replace("&amp;", "&").Replace("\\", "\\\\").Replace("'", "\\'"))';
-            HomeGrid.setHeader(header);
-            //assigned header to export to excel
-            HomeGrid.setColTypes('@Model.ColType');
-            HomeGrid.setInitWidths('@Model.Width');
-            HomeGrid.setColSorting('@Model.ColSorting');
-            HomeGrid.setColumnIds('@Model.ColumnIds');
-            HomeGrid.enableAutoHeight(false);
-            HomeGrid.enableAutoWidth(false);
-            HomeGrid.enableEditTabOnly(true);
+        TaskNameColIndex = HomeGrid.getColIndexById("TaskName");
+        HomeGrid.setColumnMinWidth("300", TaskNameColIndex);
 
-            TaskNameColIndex = HomeGrid.getColIndexById("TaskName");
-            HomeGrid.setColumnMinWidth("300", TaskNameColIndex);
+        HomeGrid.setEditable(true);
+        HomeGrid.init();
 
-            HomeGrid.setEditable(true);
-            HomeGrid.init();
+        // var mainGridData = JsonModel;
+        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid).Replace("&amp;", "&").Replace("\\", "\\\\").Replace("'", "\\'"))';
 
-            // var mainGridData = JsonModel;
-            var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid).Replace("&amp;", "&").Replace("\\", "\\\\").Replace("'", "\\'"))';
+        // Set open/closed state
+        UpdateGridDataFromSavedOpenState(JsonModel.rows, "plangridState")
 
-            // Set open/closed state
-            UpdateGridDataFromSavedOpenState(JsonModel.rows, "plangridState")
+        //Set number format for value fields
+        var columnIdArray = '@Model.ColumnIds'.split(',');
 
-            //Set number format for value fields
-            var columnIdArray = '@Model.ColumnIds'.split(',');
+        var startValueColumnIndex = 7;//this is the value column start index
+        for (var i = startValueColumnIndex; i < columnIdArray.length; ++i) {
+            // do something with `substr[i]`
 
-            var startValueColumnIndex = 7;//this is the value column start index
-            for (i = startValueColumnIndex; i < columnIdArray.length; ++i) {
-                // do something with `substr[i]`
+            HomeGrid.setNumberFormat("0,000.00", i, ".", ",");
 
-                HomeGrid.setNumberFormat("0,000.00", i, ".", ",");
+        }
 
+        var colSplitId = HomeGrid.getColIndexById("BudgetCost");
+        HomeGrid.splitAt(colSplitId);
+
+        HomeGrid.attachEvent("onOpenEnd", function (id, state) {
+            ManageBorderBoxClass(); //#2607
+            if (state == "1") {
+                SetFlagTooltip();
+                setTimeout(function () {
+                    SetTooltip();
+                }, 200);
             }
+        });
 
-            var colSplitId = HomeGrid.getColIndexById("BudgetCost");
-            HomeGrid.splitAt(colSplitId);
+        HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
+            if (IsManageviewClick) {
+                IsManageviewClick = false;
+                return false;
+            }
+            else if (IsManageDropdown) {
+                IsManageviewClick = false;
+                return false;
+            }
+            else
+                return true;
+        });
 
-            HomeGrid.attachEvent("onOpenEnd", function (id, state) {
-                ManageBorderBoxClass(); //#2607
-                if (state == "1") {
-                    SetFlagTooltip();
-                    setTimeout(function () {
-                        SetTooltip();
-                    }, 200);
-                }
-            });
+        HomeGrid.attachEvent("onAfterSorting", function (ind, grid) {
+            if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds.TaskID.length > 0) {
+                var ListofIDs = ExportSelectedIds.TaskID;
+                $.each(ListofIDs, function (Index, Id) {
+                    $("div").find("[altid='" + Id + "']").addClass("honeycombbox-icon-gantt-Active");
+                });
+            };
+        });
 
-            HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
-                if (IsManageviewClick) {
-                    IsManageviewClick = false;
-                    return false;
-                }
-                else if (IsManageDropdown) {
-                    IsManageviewClick = false;
-                    return false;
-                }
-                else
-                    return true;
-            });
-
-            HomeGrid.attachEvent("onAfterSorting", function (ind, grid) {
-                if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds.TaskID.length > 0) {
-                    var ListofIDs = ExportSelectedIds.TaskID;
-                    $.each(ListofIDs, function (Index, Id) {
-                        $("div").find("[altid='" + Id + "']").addClass("honeycombbox-icon-gantt-Active");
-                    });
-                };
-            });
-
-            HomeGrid.attachEvent("onRowSelect", function (id, ind) {
-                isEditTacticHomeGrid = id;
-                isCopyTacticHomeGrid = 0;
-                selectedTaskID = id;
-            });
-            var machineNameindex = HomeGrid.getColIndexById("MachineName");
-            var LinkTacticId = HomeGrid.getColIndexById("LinkTacticId");
-            var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
-            var colTypeIndex = HomeGrid.getColIndexById("Type");
-            var LineItemTypeIdIndex = HomeGrid.getColIndexById("LineItemTypeId");
-            HomeGrid.setColumnHidden(ActivityIdindex, true);
-            HomeGrid.setColumnHidden(machineNameindex, true);
-            HomeGrid.setColumnHidden(LinkTacticId, true);
-            HomeGrid.setColumnHidden(colTypeIndex, true);
-            HomeGrid.setColumnHidden(LineItemTypeIdIndex, true);
-            var ColumnsToView = '@Model.HiddenTab';
-            var selectedTab = ColumnsToView.split(',');
-            for (var i = 0; i < selectedTab.length; i++) {
-                var sTab = selectedTab[i];
-                if (sTab != '' && sTab != null) {
-                    for (var j = 0; j < HomeGrid.getColumnsNum() ; j++) {
-                        var ColumnId = HomeGrid.getColumnId(j);
-                        if (ColumnId == 'UnAllocatedCost') {
-                            ColumnId = 'PlannedCost';
-                        }
-                        if (ColumnId == 'UnAllocatedBudget') {
-                            ColumnId = 'BudgetCost';
-                        }
-                        var YearlyTab = sTab + "Cost";
-                        if (ColumnId == sTab || ColumnId == YearlyTab) {
-                            HomeGrid.setColumnHidden(j, true);
-                        }
+        HomeGrid.attachEvent("onRowSelect", function (id, ind) {
+            isEditTacticHomeGrid = id;
+            isCopyTacticHomeGrid = 0;
+            selectedTaskID = id;
+        });
+        var machineNameindex = HomeGrid.getColIndexById("MachineName");
+        var LinkTacticId = HomeGrid.getColIndexById("LinkTacticId");
+        var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
+        var colTypeIndex = HomeGrid.getColIndexById("Type");
+        var LineItemTypeIdIndex = HomeGrid.getColIndexById("LineItemTypeId");
+        HomeGrid.setColumnHidden(ActivityIdindex, true);
+        HomeGrid.setColumnHidden(machineNameindex, true);
+        HomeGrid.setColumnHidden(LinkTacticId, true);
+        HomeGrid.setColumnHidden(colTypeIndex, true);
+        HomeGrid.setColumnHidden(LineItemTypeIdIndex, true);
+        var ColumnsToView = '@Model.HiddenTab';
+        var selectedTab = ColumnsToView.split(',');
+        for (var i = 0; i < selectedTab.length; i++) {
+            var sTab = selectedTab[i];
+            if (sTab != '' && sTab != null) {
+                for (var j = 0; j < HomeGrid.getColumnsNum() ; j++) {
+                    var ColumnId = HomeGrid.getColumnId(j);
+                    if (ColumnId == 'UnAllocatedCost') {
+                        ColumnId = 'PlannedCost';
+                    }
+                    if (ColumnId == 'UnAllocatedBudget') {
+                        ColumnId = 'BudgetCost';
+                    }
+                    var YearlyTab = sTab + "Cost";
+                    if (ColumnId == sTab || ColumnId == YearlyTab) {
+                        HomeGrid.setColumnHidden(j, true);
                     }
                 }
             }
+        }
 
-            HomeGrid.parse(JsonModel, "json");
+        HomeGrid.parse(JsonModel, "json");
 
-            BudgetLoadAfterParsing();
+        BudgetLoadAfterParsing();
 
-            var rowCount = HomeGrid.getRowsNum();
-            if (rowCount != undefined && rowCount == 0) {
+        var rowCount = HomeGrid.getRowsNum();
+        if (rowCount != undefined && rowCount == 0) {
 
-                if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
-                    AddBlankRow();
-                    $('#exp-serach').hide();
-                }
+            if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
+                AddBlankRow();
+                $('#exp-serach').hide();
             }
+        }
+        if (GridRowId != '' || noplan.toLowerCase() == 'true') {
             SetFlagTooltip();
             SetTooltip();
+            if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+                HomeGrid.expandAll();
+                $("#errorMsg").css("display", "none");
+                $("#spanMsgError").empty();
+            }
+        }
+        else if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+            // GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
+            if (GridRowId == '') {
+                $("#errorMsg").css("display", "block");
+                $("#spanMsgError").empty();
+                $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+                $(window).scrollTop(0);
+            }
+            else {
+                HomeGrid.expandAll();
+                $("#errorMsg").css("display", "none");
+                $("#spanMsgError").empty();
+            }
         }
         else {
             $('#exp-serach').hide();
             $('#divgridview').html('<div id="NodatawithfilterBudget"><span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span><br/></div>');
         }
-        if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
-            GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
-        }
+        IsGridFromCahce = false;
+
     });
 
     function SetFlagTooltip() {

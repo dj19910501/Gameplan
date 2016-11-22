@@ -11,12 +11,12 @@ namespace RevenuePlanner.Services
     {
         // Add By Nishant Sheth
         // Get plan grid data
-        PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string onerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy);
+        PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string onerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy, string SearchText="",bool IsFromCache=false);
         List<PlanGridFilters> GetGridFilterData(int ClientId, int UserId);
         // End plan grid data
 
         // Start: Calendar related functions
-        List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string planYear, string viewby);
+        List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string planYear, string viewby,string Searchtext="");
         List<calendarDataModel> SetOwnerNameAndPermission(List<calendarDataModel> lstCalendarDataModel);
         // End: Calendar related functions
 
