@@ -10479,6 +10479,29 @@ WHERE Sys_GenCount = 0
 
 GO
 
+/* #2860 - Observations: September Path Release- Regression Testing */
+/* Query to insert Sys_Gen_Balance for tactic with no lineitem*/
+
+;WITH CalculateCost AS(
+SELECT DISTINCT
+	T.PlanTacticId,
+	Sys_GenCount = (SELECT COUNT(*) FROM Plan_Campaign_Program_Tactic_LineItem L1 WHERE L1.PlanTacticId = T.PlanTacticId AND L1.IsDeleted = 0 AND L1.LineItemTypeId IS NULL ),
+	SUM(ISNULL(T.Cost, 0)) - SUM(ISNULL(L.Cost,0)) Diff,
+	MIN(ISNULL(T.CreatedBy, 0)) CreatedBy
+FROM Plan_Campaign_Program_Tactic T
+LEFT JOIN Plan_Campaign_Program_Tactic_LineItem L on (L.PlanTacticId = T.PlanTacticId and L.IsDeleted = 0)
+WHERE T.IsDeleted = 0
+AND L.PlanTacticId IS NULL
+GROUP BY T.PlanTacticId
+)
+INSERT INTO Plan_Campaign_Program_Tactic_LineItem (PlanTacticId,Title,Cost,StartDate,EndDate,CreatedBy,IsDeleted,CreatedDate,ModifiedBy)
+SELECT DISTINCT A.PlanTacticId,'Sys_Gen_Balance' AS Title,ISNULL(A.Diff, 0) AS Diff,NULL AS StartDate,NULL AS EndDate,A.CreatedBy,0 AS IsDeleted,GETDATE() AS CreatedDate,A.CreatedBy AS ModifiedBy 
+FROM CalculateCost A
+WHERE Sys_GenCount = 0
+
+
+GO
+
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
