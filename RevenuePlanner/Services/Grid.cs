@@ -2090,7 +2090,7 @@ namespace RevenuePlanner.Services
 
              #region "Filter data based on searchtext"
             if (!string.IsNullOrEmpty(Searchtext) && calResultset != null && calResultset.Count > 0 && !string.IsNullOrEmpty(timeframe))
-                calResultset = SearchCalenderData(calResultset, Searchtext); // Get filtered tactics based on timeframe.
+                calResultset = SearchCalendarData(calResultset, Searchtext); // Get filtered tactics based on timeframe.
             #endregion
             
             return calResultset;
@@ -2261,7 +2261,7 @@ namespace RevenuePlanner.Services
         /// <param name="DataList"></param>
         /// <param name="searchtext"></param>
         /// <returns></returns>
-        public List<calendarDataModel> SearchCalenderData(List<calendarDataModel> DataList, string searchtext)
+        public List<calendarDataModel> SearchCalendarData(List<calendarDataModel> DataList, string searchtext)
         {
             List<calendarDataModel> lstSelectedData = new List<calendarDataModel>();
             int HierarchyCount = 0; // to itreate from last level of entity type

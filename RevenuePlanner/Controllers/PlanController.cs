@@ -6765,7 +6765,7 @@ namespace RevenuePlanner.Controllers
         }
 
         [CompressAttribute]
-        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy, bool isLoginFirst = false,string SearchText="", bool IsFromCache=false)
+        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy, bool isLoginFirst = false, string SearchText = "", bool IsFromCache = false)// pass parameter IsFromCache to search the grid data using cache
         {
             PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
             List<PlanOptionsTacticType> Tactictypelist = new List<PlanOptionsTacticType>();
@@ -10028,7 +10028,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="Year">selected year of plans from timeframe </param>
         /// <returns></returns>
         [CompressAttribute]
-        public ActionResult GetBudgetData(string PlanIds, string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "", string SearchText = "", bool IsFromCache = false)
+        public ActionResult GetBudgetData(string PlanIds, string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "", string SearchText = "", bool IsFromCache = false) // pass parameter IsFromCache to search the budget grid data using cache
         {
             IBudget Iobj = new RevenuePlanner.Services.Budget();
             int UserID = Sessions.User.ID;
