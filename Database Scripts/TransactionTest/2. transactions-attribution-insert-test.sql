@@ -81,8 +81,14 @@ END
 CLOSE test_cursor;  
 DEALLOCATE test_cursor;  
 
---VALIDATE ATTRIBUTION 
-SELECT Tx.TransactionId, Tx.Amount, A.AttributedAmount, B.LineItemTotalFound, B.NumberOfLineItemsAttributedTo
+--VALIDATE ATTRIBUTION RERSULTS 
+
+--1. Look from transaction point of view 
+SELECT Tx.TransactionId
+		, Tx.Amount
+		, A.AttributedAmount
+		, B.LineItemTotalFound
+		, B.NumberOfLineItemsAttributedTo
 FROM dbo.Transactions TX JOIN ( 
 		SELECT TX.TransactionId, SUM(M.Amount) AS AttributedAmount
 		FROM dbo.TransactionLineItemMapping M
@@ -95,8 +101,22 @@ FROM dbo.Transactions TX JOIN (
 			GROUP BY M.TransactionId
 		) B ON B.TransactionId = TX.TransactionId
 
-SELECT A.* 
+ORDER BY TX.TransactionId
+
+--2. Look from line item point of view
+SELECT  TX.TransactionId
+		,TX.Amount AS TransactionAmount
+		, D.PlanTacticId
+		, A.PlanLineItemId
+		, T.StartDate AS TacticStartDate
+		, TX.AccountingDate
+		, INT.Period(T.StartDate, TX.AccountingDate) AS CalculatedPeriod
+		, A.Period
+		, A.Value AS AmountAttributedToTheLineItem
 FROM dbo.Plan_Campaign_Program_Tactic_LineItem_Actual A
    JOIN LineItemDetail D ON D.PlanLineItemId = A.PlanLineItemId
+   JOIN dbo.Plan_Campaign_Program_Tactic T ON T.PlanTacticId = D.PlanTacticID
+   JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = A.PlanLineItemId
+   JOIN dbo.Transactions TX ON TX.TransactionId = M.TransactionId
 WHERE D.PlanId = @PlanId
 ORDER BY D.PlanTacticId, D.PlanLineItemId

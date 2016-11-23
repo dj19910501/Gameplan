@@ -1,3 +1,22 @@
+--NOTE: this is a correction of existing function used in integration -zz
+/****** Object:  UserDefinedFunction [INT].[Period]    Script Date: 11/23/2016 2:21:17 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER FUNCTION [INT].[Period](@tacticStartDate DATE, @actualDate DATE)
+RETURNS VARCHAR(10)
+AS 
+BEGIN
+
+    RETURN 
+	CASE WHEN DATEPART(YEAR, @tacticStartDate)<DATEPART(YEAR, @actualDate)
+		 THEN 'Y' + CAST(((DATEPART(YEAR, @actualDate) - DATEPART(YEAR, @tacticStartDate))*12 + DATEPART(MONTH, @actualDate)) AS VARCHAR(10))
+		 ELSE 'Y' +  CAST(DATEPART(MONTH, @actualDate) AS VARCHAR(10))
+	END
+END
+
 /****** Object:  View [dbo].[CampaignDetail]    Script Date: 11/23/2016 12:06:13 PM ******/
 SET ANSI_NULLS ON
 GO
