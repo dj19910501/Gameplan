@@ -9,6 +9,7 @@ namespace RevenuePlanner.Services.Transactions
     /// </summary>
     public class Transaction
     {
+
         /// <summary>
         /// Hive9 Plan internal auto ID
         /// </summary>
@@ -66,7 +67,7 @@ namespace RevenuePlanner.Services.Transactions
         /// <summary>
         /// Date and time this transaction was processed by batch attribution process (step 3) 
         /// </summary>
-        public DateTime DateProcessed { get; set; }
+        public DateTime? LastProcessed { get; set; }
     }
 
     public class LineItem
