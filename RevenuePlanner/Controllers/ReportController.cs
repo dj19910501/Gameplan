@@ -245,11 +245,11 @@ namespace RevenuePlanner.Controllers
             Plan checkcurrentplan = tblPlan.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault();
             if (checkcurrentplan != null)
             {
-                planid = tblPlan.OrderBy(p => p.Title).FirstOrDefault().PlanId; // Change By Nishant Sheth for select first plan
+                planid = tblPlan.OrderBy(p => p.Title).Select(a=>a.PlanId).FirstOrDefault(); // Change By Mitesh for select first plan
             }
             else
             {
-                planid = tblPlan.OrderByDescending(p => Convert.ToInt32(p.Year)).OrderBy(p => p.Title).ToList().Select(a => a.PlanId).FirstOrDefault(); // Change By Nishant Sheth for select first plan
+                planid = tblPlan.OrderByDescending(p => Convert.ToInt32(p.Year)).OrderBy(p => p.Title).Select(a => a.PlanId).FirstOrDefault(); // Change By Mitesh for select first plan 
             }
 
             //Modified By Komal Rawal include year filter in default view
