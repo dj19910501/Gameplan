@@ -2902,6 +2902,41 @@
         for (var i = 0; i < serLength ; i++) {
             options.series.push(eval(_series[i]));
         }
+
+        
+        
+            options.tooltip = {
+
+                formatter: function () {
+                    var symbol = '●';
+                    var series = this.point.series.chart.series[0];
+                    switch (this.point.graphic.symbolName) {
+                        case 'circle':
+                            symbol = '●';
+                            break;
+                        case 'diamond':
+                            symbol = '♦';
+                            break;
+                        case 'square':
+                            symbol = '■';
+                            break;
+                        case 'triangle':
+                            symbol = '▲';
+                            break;
+                        case 'triangle-down':
+                            symbol = '▼';
+                            break;
+                    }
+
+
+                    return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + ( _linechartDivId.indexOf('dvline') > -1 || _linechartDivId.indexOf('RevenueLineChart') > -1 ? CurrencySybmol : '') + number_format(this.y, 1, '.', ',') + '</b>';
+
+                }
+            };
+
+        
+
+
         $(_linechartDivId).highcharts(options);
     }
     // End:- Linchart script
@@ -3410,16 +3445,16 @@
                     if (this.point.series.type == "line") {
                         var _point = this.point.series.data.indexOf(this.point);
                         var _val = _Actualarray[_point];
-                        return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + Highcharts.numberFormat(_val) + '</b>';
+                        return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + ( _ChartDivId.indexOf('RevenuePlanBarChart') > -1 ? CurrencySybmol : '') + number_format(_val, 2, '.', ',') + '</b>';
                     }
                     if (this.point.series.type == "column") {
                         var _point = this.point.series.data.indexOf(this.point);
                         var _val = _ActualValuebar[_point];
-                        return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + Highcharts.numberFormat(_val) + '</b>';
+                        return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + ( _ChartDivId.indexOf('RevenuePlanBarChart') > -1 ? CurrencySybmol : '' ) + number_format(_val, 2, '.', ',') + '</b>';
                     }
                 }
                 else {
-                    return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + Highcharts.numberFormat(this.y) + '</b>';
+                    return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + ( _ChartDivId.indexOf('RevenuePlanBarChart') > -1 ? CurrencySybmol : '') + number_format(this.y, 2, '.', ',') + '</b>';
                 }
             }
         };
