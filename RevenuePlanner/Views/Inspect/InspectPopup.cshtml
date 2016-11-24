@@ -332,9 +332,6 @@
                   var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
                   tabtext = ($(this).children('a').text().replace(" ","_"));
                   isclickfrompopup = true;
-                  //if (activeTab == 'Actuals') {
-                  //    displayConfirm('topTabsClick("' + tabtext + '","' + activeTab + '");');
-                  //}
 
                   // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
                   var returnpara = true;
@@ -451,8 +448,6 @@
                 loadReview(planTacticId, activeTab);
                 //// Added By Kalpesh on 11/06/2014 to Non-Editable Tactic Name.mp4 mentioned in resolve ticket #868
                 $("#txtTacticTitle").prop('readonly', false);
-                //  $("#AddForm").css("display", "none");
-                //$('#divDeleteTactic').css('display', 'none');
             }
             else {
 
@@ -467,18 +462,6 @@
                         ReloadSavedTactic();
                     }
                 }
-                    // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
-                    //else if (activeTab == TabBudget) {
-                    //    var ReturnParameter = TacticBudgetSave();
-                    //    if (ReturnParameter == false) {
-                    //        return false;
-                    //    }
-                    //    else {
-                    //        $('.close-x-big-icon').trigger('click');
-
-                    //    }
-                    //}
-
                 else if (activeTab == TabActual) {
 
                     var hdnTacticStatus = $("#hdnTacticStatus").val();
@@ -529,6 +512,7 @@
     //
     function ReloadSavedTactic(){
         //Reloading the dialog is NOT ideal, yet it sure cleans things up and guarantees a clean start. zz
+        //tabtext - name of the tab on whick user clicks.
         loadInspectPopup($("#hdnPlanTacticId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", tabtext, "@Enums.InspectPopupMode.Edit.ToString()", @PlanProgramId, '@RequestedModule');
     }
 
@@ -551,17 +535,7 @@
                     $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
-            }
-
-                // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
-                //else if (activeTab == TabBudget) {
-                //    var ReturnParameter = TacticBudgetSave();
-                //    if (ReturnParameter == false) {
-                //        $('#InspectTab').removeClass('SpanDisable');
-                //        return false;
-                //    }
-                //}
-
+            }                
             else if (activeTab == TabActual) {
                 var hdnTacticStatus = $("#hdnTacticStatus").val();
                 var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
@@ -722,9 +696,6 @@
 
                 $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""', function (response, status, xhr) {
                     if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                        //// Call function to redirect on service unavailibility.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                     $('#InspectTab').removeClass('SpanDisable');
@@ -735,9 +706,6 @@
                 url = '@Url.Content("~/Inspect/LoadSetup/")';
                 $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
                     if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                        //// Call function to redirect on service unavailibility.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                     $('#InspectTab').removeClass('SpanDisable');
@@ -745,9 +713,6 @@
             }
         }
         if (tabValue == TabReview) {
-            //$('#txtTacticTitle').css('display', 'none');
-            //$('#lblTacticTitle').css('display', 'block');
-            //$("#lblTacticTitle").removeAttr("style");
             if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
                 $('#txtTacticTitle').css('display', 'block');
                 $('#lblTacticTitle').css('display', 'none');
@@ -756,9 +721,6 @@
             url = '@Url.Content("~/Inspect/LoadReview/")';
             $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
                 if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                    //// Call function to redirect on service unavailibility.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 $('#InspectTab').removeClass('SpanDisable');
@@ -778,27 +740,12 @@
             url = '@Url.Content("~/Inspect/LoadActuals/")';
             $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
                 if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                    //// Call function to redirect on service unavailibility.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
 
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }
-        // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
-        @* if (tabValue == TabBudget) {
-            if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
-                 $('#txtTacticTitle').css('display', 'block');
-                 $('#lblTacticTitle').css('display', 'none');
-             }
-
-             url = '@Url.Content("~/Inspect/LoadTacticBudgetAllocation/")';
-             $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
-                 $('#InspectTab').removeClass('SpanDisable');
-             });
-         }*@
 
         // Added by Arpita Soni for Ticket #2237 on 06/09/2016
         if (tabValue == TabLineItem) {

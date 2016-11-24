@@ -45,10 +45,10 @@ namespace RevenuePlanner.Controllers
             return _transaction.GetTransactionCount(Sessions.User.CID, start, end, unprocessdedOnly);
         }
 
-        public IEnumerable<Transaction> GetTransactions(DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null, int pageIndex = 1, int pageSize = 10000)
+        public IEnumerable<Transaction> GetTransactions(DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null, int pageIndex = 1, int pageSize = 100)
         {
             //Potential data transformation or triming per client per column heading mapping
-            return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessdedOnly, columnFilters);
+            return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessdedOnly, columnFilters, pageIndex, pageSize);
         }
 
         public IEnumerable<Transaction> SearchForTransactions(DateTime start, DateTime end, string searchText, bool unprocessdedOnly = true)

@@ -3012,7 +3012,7 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult ListOfBudgetName()
         {
-            var ListOfBudgetName = db.Budgets.Where(a => a.IsDeleted == false).Select(a => a.Name.ToLower()).ToList();
+            var ListOfBudgetName = db.Budgets.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.CID).Select(a => a.Name.ToLower()).ToList();
             return Json(ListOfBudgetName, JsonRequestBehavior.AllowGet);
         }
 

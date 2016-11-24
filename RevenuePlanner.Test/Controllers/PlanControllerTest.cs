@@ -1901,7 +1901,7 @@ namespace RevenuePlanner.Test.Controllers
         public void Get_PlanGridData_WithSearch()
         {
             var routes = new RouteCollection();
-            Console.WriteLine("Get Budget Data with Search .\n");
+            Console.WriteLine("Get grid Data with Search .\n");
             MRPEntities db = new MRPEntities();
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objPlanController.Url = new UrlHelper(

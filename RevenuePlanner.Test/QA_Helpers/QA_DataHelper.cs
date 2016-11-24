@@ -53,8 +53,7 @@ namespace RevenuePlanner.Test.QA
             }
 
             Message msg = new Message();
-            //var xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");
-            var xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonIntegrationMsgFilePath");
+            var xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");
             msg.loadMsg(xmlMsgFilePath);
             HttpContext.Current.Cache["CommonMsg"] = msg;
             CacheDependency dependency = new CacheDependency(xmlMsgFilePath);

@@ -66,7 +66,10 @@ function GetCalendarDataInJsonFormat() {
         },
         success: function (data) {
             var permission = Boolean($("#IsPlanEditable").val());
-            if (data.data.length > 0 || (NoPlanCreated.toString().toLowerCase() == 'true' && permission.toString().toLowerCase() == 'true') || $('#txtGlobalSearch').val().length > 0) {
+            if (data.data.length > 0 ||
+                (NoPlanCreated.toString().toLowerCase() == 'true' && permission.toString().toLowerCase() == 'true') ||
+                $('#txtGlobalSearch').val().length > 0)
+            {
             ConfigureGanttwithdefaultSettings();    // Configure Calendar with default configuration.
             SetGanttData(data.data);            // Render Calendar.
             $('#exp-serach').css('display', 'block');

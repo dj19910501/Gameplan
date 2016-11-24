@@ -1,10 +1,11 @@
-IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_ImportPlanCostDataMonthly') AND type IN ( N'P', N'PC' ) ) 
+GO
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'ImportPlanCostDataMonthly') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
 
-	DROP PROCEDURE [dbo].[Sp_ImportPlanCostDataMonthly] 
+	DROP PROCEDURE [dbo].[ImportPlanCostDataMonthly] 
 END
 GO
-CREATE PROCEDURE [dbo].[Sp_ImportPlanCostDataMonthly]  --17314
+CREATE PROCEDURE [dbo].[ImportPlanCostDataMonthly]  --17314
 --@PlanId int,
 @ImportData ImportExcelBudgetMonthData READONLY,
 @UserId INT
@@ -34,7 +35,7 @@ in(  SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan')
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -57,14 +58,15 @@ select PlanProgramId from Plan_Campaign_Program where IsDeleted =0 and PlanCampa
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name], Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
 
 ) as ExistingData
 
-select * into #temp2 from (select * from @ImportData EXCEPT select ActivityId,ActivityType,[Task Name],Budget, JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC from #Temp)   k
+select * into #temp2 from (select * from @ImportData )   k
+--select * into #temp2 from (select * from @ImportData EXCEPT select ActivityId,ActivityType,[Task Name],Budget, JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC from #Temp)   k
 
 
 --select * from @ImportData EXCEPT select * from #Temp
@@ -112,7 +114,7 @@ IF ( LOWER(@Type)='tactic')
 			--update balance lineitem
 			--update balance lineitem Cost of tactic -(sum of line item)
 			
-			IF((SELECT  ISNULL(LineItemTypeId,0) from Plan_Campaign_Program_tactic_Lineitem Where PlanTacticId=@EntityId and LineItemTypeId IS null) = 0)
+			IF((SELECT Top 1  ISNULL(LineItemTypeId,0) from Plan_Campaign_Program_tactic_Lineitem Where PlanTacticId=@EntityId and LineItemTypeId IS null and isdeleted=0) = 0)
 				BEGIN
 					  UPDATE Plan_Campaign_Program_Tactic_LineItem SET  
 					  COST=((Select cost from Plan_Campaign_Program_tactic where PlanTacticId=@EntityId)-(Select ISNULL(sum(cost),0) from Plan_Campaign_Program_tactic_Lineitem Where LineItemTypeId is not null and PlanTacticId=@EntityId)) 
@@ -307,7 +309,7 @@ IF ( LOWER(@Type)='lineitem')
 			from [Plan_Campaign_Program_Tactic_LineItem] P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId
 
 				--update balance row
-			IF((SELECT ISNULL(LineItemTypeId,0) from Plan_Campaign_Program_tactic_Lineitem Where PlanTacticId=(Select PlanTacticId from Plan_Campaign_Program_Tactic_LineItem where  PlanLineItemId=@EntityId) and LineItemTypeId is null) = 0)
+			IF((SELECT Top 1 ISNULL(LineItemTypeId,0) from Plan_Campaign_Program_tactic_Lineitem Where PlanTacticId=(Select PlanTacticId from Plan_Campaign_Program_Tactic_LineItem where  PlanLineItemId=@EntityId) and LineItemTypeId is null and isdeleted=0) = 0)
 				BEGIN
 				  UPDATE Plan_Campaign_Program_Tactic_LineItem SET 
 				  COST=((Select cost from Plan_Campaign_Program_tactic WHERE PlanTacticId=(Select PlanTacticId from Plan_Campaign_Program_Tactic_LineItem where  PlanLineItemId=@EntityId))
@@ -477,3 +479,4 @@ End
 select ActivityId from @ImportData where TYPE not in('plan')  EXCEPT select ActivityId from #Temp
 
 END
+GO
