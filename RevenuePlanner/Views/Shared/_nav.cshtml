@@ -16,6 +16,7 @@
         @if (Sessions.AppMenus != null && Sessions.AppMenus.Count() > 0)
         {
             int MenuCount = 1;
+            var childrenItems = Sessions.AppMenus.Where(x => x.ParentApplicationId != null).GroupBy(x => x.ParentApplicationId).ToDictionary(g => g.Key);
             foreach (Menu o in Sessions.AppMenus.Where(x => x.ParentApplicationId == null))
             {
                 string menuname = Convert.ToString(o.Name);
@@ -56,7 +57,8 @@
                     }
                     else
                     {
-                        if (!Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Any())
+                        var hasChildren = childrenItems.ContainsKey(o.MenuApplicationId);
+                        if (!hasChildren)
                         {
                             if (!string.IsNullOrEmpty(Convert.ToString(o.Description)))
                             {
@@ -69,7 +71,7 @@
                         }
                         string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
                         classname = classname + " fix-width";
-                        if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
+                        if (hasChildren)
                         {
                             classname = classname + " dropdown";
                         }
@@ -89,38 +91,41 @@
                             <a href="@hrefLink">
                                 <span class="@CustomCSS"></span>@*Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016*@
                                 <span class="nav-text">@menuname.ToUpper()</span>
-                                @if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
+                                @if (hasChildren)
                                 {
                                     <span class="dd-arrow"><i class="fa fa-caret-down"></i></span>
                                 }
                             </a>
-                            <ul class="dropdown-menu">
-                                @foreach (Menu submenu in Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId))
+                                @if (hasChildren)
                                 {
-                                    if (!string.IsNullOrEmpty(Convert.ToString(o.Description)) && Convert.ToString(o.Description).Contains("javascript:void(0)"))
-                                    {
-                                        LiId = "SubPage_" + submenu.MenuApplicationId;
-                                        DashFrom = "Measure";
-                                        if (submenu.Description != null)
+                                    <ul class="dropdown-menu">
+                                        @foreach (Menu submenu in childrenItems[o.MenuApplicationId])
                                         {
-                                            hrefLink = submenu.Description;
+                                            if (!string.IsNullOrEmpty(Convert.ToString(o.Description)) && Convert.ToString(o.Description).Contains("javascript:void(0)"))
+                                            {
+                                                LiId = "SubPage_" + submenu.MenuApplicationId;
+                                                DashFrom = "Measure";
+                                                if (submenu.Description != null)
+                                                {
+                                                    hrefLink = submenu.Description;
+                                                }
+                                                <li id="@LiId" dashfrom="@DashFrom">
+                                                    <a href="@hrefLink">
+                                                        <span class="nav-text">@submenu.Name.ToUpper()</span>
+                                                    </a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li>
+                                                    <a href="@Url.Action(Convert.ToString(submenu.ActionName), Convert.ToString(submenu.ControllerName))">
+                                                        @submenu.Name
+                                                    </a>
+                                                </li>
+                                            }
                                         }
-                                        <li id="@LiId" dashfrom="@DashFrom">
-                                            <a href="@hrefLink">
-                                                <span class="nav-text">@submenu.Name.ToUpper()</span>
-                                            </a>
-                                        </li>
-                                    }
-                                    else
-                                    {
-                                        <li>
-                                            <a href="@Url.Action(Convert.ToString(submenu.ActionName), Convert.ToString(submenu.ControllerName))">
-                                                @submenu.Name
-                                            </a>
-                                        </li>
-                                    }
+                                    </ul>
                                 }
-                            </ul>
                         </li>
                     }
                     MenuCount++;
