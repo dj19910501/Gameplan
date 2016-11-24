@@ -500,17 +500,33 @@ DECLARE @query nvarchar(max)
 			BEGIN
 				IF(@Val='Col_PlannedCost')
 				BEGIN
-					SET @UpdateStatement+='  @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' = ['+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'] = CASE WHEN Col_RowGroup=1 THEN CONVERT(NVARCHAR(MAX),CAST(['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+'] AS decimal(38,2))) ELSE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'+'';''+ CONVERT(NVARCHAR(MAX),CAST(['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+'] AS decimal(38,2))) END'+@Delimeter
+					SET @UpdateStatement+='  @Col_' + (SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))
+													+ ' = ['+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))
+													+ '] = CASE WHEN Col_RowGroup=1 THEN CONVERT(NVARCHAR(MAX),CAST(['
+													+ (SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))
+													+ '] AS decimal(38,2))) ELSE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))
+													+ '+'';''+ CONVERT(NVARCHAR(MAX),CAST(['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))
+													+ '] AS decimal(38,2))) END'+@Delimeter
 				END
 				ELSE 
 				BEGIN
+					/*Add Condition - If @Val is tactic or startdate or enddate or targetstagegoal or tacticcategory then no need to concat values.*/
 					IF (@Val!='Col_Tactic' AND @Val!='Col_StartDate' AND @Val!='Col_EndDate' AND @Val!='Col_TargetStageGoal' AND @Val != 'Col_TacticCategory')
 					BEGIN
-						SET @UpdateStatement+='  @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' = ['+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'] = CASE WHEN Col_RowGroup=1 THEN CONVERT(NVARCHAR(MAX),['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+']) ELSE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'+'';''+ CONVERT(NVARCHAR(MAX),['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+']) END'+@Delimeter
+						SET @UpdateStatement += '  @Col_' + ( SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@') ) 
+														  + ' = ['+ (SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))
+														  + '] = CASE WHEN Col_RowGroup=1 THEN CONVERT(NVARCHAR(MAX),['
+														  + ( SELECT REPLACE(REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))
+														  + ']) ELSE @Col_' + (SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))
+														  + '+'';''+ CONVERT(NVARCHAR(MAX),['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))
+														  + ']) END'+@Delimeter
 					END
 					ELSE
 					BEGIN
-						SET @UpdateStatement+='  @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' = ['+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'] = CONVERT(NVARCHAR(MAX),['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+'])'+@Delimeter
+						SET @UpdateStatement+='  @Col_' + (SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))
+														+ ' = [' + (SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))
+														+ '] = CONVERT(NVARCHAR(MAX),[' + (SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))
+														+ '])'+@Delimeter
 					END
 				END
 			END
