@@ -291,7 +291,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param> Added by Sohel Pathan on 07/08/2014 for PL ticket #672
         /// <returns></returns>
         [HttpPost]
-      public JsonResult SavePlanDetails(InspectModel objPlanModel, int UserId = 0)
+        public JsonResult SavePlanDetails(InspectModel objPlanModel, int UserId = 0)
         {
             //// check whether UserId is current loggined user or not.
             if (UserId != 0)
@@ -408,7 +408,7 @@ namespace RevenuePlanner.Controllers
                .SqlQuery<GridDefaultModel>("SavePlanDefaultFilters @userId,@ClientId,@IsDefaultCustomRestrictionsViewable,@newPlanId", para).ToList();
 
         }
-            /// <summary>
+        /// <summary>
         /// Method to Add / update plan detail from inspect popup
         /// Added by : Devanshi
         /// </summary>
@@ -4271,55 +4271,52 @@ namespace RevenuePlanner.Controllers
                                     // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                     #region "Send Email Notification For Owner changed"
                                     //Send Email Notification For Owner changed.
-                                    if (form.OwnerId != Sessions.User.ID && form.OwnerId != 0)
+
+                                    if (Sessions.User != null && form.OwnerId != Sessions.User.ID && form.OwnerId != 0)
                                     {
-                                        if (Sessions.User != null)
+                                        List<string> lstRecepientEmail = new List<string>();
+                                        List<User> UsersDetails = new List<BDSService.User>();
+                                        // Modified by Nandish Shah on 25/11/2016 for PL #2785
+                                        // Remove repeated session user & Change form.Owner to form.OwnerId - was change as part of tiket#2563 - swapping out GUIDs for INTs
+                                        List<int> users = new List<int>() { Convert.ToInt32(form.OwnerId), Sessions.User.ID };
+                                        try
                                         {
-                                            List<string> lstRecepientEmail = new List<string>();
-                                            List<User> UsersDetails = new List<BDSService.User>();
-                                            List<int> users = new List<int>() { Convert.ToInt32(form.Owner), Sessions.User.ID, Sessions.User.ID };
-                                            //TODO: why repeat session user wtice? // string.Concat(form.OwnerId, ",", Sessions.User.ID.ToString(), ",", Sessions.User.ID.ToString());
+                                            UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetailsEx(users, Sessions.ApplicationId);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            ErrorSignal.FromCurrentContext().Raise(e);
 
-                                            try
+                                            //To handle unavailability of BDSService
+                                            if (e is System.ServiceModel.EndpointNotFoundException)
                                             {
-                                                UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetailsEx(users, Sessions.ApplicationId);
-                                            }
-                                            catch (Exception e)
-                                            {
-                                                ErrorSignal.FromCurrentContext().Raise(e);
-
-                                                //To handle unavailability of BDSService
-                                                if (e is System.ServiceModel.EndpointNotFoundException)
-                                                {
-                                                    //// Flag to indicate unavailability of web service.
-                                                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                                                    //// Ticket: 942 Exception handeling in Gameplan.
-                                                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-                                                }
-                                            }
-
-                                            var NewOwner = UsersDetails.Where(u => u.ID == form.OwnerId).Select(u => u).FirstOrDefault();
-                                            var ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
-                                            if (NewOwner.Email != string.Empty)
-                                            {
-                                                lstRecepientEmail.Add(NewOwner.Email);
-                                            }
-                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
-                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
-                                            string PlanTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString();
-                                            string CampaignTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
-                                            string ProgramTitle = pcpobj.Plan_Campaign_Program.Title.ToString();
-                                            List<int> NewOwnerID = new List<int>();
-                                            NewOwnerID.Add(form.OwnerId);
-                                            List<int> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
-                                            if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.ID)
-                                            {
-                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, tacticId, Enums.Section.Tactic.ToString().ToLower());
-                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
-                                                Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", form.OwnerId);
+                                                //// Flag to indicate unavailability of web service.
+                                                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                                //// Ticket: 942 Exception handeling in Gameplan.
+                                                return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                                             }
                                         }
 
+                                        var NewOwner = UsersDetails.Where(u => u.ID == form.OwnerId).Select(u => u).FirstOrDefault();
+                                        var ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
+                                        if (NewOwner.Email != string.Empty)
+                                        {
+                                            lstRecepientEmail.Add(NewOwner.Email);
+                                        }
+                                        string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                        string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                        string PlanTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString();
+                                        string CampaignTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
+                                        string ProgramTitle = pcpobj.Plan_Campaign_Program.Title.ToString();
+                                        List<int> NewOwnerID = new List<int>();
+                                        NewOwnerID.Add(form.OwnerId);
+                                        List<int> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                                        if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.ID)
+                                        {
+                                            string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, tacticId, Enums.Section.Tactic.ToString().ToLower());
+                                            Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                            Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", form.OwnerId);
+                                        }
                                     }
                                     #endregion
                                     Common.ChangeProgramStatus(pcpobj.PlanProgramId, false);
@@ -6284,7 +6281,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.AllocatedBy = AllocatedBy;
                 // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
                 objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate, IsPlanEditable);
-                
+
                 //// Set View By Allocated values.
                 List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
                 lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Convert.ToString(Enums.PlanAllocatedBy.months) });
@@ -7304,7 +7301,7 @@ namespace RevenuePlanner.Controllers
                                         #region "Update Linked Tactic Budget data"
                                         List<Plan_Campaign_Program_Tactic_LineItem_Cost> tblLineItemData = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(id => (id.PlanLineItemId == form.PlanLineItemId) || (id.PlanLineItemId == LinkedLineitemId)).ToList();
                                         List<Plan_Campaign_Program_Tactic_LineItem_Cost> lstLineItemData = tblLineItemData.Where(id => id.PlanLineItemId == form.PlanLineItemId).ToList();
-                                        
+
                                         if (lstLineItemData != null && lstLineItemData.Count > 0)
                                         {
                                             List<Plan_Campaign_Program_Tactic_LineItem_Cost> linkedCostData = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
@@ -10090,7 +10087,7 @@ namespace RevenuePlanner.Controllers
                 return Json(new { IsSuccess = false, msg = e.Message.ToString(), opt = RequsetedModule });
             }
         }
-        
+
         /// <summary>
         /// Delete Plan,Tactic,Campaign,Program by Section.
         /// </summary>
@@ -10153,7 +10150,7 @@ namespace RevenuePlanner.Controllers
                                 UserSavedViews.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 db.SaveChanges();
                                 Sessions.PlanUserSavedViews = null;
-                                
+
                                 Plan plan = db.Plans.Where(p => p.PlanId == id).FirstOrDefault();
                                 returnValue = Common.InsertChangeLog(id, null, id, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", plan.CreatedBy);
                                 strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
