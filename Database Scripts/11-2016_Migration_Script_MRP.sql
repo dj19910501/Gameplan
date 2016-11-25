@@ -16,7 +16,7 @@ BEGIN
 		 ELSE 'Y' +  CAST(DATEPART(MONTH, @actualDate) AS VARCHAR(10))
 	END
 END
-
+GO
 /****** Object:  View [dbo].[CampaignDetail]    Script Date: 11/23/2016 12:06:13 PM ******/
 SET ANSI_NULLS ON
 GO
