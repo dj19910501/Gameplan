@@ -8,6 +8,10 @@ namespace RevenuePlanner.Controllers
 {
     public class MarketingBudgetController : Controller, IMarketingBudget
     {
+        public ActionResult Index()
+        {
+            return View();
+        }
         public List<LineItemAllocatingAccount> GetAccountsForLineItem(int lineItemId)
         {
             //Do whatever needed here
