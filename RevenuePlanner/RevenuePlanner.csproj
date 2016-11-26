@@ -1136,6 +1136,7 @@
     <Content Include="Views\Home\_CalExportPDFHeaderHtml.cshtml" />
     <Content Include="Views\Inspect\_SetupPlanDetails.cshtml" />
     <Content Include="Views\MarketingBudget\Index.cshtml" />
+    <Content Include="Views\MeasureDashboard\_ViewAllReportTable.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>
