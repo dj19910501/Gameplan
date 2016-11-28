@@ -180,6 +180,7 @@ function GetBudgetGridData() {
     filters = GetFilterIds();
     // BindUpcomingActivites(filters.PlanIDs.toString())
     var selectedTimeFrame = $('#ddlUpComingActivites').val();
+    var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
     var currentDate = new Date();
     if (selectedTimeFrame == null || selectedTimeFrame == 'undefined' || selectedTimeFrame == "") {
         selectedTimeFrame = currentDate.getFullYear().toString();
@@ -197,8 +198,8 @@ function GetBudgetGridData() {
             year: selectedTimeFrame.toString(),
             ViewBy: viewBy,
             SearchText: searchtext,
-            IsFromCache: IsGridFromCahce
-
+            IsFromCache: IsGridFromCahce,
+            SearchBy: SearchDDLValue
         }
     });
 }
@@ -1585,6 +1586,7 @@ $(".searchDropdown li a").click(function () {
         $('#ExpSearch').css('display', 'block');
         $('#ExpClose').css('display', 'none');
     }
+
 });
 var SearchIds = [];
 

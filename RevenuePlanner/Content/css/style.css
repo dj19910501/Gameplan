@@ -3599,18 +3599,19 @@ a.link-gray {
 	width: 50%; /*#2312*/
 	text-align: right;
 }
-.fin-head-right .quarter_selection {
+.fin-head-left .quarter_selection {
 	width: auto;
 	line-height: 1.1;
 	margin-left: 15px; /*by bheru 1678 05-11-2015*/
 	float: right;
 	margin-right: 0; /*by bheru 1678 05-11-2015*/
-	margin-left: 17px;
+	/*margin-left: 10px;*/
 }
-.fin-head-right .filter-columns /*by bheru 1678 05-11-2015 start*/ {
+.fin-head-left .quarter_selection button{margin:0 !important}
+.fin-head-left .filter-columns /*by bheru 1678 05-11-2015 start*/ {
 	display: inline-block;
 	float: left;
-	margin-left: 17px; /* Changed for #2312*/
+	margin-left: 10px; /* Changed for #2312*/
 }
 /*by bheru 1678 05-11-2015 end*/
 .finance-header {
@@ -10836,11 +10837,17 @@ li.accordion-inner.close-list {
 #sidebar h4 {
 	font-weight: 600;
 }
+
 .full-width-header h2 {
 	color: #3e3f37; /* Edited for #2219 - Bhumika */
 	font-size: 29px !important;
 	font-weight: 500;
+    line-height: 35px;
 }
+#financeHeader.full-width-header {  padding: 15px 15px 0 15px;}
+.finance-main-title{margin-top: 15px; width:100%;}
+.full-width-header .plancart-box.finance-cart .white-chart{width:100px}
+
 .create-plan-form {
 	min-height: 590px;
 }
@@ -11262,22 +11269,31 @@ li.accordion-inner.close-list {
 	padding: 0;
 	width: 24px;
 }
+
+.full-width-header .financetitle .nl-field-toggle{
+    font-family: source_sans_proregular;
+	padding-right: 18px;
+    background: url(../images/drop-down-logo-black.png) right center no-repeat;
+	font-size: 18px; /* #2805 */
+    margin-top: 17px;
+    float:left;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 .financetitle .nl-field-toggle, .financetitle .nl-field-toggle:hover {
 	color: #3e3f37; /* Edited for #2219 - Bhumika */
-	font-family: source_sans_proregular;
-	padding-right: 25px;
-	font-size: 22px;
-	background: url(../images/drop-down-logo-black.png) right center no-repeat;
 }
 .financetitle {
 	display: inline;
 	line-height: 35px;
 	vertical-align: baseline;
-	padding-right: 10px;
+	/*padding-right: 10px;*//* #2805 */
 }
 .financetitle .nl-field {
-	padding-right: 18px;
-	border-right: 1px solid #ccc;
+	padding-right: 12px;/* #2805 */
+	/*border-right: 1px solid #ccc;*/ /*#2805 */
 }
 .margin-left {
 	margin-left: -9px !important;
@@ -12320,7 +12336,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 }
 /* style added for #2214 start */
 .finance-export-btn {
-	float: right;
+	float: left; /* #2805 Fiance page HUD Design */
 	display: inline-block;
 	line-height: 30px;
 }
@@ -12633,10 +12649,10 @@ a:focus, a:hover {
 #ImportModal.fade.in {
 	top: 18%; /*margin-left:-500px;*/
 }
-#ImportBtn {
+/*#ImportBtn {
 	width: 65px;
 	margin-right: 10px;
-}
+}*/ /* #2805 Finance page New HUD Design */
 #ImportBtn .input-group-btn{margin-bottom: 15px;}
 .btn-primary.btn-file:hover, .btn-primary.fileinput-upload:hover {
 	background-color: #70bbcc !important;
@@ -13724,6 +13740,62 @@ table .lblCustomCheckbox label{width:70%}
     right: -2px;
 }
 /* ==== */
+
+
+/* #2805 Finance HUD Design */
+.btn-fill-white.export-link span{
+    margin-left:5px;
+    font-size: 12px;
+}
+
+.fin-head-left .btn.btn-fill-white, .fin-head-left .ui-multiselect{
+    cursor: pointer; 
+    float:left; 
+    line-height:30px !important;
+    height:30px; 
+    margin-right:10px ;
+    margin-top:20px ;
+    padding: 0 8px;
+}
+.fin-head-left .quarter_selection{margin-left:0px; }
+.fin-head-left .ui-multiselect{
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #c6c6c6;
+    color: inherit;
+    padding: 0 8px;
+    margin-top:0 ;
+}
+.fin-head-left .ui-multiselect.ui-widget.ui-state-default.ui-corner-all span {
+    color: inherit;
+    font-size: 12px;
+    margin-left: 0 ;
+    font-family:"ProximaNova-Regular",Helvetica,Arial,sans-serif;
+}
+.fin-head-left .ui-multiselect{
+    min-width: 85px;
+}
+.fin-head-left .selectBox{float:left}
+.fin-head-left .selectBox label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 0;
+}
+/*.finance-export-btn #ImportBtn{line-height:30px}*/
+#divAddnew{position:relative}
+#divAddnew:before {
+    content:"\f055";
+    font: normal normal normal 14px/1 FontAwesome;
+    position: absolute;
+    left: 10px;
+    bottom: 6px;
+}
+#btnAddNewBudget{    
+    font-size: 12px;
+    height: 30px;
+    padding-left: 24px;
+}
+
+/* =========================== Measure Report CSS =========================== */
 .report-wrap .tab-content {
     background: #fff none repeat scroll 0 0;
     height: calc(100% - 37px);
@@ -13740,6 +13812,74 @@ table .lblCustomCheckbox label{width:70%}
 }
 
 .inspect-column-parent .lable_inline p{margin:0 8px 0 0}
+
+.report-main .IconResize {
+    cursor: pointer;
+    float: right;
+    margin-right: 10px;
+}
+ 
+.report-main .close-popup-btn {
+    color: #fff;
+    float: right;
+    margin: 0 10px;
+}
+.tab-content-wrap {border-top:1px solid #ccc; padding:5px 0}
+.date-value-wrapper .col-xs-5{
+    padding-left: 30px;
+    text-align: left;
+    padding: 10px 0 10px 30px;
+}
+
+table.dataTable thead .sorting_asc {
+    background: url("../images/new_sort_asc.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;           
+}
+
+table.dataTable thead .sorting {
+    background: url("../images/new_sort_both.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;            
+}
+
+table.dataTable thead .sorting_desc {
+    background: url("../images/new_sort_desc.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;            
+}
+.TableRowsViewAll {
+    border-radius: 5px;
+    border: medium none;
+    color: black;
+    font-size: 12px !important;
+    height: 25px;
+    line-height: 15px;
+    margin-left: 10px;
+    background-color: #fff;
+}
+
+.ViewAllReportPopUp {
+    background-color: white;
+    margin: 30px auto;
+    text-align: center;
+    max-height: 700px;
+}
+
+.form-ViewAllReportPopUp {
+    border-radius: 5px;
+    left: 19%;
+    position: fixed;
+    text-align: center;
+    top: 0%;
+    z-index: 2002;
+    width: 60%;
+}
+
+.ViewAllReportPopUp .tab-head {
+    text-align: left;           
+    background: #F8710E none repeat scroll 0 0; 
+    color: #ffffff; 
+    border: medium none; 
+}
+/* =========================== Measure Report CSS End =========================== */
+
+
+
 
 /************************************************ Responsive css start here **********************************************************/
 
@@ -14027,14 +14167,13 @@ finance_grid_add {
 .revenue-graph .revenue-graph-info {
 	width: 21%;
 }
+.full-width-header .plancart-box.finance-cart .white-chart {
+    width: 90px;
 }
-
-@media (max-width: 1427px) {
-/* #2621 */
-/*.full-width-header .white-chart {
-	width: 18.8%;
+.full-width-header .plancart-box.finance-cart .white-chart .value {
+    font-size: 18px;
 }
-}*/
+}
 
 @media (max-width: 1306px) {
 .nav-tabs .title-header h2 {

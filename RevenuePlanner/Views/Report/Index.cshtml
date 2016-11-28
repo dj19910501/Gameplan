@@ -2260,7 +2260,6 @@
     //$('#updatedata').click(function ()
 
     function updatedata() {
-
         var arrOptionIds = new Array();
         //// close multiselect
         $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
@@ -2926,10 +2925,14 @@
                         case 'triangle-down':
                             symbol = '▼';
                             break;
+                        default: {
+                            break;
+                        }
                     }
-
-
-                    return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + ( _linechartDivId.indexOf('dvline') > -1 || _linechartDivId.indexOf('RevenueLineChart') > -1 ? CurrencySybmol : '') + number_format(this.y, 1, '.', ',') + '</b>';
+                    var CurrSymbol =  _linechartDivId.indexOf('dvline') > -1 || _linechartDivId.indexOf('RevenueLineChart') > -1 ? CurrencySybmol : '';  //attach Currency Symbol for RevenueChart
+                    var SeriesFormat = this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':';       //shows series name,symbol with color on tooltip
+                    var NumberFormat =   number_format(this.y, 1, '.', ',') // for Comma Separated values;
+                    return SeriesFormat + '<b>' + CurrSymbol +  NumberFormat + '</b>';
 
                 }
             };
@@ -3439,22 +3442,31 @@
                     case 'triangle-down':
                         symbol = '▼';
                         break;
+                    default: {
+                        break;
+                             }
                 }
+                
+                var CurrSymbol = _ChartDivId.indexOf('RevenuePlanBarChart') > -1 ? CurrencySybmol : '';       //attach Currency Symbol for RevenueChart
+                var SeriesFormat = this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':';       //shows series name,symbol with color on tooltip
 
                 if (this.point.series.name == "Actual") {
                     if (this.point.series.type == "line") {
                         var _point = this.point.series.data.indexOf(this.point);
                         var _val = _Actualarray[_point];
-                        return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + ( _ChartDivId.indexOf('RevenuePlanBarChart') > -1 ? CurrencySybmol : '') + number_format(_val, 2, '.', ',') + '</b>';
+                        var NumberFormat = number_format(_val, 2, '.', ',');     // for Comma Separated values
+                        return SeriesFormat + '<b>' + CurrSymbol + NumberFormat + '</b>';
                     }
                     if (this.point.series.type == "column") {
                         var _point = this.point.series.data.indexOf(this.point);
                         var _val = _ActualValuebar[_point];
-                        return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + ( _ChartDivId.indexOf('RevenuePlanBarChart') > -1 ? CurrencySybmol : '' ) + number_format(_val, 2, '.', ',') + '</b>';
+                        var NumberFormat = number_format(_val, 2, '.', ','); // for Comma Separated values
+                        return SeriesFormat + '<b>' + CurrSymbol + NumberFormat + '</b>';
                     }
                 }
                 else {
-                    return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + ( _ChartDivId.indexOf('RevenuePlanBarChart') > -1 ? CurrencySybmol : '') + number_format(this.y, 2, '.', ',') + '</b>';
+                    var NumberFormat =   number_format(this.y, 2, '.', ',');  // for Comma Separated values
+                    return SeriesFormat + '<b>' + CurrSymbol + NumberFormat + '</b>';
                 }
             }
         };

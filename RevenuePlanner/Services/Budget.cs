@@ -59,7 +59,7 @@ namespace RevenuePlanner.Services
         public bool isMultiYear = false;
 
 
-        public BudgetDHTMLXGridModel GetBudget(int ClientId, int UserID, string PlanIds, double PlanExchangeRate, string viewBy, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "",string Searchtext="", bool IsFromCache=false)
+        public BudgetDHTMLXGridModel GetBudget(int ClientId, int UserID, string PlanIds, double PlanExchangeRate, string viewBy, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string Searchtext = "", string SearchBy = "", bool IsFromCache = false)
         {
             string strThisQuarter = Enums.UpcomingActivities.ThisYearQuaterly.ToString();
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
@@ -109,13 +109,7 @@ namespace RevenuePlanner.Services
                 #region "Calculate Monthly Budget from Bottom to Top for Hierarchy level like: LineItem > Tactic > Program > Campaign > CustomField(if filtered) > Plan"
 
                 //// Set ViewBy data to model.
-                model = CalculateBottomUp(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem, viewBy);//// Calculate monthly Tactic budget from it's child budget i.e LineItem
-
-                model = CalculateBottomUp(model, ActivityType.ActivityProgram, ActivityType.ActivityTactic, viewBy);//// Calculate monthly Program budget from it's child budget i.e Tactic
-
-                model = CalculateBottomUp(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram, viewBy);//// Calculate monthly Campaign budget from it's child budget i.e Program
-
-                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, viewBy);//// Calculate monthly Plan budget from it's child budget i.e Campaign
+               model= RollUp(model, viewBy);
 
                 #endregion
                 if (viewBy.Contains(PlanGanttTypes.Custom.ToString()))
@@ -131,8 +125,28 @@ namespace RevenuePlanner.Services
             objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, year);
             if (!string.IsNullOrEmpty(Searchtext))
             {
+                List<PlanBudgetModel> SearchlistData = new List<PlanBudgetModel>();
+                if (string.IsNullOrEmpty(SearchBy) || SearchBy == Enums.GlobalSearch.ActivityName.ToString())
+                {
+                    SearchlistData = model.Where(a => a.ActivityName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                }
+                else
+                {
+                    SearchlistData = model.Where(a => a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                }
+                List<SearchParentDetail> parenttaskids = SearchlistData.Select(a => new SearchParentDetail
+                {
+                    ParentTaskId = a.ParentActivityId,
+                    TaskId = a.TaskId
+                }).ToList();
                 // call common method to search budget data as per search text
-                model = SearchBudgetData(model, Searchtext);
+                List<string> selectedSerachId = Common.SearchGridCalendarData(parenttaskids, model, Enums.ActivePlanTab.Budget.ToString());
+                //add all parents
+                model = (from Data in model
+                         join ParentData in selectedSerachId
+                         on Data.ActivityId equals ParentData
+                         select Data).ToList();
+               // model = SearchBudgetData(model, Searchtext, SearchBy);
             }
             objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy, UserID, ClientId, year, viewBy);//create model to bind data in grid as per DHTMLx grid format.
             //get number of tab views for user in column management
@@ -157,7 +171,20 @@ namespace RevenuePlanner.Services
 
             return objBudgetDHTMLXGrid;
         }
+        //Method for rollup bottom up values as per view by
+        public List<PlanBudgetModel> RollUp(List<PlanBudgetModel> model, string viewBy )
+        {
+            List<PlanBudgetModel> Finalmodel=  new List<PlanBudgetModel>();
+            Finalmodel = CalculateBottomUp(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem, viewBy);//// Calculate monthly Tactic budget from it's child budget i.e LineItem
 
+            Finalmodel = CalculateBottomUp(model, ActivityType.ActivityProgram, ActivityType.ActivityTactic, viewBy);//// Calculate monthly Program budget from it's child budget i.e Tactic
+
+            Finalmodel = CalculateBottomUp(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram, viewBy);//// Calculate monthly Campaign budget from it's child budget i.e Program
+
+            Finalmodel = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, viewBy);//// Calculate monthly Plan budget from it's child budget i.e Campaign
+
+            return Finalmodel;
+        }
         public List<int> FilterCustomField(List<PlanBudgetModel> BudgetModel, string CustomFieldFilter)
         {
             List<int> lstTacticIds = new List<int>();
@@ -2011,62 +2038,7 @@ namespace RevenuePlanner.Services
             }
             return BudgetModel;
         }
-        #region method to get grid data for search
-        /// <summary>
-        /// Added by devanshi 
-        /// method to get filter data as search text #2597
-        /// </summary>
-        /// <param name="DataList"></param>
-        /// <param name="searchtext"></param>
-        /// <returns></returns>
-        public List<PlanBudgetModel> SearchBudgetData(List<PlanBudgetModel> DataList, string searchtext)
-        {
-            List<PlanBudgetModel> lstSelectedData = new List<PlanBudgetModel>();
-            int HierarchyCount = 0; // to itreate from last level of entity type
-            int Ind = 0; // to find last index of taskid and based on that remove item from list
-            string ParrentTaskId = string.Empty;
-          
-                var parenttaskids = DataList.Where(a => a.ActivityName.ToLower().Contains(HttpUtility.HtmlEncode(searchtext.ToLower()))).Select(a => new
-                {
-                    parenttaskid = a.ParentActivityId,
-                    TaskId = a.TaskId
-                }).ToList();
-                List<string> taskids = new List<string>();
-                foreach (var obj in parenttaskids)
-                {
-                    taskids.Add(obj.parenttaskid);
-                    if (obj.parenttaskid.Split('_') != null && obj.parenttaskid.Split('_').Count() > 0)
-                    {
-                        if (obj.parenttaskid != null)
-                            HierarchyCount = obj.parenttaskid.Split('_').Count();
-                        ParrentTaskId = obj.parenttaskid;
-                        for (int i = 1; i < HierarchyCount; i++)
-                        {
-                             Ind = ParrentTaskId.LastIndexOf('_');
-                            ParrentTaskId = ParrentTaskId.Remove(Ind);
-                            taskids.Add(ParrentTaskId);
-                        }
-                    }
-                    taskids.Add(obj.TaskId);
-                    //add all childerns
-                    List<PlanBudgetModel> childernlist = DataList.Where(a => a.ParentActivityId != null && a.ParentActivityId.Contains(obj.TaskId)).ToList();
-                    if (childernlist != null && childernlist.Count > 0)
-                    {
-                        lstSelectedData.AddRange(childernlist);
-                    }
-                }
-
-                //add all parents
-                List<PlanBudgetModel> parentlist = (from Data in DataList
-                                                     join ParentData in taskids
-                                                         on Data.TaskId equals ParentData
-                                                     select Data).ToList();
-                lstSelectedData.AddRange(parentlist);
-                return lstSelectedData.Distinct().ToList();
-           
-           
-        }
-        #endregion
+       
 
     }
 

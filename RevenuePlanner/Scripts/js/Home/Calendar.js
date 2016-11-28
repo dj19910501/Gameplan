@@ -51,6 +51,7 @@ function GetCalendarDataInJsonFormat() {
     var timeframe = $("#ddlUpComingActivites").val();
     var viewBy = $('#ddlTabViewBy').val();
     var Searchtext = $('#txtGlobalSearch').val().trim();
+    var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
     $.ajax({
         url: strURL,
         type: 'POST',
@@ -62,7 +63,8 @@ function GetCalendarDataInJsonFormat() {
             customFieldIds: filters.customFieldIds.toString(),
             timeframe: timeframe,
             viewBy: viewBy,
-            Searchtext: Searchtext
+            Searchtext: Searchtext,
+            SearchBy: SearchDDLValue
         },
         success: function (data) {
             var permission = Boolean($("#IsPlanEditable").val());

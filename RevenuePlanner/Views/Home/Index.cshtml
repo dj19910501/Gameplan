@@ -642,6 +642,7 @@
 
     function GetGridData(filters, viewBy) {
         var seachtext = $('#txtGlobalSearch').val();
+         var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
         return $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/GetHomeGridDataJSON/")', //urlContent + 'Plan/GetHomeGridDataJSON/',
@@ -655,7 +656,8 @@
                 viewBy: viewBy,
                 isLoginFirst: isFirstTimeOnGrid,
                 SearchText: seachtext,
-                IsFromCache: IsGridFromCahce 
+                IsFromCache: IsGridFromCahce,
+                SearchBy: SearchDDLValue
                 //ExpandedtacticIds: $('#ExpandedTacticIds').val()
             },
             cache: false

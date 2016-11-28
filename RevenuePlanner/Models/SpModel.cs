@@ -201,7 +201,7 @@ namespace RevenuePlanner.Models
         public Nullable<int> HelpTextId { get; set; }
         public List<DashboardContentModel> DashboardContent = new List<DashboardContentModel>();
     }
-
+   
     public class DashboardContentModel
     {
         public int ReportID { get; set; }
@@ -247,5 +247,6 @@ namespace RevenuePlanner.Models
         public int DashboardContentId { get; set; }
         public string UserId { get; set; }
         public string RoleId { get; set; }
+        public string DisplayName { get; set; }
     }
 }

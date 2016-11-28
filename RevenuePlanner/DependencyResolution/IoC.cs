@@ -35,7 +35,7 @@ namespace RevenuePlanner.DependencyResolution {
 
                             //add individual interfaces and classes 
                             x.For<RevenuePlanner.Models.MRPEntities>().LifecycleIs(new UniquePerRequestLifecycle()).Use<RevenuePlanner.Models.MRPEntities>();
-                            x.For<RevenuePlanner.BDSService.IBDSService>().LifecycleIs(new UniquePerRequestLifecycle()).Use<RevenuePlanner.BDSService.BDSServiceClient>();
+                            x.For<RevenuePlanner.BDSService.IBDSService>().LifecycleIs(new UniquePerRequestLifecycle()).Use(() => new RevenuePlanner.BDSService.BDSServiceClient("BasicHttpBinding_IBDSService"));
 
                             //              x.For<IExample>().Use<Example>();
                         });

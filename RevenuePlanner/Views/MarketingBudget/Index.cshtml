@@ -1,0 +1,169 @@
+﻿@model RevenuePlanner.Services.MarketingBudget.MarketingActivities
+
+@{
+    ViewBag.Title = "Finance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+}
+
+<div class="light-blue-chart cf full-width-header" id="financeHeader">
+    <div style="" class="fin-head-left">
+        <div class="finance-main-title">
+            <h2 id="lblfinanceTitle" style="display:block;">Finance (Home)</h2>
+        </div>
+        <div style="float:left;" id="drpParentMain">
+            <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
+                @Html.DropDownList("ddlParentFinanceMain", new SelectList(Model.ListofBudgets, "Value", "Text"))
+                <div class="nl-overlay"></div>
+            </div>
+        </div>
+        <div id="dvExportToExcel" class="finance-export-btn">
+            @* Button style change by Bhumika #2446 *@
+            <a class="btn btn-fill-white export-link remove-box-shadow" id="exportcsv" onclick=" return ExportToExcel(); ">
+                <i class="fa fa-upload" title="Export"></i><span>Export</span>
+            </a>
+            <a class="btn btn-fill-white export-link remove-box-shadow" onclick="showModal();" title="Import" id="ImportBtn">
+                <i class="fa fa-download" title="Import"></i> <span> Import</span>
+            </a>
+        </div>
+        <div style="float:left;" id="divAddnew">
+            <input type="button" id="btnAddNewBudget" name="btnAddNewBudget" value="Add New Budget" class="btn btn-fill-white remove-box-shadow source-sans-proregular" />
+        </div>
+        <span class="selectBox quarter_selection" id="ddlMainTimeFrameSelectBox">
+            <label id="" for="Time_Frame:">Time Frame:</label>
+            @Html.DropDownList("ddlMainGridTimeFrame", new SelectList(Model.TimeFrame, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
+        </span>
+        <div id="ddlColumnsFrameBox" class="filter-columns selectBox">
+            <label id="" for="Filter Columns:">Filter Columns:</label>
+            <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>
+        </div>
+        <span class="selectBox quarter_selection" id="ddlColumnSetFrameBox">
+            <label id="" for="View by:">View by:</label>
+            @Html.DropDownList("ddlColumnSet", new SelectList(Model.Columnset, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
+        </span>
+    </div>
+
+    <div class="plancart-box finance-cart">
+        <div class="white-chart">
+            <p class="source-sans-probold" title="Actual">Actual</p>
+            <p class="value source-sans-prolight" id="ActualID" data-original-title="0" title="">$0</p>
+        </div>
+        <div class="white-chart">
+            <p class="source-sans-probold" id="plannedLabel" title="Planned">Planned</p>
+            <p class="value source-sans-prolight" id="PlannedID" data-original-title="$14,711" title="">$14.7k</p>
+        </div>
+        <div class="white-chart">
+            <p class="source-sans-probold" id="forecastLabel" title="Forecast">Forecast</p>
+            <p class="value source-sans-prolight" id="ForecastID" data-original-title="2000" title="">$2,000</p>
+        </div>
+        <div id="dvBudgetHeader" class="white-chart">
+            <p class="source-sans-probold" id="budgetLabel" title="Budget">Budget</p>
+            <p class="value source-sans-prolight" id="budgetID" data-original-title="$12,000" title="">$12.0k</p>
+        </div>
+    </div>
+
+</div>
+
+<div id="divGridView" style="" class="finance-tbl">
+    <div id="gridbox" style="width:100%; background-color:white;"></div>
+</div>
+
+<script>
+    var mygrid;
+    var BudgetGridData;
+    $(document).ready(function () {
+        var Columnsetval = $("#ddlColumnSet").val();
+        $("#sidebar").css("display", "none");
+        $("#content_wraper").css("width", "100%");
+        BindColumnsfilter(Columnsetval);
+        GetGridData();
+    
+
+        var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');
+        if (liParentFinanceMain != null && liParentFinanceMain != 'undefined' && liParentFinanceMain.length > 0) {
+            nlformParentFinanceMain = new NLForm(document.getElementById('nl-formParentFinanceMain'));
+            $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                $('#nl-formParentFinanceMain .nl-field-toggle').text($(this).text());
+                var budgetIDMain = $(this).attr('value');
+                $("#ddlParentFinanceMain").val(budgetIDMain);
+                if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
+                    GetGridData();
+                }
+            });
+        }
+
+        $("#ddlColumnSet").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
+        });
+
+        $("#ddlRevenueTimeFrame,#ddlMainGridTimeFrame").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
+        }).multiselectfilter({
+        });
+
+    });
+
+    $("#ddlMainGridTimeFrame").change(function () {
+        GetGridData();
+    });
+
+
+    function BindColumnsfilter(ColumnSetId) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/MarketingBudget/GetColumns/")',
+            data: { ColumnSetId: ColumnSetId },
+            async:false,
+            dataType: "json",
+            success: function (data) {
+                $("#budget-select").html("");
+                for (var i = 0; i < data.length; i++) {
+                    $('#budget-select').append("<option value=" + data[i].Value + " id='div" + data[i].Text + "'>" + data[i].Text + "</option>");
+                }
+            }
+        });
+
+        $('#budget-select').multiselect({ multiple: true, title: 'Filter Columns', noneSelectedText: "Filter Columns", });
+
+    }
+
+    function GetGridData() {
+        var BudgetId = $('#ddlParentFinanceMain').val();
+        var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+        var CheckedColumns = "";
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/MarketingBudget/GetBudgetData/")',
+            data: {
+                BudgetId: BudgetId,
+                viewByType: mainTimeFrame,
+            },
+            success: function (data) {
+                mygrid = new dhtmlXGridObject('gridbox');
+                mygrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+                mygrid.setImageSize(1, 1);
+                mygrid.enableAutoHeight(true);
+                mygrid.enableAutoWidth(false);
+                if (mainTimeFrame != "@RevenuePlanner.Helpers.Enums.QuarterFinance.Yearly.ToString()") {
+                    mygrid.attachHeader(data.AttacheHeader);
+                }
+                mygrid.init();
+                BudgetGridData = data.GridData;
+                mygrid.parse(BudgetGridData, "json");
+            }
+        });
+
+    }
+</script>

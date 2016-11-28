@@ -10,15 +10,23 @@ namespace RevenuePlanner.Services.MarketingBudget
         public string LastName { get; set; }
         public string DisplayName { get { return string.Format("{0} {1}", FirstName, LastName); } }
     }
-    public class UserBudgetPermission 
+    public class UserBudgetPermission
     {
         public int BudgetID { get; set; }
-        public User User { get; set; } 
+        public User User { get; set; }
         public string Role { get; set; }
         public int Permission { get; set; }
         public bool IsOwner { get; set; }
     }
 
+   
+
+	  public class MarketingActivities
+    {
+       public List<BindDropdownData> ListofBudgets { get; set; }
+        public List<BindDropdownData> TimeFrame { get; set; }
+        public List<BindDropdownData> Columnset { get; set; }
+    }
     public class BudgetItem
     {
         public int Id { get; set; }
@@ -27,17 +35,58 @@ namespace RevenuePlanner.Services.MarketingBudget
         public int userCount { get; set; }
         public User Owner { get; set; }
         public BudgetLineData BudgetItemData { get; set; }
+   
     }
 
+
+
+    public class BudgetGridDataModel
+    {
+        public List<BudgetGridRowModel> rows { get; set; }
+        public List<GridDataStyle> head { get; set; }
+    }
+
+    public class BudgetGridRowModel
+    {
+            public string id { get; set; }
+            public List<string> data { get; set; }
+            public List<BudgetGridRowModel> rows { get; set; }
+            public UserDataObj userdata { get; set; }
+            public string Detailid { get; set; }
+            public string style { get; set; } //when no permission show all data in grey and dash
+
+    }
+
+    public class UserDataObj
+    {
+        public string lo { get; set; } // lock non editable cells.
+
+    }
+    public class GridDataStyle
+    {
+        public string value { get; set; }
+        public int width { get; set; }
+        public string align { get; set; }
+        public string type { get; set; }
+        public string id { get; set; }
+        public string sort { get; set; }
+    }
+
+    public class BudgetGridModel
+    {
+        public List<GridDataStyle> GridDataStyleList { get; set; }
+        public string attachedHeader { get; set; }
+        public BudgetGridDataModel objGridDataModel { get; set; }
+    }
     public enum ViewByType
     {
         MonthlyForTheYear = 0, QuarterlyForTheYear, MonthlyForQ1, MonthlyForQ2, MonthlyForQ3, MonthlyForQ4
     }
 
     [Flags]
-    public enum BudgetColumnFlag { Budget=0, Planned=2, Actual=4}
+    public enum BudgetColumnFlag { Budget = 0, Planned = 2, Actual = 4 }
 
-    public enum BudgetCloumn { Y1=1, Y2, Y3, Y4, Y5, Y6, Y7, Y8, Y9, Y10, Y11, Y12, Q1, Q2, Q3, Q4, Total, Balance}
+    public enum BudgetCloumn { Y1 = 1, Y2, Y3, Y4, Y5, Y6, Y7, Y8, Y9, Y10, Y11, Y12, Q1, Q2, Q3, Q4, Total, Balance }
 
     public class BudgetLineData
     {
@@ -73,7 +122,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         public double AllocatedAmount;
     }
 
-    public class AllocatedLineItemForAccount: LineItemAccountAssociation
+    public class AllocatedLineItemForAccount : LineItemAccountAssociation
     {
         public string LineItemTitle { get; set; }
         public string TacticTitle { get; set; }
@@ -86,25 +135,25 @@ namespace RevenuePlanner.Services.MarketingBudget
         public double Budget { get; set; }
         public double Planned { get; set; }
         public double Actual { get; set; }
- 
+
         //Total balance remaining on the allocating account
         //NOTE: an account could be used by multiple line items. 
         //This is the total balance after allocations to all line items   
-        public double AllocatingdAccountBalance { get; set; } 
+        public double AllocatingdAccountBalance { get; set; }
     }
 
     /// <summary>
     /// This is the account info with regard to a line item
     /// 
     /// </summary>
-    public class LineItemAllocatingAccount : LineItemAccountAssociation 
+    public class LineItemAllocatingAccount : LineItemAccountAssociation
     {
         public string AccountTitle { get; set; }
 
         /// <summary>
         /// Total balance remaining
         /// </summary>
-        public double Balance { get; set; } 
+        public double Balance { get; set; }
     }
 
     /// <summary>
@@ -120,6 +169,24 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// </summary>
         public double Balance { get; set; }
     }
+    public class BindDropdownData
+    {
+        public string Text { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class BudgetDetailforDeletion
+    {
+        public int Id { get; set; }
+        public int BudgetId { get; set; }
+        public int? ParentId { get; set; }
+        public bool IsDeleted { get; set; }
+    }
+
+    public class DeleteRowID
+    {
+        public int Id { get; set; }
+    }
 
     /// <summary>
     /// Operational interface for budget related data retrieval or manipulations 
@@ -134,6 +201,16 @@ namespace RevenuePlanner.Services.MarketingBudget
         void LinkPlansToAccounts(List<PlanAccountAssociation> planAccountAssociations); //link a plan  
         List<LineItemAllocatingAccount> GetAccountsForLineItem(int lineItemId); //line item page  
         List<PlanAllocatingAccount> GetAccountsForPlan(int planId); //plan page  
+
+        List<BindDropdownData> GetBudgetlist(int ClientId); //mainbudget dropdown
+
+        List<BindDropdownData> GetColumnSet(int ClientId);// Column set dropdown
+
+        List<BindDropdownData> GetColumns(int ColumnSetId);// Column set dropdown
+
+        BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate);
+     
+        
         /// <summary>
         /// Update budget data only!
         /// Planned and actuals are NOT updated through this interface
@@ -149,5 +226,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// New values expected to see update update (regardless monthly or quarterly viewz)
         /// <returns></returns>
         Dictionary<BudgetCloumn, double> UpdateBudgetCell(int budgetId, BudgetCloumn columnIndex, double oldValue, double newValue);
+        void DeleteBudgetData(int SelectedRowIDs, int ClientId);
+        int GetOtherBudgetId(int ClientId);
     }
 }

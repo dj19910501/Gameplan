@@ -6,6 +6,7 @@ using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.EntityClient;
 using System.Linq;
 using System.Net;
@@ -319,12 +320,23 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public async Task<string> GetReportTable(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0)
         {
+          
+
             string AuthorizedReportAPIUserName = string.Empty;
             string AuthorizedReportAPIPassword = string.Empty;
             string ApiUrl = string.Empty;
             string ConnectionString = string.Empty;
             Sessions.ViewByValue = ViewBy;
-
+            if(SDV!=null)
+            {
+                if(SDV.Count()==1)
+                {
+                    if(string.IsNullOrEmpty(SDV[0]))
+                    {
+                        SDV = null;
+                    }
+                }
+            }
             if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
             {
                 // Get Measure Connection String
@@ -366,7 +378,7 @@ namespace RevenuePlanner.Controllers
                     client.BaseAddress = baseAddress;
 
                     ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-
+                    ConnectionString = ConnectionString + " multipleactiveresultsets=True;";
                     ReportTableParameters objParams = new ReportTableParameters();
                     objParams.Id = Id;
                     objParams.ConnectionString = ConnectionString;
@@ -393,6 +405,43 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return string.Empty;
+        }
+     
+        
+        /// <summary>
+        /// Date:25/11/2016 #2819 Following method is created to load _ViewAllReportTable partial view(pop-up)
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="DbName"></param>
+        /// <param name="Container"></param>
+        /// <param name="SDV"></param>
+        /// <param name="TopOnly"></param>
+        /// <param name="ViewBy"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="EndDate"></param>
+        /// <param name="DashboardId"></param>
+        /// <param name="DashboardPageid"></param>
+        /// <param name="DashboardContentId"></param>
+        /// <param name="DisplayName"></param>
+        /// <returns></returns>
+        public async  Task<PartialViewResult> LoadReportTablePartial(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0, string DisplayName = "")     
+        {
+            ReportTableParameters objReportTable = new ReportTableParameters();
+            objReportTable.Id = Id;
+            objReportTable.DisplayName = DisplayName;
+            objReportTable.Container = Container;
+            //SDV is parameter to pass selected filter
+            objReportTable.SDV = SDV;
+            objReportTable.TopOnly = false;
+            objReportTable.ViewBy = ViewBy;
+            objReportTable.StartDate = StartDate;
+            objReportTable.EndDate = EndDate;
+            objReportTable.DashboardId = DashboardId;
+            objReportTable.DashboardPageid = DashboardPageid;
+            objReportTable.DashboardContentId = DashboardContentId;
+            await Task.Delay(1);
+            return  PartialView("_ViewAllReportTable", objReportTable);
+
         }
     }
 }
