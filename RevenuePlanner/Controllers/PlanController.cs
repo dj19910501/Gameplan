@@ -6765,7 +6765,7 @@ namespace RevenuePlanner.Controllers
         }
 
         [CompressAttribute]
-        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy, bool isLoginFirst = false, string SearchText = "", bool IsFromCache = false)// pass parameter IsFromCache to search the grid data using cache
+        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy, bool isLoginFirst = false, string SearchText = "",string SearchBy = "", bool IsFromCache = false)// pass parameter IsFromCache to search the grid data using cache
         {
             PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
             List<PlanOptionsTacticType> Tactictypelist = new List<PlanOptionsTacticType>();
@@ -6808,7 +6808,7 @@ namespace RevenuePlanner.Controllers
                 string PlanCurrencySymbol = Sessions.PlanCurrencySymbol;
                 double PlanExchangeRate = Sessions.PlanExchangeRate;
                 int UserID = Sessions.User.ID;
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, ClientID, ownerIds, TacticTypeid, StatusIds, customFieldIds, PlanCurrencySymbol, PlanExchangeRate, UserID, objPermission, lstSubordinatesIds, viewBy, SearchText, IsFromCache);
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, ClientID, ownerIds, TacticTypeid, StatusIds, customFieldIds, PlanCurrencySymbol, PlanExchangeRate, UserID, objPermission, lstSubordinatesIds, viewBy, SearchText,SearchBy, IsFromCache);
                 Tactictypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
                 LineItemtypelist = objGrid.GetLineItemTypeListForHeader(planIds, Sessions.User.CID);
             }
@@ -10028,7 +10028,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="Year">selected year of plans from timeframe </param>
         /// <returns></returns>
         [CompressAttribute]
-        public ActionResult GetBudgetData(string PlanIds, string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "", string SearchText = "", bool IsFromCache = false) // pass parameter IsFromCache to search the budget grid data using cache
+        public ActionResult GetBudgetData(string PlanIds, string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "", string SearchText = "", string SearchBy = "", bool IsFromCache = false) // pass parameter IsFromCache to search the budget grid data using cache
         {
             IBudget Iobj = new RevenuePlanner.Services.Budget();
             int UserID = Sessions.User.ID;
@@ -10037,7 +10037,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBy = PlanGanttTypes.Tactic.ToString();
             }
-            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, ViewBy, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds,SearchText,IsFromCache);
+            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, ViewBy, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds, SearchText, SearchBy,IsFromCache);
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
             if (year.ToLower() == strThisMonth.ToLower())
             {

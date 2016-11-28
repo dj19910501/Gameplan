@@ -8758,11 +8758,60 @@ namespace RevenuePlanner.Helpers
         //remove plan grid and budget grid cache object when update cell value in the grid or update value from inspection popup.
         public static void RemoveGridCacheObject()
         {
-                HttpRuntime.Cache.Remove(Enums.CacheObject.AllGidData.ToString() + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString()); // Plan grid object
-                HttpRuntime.Cache.Remove(Enums.CacheObject.AllBudgetGridData.ToString() + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());// Budget grid object
+            string sessionids = string.Format("{0}-{1}", Sessions.User.ID.ToString(), HttpContext.Current.Session.Contents.SessionID.ToString());
+            HttpRuntime.Cache.Remove(string.Format("{0}-{1}", Enums.CacheObject.AllGidData.ToString(), sessionids)); // Plan grid object
+            HttpRuntime.Cache.Remove(string.Format("{0}-{1}", Enums.CacheObject.AllBudgetGridData.ToString(), sessionids)); // Plan grid object
         }
+        //Search plan grid, budget grid and calender data
+        public static List<string> SearchGridCalendarData<T>(List<SearchParentDetail> ParentTaskId, List<T> DataList, string Type)
+        {
+            List<GridDefaultModel> lstGridSelectedData = new List<GridDefaultModel>();
+            List<calendarDataModel> lstCalSelectedData = new List<calendarDataModel>();
+            List<PlanBudgetModel> lstBudgetData = new List<PlanBudgetModel>();
+            string ParrentTaskId = string.Empty;
+            List<string> taskids = new List<string>();
+            List<string> lstChilderData = new List<string>();
 
+            taskids.AddRange(ParentTaskId.Select(a => a.ParentTaskId).ToList());
+            taskids.AddRange(ParentTaskId.Select(a => a.TaskId).ToList());
 
+            foreach (var obj in ParentTaskId)
+            {
+                if (obj.ParentTaskId != null)
+                {
+                    string replaceChild = string.Empty;
+                    foreach (string entityIdPart in obj.ParentTaskId.Split('_').Reverse())
+                    {
+                        replaceChild = string.Format("{0}{1}{2}", "_", entityIdPart, replaceChild);
+                        string ParentId = obj.ParentTaskId.Replace(replaceChild, string.Empty);
+                        taskids.Add(ParentId);
+                    }
+                }
+
+                //add all childerns
+                if (Type == Convert.ToString(Enums.ActivePlanTab.Grid)) // find childern for plan grid
+                {
+                    lstGridSelectedData = DataList.Cast<GridDefaultModel>().ToList();
+                     lstChilderData = lstGridSelectedData.Where(a => a.ParentTaskId != null && a.ParentTaskId.Contains(obj.TaskId)).Select(a => a.TaskId).ToList();
+                }
+                else if (Type == Convert.ToString(Enums.ActivePlanTab.Calendar))// find childern for Calendar
+                {
+                    lstCalSelectedData = DataList.Cast<calendarDataModel>().ToList();
+                    lstChilderData = lstCalSelectedData.Where(a => a.parent != null && a.parent.Contains(obj.TaskId)).Select(a => a.id).ToList();
+                   
+                }
+                else if (Type == Convert.ToString(Enums.ActivePlanTab.Budget))// find childern for Budget
+                {
+                    lstBudgetData = DataList.Cast<PlanBudgetModel>().ToList();
+                    lstChilderData = lstBudgetData.Where(a => a.ParentActivityId != null && a.ParentActivityId.Contains(obj.TaskId)).Select(a => a.ActivityId).ToList();
+                }
+                if (lstChilderData != null && lstChilderData.Count > 0)
+                {
+                    taskids.AddRange(lstChilderData);
+                }
+            }
+            return taskids.Distinct().ToList();
+        }
     }
 
     /// <summary>

@@ -838,4 +838,11 @@ namespace RevenuePlanner.Models
         public int? PYear { get; set; }
         public bool? IsRowPermission { get; set; }
     }
+
+    public class SearchParentDetail
+    {
+        public string ParentTaskId { get; set; }
+        public string TaskId { get; set; }
+
+    }
 }
