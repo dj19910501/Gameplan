@@ -1922,7 +1922,8 @@ namespace RevenuePlanner.Test.Controllers
             string PlanYear = DataHelper.GetPlanYear(PlanId);
             string NextYear = Convert.ToString(Convert.ToInt32(PlanYear) + 1);
             string SearchText = "tactic";
-            var result = objPlanController.GetHomeGridDataJSON(PlanId.ToString(), OwnerIds, TacticTypeIds, StatusIds, string.Empty,viewby,false, SearchText,false) as JsonResult;
+            string SearchBy=Enums.GlobalSearch.ActivityName.ToString();
+            var result = objPlanController.GetHomeGridDataJSON(PlanId.ToString(), OwnerIds, TacticTypeIds, StatusIds, string.Empty,viewby,false, SearchText,SearchBy, false) as JsonResult;
 
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -2065,7 +2066,8 @@ namespace RevenuePlanner.Test.Controllers
             string PlanYear = DataHelper.GetPlanYear(PlanId);
             string NextYear = Convert.ToString(Convert.ToInt32(PlanYear) + 1);
             string SearchText = "tactic";
-            var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, PlanYear + "-" + NextYear, SearchText,true) as PartialViewResult;
+            string SearchBy = Enums.GlobalSearch.ActivityName.ToString();
+            var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, PlanYear + "-" + NextYear, SearchText, SearchBy,true) as PartialViewResult;
 
             Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
