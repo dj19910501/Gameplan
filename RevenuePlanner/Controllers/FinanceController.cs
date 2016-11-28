@@ -101,7 +101,7 @@ namespace RevenuePlanner.Controllers
         #region "Transactions"
         public ActionResult Transactions(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
-            return Index(activeMenu);
+            return View();
         }
         #endregion
 
