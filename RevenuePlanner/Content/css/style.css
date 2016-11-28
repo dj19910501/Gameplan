@@ -13740,22 +13740,7 @@ table .lblCustomCheckbox label{width:70%}
     right: -2px;
 }
 /* ==== */
-.report-wrap .tab-content {
-    background: #fff none repeat scroll 0 0;
-    height: calc(100% - 37px);
-    padding: 13px;
-    text-align: center;
-}
-.tab-content .table-striped tbody > tr:nth-child(2n+1) > th {
-    background-color: #e9e9e9;
-    border-bottom: 0 none !important;
-    border-top: 0 none !important;
-}
-.tab-content div.gridbox_dhx_web.gridbox tr {
-    color: #000000;
-}
 
-.inspect-column-parent .lable_inline p{margin:0 8px 0 0}
 
 /* #2805 Finance HUD Design */
 .btn-fill-white.export-link span{
@@ -13809,6 +13794,93 @@ table .lblCustomCheckbox label{width:70%}
     height: 30px;
     padding-left: 24px;
 }
+
+/* =========================== Measure Report CSS =========================== */
+.report-wrap .tab-content {
+    background: #fff none repeat scroll 0 0;
+    height: calc(100% - 37px);
+    padding: 13px;
+    text-align: center;
+}
+.tab-content .table-striped tbody > tr:nth-child(2n+1) > th {
+    background-color: #e9e9e9;
+    border-bottom: 0 none !important;
+    border-top: 0 none !important;
+}
+.tab-content div.gridbox_dhx_web.gridbox tr {
+    color: #000000;
+}
+
+.inspect-column-parent .lable_inline p{margin:0 8px 0 0}
+
+.report-main .IconResize {
+    cursor: pointer;
+    float: right;
+    margin-right: 10px;
+}
+ 
+.report-main .close-popup-btn {
+    color: #fff;
+    float: right;
+    margin: 0 10px;
+}
+.tab-content-wrap {border-top:1px solid #ccc; padding:5px 0}
+.date-value-wrapper .col-xs-5{
+    padding-left: 30px;
+    text-align: left;
+    padding: 10px 0 10px 30px;
+}
+
+table.dataTable thead .sorting_asc {
+    background: url("../images/new_sort_asc.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;           
+}
+
+table.dataTable thead .sorting {
+    background: url("../images/new_sort_both.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;            
+}
+
+table.dataTable thead .sorting_desc {
+    background: url("../images/new_sort_desc.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;            
+}
+.TableRowsViewAll {
+    border-radius: 5px;
+    border: medium none;
+    color: black;
+    font-size: 12px !important;
+    height: 25px;
+    line-height: 15px;
+    margin-left: 10px;
+    background-color: #fff;
+}
+
+.ViewAllReportPopUp {
+    background-color: white;
+    margin: 30px auto;
+    text-align: center;
+    max-height: 700px;
+}
+
+.form-ViewAllReportPopUp {
+    border-radius: 5px;
+    left: 19%;
+    position: fixed;
+    text-align: center;
+    top: 0%;
+    z-index: 2002;
+    width: 60%;
+}
+
+.ViewAllReportPopUp .tab-head {
+    text-align: left;           
+    background: #F8710E none repeat scroll 0 0; 
+    color: #ffffff; 
+    border: medium none; 
+}
+/* =========================== Measure Report CSS End =========================== */
+
+
+
+
 /************************************************ Responsive css start here **********************************************************/
 
 @media (max-width: 1600px) {
