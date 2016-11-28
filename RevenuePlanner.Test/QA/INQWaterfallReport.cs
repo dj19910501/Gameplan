@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
+namespace RevenuePlanner.Test.QA
 {
     [TestClass]
     public class INQWaterfallReportTest

@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
+namespace RevenuePlanner.Test.QA
 {
 
     [TestClass]
@@ -38,7 +38,7 @@ namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
         #endregion
 
         [TestMethod()]
-        [Priority(1)]
+        [Priority(3)]
         public void MonthlyRevenueReportTestCase()
         {
             try
@@ -512,7 +512,7 @@ namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
         #endregion
 
         [TestMethod()]
-        [Priority(3)]
+        [Priority(1)]
         public async Task SummeryOfRevenueReportTest()
         {
             try

@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
+namespace RevenuePlanner.Test.QA
 {
     [TestClass]
     public class WaterfallSummaryReport
@@ -55,7 +55,7 @@ namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
                     decimal sumOfActual = 0; decimal sumOfProjected = 0;
 
                     Sessions.PlanExchangeRate = 1.0;
-                    var result = await objReportController.GetOverviewData("2016", "Quarterly") as PartialViewResult;
+                    var result = await objReportController.GetOverviewData(currentYear, "Quarterly") as PartialViewResult;
                     objReportOverviewModel = new ReportOverviewModel();
                     objReportOverviewModel = (ReportOverviewModel)result.Model;
                     if (objReportOverviewModel != null)
@@ -123,7 +123,7 @@ namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
                     decimal sumOfActual = 0; decimal sumOfProjected = 0;
 
                     Sessions.PlanExchangeRate = 1.0;
-                    var result = await objReportController.GetOverviewData("2016", "Quarterly") as PartialViewResult;
+                    var result = await objReportController.GetOverviewData(currentYear, "Quarterly") as PartialViewResult;
                     objReportOverviewModel = new ReportOverviewModel();
                     objReportOverviewModel = (ReportOverviewModel)result.Model;
                     if (objReportOverviewModel != null)
@@ -217,7 +217,7 @@ namespace RevenuePlanner.Test.QA.ReportsIntegrationTest
                     decimal sumOfActual = 0; decimal sumOfProjected = 0;
 
                     Sessions.PlanExchangeRate = 1.0;
-                    var result = await objReportController.GetOverviewData("2016", "Quarterly") as PartialViewResult;
+                    var result = await objReportController.GetOverviewData(currentYear, "Quarterly") as PartialViewResult;
                     objReportOverviewModel = new ReportOverviewModel();
                     objReportOverviewModel = (ReportOverviewModel)result.Model;
                     if (objReportOverviewModel != null)
