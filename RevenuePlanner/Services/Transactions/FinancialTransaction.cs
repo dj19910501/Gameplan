@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using RevenuePlanner.Models;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace RevenuePlanner.Services.Transactions
 {
@@ -21,6 +22,7 @@ namespace RevenuePlanner.Services.Transactions
             foreach (TransactionLineItemMapping tlim in transactionLineItemMappings)
             {
 
+                // TODOWCR: Figure out how to not run this on every iteration
                 Models.TransactionLineItemMapping modelTLIM = _database.TransactionLineItemMappings.Where(dbtlim => dbtlim.TransactionId == tlim.TransactionId && dbtlim.LineItemId == tlim.LineItemId).SingleOrDefault();
 
                 if (modelTLIM == null)
@@ -36,7 +38,7 @@ namespace RevenuePlanner.Services.Transactions
                 }
 
                 modelTLIM.Amount = tlim.Amount;
-                modelTLIM.DateModified = DateTime.Now;
+                modelTLIM.DateModified = System.DateTime.Now;
                 modelTLIM.ModifiedBy = modifyingUserId;
             }
 
@@ -45,7 +47,7 @@ namespace RevenuePlanner.Services.Transactions
 
         public void DeleteTransactionLineItemMapping(int mappingId)
         {
-            // TODOWCR: I don't like having to look this up to delete it
+            // TODOWCR: I don't like having to look this up to delete it, how to otherwise guard against deleting non-existent item?
             Models.TransactionLineItemMapping modelTLIM = _database.TransactionLineItemMappings.Where(dbtlim => dbtlim.TransactionLineItemMappingId == mappingId).SingleOrDefault();
 
             if (modelTLIM != null)
@@ -61,10 +63,75 @@ namespace RevenuePlanner.Services.Transactions
         }
 
         public List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId)
-        {   
-            var datalist = _database.GetLinkedLineItemsForTransaction(transactionId).ToList();
+        {
+            // TODOWCR: Is there a better way to get multiple results from a stored procedure?
+            DataSet dataset = new DataSet();
+            SqlCommand command = new SqlCommand("GetLinkedLineItemsForTransaction", _database.Database.Connection as SqlConnection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@TransactionId", transactionId);
+            SqlDataAdapter adp = new SqlDataAdapter(command);
+            adp.Fill(dataset);
+            
+            DataTable tacticsTable = dataset.Tables[0];
+            DataTable lineItemsTable = dataset.Tables[1];
+            Dictionary<int, LineItemsGroupedByTactic> lineItemsByTactic = new Dictionary<int, LineItemsGroupedByTactic>();
 
-            throw new NotImplementedException();
+            if (tacticsTable != null)
+            {
+                foreach (DataRow row in tacticsTable.AsEnumerable())
+                {
+                    LineItemsGroupedByTactic ligbt = new LineItemsGroupedByTactic()
+                    {
+                        TacticId = Convert.ToInt32(row["TacticId"]),
+                        Title = Convert.ToString(row["Title"]),
+                        PlannedCost = Convert.ToDouble(row["PlannedCost"]),
+                        TotalLinkedCost = Convert.ToDouble(row["TotalLinkedCost"]),
+                        ActualCost = Convert.ToDouble(row["TotalActual"]),
+                        LineItems = new List<LinkedLineItems>()
+                    };
+
+                    lineItemsByTactic.Add(ligbt.TacticId, ligbt);
+                }
+            }
+
+            if (lineItemsTable != null)
+            {
+                foreach (DataRow row in lineItemsTable.AsEnumerable())
+                {
+                    TransactionLineItemMapping tlim = new TransactionLineItemMapping()
+                    {
+                        TransactionLineItemMappingId = Convert.ToInt32(row["TransactionLineItemMappingId"]),
+                        Amount = Convert.ToDouble(row["TotalLinkedCost"]),
+                        TransactionId = Convert.ToInt32(row["TransactionId"]),
+                        LineItemId = Convert.ToInt32(row["PlanLineItemId"])
+                    };
+
+                    LinkedLineItems item = new LinkedLineItems()
+                    {
+                        LineItemId = Convert.ToInt32(row["PlanLineItemId"]),
+                        Title = Convert.ToString(row["Title"]),
+                        Cost = Convert.ToDouble(row["Cost"]),
+                        Actual = Convert.ToDouble(row["Actual"]),
+                        TacticTitle = Convert.ToString(row["TacticTitle"]),
+                        ProgramTitle = Convert.ToString(row["ProgramTitle"]),
+                        CampaignTitle = Convert.ToString(row["CampaignTitle"]),
+                        PlanTitle = Convert.ToString(row["PlanTitle"]),
+                        LineItemMapping = tlim
+                    };
+
+                    int tacticId = Convert.ToInt32(row["TacticId"]);
+                    if (lineItemsByTactic.ContainsKey(tacticId))
+                    {
+                        lineItemsByTactic[tacticId].LineItems.Add(item);
+                    }
+                    else
+                    {
+                        // TODOWCR: Something is wrong with the query
+                    }
+                }
+            }
+
+            return new List<LineItemsGroupedByTactic>(lineItemsByTactic.Values);
         }
 
         public int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true)
@@ -119,7 +186,37 @@ namespace RevenuePlanner.Services.Transactions
 
         public List<Transaction> GetTransactionsForLineItem(int lineItemId)
         {
-            throw new NotImplementedException();
+            IQueryable<Transaction> sqlQuery =
+                from tlim in _database.TransactionLineItemMappings
+                join transaction in _database.Transactions on tlim.TransactionId equals transaction.TransactionId
+                where tlim.LineItemId == lineItemId
+                select new Transaction
+                {
+                    TransactionId = transaction.TransactionId,
+                    ClientTransactionId = transaction.ClientTransactionID,
+                    TransactionDescription = transaction.TransactionDescription,
+                    Amount = (double)transaction.Amount,
+                    Account = transaction.Account,
+                    AccountDescription = transaction.AccountDescription,
+                    SubAccount = transaction.SubAccount,
+                    Department = transaction.Department,
+                    TransactionDate = transaction.TransactionDate != null ? (DateTime)transaction.TransactionDate : DateTime.MinValue,
+                    AccountingDate = transaction.AccountingDate,
+                    Vendor = transaction.Vendor,
+                    PurchaseOrder = transaction.PurchaseOrder,
+                    CustomField1 = transaction.CustomField1,
+                    CustomField2 = transaction.CustomField2,
+                    CustomField3 = transaction.CustomField3,
+                    CustomField4 = transaction.CustomField4,
+                    CustomField5 = transaction.CustomField5,
+                    CustomField6 = transaction.CustomField6,
+                    LineItemId = transaction.LineItemId != null ? (int)transaction.LineItemId : 0,
+                    DateCreated = transaction.DateCreated,
+                    AmountAttributed = transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0,
+                    LastProcessed = transaction.LastProcessed
+                };
+
+            return sqlQuery.ToList();
         }
     }
 }
