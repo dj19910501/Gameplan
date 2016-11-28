@@ -15,11 +15,46 @@ namespace RevenuePlanner.Controllers
         public MarketingBudgetController(IMarketingBudget MarketingBudget) {
             _MarketingBudget = MarketingBudget;
         }
-
-        public ActionResult Index()
+        #region Declartion
+        private bool _IsBudgetCreate_Edit = true;
+        private bool _IsForecastCreate_Edit = true;
+        #endregion
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
-            return View();
+            MarketingActivities MarketingActivities = new MarketingActivities();
+
+            #region Check Permissions
+            bool IsBudgetCreateEdit, IsBudgetView, IsForecastCreateEdit, IsForecastView;
+            IsBudgetCreateEdit = _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
+            IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
+            IsForecastCreateEdit = _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
+            IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
+            if (IsBudgetCreateEdit == false && IsBudgetView == false && IsForecastCreateEdit == false && IsForecastView == false)
+            {
+
+                return RedirectToAction("Index", "NoAccess");
+            }
+            #endregion
+
+            #region Bind Budget dropdown on grid
+            List<BindDropdownData> lstMainBudget = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
+            MarketingActivities.ListofBudgets = lstMainBudget;
+            #endregion
+
+            #region "Bind TimeFrame Dropdown"
+            List<BindDropdownData> lstMainAllocated = new List<BindDropdownData>();
+            lstMainAllocated = Enums.QuartersFinance.Select(timeframe => new BindDropdownData { Text = timeframe.Key, Value = timeframe.Value }).ToList();
+            MarketingActivities.TimeFrame = lstMainAllocated;
+            #endregion
+
+            #region Bind Column set dropdown
+            var ColumnSet = _MarketingBudget.GetColumnSet(Sessions.User.CID);// Column set  dropdown
+            MarketingActivities.Columnset = ColumnSet;
+            #endregion
+
+            return View(MarketingActivities);
         }
+
         public List<LineItemAllocatingAccount> GetAccountsForLineItem(int lineItemId)
         {
             //Do whatever needed here
@@ -36,9 +71,25 @@ namespace RevenuePlanner.Controllers
             throw new NotImplementedException();
         }
 
-        public List<BudgetItem> GetBudgetData(int budgetId, ViewByType viewByType, BudgetColumnFlag columnsRequested)
+        //public List<BudgetItem> GetBudgetData(int budgetId, ViewByType viewByType, BudgetColumnFlag columnsRequested)
+        //{
+        //    throw new NotImplementedException();
+        //}
+		 
+        public JsonResult GetBudgetData(int budgetId,string viewByType, BudgetColumnFlag columnsRequested = 0) // need to pass columns requested
         {
-            throw new NotImplementedException();
+            BudgetGridModel objBudgetGridModel = new BudgetGridModel();
+            //Get all budget grid data.
+            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, viewByType, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate);
+            var jsonResult = Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader}, JsonRequestBehavior.AllowGet);
+            return jsonResult;
+        }
+
+       
+        public JsonResult GetColumns(int ColumnSetId = 0)
+        {
+            List<BindDropdownData> lstColumns = _MarketingBudget.GetColumns(ColumnSetId);// Columns  dropdown
+            return Json(lstColumns, JsonRequestBehavior.AllowGet);
         }
 
         public BudgetSummary GetBudgetSummary(int budgetId)

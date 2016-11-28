@@ -1,9 +1,12 @@
-﻿@{
+﻿@model RevenuePlanner.Services.MarketingBudget.MarketingActivities
+
+@{
     ViewBag.Title = "Finance";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
 
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
@@ -18,12 +21,7 @@
         </div>
         <div style="float:left;" id="drpParentMain">
             <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
-                @* Static HTML - Delete it when call dynamic *@
-                <div class="nl-field nl-dd">
-                    <a class="nl-field-toggle">########Budget SP Calculations</a>
-                </div>
-                @* Static HTML End *@
-                @*@Html.DropDownList("ddlParentFinanceMain", new SelectList(Model.ListofBudgets, "Value", "Text"))*@
+                @Html.DropDownList("ddlParentFinanceMain", new SelectList(Model.ListofBudgets, "Value", "Text"))
                 <div class="nl-overlay"></div>
             </div>
         </div>
@@ -41,42 +39,22 @@
         </div>
         <span class="selectBox quarter_selection" id="ddlMainTimeFrameSelectBox">
             <label id="" for="Time_Frame:">Time Frame:</label>
-            @*@Html.DropDownList("ddlMainGridTimeFrame", new SelectList(Model.TimeFrame, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })*@
-            @* Static HTML - Delete it when call dynamic *@
-            <button id="btnMultiselect_ddlMainGridTimeFrame" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" aria-haspopup="true" title="This Year">
-                <span>This Year</span>
-                <span class="ui-icon ui-icon-triangle-1-s"></span>
-            </button>
-            @* Static HTML End *@
+            @Html.DropDownList("ddlMainGridTimeFrame", new SelectList(Model.TimeFrame, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
         </span>
         <div id="ddlColumnsFrameBox" class="filter-columns selectBox">
-            <label id="" for="Filter Columns:">Filter Columns:</label>        
-
-            @*<select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>*@
-            @* Static HTML - Delete it when call dynamic *@
-            <button id="btnMultiselect_budget-select" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" title="Filter Columns" aria-haspopup="true">
-                <span>Filter Columns</span>
-                <span class="ui-icon ui-icon-triangle-1-s"></span>
-            </button>
-            @* Static HTML End *@
+            <label id="" for="Filter Columns:">Filter Columns:</label>
+            <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>
         </div>
         <span class="selectBox quarter_selection" id="ddlColumnSetFrameBox">
             <label id="" for="View by:">View by:</label>
-
-            @*@Html.DropDownList("ddlColumnSet", new SelectList(Model.Columnset, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })*@
-            @* Static HTML - Delete it when call dynamic *@
-            <button id="btnMultiselect_ddlColumnSet" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" aria-haspopup="true" title="Finance">
-                <span>Finance</span>
-                <span class="ui-icon ui-icon-triangle-1-s"></span>
-            </button>
-            @* Static HTML End *@
+            @Html.DropDownList("ddlColumnSet", new SelectList(Model.Columnset, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
         </span>
     </div>
 
     <div class="plancart-box finance-cart">
         <div class="white-chart">
             <p class="source-sans-probold" title="Actual">Actual</p>
-            <p class="value source-sans-prolight" id="ActualID" data-original-title="0" title="">$0</p> 
+            <p class="value source-sans-prolight" id="ActualID" data-original-title="0" title="">$0</p>
         </div>
         <div class="white-chart">
             <p class="source-sans-probold" id="plannedLabel" title="Planned">Planned</p>
@@ -84,7 +62,7 @@
         </div>
         <div class="white-chart">
             <p class="source-sans-probold" id="forecastLabel" title="Forecast">Forecast</p>
-            <p class="value source-sans-prolight" id="ForecastID" data-original-title="2000" title="">$2,000</p> 
+            <p class="value source-sans-prolight" id="ForecastID" data-original-title="2000" title="">$2,000</p>
         </div>
         <div id="dvBudgetHeader" class="white-chart">
             <p class="source-sans-probold" id="budgetLabel" title="Budget">Budget</p>
@@ -95,45 +73,60 @@
 </div>
 
 <div id="divGridView" style="" class="finance-tbl">
+    <div id="gridbox" style="width:100%; background-color:white;"></div>
 </div>
 
 <script>
+    var mygrid;
+    var BudgetGridData;
     $(document).ready(function () {
-
+        var Columnsetval = $("#ddlColumnSet").val();
         $("#sidebar").css("display", "none");
         $("#content_wraper").css("width", "100%");
-
+        BindColumnsfilter(Columnsetval);
+        GetGridData();
+    
 
         var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');
         if (liParentFinanceMain != null && liParentFinanceMain != 'undefined' && liParentFinanceMain.length > 0) {
             nlformParentFinanceMain = new NLForm(document.getElementById('nl-formParentFinanceMain'));
             $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
                 $('#nl-formParentFinanceMain .nl-field-toggle').text($(this).text());
+                var budgetIDMain = $(this).attr('value');
+                $("#ddlParentFinanceMain").val(budgetIDMain);
+                if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
+                    GetGridData();
+                }
             });
         }
-        // uncomment below function when real data bind - Bhumika
-        //$("#ddlColumnSet").multiselect({
-        //    multiple: false,
-        //    noneSelectedText: "Please Select",
-        //    selectedList: 1
-        //});
 
-        //$("#ddlRevenueTimeFrame,#ddlMainGridTimeFrame").multiselect({
-        //    multiple: false,
-        //    noneSelectedText: "Please Select",
-        //    selectedList: 1
-        //}).multiselectfilter({
-        //});
+        $("#ddlColumnSet").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
+        });
+
+        $("#ddlRevenueTimeFrame,#ddlMainGridTimeFrame").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
+        }).multiselectfilter({
+        });
 
     });
-    // uncomment below function when real data bind - Bhumika
-    @*function BindColumnsfilter(ColumnSetId) {
+
+    $("#ddlMainGridTimeFrame").change(function () {
+        GetGridData();
+    });
+
+
+    function BindColumnsfilter(ColumnSetId) {
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/MarketingBudget/GetColumns/")',
             data: { ColumnSetId: ColumnSetId },
+            async:false,
             dataType: "json",
-            async: false,
             success: function (data) {
                 $("#budget-select").html("");
                 for (var i = 0; i < data.length; i++) {
@@ -144,6 +137,33 @@
 
         $('#budget-select').multiselect({ multiple: true, title: 'Filter Columns', noneSelectedText: "Filter Columns", });
 
+    }
 
-    }*@
-    </script>
+    function GetGridData() {
+        var BudgetId = $('#ddlParentFinanceMain').val();
+        var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+        var CheckedColumns = "";
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/MarketingBudget/GetBudgetData/")',
+            data: {
+                BudgetId: BudgetId,
+                viewByType: mainTimeFrame,
+            },
+            success: function (data) {
+                mygrid = new dhtmlXGridObject('gridbox');
+                mygrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+                mygrid.setImageSize(1, 1);
+                mygrid.enableAutoHeight(true);
+                mygrid.enableAutoWidth(false);
+                if (mainTimeFrame != "@RevenuePlanner.Helpers.Enums.QuarterFinance.Yearly.ToString()") {
+                    mygrid.attachHeader(data.AttacheHeader);
+                }
+                mygrid.init();
+                BudgetGridData = data.GridData;
+                mygrid.parse(BudgetGridData, "json");
+            }
+        });
+
+    }
+</script>
