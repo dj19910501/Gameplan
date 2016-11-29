@@ -76,11 +76,8 @@ var config = {
     devtool: SOURCEMAPS ? "source-map" : undefined,
     output: {
         path: outputFolder,
-        filename: "[name]-[hash]" + jsSuffix,
-        publicPath: "",
-        libraryTarget: 'umd',
-        library: libraryName,
-        umdNamedDefine: true
+        filename: libraryName + "-[hash]" + jsSuffix,
+        publicPath: ""
     },
     bail: true,
     // Declare libraries that are loaded globally so we can still "import" them
