@@ -70,12 +70,13 @@ namespace RevenuePlanner.Services.Transactions
         public DateTime? LastProcessed { get; set; }
     }
 
-    public class LineItem
+    public class LinkedLineItems
     {
         public int LineItemId { get; set; }
         public string Title { get; set; }
         public double Cost { get; set; }
         public double Actual { get; set; }
+        public TransactionLineItemMapping LineItemMapping { get; set; }
 
         public string TacticTitle { get; set; }
         public string ProgramTitle { get; set; }
@@ -90,7 +91,7 @@ namespace RevenuePlanner.Services.Transactions
         public double TotalLinkedCost{ get; set; }
         public double PlannedCost { get; set; }
         public double ActualCost { get; set; }   
-        public List<LineItem> LineItems {get; set;}
+        public List<LinkedLineItems> LineItems {get; set;}
     }
 
     /// <summary>

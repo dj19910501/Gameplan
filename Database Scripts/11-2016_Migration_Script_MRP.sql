@@ -1,3 +1,151 @@
+/****** Object:  StoredProcedure [INT].[PullLineItemActuals]    Script Date: 11/28/2016 12:26:49 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[INT].[PullFinancialTransactions]'))
+	DROP PROCEDURE [INT].[PullFinancialTransactions]
+GO
+
+CREATE PROCEDURE [INT].[PullFinancialTransactions](@DataSource NVARCHAR(255), @ClientID INT, @UserID INT, @IntegrationInstanceID INT)
+AS
+BEGIN 
+	DECLARE @CustomQuery NVARCHAR(MAX)
+	DECLARE @Start DATETIME = GETDATE()
+		
+	--DELETE, UPDATE AND INSERT plan tactic actuals for stage title ProjectedStageValue which match with measure sfdc tactics	
+	SET @CustomQuery='
+
+		DECLARE @Updated INT;
+		DECLARE @Inserted INT;
+		DECLARE @Start DATETIME = GETDATE();
+
+		DECLARE @LastDate DATETIME
+
+		SELECT @LastDate = MAX(DateCreated) FROM dbo.Transactions;
+		IF (@LastDate IS NULL) SET @LastDate = DATEADD(YEAR,-2,GETDATE()) --goes 2 years back 
+
+		UPDATE dbo.Transactions 
+		SET 
+			 ClientTransactionID = V.ClientTransactionID 
+			,TransactionDescription = V.TransactionDescription
+			,Amount = V.Amount 
+			,Account = V.Account
+			,AccountDescription = V.AccountDescription 
+			,SubAccount = V.SubAccount 
+			,Department = V.Department 
+			,TransactionDate = V.TransactionDate 
+			,AccountingDate = V.AccountingDate 
+			,Vendor = V.Vendor 
+			,PurchaseOrder = V.PurchaseOrder 
+			,LineItemId = V.LineItemId 
+			,CustomField1 = V.CustomField1 
+			,CustomField2 = V.CustomField2 
+			,CustomField3 = V.CustomField3 
+			,CustomField4 = V.CustomField4 
+			,CustomField5 = V.CustomField5 
+			,CustomField6 = V.CustomField6
+			,DateCreated = V.DateCreated 
+	
+		FROM '+@DataSource+' V
+		WHERE V.DateCreated > @LastDate 
+			AND dbo.Transactions.ClientTransactionID = V.ClientTransactionID
+			AND dbo.Transactions.ClientId = '+STR(@ClientId)+'
+
+		SET @Updated = @@ROWCOUNT; 
+
+		INSERT INTO dbo.Transactions
+				   ( ClientID 
+					,ClientTransactionID
+					,TransactionDescription
+					,Amount
+					,Account 
+					,AccountDescription 
+					,SubAccount 
+					,Department 
+					,TransactionDate 
+					,AccountingDate 
+					,Vendor 
+					,PurchaseOrder 
+					,CustomField1 
+					,CustomField2 
+					,CustomField3 
+					,CustomField4 
+					,CustomField5 
+					,CustomField6 
+					,LineItemId 
+					,DateCreated
+				)
+
+		SELECT  ' + STR(@ClientID) + ' 
+				,V.ClientTransactionID 
+				,V.TransactionDescription 
+				,V.Amount 
+				,V.Account 
+				,V.AccountDescription 
+				,V.SubAccount 
+				,V.Department 
+				,V.TransactionDate 
+				,V.AccountingDate 
+				,V.Vendor 
+				,V.PurchaseOrder 
+				,V.CustomField1 
+				,V.CustomField2 
+				,V.CustomField3 
+				,V.CustomField4 
+				,V.CustomField5 
+				,V.CustomField6 
+				,V.LineItemId 
+				,V.DateCreated
+		FROM ' + @DataSource + ' V 
+			LEFT JOIN dbo.Transactions T ON T.ClientTransactionID = T.ClientTransactionID
+		WHERE  V.DateCreated > @LastDate 
+			AND T.ClientTransactionID IS NULL
+
+
+		SET @Inserted = @@ROWCOUNT;
+
+		INSERT INTO [dbo].[IntegrationInstanceLog] ( 
+			   [IntegrationInstanceID]
+			  ,[SyncStart]
+			  ,[SyncEnd]
+			  ,[Status]
+			  ,[ErrorDescription]
+			  ,[CreatedDate]
+			  ,[CreatedBy]
+			  ,[IsAutoSync]) 
+		SELECT ' + STR(@IntegrationInstanceID) + '
+			, @Start
+			, GETDATE()
+			, ''SUCCESS'' 
+			, ''Pulled Financial Transactions From'' +''' + @DataSource + '''+STR(@Updated) + '' Updated.'' + STR(@Inserted) + '' Inserted.'' 
+			, GETDATE()
+			, ' + STR(@UserID) + '
+			, 1  
+
+	'
+		BEGIN TRY 
+			--PRINT @CustomQuery;
+			EXEC (@CustomQuery)
+		END TRY 
+
+		BEGIN CATCH 
+			INSERT INTO [dbo].[IntegrationInstanceLog] ( 
+				   [IntegrationInstanceID]
+				  ,[SyncStart]
+				  ,[SyncEnd]
+				  ,[Status]
+				  ,[ErrorDescription]
+				  ,[CreatedDate]
+				  ,[CreatedBy]
+				  ,[IsAutoSync]) 
+			SELECT @IntegrationInstanceID, @Start, GETDATE(), 'ERROR' ,ERROR_MESSAGE(), GETDATE(), @UserID, 1  
+		END CATCH 
+
+END 
+GO
+
 --NOTE: this is a correction of existing function used in integration -zz
 /****** Object:  UserDefinedFunction [INT].[Period]    Script Date: 11/23/2016 2:21:17 PM ******/
 SET ANSI_NULLS ON
@@ -714,29 +862,39 @@ BEGIN
 	SELECT T.PlanTacticId AS TacticId
 			, T.Title
 			, T.Cost AS PlannedCost
-			, SUM(ISNULL(M.Amount, 0.0)) AS TotalLinkedCost --only the portion of the transaction that is linked to this tactic 
-			, SUM(LA.Value) AS TotalActual 
- 
-	FROM Plan_Campaign_Program_tactic T 
+			, SUM(ISNULL(M.Amount, 0.0)) AS TotalLinkedCost --only the portion of the transaction that is linked to this tactic
+			, SUM(ISNULL(LA.Value, 0.0)) AS TotalActual
+
+	FROM Plan_Campaign_Program_tactic T
 		JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanTacticId = T.PlanTacticId
-		JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
-		LEFT JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId 
+		LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
+		JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId
 	WHERE M.TransactionId = @TransactionId
 	GROUP BY T.PlanTacticId, T.Title, T.Cost
 
-	--dataset 2: line items linked to the @transaction 
+	--dataset 2: line items linked to the @transaction
 	SELECT    L.PlanTacticId AS TacticId
-			, L.PlanLineItemId -- this the prmary key, the rest of non aggregate columns are auxiliary info. 
+			, L.PlanLineItemId -- this the prmary key, the rest of non aggregate columns are auxiliary info.
 			, L.Title
 			, L.Cost AS Cost
-			, SUM(M.Amount) AS TotalLinkedCost -- SUM is a no-op as a transaction can only be linked once per line item 
-			, SUM(LA.Value) AS TotalActual 
- 
-	FROM dbo.Plan_Campaign_Program_Tactic_LineItem L 
-		JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
-		JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId 
+            , T.Title AS TacticTitle
+			, P.Title AS ProgramTitle
+			, C.Title AS CampaignTitle
+			, PL.Title AS PlanTitle
+            , M.TransactionLineItemMappingId
+            , M.TransactionId
+            , SUM(M.Amount) AS TotalLinkedCost -- SUM is a no-op as a transaction can only be linked once per line item
+			, SUM(ISNULL(LA.Value, 0.0)) AS Actual
+
+	FROM dbo.Plan_Campaign_Program_Tactic_LineItem L
+        JOIN dbo.Plan_Campaign_Program_Tactic T ON T.PlanTacticId = L.PlanTacticId
+        JOIN dbo.Plan_Campaign_Program P ON P.PlanProgramId = T.PlanProgramId
+        JOIN dbo.Plan_Campaign C ON C.PlanCampaignId = P.PlanCampaignId
+        JOIN dbo.[Plan] PL ON PL.PlanId = C.PlanId
+		LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
+		JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId
 	WHERE M.TransactionId = @TransactionId
-	GROUP BY L.PlanTacticId, L.PlanLineItemId, L.Title, L.Cost
+	GROUP BY L.PlanTacticId, L.PlanLineItemId, L.Title, L.Cost, T.Title, P.Title, C.Title, PL.Title, M.TransactionLineItemMappingId, M.TransactionId
 
 END 
 GO

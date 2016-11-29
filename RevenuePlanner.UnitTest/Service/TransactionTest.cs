@@ -12,7 +12,7 @@ namespace RevenuePlanner.UnitTest.Service
         private ITransaction _transaction;
         #region Test Data 
         private const int ClientId = 30; //demo client
-        private const int ExpectedNumberOfUnprocessedTransaction = 22;
+        private const int ExpectedNumberOfUnprocessedTransaction = 0;
         private const int ExpectedNumberOfAllTransaction = 22;
         #endregion
 
@@ -24,19 +24,27 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_DeleteTransactionLineItemMapping()
         {
-            throw new NotImplementedException();
+            _transaction.DeleteTransactionLineItemMapping(7);
         }
 
         [TestMethod]
         public void Test_Transaction_GetHeaderMappings()
         {
-            throw new NotImplementedException();
+            var mapping = _transaction.GetHeaderMappings(ClientId) ;
+            Assert.IsTrue(mapping.Count > 0);
         }
 
         [TestMethod]
         public void Test_Transaction_GetLinkedLineItemsForTransaction()
         {
-            _transaction.GetLinkedLineItemsForTransaction(120);
+            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(120);
+
+            Assert.AreEqual(lineItems.Count, 1);
+
+            LineItemsGroupedByTactic ligbt = lineItems[0];
+            Assert.AreEqual(ligbt.TacticId, 2077);
+
+            // TODOWCR: Finish unit test
         }
 
         [TestMethod]
@@ -55,21 +63,21 @@ namespace RevenuePlanner.UnitTest.Service
         public void Test_Transaction_GetTransactions()
         {
             // Get the whole list
-            List<Transaction> transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, true, null, 1, 100);
+            List<Transaction> transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 1, 100);
             Assert.AreEqual(22, transactionList.Count);
 
             // Get Page 1
-            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, true, null, 1, 10);
+            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 1, 10);
             Assert.AreEqual("39899", transactionList[0].ClientTransactionId);
             Assert.AreEqual(10, transactionList.Count);
             
             // Get Page 3
-            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, true, null, 3, 10);
+            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 3, 10);
             Assert.AreEqual("85316", transactionList[0].ClientTransactionId);
             Assert.AreEqual(2, transactionList.Count);
 
             // Get Page 10 (only 22 items, should be zero but not throw exception
-            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, true, null, 10, 10);
+            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 10, 10);
             Assert.AreEqual(0, transactionList.Count);
 
             // TODOWCR: Finish unit test
@@ -78,22 +86,30 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_GetTransactionsForLineItem()
         {
-            throw new NotImplementedException();
+            List<Transaction> transactions = _transaction.GetTransactionsForLineItem(297);
         }
 
         [TestMethod]
         public void Test_Transaction_SaveTransactionToLineItemMapping()
         {
+            List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
             TransactionLineItemMapping tlim = new TransactionLineItemMapping
             {
                 TransactionId = 120,
-                LineItemId = 77,
+                LineItemId = 297,
                 Amount = 300.10,
             };
-            List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
             tlimList.Add(tlim);
+            TransactionLineItemMapping tlim2 = new TransactionLineItemMapping
+            {
+                TransactionId = 120,
+                LineItemId = 298,
+                Amount = 100.10,
+            };
+            tlimList.Add(tlim2);
 
             _transaction.SaveTransactionToLineItemMapping(tlimList, 297);
+
 
             // TODOWCR: Finish unit test
         }
