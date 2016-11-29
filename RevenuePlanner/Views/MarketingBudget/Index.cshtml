@@ -77,7 +77,7 @@
 </div>
 
 <script>
-    var mygrid;
+    var budgetgrid;
     var BudgetGridData;
     $(document).ready(function () {
         var Columnsetval = $("#ddlColumnSet").val();
@@ -85,7 +85,7 @@
         $("#content_wraper").css("width", "100%");
         BindColumnsfilter(Columnsetval);
         GetGridData();
-    
+
 
         var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');
         if (liParentFinanceMain != null && liParentFinanceMain != 'undefined' && liParentFinanceMain.length > 0) {
@@ -125,7 +125,7 @@
             type: 'POST',
             url: '@Url.Content("~/MarketingBudget/GetColumns/")',
             data: { ColumnSetId: ColumnSetId },
-            async:false,
+            async: false,
             dataType: "json",
             success: function (data) {
                 $("#budget-select").html("");
@@ -151,17 +151,45 @@
                 viewByType: mainTimeFrame,
             },
             success: function (data) {
-                mygrid = new dhtmlXGridObject('gridbox');
-                mygrid.setImagePath('@Url.Content("~/codebase/imgs/")');
-                mygrid.setImageSize(1, 1);
-                mygrid.enableAutoHeight(true);
-                mygrid.enableAutoWidth(false);
+                budgetgrid = new dhtmlXGridObject('gridbox');
+                budgetgrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+                budgetgrid.setImageSize(1, 1);
+                budgetgrid.enableAutoHeight(true);
+                budgetgrid.enableAutoWidth(false);
                 if (mainTimeFrame != "@RevenuePlanner.Helpers.Enums.QuarterFinance.Yearly.ToString()") {
-                    mygrid.attachHeader(data.AttacheHeader);
+                    budgetgrid.attachHeader(data.AttacheHeader);
                 }
-                mygrid.init();
+                budgetgrid.init();             
                 BudgetGridData = data.GridData;
-                mygrid.parse(BudgetGridData, "json");
+                budgetgrid.parse(BudgetGridData, "json");
+
+                var TaskNameIndex = budgetgrid.getColIndexById('Name');
+
+                budgetgrid.expandAll();
+                budgetgrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
+                    var ColumnId = budgetgrid.getColumnId(cInd);
+                    var locked = budgetgrid.getUserData(rId, "lo");
+                    var Permission = budgetgrid.getUserData(rId, "per");
+                    if (locked == 1 && (Permission == "View" || Permission == "None")) {
+                        budgetgrid.cells(rId, cInd).setDisabled(true);
+                        return false;
+                    }
+                    else if (locked == 1 && (ColumnId.indexOf('Budget') >= 0 || ColumnId.indexOf('Forecast') >= 0)) {
+                        budgetgrid.cells(rId, cInd).setDisabled(true);
+                        return false;
+                    }
+
+                    if (cInd == TaskNameIndex) {
+                        var isTitleEdit = budgetgrid.getUserData(rId, "isTitleEdit");
+                        if (isTitleEdit == "0") {
+                            budgetgrid.cells(rId, TaskNameIndex).setDisabled(true);
+                            return false;
+                        }
+                    }
+
+
+
+                });
             }
         });
 

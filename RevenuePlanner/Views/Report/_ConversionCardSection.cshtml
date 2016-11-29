@@ -3,9 +3,9 @@
 @using RevenuePlanner.Helpers
 @using Newtonsoft.Json;
 @{
-  //  var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
+    //  var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
 
-  //Modified By komal RAwal for #2067 to handle null Model values.
+    //Modified By komal RAwal for #2067 to handle null Model values.
 
     var cardsectionList = string.Empty;
 
@@ -25,18 +25,18 @@
     string INQStageLabel = Common.GetLabel(Common.StageModeINQ);
     string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
     string CWStageLabel = Common.GetLabel(Common.StageModeCW);
-    
-   // foreach (var SortBy in Enums.SortByWaterFallDrp)
+
+    // foreach (var SortBy in Enums.SortByWaterFallDrp)
     //{
-     
+
     ListSortBy.Add(new ViewByModel { Text = INQStageLabel, Value = "INQ" });
     ListSortBy.Add(new ViewByModel { Text = MQLStageLabel, Value = "MQL" });
     ListSortBy.Add(new ViewByModel { Text = CWStageLabel, Value = "CW" });
     //#PL 1482 dashrath prajapati
-      // ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
+    // ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
     //}
     // End By Nishant Sheth
-    
+
     //var TotalRecords = Model.TotalRecords;
     //var CurrentPageNum = Model.CuurentPageNum;
 
@@ -47,7 +47,7 @@
         TotalRecords = Model.TotalRecords;
         CurrentPageNum = Model.CuurentPageNum;
     }
-    
+
 }
 <style>
     .carvdval-block {
@@ -58,18 +58,18 @@
         width: 249px;
         font-size: 40px;
     }
-    .sorting
-    {
-         float: left;
-         width: 419px;
+
+    .sorting {
+        float: left;
+        width: 419px;
     }
-    .select-sortby button
-    {
+
+    .select-sortby button {
         min-width: 105px;
     }
-    .sorting .geography-dropdown
-    {
-        width:202px; /*made changes for PL #2176 to set allignment of sortBy drop-down list*/
+
+    .sorting .geography-dropdown {
+        width: 202px; /*made changes for PL #2176 to set allignment of sortBy drop-down list*/
     }
 
     .paging ul li {
@@ -112,10 +112,10 @@
     <div class="paging" id="page_navigation" style="width:100%">
     </div>
     <div id="NorecordfoundMsg" style="border-top:none; display:none;" class="NoDataFound">No results found.</div> @*PL #1399 dashrath prajapati*@
-     @*<div id="errorMessage" class="alert alert-error hide message-position-small">
-           <a class="close" id="iclose">×</a>
-        <span id="NoRecFound"></span>
-    </div>*@
+    @*<div id="errorMessage" class="alert alert-error hide message-position-small">
+               <a class="close" id="iclose">×</a>
+            <span id="NoRecFound"></span>
+        </div>*@
 </div>
 <script type="text/javascript">
     var SearchVal = [];
@@ -376,9 +376,17 @@
             var _cntrlId = $(_cntrl).attr('id');
             var _Id = "#" + _cntrlId;
             var text = $(_Id).attr('orig-val');
-            //_type = $(_Id).attr('add-sep');
+            //Add by Preet Shah on 29/11/2016 for #2768
+            _type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
-                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+
+                //Modified by Preet Shah on 29/11/2016 for #2768
+                if (_type == 'false')
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                else
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false, 1); //rounding value upto one decimal.
+                //End Modified by Preet Shah on 29/11/2016 for #2768
+
                 //alert(_formatednumber);
                 //var _value = '';
                 //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
@@ -565,7 +573,7 @@
 
         Request = $.ajax({
             beforeSend: function (x) {
-              
+
                 //Modified By komal RAwal for #2067 to handle null Model values by aborting previous requests.
                 if (Request != null) {
                     Request.abort();
@@ -582,7 +590,7 @@
                 IsQuarterly: Qurt_Month,
                 BackHeadTitle: HeadTitleval,
                 code: Code,
-                isDetails : true
+                isDetails: true
             },
             success: function (response) {
                 $('#dvConversionToPlan').html('');
