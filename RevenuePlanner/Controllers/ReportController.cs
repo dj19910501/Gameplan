@@ -245,7 +245,7 @@ namespace RevenuePlanner.Controllers
             Plan checkcurrentplan = tblPlan.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault();
             if (checkcurrentplan != null)
             {
-                planid = tblPlan.OrderBy(p => p.Title).Select(a=>a.PlanId).FirstOrDefault(); // Change By Mitesh for select first plan
+                planid = tblPlan.OrderBy(p => p.Title).Select(a => a.PlanId).FirstOrDefault(); // Change By Mitesh for select first plan
             }
             else
             {
@@ -13935,7 +13935,8 @@ namespace RevenuePlanner.Controllers
                         //objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
                         objCardSectionSubModel.CardType = INQStageLabel;
                         objCardSectionSubModel.Actual_Projected = _inqActual;
-                        objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
+                        //Modified By Preet Shah on 29/11/2016 - Rounding Goal Value
+                        objCardSectionSubModel.Goal = Math.Round(ProjectedTrendList.Sum(goal => goal.Value), 1);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
                         Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
                         if (Percentage > 0)
@@ -14062,7 +14063,8 @@ namespace RevenuePlanner.Controllers
                         _mqlActual = 0;
                         _mqlActual = ActualTacticTrendList.Sum(actual => actual.Value); ;
                         objCardSectionSubModel.Actual_Projected = _mqlActual;
-                        objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
+                        //Modified By Preet Shah on 29/11/2016 - Rounding Goal Value
+                        objCardSectionSubModel.Goal = Math.Round(ProjectedTrendList.Sum(goal => goal.Value), 1);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
                         Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
                         if (Percentage > 0)
@@ -14194,7 +14196,8 @@ namespace RevenuePlanner.Controllers
                         cwActualvalue = 0;
                         cwActualvalue = ActualTacticTrendList.Sum(actual => actual.Value);
                         objCardSectionSubModel.Actual_Projected = cwActualvalue;
-                        objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
+                        //Modified By Preet Shah on 29/11/2016 - Rounding Goal Value
+                        objCardSectionSubModel.Goal = Math.Round(ProjectedTrendList.Sum(goal => goal.Value), 1);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
                         Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
                         if (Percentage > 0)
@@ -14256,7 +14259,8 @@ namespace RevenuePlanner.Controllers
                         objCardSectionSubModel = new CardSectionListSubModel();
                         objCardSectionSubModel.CardType = INQStageLabel;
                         objCardSectionSubModel.Actual_Projected = _inqActual;
-                        objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
+                        //Modified By Preet Shah on 29/11/2016 - Rounding Goal Value
+                        objCardSectionSubModel.Goal = Math.Round(ProjectedTrendList.Sum(goal => goal.Value), 1);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
                         Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
                         if (Percentage > 0)
@@ -14277,7 +14281,8 @@ namespace RevenuePlanner.Controllers
                         objCardSectionSubModel = new CardSectionListSubModel();
                         objCardSectionSubModel.CardType = MQLStageLabel;
                         objCardSectionSubModel.Actual_Projected = _mqlActual;
-                        objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
+                        //Modified By Preet Shah on 29/11/2016 - Rounding Goal Value
+                        objCardSectionSubModel.Goal = Math.Round(ProjectedTrendList.Sum(goal => goal.Value), 1);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
                         Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
                         if (Percentage > 0)
@@ -14303,7 +14308,8 @@ namespace RevenuePlanner.Controllers
                         objCardSectionSubModel = new CardSectionListSubModel();
                         objCardSectionSubModel.CardType = CWStageLabel;
                         objCardSectionSubModel.Actual_Projected = _cwActual;
-                        objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
+                        //Modified By Preet Shah on 29/11/2016 - Rounding Goal Value
+                        objCardSectionSubModel.Goal = Math.Round(ProjectedTrendList.Sum(goal => goal.Value), 1);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
                         Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
                         if (Percentage > 0)
