@@ -29,7 +29,7 @@
     
     @if (ViewBag.IncludeLibHive9)
     {
-        foreach (var css in File.ReadAllLines(HttpContext.Current.Server.MapPath("~/web-assets/dist/include-css.html")))
+        foreach (var css in File.ReadAllLines(HttpContext.Current.Server.MapPath("~/web-assets/dist/include-css.txt")))
         {
             var file = css.Trim();
             if (!string.IsNullOrEmpty(file))
@@ -54,7 +54,7 @@
     @* Include the new Hive9 JS library after all the global 3rd party stuff from old code *@
     @if (ViewBag.IncludeLibHive9)
     {
-        foreach (var script in File.ReadAllLines(HttpContext.Current.Server.MapPath("~/web-assets/dist/include-js.html")))
+        foreach (var script in File.ReadAllLines(HttpContext.Current.Server.MapPath("~/web-assets/dist/include-js.txt")))
         {
             var file = script.Trim();
             if (!string.IsNullOrEmpty(file))

@@ -27,7 +27,7 @@ var plugins = [
     new HtmlWebpackPlugin({
         template: path.resolve(path.join("build", "include-css.ejs")),
         hash: false,
-        filename: "include-css.html",
+        filename: "include-css.txt",
         inject: false,
         minify: false
     }),
@@ -35,7 +35,7 @@ var plugins = [
     new HtmlWebpackPlugin({
         template: path.resolve(path.join("build", "include-js.ejs")),
         hash: false,
-        filename: "include-js.html",
+        filename: "include-js.txt",
         inject: false,
         minify: false
     })
