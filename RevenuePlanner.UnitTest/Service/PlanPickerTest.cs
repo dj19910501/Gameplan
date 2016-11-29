@@ -58,7 +58,7 @@ namespace RevenuePlanner.UnitTest.Service
         }
 
         [TestMethod]
-        public void Test_PlanPicker_GetTatics()
+        public void Test_PlanPicker_GetTactics()
         {
             var res = _planPicker.GetTatics(ProgramId);
             Assert.IsTrue(res.Count > 0 && res.ContainsTitle(TacticTitle));

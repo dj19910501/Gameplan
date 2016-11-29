@@ -57,9 +57,21 @@ namespace RevenuePlanner.Services.Transactions
             }
         }
 
+        /// <summary>
+        /// 
+        ///NOTE: 
+        ///this is simply a lookup table for customer preferred captions on transaction list.
+        ///In addition, it also determines columns needed to on UI. For this reason, controller action 
+        ///should consider using this API to trim down columns before shipping transactions out to UI
+        ///since not all columns are needed by UI per client. 
+        ///
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         public List<TransactionHeaderMapping> GetHeaderMappings(int clientId)
         {
-            throw new NotImplementedException();
+            //Use default for now until real customers are using transaction feature.
+            return _defaultHeaderMapping;
         }
 
         public List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId)
@@ -218,5 +230,19 @@ namespace RevenuePlanner.Services.Transactions
 
             return sqlQuery.ToList();
         }
+
+        #region Internal Impkementation 
+        private static List<TransactionHeaderMapping> _defaultHeaderMapping = 
+            new List<TransactionHeaderMapping>() {
+                new TransactionHeaderMapping() { ClientHeader = "Transaction ID", Hive9Header = "ClientTransactionId"},
+                new TransactionHeaderMapping() { ClientHeader = "Purchase Order", Hive9Header = "PurchaseOrder"},
+                new TransactionHeaderMapping() { ClientHeader = "Vendor", Hive9Header = "Vendor"},
+                new TransactionHeaderMapping() { ClientHeader = "Amount", Hive9Header = "Amount"},
+                new TransactionHeaderMapping() { ClientHeader = "Description", Hive9Header = "TransactionDescription"},
+                new TransactionHeaderMapping() { ClientHeader = "Account", Hive9Header = "Account"},
+                new TransactionHeaderMapping() { ClientHeader = "Date", Hive9Header = "TransactionDate"},
+                new TransactionHeaderMapping() { ClientHeader = "Department", Hive9Header = "Department"},
+            };
+        #endregion Internal Implementation 
     }
 }

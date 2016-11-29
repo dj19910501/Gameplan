@@ -30,7 +30,8 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_GetHeaderMappings()
         {
-            throw new NotImplementedException();
+            var mapping = _transaction.GetHeaderMappings(ClientId) ;
+            Assert.IsTrue(mapping.Count > 0);
         }
 
         [TestMethod]
