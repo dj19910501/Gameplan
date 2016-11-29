@@ -2,6 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    @{
+        ViewBag.IncludeLibHive9 = ViewBag.IncludeLibHive9 ?? false;
+        ViewBag.NewLayout = ViewBag.NewLayout ?? false;
+        ViewBag.NoSideBar = ViewBag.NoSideBar ?? false;
+    }
     <meta charset="utf-8" />
     <title>@ViewBag.Title</title>
     <link rel="shortcut icon" href="@Url.Content("~/Content/images/favicon.png")">
@@ -22,7 +27,18 @@
    
     <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Aug_2.css")" type="text/css" />
     
-   
+    @if (ViewBag.IncludeLibHive9)
+    {
+        foreach (var css in File.ReadAllLines(HttpContext.Current.Server.MapPath("~/web-assets/dist/include-css.html")))
+        {
+            var file = css.Trim();
+            if (!string.IsNullOrEmpty(file))
+            {
+                <link rel="stylesheet" href="@Url.Content("~/web-assets/dist/" + file)" type="text/css"/>
+            }
+        }
+    }
+
     @RenderSection("FilterEx", false)
      @Scripts.Render("~/bundles/GetJS")
      <script type="text/javascript">
@@ -36,15 +52,21 @@
     
     @RenderSection("Dependencies", false)
     @* Include the new Hive9 JS library after all the global 3rd party stuff from old code *@
-    @if (File.Exists(HttpContext.Current.Server.MapPath("~/web-assets/dist/libhive9.min.js"))) {
-        <script src="@Url.Content("~/web-assets/dist/libhive9.min.js")"></script>
-    } else {
-        <script src="@Url.Content("~/web-assets/dist/libhive9.js")"></script>
-    }
-    @* temporary script to test that libhive9 loads*@
-    <script type="text/javascript">
+    @if (ViewBag.IncludeLibHive9)
+    {
+        foreach (var script in File.ReadAllLines(HttpContext.Current.Server.MapPath("~/web-assets/dist/include-js.html")))
+        {
+            var file = script.Trim();
+            if (!string.IsNullOrEmpty(file))
+            {
+                <script src="@Url.Content("~/web-assets/dist/" + file)"></script>
+            }
+        }
+        @* temporary script to test that libhive9 loads*@
+        <script type="text/javascript">
         libhive9.displayTransactions();
-    </script>
+        </script>
+    }
 
     <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">
     @*<script>
@@ -59,7 +81,7 @@
     </script>*@
 </head>
 <body>
-    <div class="container-fluid @((ViewBag.NewLayout ?? false) ? "header-content-footer-layout" : "")">
+    <div class="container-fluid @(ViewBag.NewLayout ? "header-content-footer-layout" : "")">
 
         @{
             string a = Convert.ToString(ViewBag.ActiveMenu);
@@ -75,7 +97,7 @@
         <div class="row-fluid">
             @Html.Hidden("ActiveMenu", a)
             @Html.Partial("_header")
-            @if (ViewBag.NewLayout ?? false)
+            @if (ViewBag.NewLayout)
             {
                 @* New Layout uses flexbox and requires we have *exactly* 3 child elements, so we need to render PlanHeader as part of Header *@
                 <div>
@@ -83,14 +105,14 @@
                 </div>
             }
         </div>
-        @if (!(ViewBag.NewLayout ?? false))
+        @if (!ViewBag.NewLayout)
         {
             <div>
                 @RenderSection("PlanHeader", false)
             </div>
         }
         <div class="row-fluid midl-wrap clearfix">@* 'calc-height' removed for #2219 - Bhumika *@
-        @if (ViewBag.NoSideBar ?? false)
+        @if (ViewBag.NoSideBar)
         {
             <div id="full-width-content-wrapper">
                 @RenderBody()
@@ -119,12 +141,12 @@
             <div class="clear"></div>
         }
         </div>
-        @if (ViewBag.NewLayout ?? false)
+        @if (ViewBag.NewLayout)
         {
             <footer><span class="source-sans-proregular">Copyright &copy; @System.DateTime.Now.Year.ToString() Hive9, Inc. All rights reserved.<a href="http://www.hive9.com/ssa-sla" target="_blank">Terms of Use</a></span></footer>
         }
     </div>
-@if (!(ViewBag.NewLayout ?? false))
+@if (!ViewBag.NewLayout)
 {
     <footer><span class="source-sans-proregular">Copyright &copy; @System.DateTime.Now.Year.ToString() Hive9, Inc. All rights reserved.<a href="http://www.hive9.com/ssa-sla" target="_blank">Terms of Use</a></span></footer>
 }

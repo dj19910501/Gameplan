@@ -1,5 +1,6 @@
 ﻿var webpack = require('webpack');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 var path = require("path");
 
 // *************************************************************
@@ -18,24 +19,34 @@ var libraryName = "libhive9";
 // *************************************************************
 
 
-
-
-
-
-
-
-var outputFileName = libraryName + ".js";
+var jsSuffix = ".js";
 var entry = path.resolve("src/main.js");
 var plugins = [
-    new webpack.NoErrorsPlugin()
+    new webpack.NoErrorsPlugin(),
+    // Emit an HTML snippet for including any CSS
+    new HtmlWebpackPlugin({
+        template: path.resolve(path.join("build", "include-css.ejs")),
+        hash: false,
+        filename: "include-css.html",
+        inject: false,
+        minify: false
+    }),
+    // Emit an HTML snippet for including any JavaScript
+    new HtmlWebpackPlugin({
+        template: path.resolve(path.join("build", "include-js.ejs")),
+        hash: false,
+        filename: "include-js.html",
+        inject: false,
+        minify: false
+    })
 ];
 
 if (!EMBEDDED_CSS) {
-    plugins.push(new ExtractTextPlugin("hive9lib.css"));
+    plugins.push(new ExtractTextPlugin("[name]-[contenthash].css"));
 }
 
 if (MINIFY) {
-    outputFileName = libraryName + ".min.js";
+    jsSuffix = ".min.js";
     plugins.push(
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.DedupePlugin(),
@@ -65,7 +76,7 @@ var config = {
     devtool: SOURCEMAPS ? "source-map" : undefined,
     output: {
         path: outputFolder,
-        filename: outputFileName,
+        filename: "[name]-[hash]" + jsSuffix,
         publicPath: "",
         libraryTarget: 'umd',
         library: libraryName,
