@@ -7,6 +7,9 @@
     <ExcludeFromPackageFiles Include="RevenuePlanner.wpp.targets">
       <FromTarget>RevenuePlanner.wpp.targets</FromTarget>
     </ExcludeFromPackageFiles>
+    <ExcludeFromPackageFolders Include="web-assets">
+        <FromTarget>RevenuePlanner.wpp.targets</FromTarget>
+    </ExcludeFromPackageFolders>
   </ItemGroup>
     <Target Name="AddWebAssets">
         <ItemGroup>
