@@ -372,6 +372,7 @@
                                 'placement': 'bottom'
                             });
                         } catch (e) {
+
                         }
 
                     }
@@ -688,11 +689,9 @@
             var url = '@Url.Action("/LoadReportTablePartial/")';
             document.body.style.overflow = "hidden";          
             var params = {};
-            params.Id = id;
-            params.DbName = '@Enums.ApplicationCode.RPC.ToString()';
+            params.Id = id;            
             params.Container = "divChart" + DashboardContentId;
-            params.SDV = SelectedDimensionValue;
-            params.TopOnly = 'False';
+            params.SDV = SelectedDimensionValue;            
             params.ViewBy = ViewBy;
             params.StartDate = StartDate;
             params.EndDate = EndDate;
@@ -714,6 +713,7 @@
             });         
         }
         catch (e) {
+            $("divChart" + DashboardContentId).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
         }
     }
 </script>

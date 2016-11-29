@@ -424,7 +424,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="DashboardContentId"></param>
         /// <param name="DisplayName"></param>
         /// <returns></returns>
-        public async  Task<PartialViewResult> LoadReportTablePartial(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0, string DisplayName = "")     
+        public async  Task<PartialViewResult> LoadReportTablePartial(int Id, string Container, string[] SDV, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0, string DisplayName = "")     
         {
             ReportTableParameters objReportTable = new ReportTableParameters();
             objReportTable.Id = Id;
