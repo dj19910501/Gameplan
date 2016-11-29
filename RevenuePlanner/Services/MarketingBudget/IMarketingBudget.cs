@@ -51,15 +51,17 @@ namespace RevenuePlanner.Services.MarketingBudget
             public string id { get; set; }
             public List<string> data { get; set; }
             public List<BudgetGridRowModel> rows { get; set; }
-            public UserDataObj userdata { get; set; }
+            public UserData userdata { get; set; }
             public string Detailid { get; set; }
             public string style { get; set; } //when no permission show all data in grey and dash
 
     }
 
-    public class UserDataObj
+    public class UserData
     {
         public string lo { get; set; } // lock non editable cells.
+        public string isTitleEdit { get; set; } //checks if title is editable
+        public string per { get; set; } //sets each row permission.
 
     }
     public class GridDataStyle
