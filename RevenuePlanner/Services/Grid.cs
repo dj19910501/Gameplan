@@ -2261,8 +2261,7 @@ namespace RevenuePlanner.Services
             lstClientUsers = objAuthService.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, Sessions.ApplicationId).Select(w => w.ID).ToList(); //PL #1532 Dashrath Prajapati                   
             return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new PlanOptions
             {
-                id = owner.ID,
-                //value = owner.FirstName + " " + owner.LastName
+                id = owner.ID,             
                 value = string.Format("{0} {1}",owner.FirstName,owner.LastName)
             }).OrderBy(tactype => tactype.value).ToList(); ;
         }
