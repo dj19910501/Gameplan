@@ -38,17 +38,17 @@ namespace RevenuePlanner.Services.MarketingBudget
         {
             // To get first OTHER budget Id for client.             
             int BudgetId = (from ParentBudget in _database.Budgets
-                        join
-                            ChildBudget in _database.Budget_Detail on ParentBudget.Id equals ChildBudget.BudgetId
-                        where ParentBudget.ClientId == ClientId
-                        && (ParentBudget.IsDeleted == false || ParentBudget.IsDeleted == null)
-                        && ParentBudget.IsOther == true
-                        select ChildBudget.Id
+                            join
+                                ChildBudget in _database.Budget_Detail on ParentBudget.Id equals ChildBudget.BudgetId
+                            where ParentBudget.ClientId == ClientId
+                            && (ParentBudget.IsDeleted == false || ParentBudget.IsDeleted == null)
+                            && ParentBudget.IsOther == true
+                            select ChildBudget.Id
                         ).FirstOrDefault();
             return BudgetId;
-        }	   
+        }
 
-   public List<BindDropdownData> GetColumnSet(int ClientId)
+        public List<BindDropdownData> GetColumnSet(int ClientId)
         {
             List<BindDropdownData> lstColumnset = (from ColumnSet in _database.Budget_ColumnSet
                                                    join Columns in _database.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
@@ -76,23 +76,25 @@ namespace RevenuePlanner.Services.MarketingBudget
 
 
 
-        public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID,double Exchangerate)
+        public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate)
         {
             List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(Sessions.User.CID).ToList();
 
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             BudgetGridDataModel objBudgetGridDataModel = new BudgetGridDataModel();
-            var lstUserId = lstUser.Select(a => a.ID).ToList();
+            List<int> lstUserId = lstUser.Select(a => a.ID).ToList();
             string CommaSeparatedUserIds = String.Join(",", lstUserId);
-
+            List<string> CustomColumnNames = new List<string>();
             //Call Sp to get data.
             DataSet BudgetGridData = GetBudgetDefaultData(budgetId, viewByType, columnsRequested, ClientID, UserID, CommaSeparatedUserIds, Exchangerate);
 
-            DataTable CustomColumnsTable = BudgetGridData.Tables[1];
-            List<string> CustomColumnNames = CustomColumnsTable.Columns.Cast<DataColumn>() //list to get custom column names
+            if (BudgetGridData.Tables.Count > 1)
+            {
+                DataTable CustomColumnsTable = BudgetGridData.Tables[1];
+                CustomColumnNames = CustomColumnsTable.Columns.Cast<DataColumn>() //list to get custom column names
                   .Select(x => x.ToString())
                   .ToList();
-
+            }
             DataTable StandardColumnTable = BudgetGridData.Tables[0];
             //list to get standard column names
             List<string> StandardColumnNames = StandardColumnTable.Columns.Cast<DataColumn>().Where(name => name.ToString().ToLower() != Enums.DefaultGridColumn.Permission.ToString().ToLower() && name.ToString().ToLower() != Enums.DefaultGridColumn.ParentId.ToString().ToLower())
@@ -122,18 +124,15 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser)
         {
+            string istitleedit = "1";
             string stylecolorgray = string.Empty; // if no permission set style to gray
             int id = Convert.ToInt32(row[Enums.DefaultGridColumn.BudgetDetailId.ToString()]);
             string Permission = row[Enums.DefaultGridColumn.Permission.ToString()].ToString(); // variable to check permission
             string rowId = Regex.Replace((row[Enums.DefaultGridColumn.Name.ToString()].ToString() == null ? "" : row[Enums.DefaultGridColumn.Name.ToString().Trim().Replace("_", "")]).ToString(), @"[^0-9a-zA-Z]+", "") + "_" + id + "_" + (row[Enums.DefaultGridColumn.ParentId.ToString()].ToString() == "" ? "0" : row[Enums.DefaultGridColumn.ParentId.ToString()]); //row id for each budget item
             List<string> Data = new List<string>(); // list to bind all each row data.
-            UserDataObj objuserData = new UserDataObj();
+            UserData objuserData = new UserData();
             List<string> BindColumnDataatend = new List<string>(); //list will bind data of user owner and lineitems as we have to bind these data at the end.
-            if (Permission == "None")
-            {
-                stylecolorgray = "color:#999"; 
-                objuserData.lo = "1"; // checks if the cell is locked or not
-            }
+
             #region Bind Standard Columns
             foreach (var ColumnName in StandardColumnNames)
             {
@@ -142,10 +141,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                     Data.Add(row[ColumnName.ToString()].ToString() == null ? string.Empty : row[ColumnName.ToString()].ToString());
 
                     //Add icons data after name
-                    if (Permission == "None")
+                    if (Permission == "None" || Permission == "View")
                     {
                         Data.Add(string.Empty);
-                       
+                        istitleedit = "0";
                     }
                     else
                     {
@@ -192,8 +191,15 @@ namespace RevenuePlanner.Services.MarketingBudget
             #region Bind Custom Columns
             //Get Custom Column row
             IEnumerable<DataRow> CustomColumnRow = null;
-            CustomColumnRow = GetCustomColumnRow(DataSet, id);
-            if (CustomColumnRow.Count() > 0)
+            if (CustomColumnNames.Count > 0)
+            {
+                CustomColumnRow = GetCustomColumnRow(DataSet, id);
+            }
+            if (Permission == "None")
+            {
+                Data.AddRange(CustomColumnNames.Skip(1).Select(item => TripleDash).ToList());
+            }
+            else if (CustomColumnRow != null && CustomColumnRow.Count() > 0)
             {
                 //Add custom row values to the list.
                 var Listofvalues = CustomColumnRow.Select(dr => dr.ItemArray.Skip(1).Select(x => x.ToString())
@@ -214,6 +220,34 @@ namespace RevenuePlanner.Services.MarketingBudget
             List<BudgetGridRowModel> children = new List<BudgetGridRowModel>();
             IEnumerable<DataRow> lstChildren = null;
             lstChildren = GetChildren(DataSet, id);
+
+            #region Handle Permissions in grid
+            if (Permission == "None")
+            {
+                stylecolorgray = "color:#999";
+                objuserData.lo = "1"; // checks if the cell is locked or not
+                objuserData.isTitleEdit = istitleedit;//checks if title is editable or not
+                objuserData.per = Permission;
+            }
+            else
+            {
+                int rwcount = DataSet.Tables[0] != null ? DataSet.Tables[0].Rows.Count : 0;
+                if (rwcount == 1 || lstChildren.Count() == 0)
+                {
+                    objuserData.lo = Permission == "View" ? "1" : "0";
+                    objuserData.isTitleEdit = istitleedit;
+                    objuserData.per = Permission;
+                }
+                else
+                {
+                    objuserData.lo = "1";
+                    objuserData.isTitleEdit = istitleedit;
+                    objuserData.per = Permission;
+                }
+            }
+
+            #endregion
+
             children = lstChildren
                   .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser))
                   .ToList();
@@ -237,7 +271,7 @@ namespace RevenuePlanner.Services.MarketingBudget
               .Where(row => row.Field<Nullable<Int32>>("ParentId") == parentId);
         }
 
-        public DataSet GetBudgetDefaultData(int budgetId, string timeframe, BudgetColumnFlag columnsRequested, int ClientID, int UserID, string CommaSeparatedUserIds,double Exchangerate)
+        public DataSet GetBudgetDefaultData(int budgetId, string timeframe, BudgetColumnFlag columnsRequested, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate)
         {
             DataSet EntityList = new DataSet();
             try
@@ -298,7 +332,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.type = "ro";
                     headObj.id = columns;
                     ListHead.Add(headObj);
-                    
+
                 }
                 else if (columns == Enums.DefaultGridColumn.Name.ToString())
                 {
@@ -319,7 +353,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.type = "tree";
                     headObj.id = columns;
                     ListHead.Add(headObj);
-                    
+
 
                     //Add icons column after name
                     headObj = new GridDataStyle();
@@ -376,7 +410,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                     headObj.id = columns;
                     headObj.sort = "na";
-                    if (columns == Enums.DefaultGridColumn.Forecast.ToString())
+                    if (columns.Contains(Enums.DefaultGridColumn.Forecast.ToString()))
                     {
                         headObj.width = 0;
                     }
@@ -384,9 +418,9 @@ namespace RevenuePlanner.Services.MarketingBudget
                     {
                         headObj.width = 100;
                     }
-                   
+
                     headObj.align = "center";
-                   
+
                     // columns will have data like eg.Y1_Budget in case of time frame like This year(Monthly)
                     // so we will split them and attach the values to string builder to get double headers.
                     if (columns.Contains('_') && columns.Split('_').Length > 0)
@@ -407,8 +441,8 @@ namespace RevenuePlanner.Services.MarketingBudget
                         sbAttachedHeaders.Append(columns + ",");
                     }
 
-                    if (columns == Enums.DefaultGridColumn.Planned.ToString() ||
-                       columns == Enums.DefaultGridColumn.Actual.ToString())
+                    if (columns.Contains(Enums.DefaultGridColumn.Planned.ToString()) ||
+                       columns.Contains(Enums.DefaultGridColumn.Actual.ToString()))
                     {
                         headObj.type = "ro";
                     }
@@ -506,41 +540,41 @@ namespace RevenuePlanner.Services.MarketingBudget
         {
             #region Delete Fields            
             if (SelectedRowIDs != 0)
-            {               
+            {
                 // To get Selected budget Data. 
                 List<BudgetDetailforDeletion> SelectedBudgetDetail = (from details in _database.Budget_Detail
-                                            where (details.ParentId == SelectedRowIDs || details.Id == SelectedRowIDs) && details.IsDeleted == false
-                                            select new BudgetDetailforDeletion
-                                            {
-                                                Id = details.Id,
-                                                BudgetId = details.BudgetId,
-                                                ParentId = details.ParentId,
-                                                IsDeleted = details.IsDeleted
-                                            }).ToList();
+                                                                      where (details.ParentId == SelectedRowIDs || details.Id == SelectedRowIDs) && details.IsDeleted == false
+                                                                      select new BudgetDetailforDeletion
+                                                                      {
+                                                                          Id = details.Id,
+                                                                          BudgetId = details.BudgetId,
+                                                                          ParentId = details.ParentId,
+                                                                          IsDeleted = details.IsDeleted
+                                                                      }).ToList();
 
                 // To get Selected budget Data with its 'N' level heirarchy.
                 List<BudgetDetailforDeletion> BudgetDetailJoin = (from details in _database.Budget_Detail
-                                        join selectdetails in
-                                            (from details in _database.Budget_Detail
-                                             where (details.ParentId == SelectedRowIDs || details.Id == SelectedRowIDs) && details.IsDeleted == false
-                                             select new BudgetDetailforDeletion
-                                             {
-                                                 Id = details.Id,
-                                                 BudgetId = details.BudgetId,
-                                                 ParentId = details.ParentId,                                                 
-                                                 IsDeleted = details.IsDeleted
-                                             }) on details.ParentId equals selectdetails.Id
-                                        select new BudgetDetailforDeletion
-                                        {
-                                            Id = details.Id,
-                                            BudgetId = details.BudgetId,
-                                            ParentId = details.ParentId,                                            
-                                            IsDeleted = details.IsDeleted
-                                        }).ToList();
+                                                                  join selectdetails in
+                                                                      (from details in _database.Budget_Detail
+                                                                       where (details.ParentId == SelectedRowIDs || details.Id == SelectedRowIDs) && details.IsDeleted == false
+                                                                       select new BudgetDetailforDeletion
+                                                                       {
+                                                                           Id = details.Id,
+                                                                           BudgetId = details.BudgetId,
+                                                                           ParentId = details.ParentId,
+                                                                           IsDeleted = details.IsDeleted
+                                                                       }) on details.ParentId equals selectdetails.Id
+                                                                  select new BudgetDetailforDeletion
+                                                                  {
+                                                                      Id = details.Id,
+                                                                      BudgetId = details.BudgetId,
+                                                                      ParentId = details.ParentId,
+                                                                      IsDeleted = details.IsDeleted
+                                                                  }).ToList();
 
                 List<BudgetDetailforDeletion> BudgetDetailData = SelectedBudgetDetail.Union(BudgetDetailJoin).ToList();
                 List<BudgetDetailforDeletion> BudgetDetailData1 = new List<BudgetDetailforDeletion>();
-                BudgetDetailData1 = BudgetDetailData.Distinct().ToList();               
+                BudgetDetailData1 = BudgetDetailData.Distinct().ToList();
                 if (BudgetDetailData.Count > 0)
                 {
                     BudgetDetailforDeletion ParentBudgetData = BudgetDetailData.Where(a => a.ParentId == null).Select(a => a).FirstOrDefault();
