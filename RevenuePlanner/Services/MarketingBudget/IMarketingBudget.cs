@@ -19,11 +19,11 @@ namespace RevenuePlanner.Services.MarketingBudget
         public bool IsOwner { get; set; }
     }
 
-   
 
-	  public class MarketingActivities
+
+    public class MarketingActivities
     {
-       public List<BindDropdownData> ListofBudgets { get; set; }
+        public List<BindDropdownData> ListofBudgets { get; set; }
         public List<BindDropdownData> TimeFrame { get; set; }
         public List<BindDropdownData> Columnset { get; set; }
     }
@@ -35,7 +35,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         public int userCount { get; set; }
         public User Owner { get; set; }
         public BudgetLineData BudgetItemData { get; set; }
-   
+
     }
 
 
@@ -48,12 +48,12 @@ namespace RevenuePlanner.Services.MarketingBudget
 
     public class BudgetGridRowModel
     {
-            public string id { get; set; }
-            public List<string> data { get; set; }
-            public List<BudgetGridRowModel> rows { get; set; }
-            public UserData userdata { get; set; }
-            public string Detailid { get; set; }
-            public string style { get; set; } //when no permission show all data in grey and dash
+        public string id { get; set; }
+        public List<string> data { get; set; }
+        public List<BudgetGridRowModel> rows { get; set; }
+        public UserData userdata { get; set; }
+        public string Detailid { get; set; }
+        public string style { get; set; } //when no permission show all data in grey and dash
 
     }
 
@@ -210,9 +210,9 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         List<BindDropdownData> GetColumns(int ColumnSetId);// Column set dropdown
 
-        BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate);
-     
-        
+        BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol);
+
+
         /// <summary>
         /// Update budget data only!
         /// Planned and actuals are NOT updated through this interface

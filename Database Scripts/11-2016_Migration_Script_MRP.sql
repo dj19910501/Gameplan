@@ -2253,7 +2253,8 @@ BEGIN
 	GROUP BY BudgetDetailId
 
 	INSERT INTO @ResultFinanceData(Permission,BudgetDetailId,ParentId,Name,[Owner],TotalBudget,TotalForecast,TotalPlanned,LineItems,[User])
-	SELECT DISTINCT R.Permission,R.BudgetDetailId,R.ParentId,R.Name,R.[Owner],R.TotalBudget,R.TotalForecast,LineItem.TotalPlanned,L.LineItems,usrcnt.[User]
+	SELECT DISTINCT R.Permission,R.BudgetDetailId,R.ParentId,R.Name,R.[Owner],R.TotalBudget,R.TotalForecast,LineItem.TotalPlanned,
+	ISNULL(L.LineItems,0) AS LineItems,ISNULL(usrcnt.[User],0) AS [User]
 	FROM @tblResult R
 	LEFT JOIN @tblLineItemIds L on R.BudgetDetailId = L.BudgetDetailId
 	LEFT JOIN 

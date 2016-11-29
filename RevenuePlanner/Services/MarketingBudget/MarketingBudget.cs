@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Text;
 using RevenuePlanner.BDSService;
+using System.Runtime.CompilerServices;
 
 
 namespace RevenuePlanner.Services.MarketingBudget
@@ -17,6 +18,7 @@ namespace RevenuePlanner.Services.MarketingBudget
     {
         private MRPEntities _database;
         string TripleDash = "---";
+        private const string formatThousand = "#,#0.##";
         private IBDSService _ServiceDatabase;
         public MarketingBudget(MRPEntities database, IBDSService ServiceDatabase)
         {
@@ -76,7 +78,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
 
 
-        public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate)
+        public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol)
         {
             List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(Sessions.User.CID).ToList();
 
@@ -107,7 +109,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             //Call recursive function to bind the hierarchy.
             List<BudgetGridRowModel> lstData = new List<BudgetGridRowModel>();
             lstData = GetTopLevelRows(BudgetGridData, null)
-                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser)).ToList();
+                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol)).ToList();
 
             objBudgetGridDataModel.head = objBudgetGridModel.GridDataStyleList;
             objBudgetGridDataModel.rows = lstData;
@@ -122,7 +124,7 @@ namespace RevenuePlanner.Services.MarketingBudget
               .Where(row => row.Field<Nullable<Int32>>("ParentId") == minParentId);
         }
 
-        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser)
+        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol)
         {
             string istitleedit = "1";
             string stylecolorgray = string.Empty; // if no permission set style to gray
@@ -179,7 +181,16 @@ namespace RevenuePlanner.Services.MarketingBudget
                     }
                     else
                     {
-                        Data.Add(row[ColumnName.ToString()].ToString() == null ? string.Empty : row[ColumnName.ToString()].ToString());
+                        
+                        object objValue = row[Convert.ToString(ColumnName)];
+                        string DisplayValue = string.Empty;
+                        if (objValue != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(objValue)))
+                        {
+                            double value;
+                            double.TryParse(Convert.ToString(objValue), out value);
+                            DisplayValue = string.Format("{0}{1}", CurSymbol, value.ToString(formatThousand));
+                        }
+                        Data.Add(DisplayValue);
                     }
 
                 }
@@ -249,7 +260,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
 
             children = lstChildren
-                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser))
+                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol))
                   .ToList();
 
             return new BudgetGridRowModel { id = rowId, data = Data, rows = children, style = stylecolorgray, Detailid = Convert.ToString(id), userdata = objuserData };
@@ -491,6 +502,19 @@ namespace RevenuePlanner.Services.MarketingBudget
             mdlGridHeader.GridDataStyleList = ListHead;
             return mdlGridHeader;
         }
+
+        #region Method to convert number format
+        /// <summary>
+        /// Method for convert number to formatted string
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string FormatNumber<T>(T number, int maxDecimals = 1)
+        {
+            return Regex.Replace(String.Format("{0:n" + maxDecimals + "}", number),
+                                 @"[" + System.Globalization.NumberFormatInfo.CurrentInfo.NumberDecimalSeparator + "]?0+$", "");
+        }
+        #endregion
+
         public List<LineItemAllocatingAccount> GetAccountsForLineItem(int lineItemId)
         {
             throw new NotImplementedException();
@@ -538,7 +562,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         public void DeleteBudgetData(int SelectedRowIDs, int ClientId)
         {
-            #region Delete Fields            
+            #region Delete Fields
             if (SelectedRowIDs != 0)
             {
                 // To get Selected budget Data. 
@@ -610,7 +634,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     _database.SaveChanges();
                 }
             }
-            #endregion  
+            #endregion
         }
     }
 }
