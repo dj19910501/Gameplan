@@ -25,7 +25,7 @@ var plugins = [
     new webpack.NoErrorsPlugin(),
     // Emit an HTML snippet for including any CSS
     new HtmlWebpackPlugin({
-        template: path.resolve(path.join("build", "include-css.ejs")),
+        template: path.resolve(path.join("build", "include-css.htm")),
         hash: false,
         filename: "include-css.txt",
         inject: false,
@@ -33,7 +33,7 @@ var plugins = [
     }),
     // Emit an HTML snippet for including any JavaScript
     new HtmlWebpackPlugin({
-        template: path.resolve(path.join("build", "include-js.ejs")),
+        template: path.resolve(path.join("build", "include-js.htm")),
         hash: false,
         filename: "include-js.txt",
         inject: false,
@@ -105,6 +105,17 @@ var config = {
                 test: /\.scss$/,
                 include: /src/,
                 loader: extractCSS("css?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!sass?sourceMap")
+            },
+            {
+                test: /\.ejs$/,
+                loader: "underscore-template-loader",
+                exclude: /\/build\//,
+                query: {
+                    engine: "util/templateEngine",
+                    withImports: false,
+                    prependFilenameComment: IS_RELEASE ? undefined : path.resolve("src"),
+                    variable: "data"
+                }
             }
         ]
     },
