@@ -99,7 +99,7 @@ namespace RevenuePlanner.Services.Transactions
                         PlannedCost = Convert.ToDouble(row["PlannedCost"]),
                         TotalLinkedCost = Convert.ToDouble(row["TotalLinkedCost"]),
                         ActualCost = Convert.ToDouble(row["TotalActual"]),
-                        LineItems = new List<LinkedLineItems>()
+                        LineItems = new List<LinkedLineItem>()
                     };
 
                     lineItemsByTactic.Add(ligbt.TacticId, ligbt);
@@ -118,7 +118,7 @@ namespace RevenuePlanner.Services.Transactions
                         LineItemId = Convert.ToInt32(row["PlanLineItemId"])
                     };
 
-                    LinkedLineItems item = new LinkedLineItems()
+                    LinkedLineItem item = new LinkedLineItem()
                     {
                         LineItemId = Convert.ToInt32(row["PlanLineItemId"]),
                         Title = Convert.ToString(row["Title"]),
