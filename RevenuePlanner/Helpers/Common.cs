@@ -7847,7 +7847,10 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                            var lstTacticItemActuals = tblTacticItemActuals.Where(tac => tac.PlanTacticId == keyTactic).ToList()
+                            // Modified by Nandish Shah on 29/11/2016 for PL #2864
+                            // Add Where condition of filter only Actual Cost Data from Tactic Actual data
+                            string TitleCost = Convert.ToString(Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()]);
+                            var lstTacticItemActuals = tblTacticItemActuals.Where(tac => tac.PlanTacticId == keyTactic && tac.StageTitle == TitleCost).ToList()
                                 .Select(tac => new
                                 {
                                     Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
