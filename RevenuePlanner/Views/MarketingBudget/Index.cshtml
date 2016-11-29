@@ -159,11 +159,13 @@
                 if (mainTimeFrame != "@RevenuePlanner.Helpers.Enums.QuarterFinance.Yearly.ToString()") {
                     budgetgrid.attachHeader(data.AttacheHeader);
                 }
-                budgetgrid.init();
+                budgetgrid.init();             
                 BudgetGridData = data.GridData;
                 budgetgrid.parse(BudgetGridData, "json");
 
                 var TaskNameIndex = budgetgrid.getColIndexById('Name');
+
+                budgetgrid.expandAll();
                 budgetgrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
                     var ColumnId = budgetgrid.getColumnId(cInd);
                     var locked = budgetgrid.getUserData(rId, "lo");
