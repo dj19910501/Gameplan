@@ -191,11 +191,6 @@ namespace RevenuePlanner.Services.Transactions
             return sqlQuery.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         }
 
-        public List<Transaction> SearchForTransactions(int clientId, DateTime start, DateTime end, string searchText, bool unprocessdedOnly = true)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<Transaction> GetTransactionsForLineItem(int lineItemId)
         {
             IQueryable<Transaction> sqlQuery =

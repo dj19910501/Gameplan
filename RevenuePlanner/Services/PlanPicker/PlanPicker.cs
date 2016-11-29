@@ -50,12 +50,25 @@ namespace RevenuePlanner.Services.PlanPicker
             return sqlQuery.ToList();
         }
 
-        public List<PlanItem> GetTatics(int programId)
+        public List<PlanItem> GetTactics(int programId)
         {
             var sqlQuery =
                 from tactic in _database.Plan_Campaign_Program_Tactic
                 where tactic.PlanProgramId == programId
                 select new PlanItem { Id = tactic.PlanTacticId, Title = tactic.Title };
+            return sqlQuery.ToList();
+        }
+
+        public List<String> GetYears(int clientId)
+        {
+            IEnumerable<String> sqlQuery =
+                from plan in _database.Plans
+                join model in _database.Models on plan.ModelId equals model.ModelId
+                where model.ClientId == clientId
+                group plan by plan.Year into year
+                orderby year.Key
+                select year.Key;
+
             return sqlQuery.ToList();
         }
     }

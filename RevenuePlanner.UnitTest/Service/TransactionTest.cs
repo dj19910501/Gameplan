@@ -37,12 +37,12 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_GetLinkedLineItemsForTransaction()
         {
-            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(120);
+            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(30);
 
-            Assert.AreEqual(lineItems.Count, 1);
+            Assert.AreEqual(lineItems.Count, 4);
 
             LineItemsGroupedByTactic ligbt = lineItems[0];
-            Assert.AreEqual(ligbt.TacticId, 2077);
+            Assert.AreEqual(ligbt.TacticId, 4591);
 
             // TODOWCR: Finish unit test
         }
@@ -114,10 +114,5 @@ namespace RevenuePlanner.UnitTest.Service
             // TODOWCR: Finish unit test
         }
 
-        [TestMethod]
-        public void Test_Transaction_SearchForTransactions()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
