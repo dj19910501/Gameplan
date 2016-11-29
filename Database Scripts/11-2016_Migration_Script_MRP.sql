@@ -2985,11 +2985,11 @@ BEGIN
 
 			  Declare @CustomFieldIDs varchar(max)=''
 
-			 SELECT  @CustomFieldIDs = COALESCE(@CustomFieldIDs + ',', '') + CONVERT(varchar(100), CF.[CustomFieldId])  + '_null'  FROM [Hive9ProdGP].[dbo].[CustomField] CF
+			 SELECT  @CustomFieldIDs = COALESCE(@CustomFieldIDs + ',', '') + CONVERT(varchar(100), CF.[CustomFieldId])  + '_null'  FROM [CustomField] CF
 			 inner join CustomFieldType CT on CT.CustomFieldTypeId = CF.CustomFieldTypeId and CT.name = 'DropDownList'
 			  where  CF.EntityType = 'Tactic'  and CF.isdeleted = 0 and CF.IsDisplayForFilter = 1 AND CF.ClientId = @ClientId 
              AND ( CF.[CustomFieldId] NOT IN
-			  (select  CAST((CASE WHEN REPLACE(FilterName,'CF_','') NOT LIKE '%[^0-9]%' THEN REPLACE(FilterName,'CF_','') END) AS INT)  from [Hive9ProdGP].DBO.Plan_UserSavedViews where Userid=@userId and FilterName like'CF_%')
+			  (select  CAST((CASE WHEN REPLACE(FilterName,'CF_','') NOT LIKE '%[^0-9]%' THEN REPLACE(FilterName,'CF_','') END) AS INT)  from Plan_UserSavedViews where Userid=@userId and FilterName like'CF_%')
 			  )
 
 			   if( LEFT(@CustomFieldIDs,1) = ',')
