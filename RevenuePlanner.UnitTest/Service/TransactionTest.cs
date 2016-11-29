@@ -24,7 +24,25 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_DeleteTransactionLineItemMapping()
         {
-            _transaction.DeleteTransactionLineItemMapping(7);
+            List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
+            // tacticId = 2079, lineitemId = 301
+            TransactionLineItemMapping tlim = new TransactionLineItemMapping
+            { 
+                TransactionId = 75,
+                LineItemId = 301,
+                Amount = 300.10,
+            };
+            tlimList.Add(tlim);
+            _transaction.SaveTransactionToLineItemMapping(tlimList, 297);
+
+            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(75);
+
+            LineItemsGroupedByTactic ligbt = lineItems.Find(item => item.TacticId == 2079);
+            Assert.IsNotNull(ligbt);
+            LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == 301);
+            Assert.IsNotNull(lineItem);
+            _transaction.DeleteTransactionLineItemMapping(lineItem.LineItemMapping.TransactionLineItemMappingId);
+
         }
 
         [TestMethod]
@@ -109,6 +127,21 @@ namespace RevenuePlanner.UnitTest.Service
             tlimList.Add(tlim2);
 
             _transaction.SaveTransactionToLineItemMapping(tlimList, 297);
+
+            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(120);
+
+            LineItemsGroupedByTactic ligbt = lineItems.Find(item => item.TacticId == 2077);
+            Assert.IsNotNull(ligbt);
+            LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == 297);
+            Assert.IsNotNull(lineItem);
+            Assert.AreEqual(300.1, lineItem.LineItemMapping.Amount);
+            _transaction.DeleteTransactionLineItemMapping(lineItem.LineItemMapping.TransactionLineItemMappingId);
+
+
+            lineItem = ligbt.LineItems.Find(item => item.LineItemId == 298);
+            Assert.IsNotNull(lineItem);
+            Assert.AreEqual(100.1, lineItem.LineItemMapping.Amount);
+            _transaction.DeleteTransactionLineItemMapping(lineItem.LineItemMapping.TransactionLineItemMappingId);
 
 
             // TODOWCR: Finish unit test
