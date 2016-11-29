@@ -25,7 +25,9 @@ BEGIN
 	DECLARE @UpdatedColumn VARCHAR(30) = 'Planned',
 			@Period VARCHAR(30),
 			@NewValue FLOAT,
+			@OldValue FlOAT = 0,
 			@PlanLineItemId INT,
+			@Year INT,
 			@DeleteQuery NVARCHAR(MAX)
 
 	IF ((SELECT COUNT(*) FROM INSERTED) > 0)
@@ -33,25 +35,32 @@ BEGIN
 		-- Get values which are inserted/updated
 		SELECT @Period = Period,
 			   @NewValue = Value,
-			   @PlanLineItemId = PlanLineItemId FROM INSERTED
+			   @PlanLineItemId = PlanLineItemId,
+			   @Year = YEAR(CreatedDate)
+		FROM INSERTED 
 
-		IF EXISTS(SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId)
+		-- Get old value in case of update
+		SELECT @OldValue = Value FROM DELETED
+
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
-			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Period, @NewValue, @PlanLineItemId
+			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Year, @Period, @NewValue,@OldValue, @PlanLineItemId
 		END
 	END
 	ELSE 
 	BEGIN
 		-- Get values which are deleted
-		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId FROM DELETED
+		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate) FROM DELETED 
 
-		IF EXISTS(SELECT COUNT(id) FROM [dbo].[LineItem_Budget] WHERE PlanLineItemId = @PlanLineItemId)
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Delete/Update record into pre-calculated table while Cost entry is deleted
-			SET @DeleteQuery = 'UPDATE P SET ' +@Period + '_'+@UpdatedColumn +' = NULL FROM [MV].[PreCalculatedMarketingBudget] P
+			SET @DeleteQuery = 'UPDATE P SET 
+								' +@Period + '_'+@UpdatedColumn +' = (P.' +@Period + '_'+ @UpdatedColumn + ' - '+CAST(@OldValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) + '+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100))
+								FROM [MV].[PreCalculatedMarketingBudget] P
 								INNER JOIN [dbo].[LineItem_Budget] LB ON P.BudgetDetailId = LB.BudgetDetailId 
-								WHERE LB.PlanLineItemId = ' +CAST(@PlanLineItemId AS VARCHAR(30)) 
+								WHERE LB.PlanLineItemId = ' +CAST(@PlanLineItemId AS VARCHAR(30)) + ' AND P.Year = ' + CAST(@Year AS VARCHAR(30))
 			EXEC (@DeleteQuery)
 		END
 	END

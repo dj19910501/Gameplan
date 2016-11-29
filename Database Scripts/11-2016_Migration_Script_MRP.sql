@@ -1983,41 +1983,42 @@ GO
 -- Create date: 11/18/2016
 -- Description:	SP to insert/update precalculated data for marketing budget grid
 -- =============================================
--- [MV].[PreCalPlannedActualForFinanceGrid] 'Planned','Y1',5555, 109415
+-- [MV].[PreCalculatePlannedActualForFinance] 'Planned','Y1',5555, 109415
 CREATE PROCEDURE [MV].[PreCalPlannedActualForFinanceGrid]
 	@UpdatedColumn		VARCHAR(30),  -- Enum which is used to identify Planned/Actuals
 	@Year				INT,		  -- Year 
 	@Period				VARCHAR(5),   -- Period in case of editing Monthly/Quarterly allocation
 	@NewValue			FLOAT,        -- New value for Budget/Forecast/Custom column
+	@OldValue			FLOAT,
 	@PlanLineItemId		INT           -- Line Item Id in which Budget is associated
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-
 	DECLARE @InsertQuery		NVARCHAR(MAX), 
 			@UpdateColumnName	NVARCHAR(50)
 	
 	SET @UpdateColumnName = @Period + '_' + @UpdatedColumn
 	
-	-- Insert Budget/Forecast values in PreCalculatedMarketingBudget table if already exists 
+	-- Insert Planned/Actual values in PreCalculatedMarketingBudget table if already exists 
 	SET @InsertQuery = ' MERGE INTO [MV].[PreCalculatedMarketingBudget] AS T1
 						 USING
 						 (	
 							SELECT BudgetDetailId, 
 							' + CAST(@Year AS VARCHAR(30))+ ' AS [Year], 
-							'+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) AS '+@UpdateColumnName+' 
+							'+CAST(ISNULL(@OldValue,0) AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) AS OldValue, 
+						 	'+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) AS '+@UpdateColumnName+' 
 							FROM LineItem_Budget WHERE PlanLineItemid = '+CAST(@PlanLineItemId AS VARCHAR(30))+'
 						 ) AS T2
 						 ON (T2.BudgetDetailId = T1.BudgetDetailId AND T2.Year = T1.Year)
 						 WHEN MATCHED THEN
-						 UPDATE SET ' + @UpdateColumnName + ' = T2.' + @UpdateColumnName + ' 
+						 UPDATE SET ' + @UpdateColumnName + ' = (ISNULL(T1.' + @UpdateColumnName + ',0) - T2.OldValue + ' +'T2.' + @UpdateColumnName +')
 						 WHEN NOT MATCHED THEN  
 						 INSERT (BudgetDetailId, [Year], ' + @UpdateColumnName + ')
 						 VALUES (BudgetDetailId, [Year], ' + @UpdateColumnName + ');'
 	
-	EXEC (@InsertQuery)
+	EXEC(@InsertQuery)
 END
 GO
 
@@ -2348,7 +2349,6 @@ BEGIN
 END
 GO
 
-
 IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalPlannedMarketingBudget]'))
 BEGIN
 	DROP TRIGGER [dbo].[TrgPreCalPlannedMarketingBudget]
@@ -2376,7 +2376,9 @@ BEGIN
 	DECLARE @UpdatedColumn VARCHAR(30) = 'Planned',
 			@Period VARCHAR(30),
 			@NewValue FLOAT,
+			@OldValue FlOAT = 0,
 			@PlanLineItemId INT,
+			@Year INT,
 			@DeleteQuery NVARCHAR(MAX)
 
 	IF ((SELECT COUNT(*) FROM INSERTED) > 0)
@@ -2384,32 +2386,38 @@ BEGIN
 		-- Get values which are inserted/updated
 		SELECT @Period = Period,
 			   @NewValue = Value,
-			   @PlanLineItemId = PlanLineItemId FROM INSERTED
+			   @PlanLineItemId = PlanLineItemId,
+			   @Year = YEAR(CreatedDate)
+		FROM INSERTED 
 
-		IF EXISTS(SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId)
+		-- Get old value in case of update
+		SELECT @OldValue = Value FROM DELETED
+
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
-			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Period, @NewValue, @PlanLineItemId
+			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Year, @Period, @NewValue,@OldValue, @PlanLineItemId
 		END
 	END
 	ELSE 
 	BEGIN
 		-- Get values which are deleted
-		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId FROM DELETED
+		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate) FROM DELETED 
 
-		IF EXISTS(SELECT COUNT(id) FROM [dbo].[LineItem_Budget] WHERE PlanLineItemId = @PlanLineItemId)
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Delete/Update record into pre-calculated table while Cost entry is deleted
-			SET @DeleteQuery = 'UPDATE P SET ' +@Period + '_'+@UpdatedColumn +' = NULL FROM [MV].[PreCalculatedMarketingBudget] P
+			SET @DeleteQuery = 'UPDATE P SET 
+								' +@Period + '_'+@UpdatedColumn +' = (P.' +@Period + '_'+ @UpdatedColumn + ' - '+CAST(@OldValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) + '+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100))
+								FROM [MV].[PreCalculatedMarketingBudget] P
 								INNER JOIN [dbo].[LineItem_Budget] LB ON P.BudgetDetailId = LB.BudgetDetailId 
-								WHERE LB.PlanLineItemId = ' +CAST(@PlanLineItemId AS VARCHAR(30)) 
+								WHERE LB.PlanLineItemId = ' +CAST(@PlanLineItemId AS VARCHAR(30)) + ' AND P.Year = ' + CAST(@Year AS VARCHAR(30))
 			EXEC (@DeleteQuery)
 		END
 	END
 
 END
 GO
-
 
 IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalActualMarketingBudget]'))
 BEGIN
@@ -2438,7 +2446,9 @@ BEGIN
 	DECLARE @UpdatedColumn VARCHAR(30) = 'Actual',
 			@Period VARCHAR(30),
 			@NewValue FLOAT,
+			@OldValue FLOAT,
 			@PlanLineItemId INT,
+			@Year INT,
 			@DeleteQuery NVARCHAR(MAX)
 
 	IF ((SELECT COUNT(*) FROM INSERTED) > 0)
@@ -2446,31 +2456,39 @@ BEGIN
 		-- Get values which are inserted/updated
 		SELECT @Period = Period,
 			   @NewValue = Value,
-			   @PlanLineItemId = PlanLineItemId FROM INSERTED
+			   @PlanLineItemId = PlanLineItemId,
+			   @Year = YEAR(CreatedDate)
+		FROM INSERTED 
 
-		IF EXISTS(SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId)
+		-- Get old value in case of update
+		SELECT @OldValue = Value FROM DELETED
+
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
-			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Period, @NewValue, @PlanLineItemId
+			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Year, @Period, @NewValue,@OldValue, @PlanLineItemId
 		END
 	END
 	ELSE 
 	BEGIN
 		-- Get values which are deleted
-		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId FROM DELETED
+		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate) FROM DELETED 
 
-		IF EXISTS(SELECT COUNT(id) FROM [dbo].[LineItem_Budget] WHERE PlanLineItemId = @PlanLineItemId)
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Delete/Update record into pre-calculated table while Cost entry is deleted
-			SET @DeleteQuery = 'UPDATE P SET ' +@Period + '_'+@UpdatedColumn +' = NULL FROM [MV].[PreCalculatedMarketingBudget] P
+			SET @DeleteQuery = 'UPDATE P SET 
+								' +@Period + '_'+@UpdatedColumn +' = (P.' +@Period + '_'+ @UpdatedColumn + ' - '+CAST(@OldValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) + '+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100))
+								FROM [MV].[PreCalculatedMarketingBudget] P
 								INNER JOIN [dbo].[LineItem_Budget] LB ON P.BudgetDetailId = LB.BudgetDetailId 
-								WHERE LB.PlanLineItemId = ' +CAST(@PlanLineItemId AS VARCHAR(30)) 
+								WHERE LB.PlanLineItemId = ' +CAST(@PlanLineItemId AS VARCHAR(30)) + ' AND P.Year = ' + CAST(@Year AS VARCHAR(30))
 			EXEC (@DeleteQuery)
 		END
 	END
 
 END
 GO
+
 
 IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgInsertDeletePreCalMarketingBudget]'))
 BEGIN

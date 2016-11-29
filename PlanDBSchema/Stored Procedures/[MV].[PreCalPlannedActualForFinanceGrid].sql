@@ -19,35 +19,36 @@ CREATE PROCEDURE [MV].[PreCalPlannedActualForFinanceGrid]
 	@Year				INT,		  -- Year 
 	@Period				VARCHAR(5),   -- Period in case of editing Monthly/Quarterly allocation
 	@NewValue			FLOAT,        -- New value for Budget/Forecast/Custom column
+	@OldValue			FLOAT,
 	@PlanLineItemId		INT           -- Line Item Id in which Budget is associated
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-
 	DECLARE @InsertQuery		NVARCHAR(MAX), 
 			@UpdateColumnName	NVARCHAR(50)
 	
 	SET @UpdateColumnName = @Period + '_' + @UpdatedColumn
 	
-	-- Insert Budget/Forecast values in PreCalculatedMarketingBudget table if already exists 
+	-- Insert Planned/Actual values in PreCalculatedMarketingBudget table if already exists 
 	SET @InsertQuery = ' MERGE INTO [MV].[PreCalculatedMarketingBudget] AS T1
 						 USING
 						 (	
 							SELECT BudgetDetailId, 
 							' + CAST(@Year AS VARCHAR(30))+ ' AS [Year], 
-							'+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) AS '+@UpdateColumnName+' 
+							'+CAST(ISNULL(@OldValue,0) AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) AS OldValue, 
+						 	'+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) AS '+@UpdateColumnName+' 
 							FROM LineItem_Budget WHERE PlanLineItemid = '+CAST(@PlanLineItemId AS VARCHAR(30))+'
 						 ) AS T2
 						 ON (T2.BudgetDetailId = T1.BudgetDetailId AND T2.Year = T1.Year)
 						 WHEN MATCHED THEN
-						 UPDATE SET ' + @UpdateColumnName + ' = T2.' + @UpdateColumnName + ' 
+						 UPDATE SET ' + @UpdateColumnName + ' = (ISNULL(T1.' + @UpdateColumnName + ',0) - T2.OldValue + ' +'T2.' + @UpdateColumnName +')
 						 WHEN NOT MATCHED THEN  
 						 INSERT (BudgetDetailId, [Year], ' + @UpdateColumnName + ')
 						 VALUES (BudgetDetailId, [Year], ' + @UpdateColumnName + ');'
 	
-	EXEC (@InsertQuery)
+	EXEC(@InsertQuery)
 END
 GO
 
