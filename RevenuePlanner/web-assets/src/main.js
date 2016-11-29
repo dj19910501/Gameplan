@@ -7,7 +7,8 @@ import displayTransactions from './transactions/displayTransactions';
 function main() {
     // TODO: use a router.  For now, we just assume the Transactions page
 
-    displayTransactions();
+    const $rootElement = $("#full-width-content-wrapper");
+    $rootElement.html("content goes here");
 }
 
 
