@@ -6,7 +6,7 @@ using StructureMap;
 namespace RevenuePlanner.UnitTest.Service
 {
     [TestClass]
-    public class PlanPickerTest 
+    public class PlanPickerTest
     {
         private IPlanPicker _planPicker;
 
@@ -22,11 +22,12 @@ namespace RevenuePlanner.UnitTest.Service
         private const int TacticId = 4596;
         private const string TacticTitle = "Configuration Guide";
         private const string LineItemTitle = "Configuration Guide Development";
+        private const int NumberOfYears = 4;
         #endregion Test Data
 
         public PlanPickerTest()
         {
-            _planPicker = ObjectFactory.GetInstance<IPlanPicker>(); 
+            _planPicker = ObjectFactory.GetInstance<IPlanPicker>();
         }
 
         [TestMethod]
@@ -60,8 +61,15 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_PlanPicker_GetTactics()
         {
-            var res = _planPicker.GetTatics(ProgramId);
+            var res = _planPicker.GetTactics(ProgramId);
             Assert.IsTrue(res.Count > 0 && res.ContainsTitle(TacticTitle));
+        }
+
+        [TestMethod]
+        public void Test_PlanPicker_GetYears()
+        {
+            List<string> years = _planPicker.GetYears(ClientId);
+            Assert.AreEqual(years.Count, NumberOfYears);
         }
     }
 

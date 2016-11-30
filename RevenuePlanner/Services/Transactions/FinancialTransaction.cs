@@ -99,7 +99,7 @@ namespace RevenuePlanner.Services.Transactions
                         PlannedCost = Convert.ToDouble(row["PlannedCost"]),
                         TotalLinkedCost = Convert.ToDouble(row["TotalLinkedCost"]),
                         ActualCost = Convert.ToDouble(row["TotalActual"]),
-                        LineItems = new List<LinkedLineItems>()
+                        LineItems = new List<LinkedLineItem>()
                     };
 
                     lineItemsByTactic.Add(ligbt.TacticId, ligbt);
@@ -118,7 +118,7 @@ namespace RevenuePlanner.Services.Transactions
                         LineItemId = Convert.ToInt32(row["PlanLineItemId"])
                     };
 
-                    LinkedLineItems item = new LinkedLineItems()
+                    LinkedLineItem item = new LinkedLineItem()
                     {
                         LineItemId = Convert.ToInt32(row["PlanLineItemId"]),
                         Title = Convert.ToString(row["Title"]),
@@ -189,11 +189,6 @@ namespace RevenuePlanner.Services.Transactions
 
             // TODOWCR: It appears that linq's query for pagination is not terribly efficient (appears to be 3 embedded selects vs 2)
             return sqlQuery.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-        }
-
-        public List<Transaction> SearchForTransactions(int clientId, DateTime start, DateTime end, string searchText, bool unprocessdedOnly = true)
-        {
-            throw new NotImplementedException();
         }
 
         public List<Transaction> GetTransactionsForLineItem(int lineItemId)

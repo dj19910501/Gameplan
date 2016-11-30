@@ -12,7 +12,8 @@ namespace RevenuePlanner.Controllers
     public class MarketingBudgetController : CommonController
     {
         IMarketingBudget _MarketingBudget;
-        public MarketingBudgetController(IMarketingBudget MarketingBudget) {
+        public MarketingBudgetController(IMarketingBudget MarketingBudget)
+        {
             _MarketingBudget = MarketingBudget;
         }
         #region Declartion
@@ -75,17 +76,17 @@ namespace RevenuePlanner.Controllers
         //{
         //    throw new NotImplementedException();
         //}
-		 
-        public JsonResult GetBudgetData(int budgetId,string viewByType, BudgetColumnFlag columnsRequested = 0) // need to pass columns requested
+
+        public JsonResult GetBudgetData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested = 0) // need to pass columns requested
         {
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             //Get all budget grid data.
-            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, viewByType, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate);
-            var jsonResult = Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader}, JsonRequestBehavior.AllowGet);
+            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, viewByType, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol);
+            var jsonResult = Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader }, JsonRequestBehavior.AllowGet);
             return jsonResult;
         }
 
-       
+
         public JsonResult GetColumns(int ColumnSetId = 0)
         {
             List<BindDropdownData> lstColumns = _MarketingBudget.GetColumns(ColumnSetId);// Columns  dropdown
@@ -118,16 +119,16 @@ namespace RevenuePlanner.Controllers
         }
 
         public ActionResult DeleteBudgetData(string SelectedRowIDs, string mainTimeFrame, string currentBudgetId, string ListofCheckedColums = "")
-        {   
-                     
+        {
+
             int ClientId = Sessions.User.CID;  //Assign ClientId from Session
-            #region Delete Budget Fields  
-             if (SelectedRowIDs != null && SelectedRowIDs != "")
+            #region Delete Budget Fields
+            if (SelectedRowIDs != null && SelectedRowIDs != "")
             {
                 List<DeleteRowID> Values = JsonConvert.DeserializeObject<List<DeleteRowID>>(SelectedRowIDs); // Deserialize Data 
                 int Selectedids = Values.Select(ids => int.Parse(ids.Id.ToString())).FirstOrDefault();
                 _MarketingBudget.DeleteBudgetData(Selectedids, ClientId); // call DeleteBudgetData function to delete selected data.
-            }            
+            }
             List<BindDropdownData> lstchildbudget = _MarketingBudget.GetBudgetlist(ClientId); // get Child budget list.
             int _budgetId = 0, _currentBudgetId = 0;
             if (lstchildbudget != null)
@@ -144,9 +145,9 @@ namespace RevenuePlanner.Controllers
             }
             #endregion
             return PartialView("_MainGrid"); //TODO : here we need to call bind finance grid function to load updated finance grid.
-            
+
             //End
         }
-      
+
     }
 }

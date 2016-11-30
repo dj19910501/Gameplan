@@ -360,8 +360,7 @@
             }
             $('#' + reportTableId).find('.objbox').find('table').find('tr').each(function (i, row) {
                 $(row).find('td').each(function (j, cell) {
-                    if (j > 1) {
-                        try {
+                    if (j > 1) {                      
                             var originalValue = $(cell).text();
                             $(cell).text(ME_number_format(originalValue, 2, '.', ','));
                             $(cell).attr('title', originalValue);
@@ -370,10 +369,7 @@
                             $(".north").tooltip({
                                 'container': 'body',
                                 'placement': 'bottom'
-                            });
-                        } catch (e) {
-                        }
-
+                            }); 
                     }
                 });
             });
@@ -558,8 +554,7 @@
 
     });
 
-    function getFiscalDateRange() {
-        try {
+    function getFiscalDateRange() {      
             var cbMainDate = function (start, end, label) {
                 console.log(start.toISOString(), end.toISOString(), label);
                 $('div[id=reportrange]').each(function () {
@@ -603,10 +598,7 @@
                 optionSet1.endDate = '@Sessions.EndDate';
                 $(this).daterangepicker(optionSet1, cbMainDate);
             });
-        }
-        catch (err) {
-
-        }
+       
     }
 
     function toggleOwner(obj) {
@@ -688,11 +680,9 @@
             var url = '@Url.Action("/LoadReportTablePartial/")';
             document.body.style.overflow = "hidden";          
             var params = {};
-            params.Id = id;
-            params.DbName = '@Enums.ApplicationCode.RPC.ToString()';
+            params.Id = id;            
             params.Container = "divChart" + DashboardContentId;
-            params.SDV = SelectedDimensionValue;
-            params.TopOnly = 'False';
+            params.SDV = SelectedDimensionValue;            
             params.ViewBy = ViewBy;
             params.StartDate = StartDate;
             params.EndDate = EndDate;
@@ -714,6 +704,7 @@
             });         
         }
         catch (e) {
+            $("divChart" + DashboardContentId).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
         }
     }
 </script>

@@ -61,3 +61,6 @@ FROM dbo.Plan_Campaign_Program_Tactic_LineItem_Actual A
    JOIN dbo.Transactions TX ON TX.TransactionId = M.TransactionId
 WHERE D.PlanId = @PlanId
 ORDER BY D.PlanTacticId, D.PlanLineItemId
+
+--List all transactions to see if AmountAttributed and LastProcessed set 
+SELECT * FROM dbo.Transactions WHERE ClientID = @ClientId ORDER BY LastProcessed DESC

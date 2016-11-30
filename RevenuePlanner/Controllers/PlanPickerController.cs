@@ -35,9 +35,14 @@ namespace RevenuePlanner.Controllers
             return _planPicker.GetPrograms(campaignId);
         }
 
-        public IEnumerable<PlanItem> GetTatics(int programId)
+        public IEnumerable<PlanItem> GetTactics(int programId)
         {
-            return _planPicker.GetTatics(programId);
+            return _planPicker.GetTactics(programId);
+        }
+        
+        public IEnumerable<String> GetYears()
+        {
+            return _planPicker.GetYears(Sessions.User.CID);
         }
     }
 }

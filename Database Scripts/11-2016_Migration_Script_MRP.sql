@@ -989,6 +989,22 @@ BEGIN
 	WHERE dbo.Plan_Campaign_Program_Tactic_LineItem_Actual.PlanLineItemId = A.PlanLineItemId 
 		AND dbo.Plan_Campaign_Program_Tactic_LineItem_Actual.Period = A.Period
 
+
+	--update transactions table with AmountAttributed and LastProcessed
+	UPDATE dbo.Transactions
+	SET AmountAttributed = A.TotalAttributed, 
+	    LastProcessed = GETDATE()
+	FROM (	
+			SELECT SUM(A.Value) AS TotalAttributed, TX.TransactionId 
+			FROM dbo.Transactions TX 
+				JOIN dbo.TransactionLineItemMapping M ON M.TransactionId = TX.TransactionId
+				JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = M.LineItemId 
+				JOIN dbo.Plan_Campaign_Program_Tactic T ON T.PlanTacticId = L.PlanLineItemId
+				JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual A ON A.PlanLineItemId = M.LineItemId AND A.Period = [INT].Period(T.StartDate, TX.AccountingDate)
+			WHERE TX.TransactionId IN (SELECT TransactionID FROM Deleted UNION ALL SELECT TransactionId FROM INSERTED)
+			GROUP BY TX.TransactionId
+	) A
+
 END
 Go
 -- =============================================
@@ -2253,7 +2269,8 @@ BEGIN
 	GROUP BY BudgetDetailId
 
 	INSERT INTO @ResultFinanceData(Permission,BudgetDetailId,ParentId,Name,[Owner],TotalBudget,TotalForecast,TotalPlanned,LineItems,[User])
-	SELECT DISTINCT R.Permission,R.BudgetDetailId,R.ParentId,R.Name,R.[Owner],R.TotalBudget,R.TotalForecast,LineItem.TotalPlanned,L.LineItems,usrcnt.[User]
+	SELECT DISTINCT R.Permission,R.BudgetDetailId,R.ParentId,R.Name,R.[Owner],R.TotalBudget,R.TotalForecast,LineItem.TotalPlanned,
+	ISNULL(L.LineItems,0) AS LineItems,ISNULL(usrcnt.[User],0) AS [User]
 	FROM @tblResult R
 	LEFT JOIN @tblLineItemIds L on R.BudgetDetailId = L.BudgetDetailId
 	LEFT JOIN 
@@ -2984,11 +3001,11 @@ BEGIN
 
 			  Declare @CustomFieldIDs varchar(max)=''
 
-			 SELECT  @CustomFieldIDs = COALESCE(@CustomFieldIDs + ',', '') + CONVERT(varchar(100), CF.[CustomFieldId])  + '_null'  FROM [Hive9ProdGP].[dbo].[CustomField] CF
+			 SELECT  @CustomFieldIDs = COALESCE(@CustomFieldIDs + ',', '') + CONVERT(varchar(100), CF.[CustomFieldId])  + '_null'  FROM [CustomField] CF
 			 inner join CustomFieldType CT on CT.CustomFieldTypeId = CF.CustomFieldTypeId and CT.name = 'DropDownList'
 			  where  CF.EntityType = 'Tactic'  and CF.isdeleted = 0 and CF.IsDisplayForFilter = 1 AND CF.ClientId = @ClientId 
              AND ( CF.[CustomFieldId] NOT IN
-			  (select  CAST((CASE WHEN REPLACE(FilterName,'CF_','') NOT LIKE '%[^0-9]%' THEN REPLACE(FilterName,'CF_','') END) AS INT)  from [Hive9ProdGP].DBO.Plan_UserSavedViews where Userid=@userId and FilterName like'CF_%')
+			  (select  CAST((CASE WHEN REPLACE(FilterName,'CF_','') NOT LIKE '%[^0-9]%' THEN REPLACE(FilterName,'CF_','') END) AS INT)  from Plan_UserSavedViews where Userid=@userId and FilterName like'CF_%')
 			  )
 
 			   if( LEFT(@CustomFieldIDs,1) = ',')

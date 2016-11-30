@@ -70,7 +70,7 @@ namespace RevenuePlanner.Services.Transactions
         public DateTime? LastProcessed { get; set; }
     }
 
-    public class LinkedLineItems
+    public class LinkedLineItem
     {
         public int LineItemId { get; set; }
         public string Title { get; set; }
@@ -91,7 +91,7 @@ namespace RevenuePlanner.Services.Transactions
         public double TotalLinkedCost{ get; set; }
         public double PlannedCost { get; set; }
         public double ActualCost { get; set; }   
-        public List<LinkedLineItems> LineItems {get; set;}
+        public List<LinkedLineItem> LineItems {get; set;}
     }
 
     /// <summary>
@@ -138,20 +138,20 @@ namespace RevenuePlanner.Services.Transactions
         /// <param name="clientId"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="unprocessdedOnly"></param>
+        /// <param name="unprocessedOnly"></param>
         /// <returns></returns>
-        int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true);
+        int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessedOnly = true);
         /// <summary>
         /// returns a page of transactions according page size and page index
         /// </summary>
         /// <param name="clientId"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="unprocessdedOnly"></param>
+        /// <param name="unprocessedOnly"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null,  int pageIndex = 1, int pageSize = 10000);
+        List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessedOnly = true, List<ColumnFilter> columnFilters = null,  int pageIndex = 1, int pageSize = 10000);
 
         List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId);
 
@@ -169,9 +169,9 @@ namespace RevenuePlanner.Services.Transactions
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <param name="searchText"></param>
-        /// <param name="unprocessdedOnly"></param>
+        /// <param name="unprocessedOnly"></param>
         /// <returns></returns>
-        List<Transaction> SearchForTransactions(int clientId, DateTime start, DateTime end, string searchText, bool unprocessdedOnly = true);
+        //List<Transaction> SearchForTransactions(int clientId, DateTime start, DateTime end, string searchText, bool unprocessedOnly = true);
 
         /// <summary>
         /// This method handles both new mapping as well as updating existing mappings 
