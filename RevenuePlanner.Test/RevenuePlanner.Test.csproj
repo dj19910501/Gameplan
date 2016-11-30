@@ -96,6 +96,7 @@
     <Compile Include="Controllers\PlanControllerTest.cs" />
     <Compile Include="Controllers\ReportControllerTest.cs" />
     <Compile Include="Controllers\ColumnViewControllerTest.cs" />
+    <Compile Include="Controllers\MeasureDashboardControllerTest.cs" />
     <Compile Include="Controllers\UserControllerTest.cs" />
     <Compile Include="Helper\CommonTest.cs" />
     <Compile Include="Helper\ClonehelperTest.cs" />
@@ -160,6 +161,7 @@
     <None Include="Resource\GamePlan_Data-1.xls" />
     <None Include="Resource\GamePlan_Data.xls" />
     <None Include="Resource\Login.xls" />
+    <None Include="Resource\MeasureReportData.xls" />
     <None Include="Service References\BDSService\BDSService1.wsdl" />
     <None Include="Service References\BDSService\BDSService4.xsd">
       <SubType>Designer</SubType>
