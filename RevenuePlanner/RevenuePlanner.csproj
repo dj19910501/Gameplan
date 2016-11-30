@@ -331,11 +331,10 @@
     <Content Include="Views\Finance\Transactions.cshtml" />
     <None Include="web-assets\build\check-npm-install.js" />
     <None Include="web-assets\build\check-npm-version.js" />
-    <Content Include="web-assets\build\include-js.ejs" />
+    <Content Include="web-assets\build\include-css.htm" />
     <None Include="web-assets\build\prebuild.js" />
     <None Include="web-assets\build\vsbuild.cmd" />
     <None Include="web-assets\build\webpack.config.js" />
-    <Content Include="web-assets\build\include-css.ejs" />
     <None Include="web-assets\src\**" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left.gif" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left_abs.gif" />
@@ -846,6 +845,7 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+    <Content Include="web-assets\build\include-js.htm" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
