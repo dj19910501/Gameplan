@@ -2125,29 +2125,28 @@ RETURNS
 )
 AS
 BEGIN
-	-- SELECT * FROM GetLineItemIdsByBudgetDetailId(2807)
+		-- SELECT * FROM GetLineItemIdsByBudgetDetailId(2807)
 	
 		-- For child records, Get comma separated LineItemIds by BudgetDetailId 
-		;WITH MyData AS(
-		select L.BudgetDetailId,L.PlanLineItemId 
-		from LineItem_Budget L
-		inner join Budget_Detail B ON B.Id = L.BudgetDetailId
-		AND B.BudgetId = @BudgetId
+		;WITH MyData AS
+		(
+			SELECT L.BudgetDetailId,L.PlanLineItemId 
+			FROM LineItem_Budget L
+			INNER JOIN Budget_Detail B ON B.Id = L.BudgetDetailId AND B.BudgetId = @BudgetId
+			WHERE B.IsDeleted = 0
 		)
 		
 		INSERT INTO @tblLineItem(BudgetDetailId,LineItemCount,PlanLineItemIds)
-		SELECT BudgetDetailId,Count(*)as LineItemCount, PlanLineItemId = STUFF((
+		SELECT BudgetDetailId,COUNT(*)as LineItemCount, PlanLineItemId = STUFF((
 		    SELECT ', ' + CAST(PlanLineItemId AS VARCHAR) FROM MyData
 		    WHERE BudgetDetailId = x.BudgetDetailId
 		    FOR XML PATH(''), TYPE).value('.[1]', 'nvarchar(max)'), 1, 2, '')
 		FROM MyData x
 		GROUP BY BudgetDetailId;
 
-
 	RETURN 
 END
 GO
-
 
 -- DROP AND CREATE FUNCTION
 IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'GetFinanceBasicData') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
@@ -2183,7 +2182,7 @@ AS
 
 BEGIN
 	
-	-- select * from [dbo].GetFinanceBasicData(2807,24,'470,308,104',470)
+	-- SELECT * FROM [dbo].GetFinanceBasicData(2807,24,'470,308,104',470)
 	
 	DECLARE @tblUserIds TABLE (UserId INT)
 
@@ -2290,12 +2289,15 @@ BEGIN
 		[dbo].[Budget_Detail] BD 
 		INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
 		INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
+		WHERE BD.IsDeleted=0 AND BD.BudgetId = @BudgetId AND PCPTL.LineItemTypeId IS NOT NULL and PCPTL.IsDeleted = 0
 		GROUP BY BD.Id
 	) LineItem ON L.BudgetDetailId = LineItem.BudgetDetailId
 
 	RETURN 
 END
 GO
+
+
 
 IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalBudgetForecastMarketingBudget]'))
 BEGIN
@@ -2547,7 +2549,6 @@ BEGIN
 END
 GO
 
-
 -- DROP AND CREATE STORED PROCEDURE [dbo].[GetFinanceCustomfieldColumnsData]
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[GetFinanceCustomfieldColumnsData]') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
@@ -2571,7 +2572,7 @@ CREATE PROCEDURE [dbo].[GetFinanceCustomfieldColumnsData]
 AS
 BEGIN
 
-	--Exec GetFinanceCustomfieldColumnsData 2807,24
+	-- Exec GetFinanceCustomfieldColumnsData 2766,24
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
@@ -2582,18 +2583,16 @@ BEGIN
 		Declare @columns varchar(max)
 		Declare @drpdCustomType varchar(50)='DropDownList'
 		
-		SELECT @columns= COALESCE(@columns+', ' ,'')+C.Name+'_'+Cast(C.CustomFieldId as varchar(30))
+		SELECT @columns= COALESCE(@columns+', ' ,'')+C.Name
 		FROM Budget_ColumnSet A
 		INNER JOIN Budget_Columns B ON A.Id= B.Column_SetId
 		INNER JOIN CustomField C ON B.CustomFieldId = C.CustomFieldId and C.EntityType='Budget'
-		LEFT JOIN CustomField_Entity CF ON C.CustomFieldId = CF.CustomFieldId and EntityID IN (select Id FROM Budget_Detail where BudgetId = @budgetID and IsDeleted=0)
-		LEFT JOIN CustomFieldOption CFO ON CF.Value = CAST(CFO.CustomFieldOptionId AS INT)
-		WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND A.ClientId = @clientID AND MapTableName = 'CustomField_Entity'
+		WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND A.ClientId = @clientID AND MapTableName = 'CustomField_Entity'
 		
 		SET @query = '
 		SELECT *
 		FROM (
-		     SELECT C.Name+''_''+Cast(C.CustomFieldId as varchar(30)) as Name,CF.EntityId as BudgetDetailId, 
+		     SELECT C.Name as Name,CF.EntityId as BudgetDetailId, 
 			 		CASE 
 					WHEN CT.Name='''+@drpdCustomType+''' THEN CFO.Value ELSE CF.Value
 				END as Value
@@ -2603,15 +2602,16 @@ BEGIN
 			INNER JOIN CustomFieldType CT ON C.CustomFieldTypeId = CT.CustomFieldTypeId
 			LEFT JOIN CustomField_Entity CF ON C.CustomFieldId = CF.CustomFieldId and EntityID IN (select Id FROM Budget_Detail where BudgetId = '+Cast(@budgetID as varchar(20)) +' and IsDeleted=0) 
 			--INNER JOIN Budget_Detail BD ON CF.EntityId = BD.Id and BD.IsDeleted=0 and BD.BudgetId ='+Cast(@budgetID as varchar(20)) +'
-			LEFT JOIN CustomFieldOption CFO ON CF.Value = CAST(CFO.CustomFieldOptionId AS nvarchar(30)) and CT.Name='''+@drpdCustomType+'''
-			WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND A.ClientId = '+Cast(@clientID as varchar(20))+' AND MapTableName = ''CustomField_Entity'' and IsNUll(CF.EntityId,'''') <> ''''
+			LEFT JOIN CustomFieldOption CFO ON CF.Value = CAST(CFO.CustomFieldOptionId AS nvarchar(30)) and CT.Name='''+@drpdCustomType+''' AND CFO.IsDeleted = 0 
+			WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND 
+			A.ClientId = '+Cast(@clientID as varchar(20))+' AND MapTableName = ''CustomField_Entity'' and IsNUll(CF.EntityId,'''') <> ''''
 		) as s
 		PIVOT
 		(
 		    MIN(Value)
 		    FOR [Name] IN ('+@columns+')
 		)AS pvt'
-	EXEC(@query)
+	EXEC (@query)
 END
 GO
 

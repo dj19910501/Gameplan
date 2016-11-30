@@ -1,5 +1,5 @@
 
-    BEGIN
+BEGIN
 	-- Update Budget values into [MV].[PreCalculatedMarketingBudget] table
 	UPDATE PreCal SET Y1_Budget = [Y1],Y2_Budget = [Y2],
 					  Y3_Budget = [Y3],Y4_Budget = [Y4],
@@ -85,6 +85,7 @@ BEGIN
 		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget FROM Budget A
 		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
 		LEFT JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+		WHERE A.IsDeleted = 0
 	) P
 	PIVOT
 	(
@@ -113,11 +114,13 @@ BEGIN
 		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
 		LEFT JOIN 
 		(
-			SELECT BD.Id AS BudgetDetailId,PCPTL.Period, SUM((ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100)) AS TotalPlanned FROM 
+			SELECT BD.Id AS BudgetDetailId,PCPTLC.Period, SUM((ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100)) AS TotalPlanned FROM 
 			[dbo].[Budget_Detail] BD 
 			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
-			GROUP BY BD.Id, PCPTL.Period
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PCPTLC ON PCPTL.PlanLineItemId = PCPTLC.PlanLineItemId
+			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
+			GROUP BY BD.Id, PCPTLC.Period
 		) LineItems ON B.Id = LineItems.BudgetDetailId
 		WHERE A.IsDeleted = 0
 	) P
@@ -142,11 +145,13 @@ BEGIN
 		LEFT JOIN 
 		(
 			-- Apply weightage on planned cost and sum up costs for all line items associated to the single budget 
-			SELECT BD.Id AS BudgetDetailId,PCPTL.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalPlanned FROM 
+			SELECT BD.Id AS BudgetDetailId,PCPTLC.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalPlanned FROM 
 			[dbo].[Budget_Detail] BD 
 			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
-			GROUP BY BD.Id, PCPTL.Period
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PCPTLC ON PCPTL.PlanLineItemId = PCPTLC.PlanLineItemId
+			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
+			GROUP BY BD.Id, PCPTLC.Period
 		) LineItems ON B.Id = LineItems.BudgetDetailId
 		WHERE A.IsDeleted = 0
 	) P
@@ -177,11 +182,13 @@ BEGIN
 		LEFT JOIN 
 		(
 			-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
-			SELECT BD.Id AS BudgetDetailId,PCPTL.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalActual FROM 
+			SELECT BD.Id AS BudgetDetailId,PCPTLA.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalActual FROM 
 			[dbo].[Budget_Detail] BD 
 			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
-			GROUP BY BD.Id, PCPTL.Period
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
+			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
+			GROUP BY BD.Id, PCPTLA.Period
 		) LineItems ON B.Id = LineItems.BudgetDetailId
 		WHERE A.IsDeleted = 0
 	) P
@@ -206,11 +213,13 @@ BEGIN
 		LEFT JOIN 
 		(
 			-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
-			SELECT BD.Id AS BudgetDetailId,PCPTL.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalActual FROM 
+			SELECT BD.Id AS BudgetDetailId,PCPTLA.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalActual FROM 
 			[dbo].[Budget_Detail] BD 
 			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
-			GROUP BY BD.Id, PCPTL.Period
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
+			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
+			GROUP BY BD.Id, PCPTLA.Period
 		) LineItems ON B.Id = LineItems.BudgetDetailId
 		WHERE A.IsDeleted = 0
 	) P
