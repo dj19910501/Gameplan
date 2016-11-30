@@ -1,12 +1,17 @@
 import Grid from 'dhtmlXGridObject';
 import resolveAppUri from 'util/resolveAppUri';
+import COLUMN_DEFAULTS from './transactionGridColumnDefaults';
 
-export default function createGrid($container, $grid) {
+function setupColumns(grid, headerMappings) {
+    grid.setHeader(headerMappings.map(m => m.ClientHeader).join(","));
+    grid.setInitWidths(headerMappings.map(m => COLUMN_DEFAULTS[m.Hive9Header].width || "150").join(","));
+    grid.setColAlign(headerMappings.map(m => COLUMN_DEFAULTS[m.Hive9Header].align || "left").join(","));
+}
+
+export default function createGrid(model, $container, $grid) {
     const grid = new Grid($grid.get(0));
 
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
-    grid.setHeader("Product Name,Internal Code,Price");
-    grid.setInitWidths("*,150,150");
-    grid.setColAlign("left,left,right");
+    setupColumns(grid, model.state.headerMappings);
     grid.init();
 }
