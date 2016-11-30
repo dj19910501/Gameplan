@@ -1,3 +1,78 @@
+-- START #2802: Added by Viral on 11/30/2016
+-- Desc: Adde User & Owner columns for Marketing Budget screen
+
+DECLARE @ClientId INT 	
+DECLARE @CreatedBy INT
+-- END: Please modify the below variable values as per requirement
+
+
+DECLARE @CustomeFieldTypeId INT -- fetch CustomeFieldTypeId from CustomFieldType table used for insert in customfield table
+DECLARE @ColumnSetId INT   -- fetch id from Budget_ColumnSet table used for insert in Budget_Columns table
+DECLARE @UserCustomFieldId INT --fetch inserted CustomFieldId in customfield table as UserCustomFieldId for further insert in Budget_Columns table
+DECLARE @OwnerCustomFieldId INT --fetch inserted CustomFieldId customfield table as UserCustomFieldId for further insert in Budget_Columns table
+
+
+  DECLARE db_cursor CURSOR FOR   --create cursor for get all clientid,createdby
+			select Distinct ClientId,CreatedBy 
+             FROM [dbo].[CustomField] where EntityType = 'Budget' and Name IN ('Budget','Forecast','Planned','Actual') and IsDeleted='0'
+			
+			OPEN db_cursor   
+			FETCH NEXT FROM db_cursor INTO @ClientId,@CreatedBy   
+			
+			WHILE @@FETCH_STATUS = 0   
+			BEGIN 
+
+				SELECT @CustomeFieldTypeId = CustomFieldTypeId  FROM [dbo].CustomFieldType WHERE Name = 'TextBox'  --get client specific CustomFieldTypeId for TextBox to insert CustomFieldTypeId for User,Owner 
+				SELECT TOP 1 @ColumnSetId = [Id]  FROM [dbo].[Budget_ColumnSet] where ClientId = @ClientId and IsDeleted='0' and Name ='Finance'  --get client specific ColumnSetId from Budget_ColumnSet
+ 
+
+				  IF NOT EXISTS(SELECT CustomFieldid FROM [dbo].[CustomField] WHERE Name = 'User' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0) -- check client specific User name already exists in CustomField Table
+					BEGIN
+					   INSERT INTO [dbo].[CustomField]
+						([Name] ,[CustomFieldTypeId],[Description] ,[IsRequired] ,[EntityType],[IsDeleted],[CreatedDate] ,[ModifiedDate] ,[IsDisplayForFilter] ,
+						[AbbreviationForMulti] ,[IsDefault] ,[IsGet],[ClientId],[CreatedBy],[ModifiedBy]) 
+
+							SELECT 'User', @CustomeFieldTypeId, null, 0, 'Budget', 0, GETDATE(), null, 0, 'MULTI', 0 , 0, @ClientId, @CreatedBy, 0  --insert new row in CustomField Table for User Name CustomField
+
+							 SELECT @UserCustomFieldId = SCOPE_IDENTITY() --get last inserted CustomFieldId  as UserCustomFieldId for further insert in Budget_Columns table
+							
+							IF NOT EXISTS(SELECT Id FROM [dbo].[Budget_Columns] WHERE Column_SetId = @ColumnSetId AND IsDeleted = 0 AND CustomFieldId = @UserCustomFieldId ) --check Column_Set specific same customfield for User already exist in Budget_Columns
+							BEGIN
+							INSERT INTO [dbo].[Budget_Columns]  ([Column_SetId],[CustomFieldId] ,[CreatedDate] ,[IsTimeFrame],[IsDeleted]
+							           ,[MapTableName],[ValueOnEditable] ,[ValidationType],[CreatedBy])
+							     
+								 SELECT  @ColumnSetId , @UserCustomFieldId , GETDATE() , 0, 0,'', 4, 'None', @CreatedBy --insert new row in Budget_Columns table for User Custom Field for Column_Set specific
+							END
+					END
+					
+					    IF NOT EXISTS(SELECT CustomFieldid FROM [dbo].[CustomField] WHERE Name = 'Owner' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0) --check client specific Owner name already exists in CustomField Table
+					BEGIN
+					   INSERT INTO [dbo].[CustomField]
+						([Name] ,[CustomFieldTypeId],[Description] ,[IsRequired] ,[EntityType],[IsDeleted],[CreatedDate] ,[ModifiedDate] ,[IsDisplayForFilter] ,
+						[AbbreviationForMulti] ,[IsDefault] ,[IsGet],[ClientId],[CreatedBy],[ModifiedBy]) 
+
+							SELECT 'Owner', @CustomeFieldTypeId, null, 0, 'Budget', 0, GETDATE(), null, 0, 'MULTI', 0, 0, @ClientId, @CreatedBy, 0--insert new row in CustomField Table for Owner Name CustomField
+
+							SELECT @OwnerCustomFieldId = SCOPE_IDENTITY() --get last inserted CustomFieldId as OwnerCustomFieldId  for further insert in Budget_Columns table
+							
+							IF NOT EXISTS(SELECT Id FROM [dbo].[Budget_Columns] WHERE Column_SetId = @ColumnSetId AND IsDeleted = 0 AND CustomFieldId = @OwnerCustomFieldId )--check Column_Set specific same customfield for Owner already exist in Budget_Columns
+							BEGIN
+							INSERT INTO [dbo].[Budget_Columns]  ([Column_SetId],[CustomFieldId] ,[CreatedDate] ,[IsTimeFrame],[IsDeleted]
+							           ,[MapTableName],[ValueOnEditable] ,[ValidationType],[CreatedBy])
+							     
+								 SELECT  @ColumnSetId , @OwnerCustomFieldId , GETDATE() , 0, 0,'', 4, 'None', @CreatedBy --insert new row in Budget_Columns table for User Custom Field for Column_Set specific
+							END
+					END
+
+
+			FETCH NEXT FROM db_cursor INTO @ClientId,@CreatedBy      
+			END   
+			
+			CLOSE db_cursor   
+			DEALLOCATE db_cursor
+
+-- END #2802: Added by Viral on 11/30/2016
+
 /****** Object:  StoredProcedure [INT].[PullLineItemActuals]    Script Date: 11/28/2016 12:26:49 PM ******/
 SET ANSI_NULLS ON
 GO
