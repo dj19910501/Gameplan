@@ -149,8 +149,9 @@ $('#btnbudget').click(function () {
     $('#exp-serach').css('display', 'none');
     RemoveAllHoneyCombData();
     RefershPlanHeaderCalc();
-    LoadBudgetGrid();
     ShowHideDataonBudgetScreen();
+    LoadBudgetGrid();
+
 
 });
 
@@ -171,6 +172,11 @@ function ShowHideDataonBudgetScreen() {
     $('.export-dd').find('#ExportXls').show();
     $('.export-dd').find('#ExportPDf').hide();
     $('.export-dd').find('#ExportCSV').hide();
+    $('#txtGlobalSearch').val('');
+    if ($('#ExpClose').css('display') == 'block') {
+        $('#ExpClose').css('display', 'none');
+        $('#ExpSearch').css('display', 'block');
+    }
 }
 
 

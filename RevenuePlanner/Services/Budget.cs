@@ -128,11 +128,11 @@ namespace RevenuePlanner.Services
                 List<PlanBudgetModel> SearchlistData = new List<PlanBudgetModel>();
                 if (string.IsNullOrEmpty(SearchBy) || SearchBy == Enums.GlobalSearch.ActivityName.ToString())
                 {
-                    SearchlistData = model.Where(a => a.ActivityName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                    SearchlistData = model.Where(a => a.ActivityName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.Trim().ToLower()))).ToList();
                 }
                 else
                 {
-                    SearchlistData = model.Where(a => a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                    SearchlistData = model.Where(a => a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.Trim().ToLower()))).ToList();
                 }
                 List<SearchParentDetail> parenttaskids = SearchlistData.Select(a => new SearchParentDetail
                 {
