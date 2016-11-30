@@ -409,7 +409,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
         $(".dhx_combo_edit").off("keydown");
         if (UpdateColumn == PlannedCostId || UpdateColumn == TargetStageGoalId) {
-
             $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
             HomeGrid.editor.obj.onkeypress = function (e) {
                 e = e || window.event;
@@ -434,7 +433,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
     }
     if (stage == 2) {
-
         if (nValue.trim() != null && nValue.trim() != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
             var oldAssetType = '';
             var NewValue = htmlDecode(nValue);
