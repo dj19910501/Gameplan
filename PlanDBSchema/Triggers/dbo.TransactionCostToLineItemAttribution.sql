@@ -88,4 +88,20 @@ BEGIN
 	WHERE dbo.Plan_Campaign_Program_Tactic_LineItem_Actual.PlanLineItemId = A.PlanLineItemId 
 		AND dbo.Plan_Campaign_Program_Tactic_LineItem_Actual.Period = A.Period
 
+
+	--update transactions table with AmountAttributed and LastProcessed
+	UPDATE dbo.Transactions
+	SET AmountAttributed = A.TotalAttributed, 
+	    LastProcessed = GETDATE()
+	FROM (	
+			SELECT SUM(A.Value) AS TotalAttributed, TX.TransactionId 
+			FROM dbo.Transactions TX 
+				JOIN dbo.TransactionLineItemMapping M ON M.TransactionId = TX.TransactionId
+				JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = M.LineItemId 
+				JOIN dbo.Plan_Campaign_Program_Tactic T ON T.PlanTacticId = L.PlanLineItemId
+				JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual A ON A.PlanLineItemId = M.LineItemId AND A.Period = [INT].Period(T.StartDate, TX.AccountingDate)
+			WHERE TX.TransactionId IN (SELECT TransactionID FROM Deleted UNION ALL SELECT TransactionId FROM INSERTED)
+			GROUP BY TX.TransactionId
+	) A
+
 END
