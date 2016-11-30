@@ -334,11 +334,11 @@ namespace RevenuePlanner.Services
                     List<GridDefaultModel> SearchlistData = new List<GridDefaultModel>();
                     if ( string.IsNullOrEmpty(SearchBy) || SearchBy == Enums.GlobalSearch.ActivityName.ToString())
                     {
-                        SearchlistData = lstSelectedColumnsData.Where(a => a.EntityTitle.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.ToLower()))).ToList();
+                        SearchlistData = lstSelectedColumnsData.Where(a => a.EntityTitle.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.Trim().ToLower()))).ToList();
                     }
                     else
                     {
-                        SearchlistData = lstSelectedColumnsData.Where(a => a.MachineName != null && a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.ToLower()))).ToList();
+                        SearchlistData = lstSelectedColumnsData.Where(a => a.MachineName != null && a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.Trim().ToLower()))).ToList();
                     }
                     List<SearchParentDetail> parenttaskids = SearchlistData.Select(a => new SearchParentDetail
                     {
@@ -2061,11 +2061,11 @@ namespace RevenuePlanner.Services
                 List<calendarDataModel> SearchlistData = new List<calendarDataModel>();
                 if (string.IsNullOrEmpty(SearchBy) || SearchBy == Enums.GlobalSearch.ActivityName.ToString())
                 {
-                    SearchlistData = calResultset.Where(a => a.text.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                    SearchlistData = calResultset.Where(a => a.text.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.Trim().ToLower()))).ToList();
                 }
                 else
                 {
-                    SearchlistData = calResultset.Where(a => a.machineName != null && a.machineName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                    SearchlistData = calResultset.Where(a => a.machineName != null && a.machineName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.Trim().ToLower()))).ToList();
                 }
                 List<SearchParentDetail> parenttaskids = SearchlistData.Select(a => new SearchParentDetail
                 {
