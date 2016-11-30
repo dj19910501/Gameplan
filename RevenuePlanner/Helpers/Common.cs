@@ -7350,6 +7350,9 @@ namespace RevenuePlanner.Helpers
                             List<CustomField> customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic)).ToList();
                             if (!customfieldlist.Any(customfield => customfield.IsRequired && !isDisplayForFilter))
                             {
+                                //Added by Preet Shah for #2862
+                                tx.Complete(); // complete transcation before return.
+
                                 return lstTactic;
                             }
 
@@ -7380,6 +7383,9 @@ namespace RevenuePlanner.Helpers
 
                             if (tblCustomFieldEntity == null || !tblCustomFieldEntity.Any())
                             {
+                                //Added by Preet Shah for #2862
+                                tx.Complete(); // complete transcation before return.
+
                                 return lstTactic;
                             }
                             // Add By Nishant Sheth
@@ -7448,6 +7454,9 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
+                            //Added by Preet Shah for #2862
+                            tx.Complete(); // complete transcation before return.
+
                             return lstTactic;
                         }
                     }
