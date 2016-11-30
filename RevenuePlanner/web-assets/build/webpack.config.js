@@ -77,7 +77,7 @@ var config = {
     output: {
         path: outputFolder,
         filename: libraryName + "-[hash]" + jsSuffix,
-        publicPath: ""
+        publicPath: undefined // ASP.NET app will inject a BASE_URL to tell us where the app is hosted and we will use this to set the path in main.js
     },
     bail: true,
     // Declare libraries that are loaded globally so we can still "import" them

@@ -81,21 +81,21 @@ namespace RevenuePlanner.UnitTest.Service
         public void Test_Transaction_GetTransactions()
         {
             // Get the whole list
-            List<Transaction> transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 1, 100);
+            List<Transaction> transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 0, 100);
             Assert.AreEqual(22, transactionList.Count);
 
             // Get Page 1
-            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 1, 10);
+            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 0, 10);
             Assert.AreEqual("39899", transactionList[0].ClientTransactionId);
             Assert.AreEqual(10, transactionList.Count);
             
             // Get Page 3
-            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 3, 10);
+            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 20, 10);
             Assert.AreEqual("85316", transactionList[0].ClientTransactionId);
             Assert.AreEqual(2, transactionList.Count);
 
             // Get Page 10 (only 22 items, should be zero but not throw exception
-            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 10, 10);
+            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, null, 90, 10);
             Assert.AreEqual(0, transactionList.Count);
 
             // TODOWCR: Finish unit test

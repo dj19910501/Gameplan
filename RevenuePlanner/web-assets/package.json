@@ -38,7 +38,9 @@
     "webpack": "^1.13.3"
   },
   "dependencies": {
+    "bootstrap-daterangepicker": "^2.1.24",
     "lodash": "^4.17.2",
+    "moment": "^2.17.0",
     "mresize": "^1.0.1"
   }
 }

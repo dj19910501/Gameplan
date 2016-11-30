@@ -154,7 +154,7 @@ namespace RevenuePlanner.Services.Transactions
 
         }
 
-        public List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null, int pageIndex = 1, int pageSize = 10000)
+        public List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null, int skip = 0, int take = 10000)
         {
 
             // TODOWCR: For paging, what do we order by? Creation date?
@@ -188,7 +188,7 @@ namespace RevenuePlanner.Services.Transactions
                 };
 
             // TODOWCR: It appears that linq's query for pagination is not terribly efficient (appears to be 3 embedded selects vs 2)
-            return sqlQuery.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+            return sqlQuery.Skip(skip).Take(take).ToList();
         }
 
         public List<Transaction> GetTransactionsForLineItem(int lineItemId)

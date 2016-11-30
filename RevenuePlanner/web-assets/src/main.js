@@ -3,6 +3,10 @@
 */
 import $ from 'jquery';
 import transactions from 'transactions';
+import resolveAppUri from 'util/resolveAppUri';
+
+// Tell webpack where to find our assets
+__webpack_public_path__ = resolveAppUri("web-assets/");
 
 function main() {
     // TODO: use a router.  For now, we just assume the Transactions page.

@@ -47,10 +47,10 @@ namespace RevenuePlanner.Controllers
             return _transaction.GetTransactionCount(Sessions.User.CID, start, end, unprocessedOnly);
         }
 
-        public IEnumerable<Transaction> GetTransactions(DateTime start, DateTime end, bool unprocessedOnly = true, int pageIndex = 1, int pageSize = 100)
+        public IEnumerable<Transaction> GetTransactions(DateTime start, DateTime end, bool unprocessedOnly = true, int skip = 0, int take = 10000)
         {
             //Potential data transformation or triming per client per column heading mapping
-            return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, null, pageIndex, pageSize);
+            return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, null, skip, take);
         }
 
         public IEnumerable<Transaction> GetTransactionsForLineItem(int lineItemId)
