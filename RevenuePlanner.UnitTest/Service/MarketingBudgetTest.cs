@@ -12,6 +12,8 @@ namespace RevenuePlanner.UnitTest.Service
         #region Test Data 
         private const int ClientId = 24; //demo client     
         private const string BudgetTitle = "ZebraAdmin";
+        private const int BudgetId = 80;
+        private const int BudgetDetailId = 752;
         #endregion Test Data
 
         public MarketingBudgetTest()
@@ -26,12 +28,12 @@ namespace RevenuePlanner.UnitTest.Service
             Assert.IsTrue(res.Count > 0);
         }
 
-        public void Test_MarketingBudget_GetOtherBudgetId()
+        public void Test_MarketingBudget_DeleteBudget()
         {
-            var res = _marketingBudget.GetOtherBudgetId(ClientId);
-            Assert.IsTrue(res > 0);
+            var res = _marketingBudget.DeleteBudget(BudgetDetailId, ClientId);
+            Assert.IsTrue(res >= 0);
         }
-        
+
     }
 
     /// <summary>

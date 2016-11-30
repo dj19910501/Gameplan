@@ -56,6 +56,16 @@ namespace RevenuePlanner.Controllers
             return View(MarketingActivities);
         }
 
+        public JsonResult RefreshBudgetList()
+        {
+
+            #region Bind Budget dropdown on grid
+            List<BindDropdownData> budgetList = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
+            return Json(budgetList, JsonRequestBehavior.AllowGet);
+            #endregion
+
+        }
+
         public List<LineItemAllocatingAccount> GetAccountsForLineItem(int lineItemId)
         {
             //Do whatever needed here
@@ -117,34 +127,42 @@ namespace RevenuePlanner.Controllers
         {
             throw new NotImplementedException();
         }
-
-        public ActionResult DeleteBudgetData(string SelectedRowIDs, string mainTimeFrame, string currentBudgetId, string ListofCheckedColums = "")
+        /// <summary>
+        /// Function to deleting budget data and its child heirarchy.
+        /// Added By: Rahul Shah on 11/30/2016.
+        /// </summary>
+        /// <param name="SelectedBudgetId">Budget Detail Id.</param>
+        /// <param name="CurrentBudgetId">Budget Id.</param>        
+        /// <returns>Return Budget Id.</returns>
+        public JsonResult DeleteBudgetData(string SelectedBudgetId, string BudgetId)
         {
+            #region Delete Budget   
 
-            int ClientId = Sessions.User.CID;  //Assign ClientId from Session
-            #region Delete Budget Fields
-            if (SelectedRowIDs != null && SelectedRowIDs != "")
+            if (SelectedBudgetId != null && SelectedBudgetId != "")
             {
-                List<DeleteRowID> Values = JsonConvert.DeserializeObject<List<DeleteRowID>>(SelectedRowIDs); // Deserialize Data 
-                int Selectedids = Values.Select(ids => int.Parse(ids.Id.ToString())).FirstOrDefault();
-                _MarketingBudget.DeleteBudgetData(Selectedids, ClientId); // call DeleteBudgetData function to delete selected data.
-            }
-            List<BindDropdownData> lstchildbudget = _MarketingBudget.GetBudgetlist(ClientId); // get Child budget list.
-            int _budgetId = 0, _currentBudgetId = 0;
-            if (lstchildbudget != null)
-            {
-                _currentBudgetId = !string.IsNullOrEmpty(currentBudgetId) ? Int32.Parse(currentBudgetId) : 0;
-                //check if any child budet is exist or not if not then assign first budget's of client to display budget grid.
-                if (lstchildbudget.Any(budgt => budgt.Value == _currentBudgetId.ToString()))
-                    _budgetId = _currentBudgetId;
+                int _budgetId = 0, _currentBudgetId = 0;
+                int ClientId = Sessions.User.CID; //Assign ClientId from Session
+                int NextBudgetId = 0;
+
+                int Selectedid = !string.IsNullOrEmpty(SelectedBudgetId) ? Int32.Parse(SelectedBudgetId) : 0;
+
+                NextBudgetId = _MarketingBudget.DeleteBudget(Selectedid, ClientId); // call DeleteBudget function to delete selected data.
+
+                _currentBudgetId = !string.IsNullOrEmpty(BudgetId) ? Int32.Parse(BudgetId) : 0;
+
+                // assign next budget if current root budget is deleted to display budget other than the one deleted
+                if (NextBudgetId > 0)
+                {
+                    _budgetId = NextBudgetId;
+                }
                 else
                 {
-                    string strbudgetId = lstchildbudget.Select(bdgt => bdgt.Value).FirstOrDefault();
-                    _budgetId = !string.IsNullOrEmpty(strbudgetId) ? Int32.Parse(strbudgetId) : 0;
+                    _budgetId = _currentBudgetId;
                 }
+                return Json(new { IsSuccess = true, budgetId = _budgetId }, JsonRequestBehavior.AllowGet);
             }
             #endregion
-            return PartialView("_MainGrid"); //TODO : here we need to call bind finance grid function to load updated finance grid.
+            return Json(new { IsSuccess = false, budgetId = BudgetId }, JsonRequestBehavior.AllowGet);
 
             //End
         }

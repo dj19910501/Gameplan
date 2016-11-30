@@ -228,7 +228,6 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// New values expected to see update update (regardless monthly or quarterly viewz)
         /// <returns></returns>
         Dictionary<BudgetCloumn, double> UpdateBudgetCell(int budgetId, BudgetCloumn columnIndex, double oldValue, double newValue);
-        void DeleteBudgetData(int SelectedRowIDs, int ClientId);
-        int GetOtherBudgetId(int ClientId);
+        int DeleteBudget(int selectedBudgetId, int ClientId);
     }
 }

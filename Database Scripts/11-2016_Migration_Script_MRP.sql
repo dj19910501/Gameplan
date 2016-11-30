@@ -3098,6 +3098,111 @@ GO
 
 -- End - Added by Viral for Ticket #2763 on 11/29/2016
 
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'DeleteMarketingBudget') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE DeleteMarketingBudget
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Rahul Shah
+-- Create date: 11/30/2016
+-- Description:	SP to Delete Marketing Budget data
+-- =============================================
+
+CREATE  PROCEDURE [dbo].[DeleteMarketingBudget]
+@BudgetDetailId int = 0,
+@ClientId INT = 0
+AS 
+
+BEGIN
+	SET NOCOUNT ON
+	Declare @ErrorMeesgae varchar(3000) = ''
+	Declare @OtherBudgetId int = 0
+	Declare @ParentIdCount int = 0
+	Declare @LineItemBudgetCount int = 0
+	Declare @NextBudgetId int = 0
+	Declare @RowCount int = 0
+	BEGIN TRY
+		IF OBJECT_ID(N'tempdb..#BudgetDetailData') IS NOT NULL
+		BEGIN
+		  PRINT 'Table Exists'
+		  DROP TABLE #BudgetDetailData
+		END
+
+
+		-- GET 'N' Level Heirarchy for selected budget from budget detail table
+		;WITH BudgetCTE AS
+		( 
+			SELECT Id
+			,ParentId
+			,BudgetId
+			,IsDeleted
+			FROM [dbo].[Budget_Detail] 
+			WHERE ParentId = @BudgetDetailId OR Id = @BudgetDetailId
+			AND IsDeleted=0 OR IsDeleted is null
+			UNION ALL
+			SELECT a.Id
+			,a.ParentId
+			,a.BudgetId
+			,a.IsDeleted
+			FROM [dbo].[Budget_Detail] a 
+			INNER JOIN BudgetCTE s on a.ParentId=s.Id
+			where (a.IsDeleted=0 OR a.IsDeleted is null) and (s.IsDeleted=0 and s.IsDeleted is null)
+		)
+		 
+	SELECT  Distinct Id,ParentId,BudgetId into #BudgetDetailData FROM BudgetCTE Order by ID asc
+
+	Select @RowCount = COUNT(Id) From #BudgetDetailData 
+	IF @RowCount > 0 
+	BEGIN
+	-- check if any of the selected budgets is a root budget
+	Select @ParentIdCount=Count(*) From #BudgetDetailData where ParentId is null
+
+	--- if there is a parent/root budget found than delete that from budget table and get the next id of next budget that we should show on UI after deletion of root budget
+	If @ParentIdCount > 0 
+	BEGIN
+		UPDATE [dbo].[Budget] SET IsDeleted=1 Where Id = (Select Top(1) BudgetId From #BudgetDetailData)	
+		SELECT Top(1) @NextBudgetId = Id from Budget where ClientId=@ClientId and IsDeleted = 0 order by Name asc 	
+	END
+	
+	-- delete budget from budget details table
+	UPDATE [dbo].[Budget_Detail] SET IsDeleted=1 Where Id in (Select Id From #BudgetDetailData)
+	
+	Select @LineItemBudgetCount = Count(*) From [LineItem_Budget] where BudgetDetailId in (
+			Select Id from #BudgetDetailData)
+	
+	-- If any of the selected budgets are linked to a line item, update respective Line item detail records with other budget id
+	if @LineItemBudgetCount > 0
+	BEGIN
+	
+	-- get Other budget Ids
+	Select @OtherBudgetId = ChildDetail.Id From Budget_Detail ChildDetail
+	INNER JOIN Budget ParentDetail on  ParentDetail.Id = ChildDetail.BudgetId
+	where (ParentDetail.IsDeleted=0 OR ParentDetail.IsDeleted is null) and (ChildDetail.IsDeleted=0  OR ChildDetail.IsDeleted is null)
+	and ParentDetail.IsOther=1
+	and ParentDetail.ClientId=@ClientId
+	
+	Update [dbo].[LineItem_Budget] SET BudgetDetailId=@OtherBudgetId
+		Where Id In(
+		Select Id From [dbo].[LineItem_Budget] Where BudgetDetailId in (
+			Select Id from #BudgetDetailData))
+		END
+	
+	END
+	RETURN @NextBudgetId -- return next budget Id.
+	
+END TRY
+BEGIN CATCH
+	SET @ErrorMeesgae= 'Object=DeleteBudget , ErrorMessage='+ERROR_MESSAGE()
+	SELECT @ErrorMeesgae as 'ErrorMessage'
+END CATCH
+END
+
+GO
 
 
 -- ===========================Please put your script above this script=============================

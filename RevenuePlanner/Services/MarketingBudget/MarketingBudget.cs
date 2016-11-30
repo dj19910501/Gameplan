@@ -29,25 +29,10 @@ namespace RevenuePlanner.Services.MarketingBudget
         public List<BindDropdownData> GetBudgetlist(int ClientId)
         {
             //get budget name list for budget drop-down data binding.
-            List<BindDropdownData> lstBudget = new List<BindDropdownData>();
-            List<Models.Budget> customfieldlist = _database.Budgets.Where(bdgt => bdgt.ClientId == ClientId && (bdgt.IsDeleted == false || bdgt.IsDeleted == null) && !string.IsNullOrEmpty(bdgt.Name)).ToList();
-            lstBudget = customfieldlist.Select(budget => new BindDropdownData { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
-            return lstBudget;
-        }
-
-
-        public int GetOtherBudgetId(int ClientId)
-        {
-            // To get first OTHER budget Id for client.             
-            int BudgetId = (from ParentBudget in _database.Budgets
-                            join
-                                ChildBudget in _database.Budget_Detail on ParentBudget.Id equals ChildBudget.BudgetId
-                            where ParentBudget.ClientId == ClientId
-                            && (ParentBudget.IsDeleted == false || ParentBudget.IsDeleted == null)
-                            && ParentBudget.IsOther == true
-                            select ChildBudget.Id
-                        ).FirstOrDefault();
-            return BudgetId;
+            List<BindDropdownData> ddlBudget = new List<BindDropdownData>();
+            List<Models.Budget> lstBudget = _database.Budgets.Where(bdgt => bdgt.ClientId == ClientId && (bdgt.IsDeleted == false || bdgt.IsDeleted == null) && !string.IsNullOrEmpty(bdgt.Name)).ToList();
+            ddlBudget = lstBudget.Select(budget => new BindDropdownData { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+            return ddlBudget;
         }
 
         public List<BindDropdownData> GetColumnSet(int ClientId)
@@ -150,7 +135,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     }
                     else
                     {
-                        Data.Add("<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + row[Enums.DefaultGridColumn.Name.ToString()].ToString() + "' LICount='" + row[Enums.DefaultGridColumn.LineItems.ToString()].ToString() + "' onclick='CheckboxClick(this)' title='Delete' title='Delete' class='grid_Delete'></div>");
+                        Data.Add("<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + row[Enums.DefaultGridColumn.Name.ToString()].ToString() + "' LICount='" + row[Enums.DefaultGridColumn.LineItems.ToString()].ToString() + "' onclick='DeleteBudgetIconClick(this)' title='Delete' title='Delete' class='grid_Delete'></div>");
                     }
 
                 }
@@ -559,82 +544,41 @@ namespace RevenuePlanner.Services.MarketingBudget
         {
             throw new NotImplementedException();
         }
-
-        public void DeleteBudgetData(int SelectedRowIDs, int ClientId)
+        /// <summary>
+        /// Function to Call sp. DeleteMarketingBudget for deleting budget data and its child heirarchy.
+        /// Added By: Rahul Shah on 11/30/2016.
+        /// </summary>
+        /// <param name="selectedBudgetId">Budget Detail Id.</param>
+        /// <param name="ClientId">Client Id.</param>        
+        /// <returns>Return Budget Id.</returns>
+        public int DeleteBudget(int selectedBudgetId, int ClientId)
         {
-            #region Delete Fields
-            if (SelectedRowIDs != 0)
+            int NextBudgetId = 0; // 
+            try
             {
-                // To get Selected budget Data. 
-                List<BudgetDetailforDeletion> SelectedBudgetDetail = (from details in _database.Budget_Detail
-                                                                      where (details.ParentId == SelectedRowIDs || details.Id == SelectedRowIDs) && details.IsDeleted == false
-                                                                      select new BudgetDetailforDeletion
-                                                                      {
-                                                                          Id = details.Id,
-                                                                          BudgetId = details.BudgetId,
-                                                                          ParentId = details.ParentId,
-                                                                          IsDeleted = details.IsDeleted
-                                                                      }).ToList();
-
-                // To get Selected budget Data with its 'N' level heirarchy.
-                List<BudgetDetailforDeletion> BudgetDetailJoin = (from details in _database.Budget_Detail
-                                                                  join selectdetails in
-                                                                      (from details in _database.Budget_Detail
-                                                                       where (details.ParentId == SelectedRowIDs || details.Id == SelectedRowIDs) && details.IsDeleted == false
-                                                                       select new BudgetDetailforDeletion
-                                                                       {
-                                                                           Id = details.Id,
-                                                                           BudgetId = details.BudgetId,
-                                                                           ParentId = details.ParentId,
-                                                                           IsDeleted = details.IsDeleted
-                                                                       }) on details.ParentId equals selectdetails.Id
-                                                                  select new BudgetDetailforDeletion
-                                                                  {
-                                                                      Id = details.Id,
-                                                                      BudgetId = details.BudgetId,
-                                                                      ParentId = details.ParentId,
-                                                                      IsDeleted = details.IsDeleted
-                                                                  }).ToList();
-
-                List<BudgetDetailforDeletion> BudgetDetailData = SelectedBudgetDetail.Union(BudgetDetailJoin).ToList();
-                List<BudgetDetailforDeletion> BudgetDetailData1 = new List<BudgetDetailforDeletion>();
-                BudgetDetailData1 = BudgetDetailData.Distinct().ToList();
-                if (BudgetDetailData.Count > 0)
+                ///If connection is closed then it will be open
+                var Connection = _database.Database.Connection as SqlConnection;
+                if (Connection.State == System.Data.ConnectionState.Closed)
                 {
-                    BudgetDetailforDeletion ParentBudgetData = BudgetDetailData.Where(a => a.ParentId == null).Select(a => a).FirstOrDefault();
-                    List<int> BudgetDetailIds = BudgetDetailData.Select(a => a.Id).ToList();
-                    int OtherBudgetId = GetOtherBudgetId(ClientId);
+                    Connection.Open();
+                }
+                SqlCommand command = new SqlCommand("DeleteMarketingBudget", Connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@BudgetDetailId", selectedBudgetId);
+                command.Parameters.AddWithValue("@ClientId", ClientId);
 
-                    if (ParentBudgetData != null)
-                    {
-                        // Delete Budget From Budget Table
-                        RevenuePlanner.Models.Budget objBudget = _database.Budgets.Where(a => a.Id == ParentBudgetData.BudgetId && a.IsDeleted == false).FirstOrDefault();
-                        if (objBudget != null)
-                        {
-                            objBudget.IsDeleted = true;
-                            _database.Entry(objBudget).State = EntityState.Modified;
-                        }
-                    }
-
-                    // Update Line Item with Other Budget Id
-                    List<LineItem_Budget> LineItemBudgetList = _database.LineItem_Budget.Where(a => BudgetDetailIds.Contains(a.BudgetDetailId)).ToList();
-                    foreach (var LineitemBudget in LineItemBudgetList)
-                    {
-                        LineitemBudget.BudgetDetailId = OtherBudgetId;
-                        _database.Entry(LineitemBudget).State = EntityState.Modified;
-                    }
-
-                    // Delete Budget Id from Budget_Detail Table
-                    List<RevenuePlanner.Models.Budget_Detail> BudgetDetailList = _database.Budget_Detail.Where(a => BudgetDetailIds.Contains(a.Id)).ToList();
-                    foreach (var BudgetDetail in BudgetDetailList)
-                    {
-                        BudgetDetail.IsDeleted = true;
-                        _database.Entry(BudgetDetail).State = EntityState.Modified;
-                    }
-                    _database.SaveChanges();
+                SqlParameter returnParameter = command.Parameters.Add("NewParentId", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+                command.ExecuteNonQuery();
+                NextBudgetId = (int)returnParameter.Value;
+                
+                if (Connection.State == System.Data.ConnectionState.Open)
+                {
+                    Connection.Close();
                 }
             }
-            #endregion
+            catch { throw; }
+            return NextBudgetId; //return new budgetid if user delete root/Parent budget.
         }
     }
 }
