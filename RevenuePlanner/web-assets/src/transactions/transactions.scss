@@ -1,0 +1,28 @@
+$GRID_PADDING: 5px;
+
+.header {
+  padding-left: $GRID_PADDING;
+  padding-right: $GRID_PADDING;
+}
+
+.gridContainer {
+  position: absolute;
+  top: $GRID_PADDING;
+  bottom: $GRID_PADDING;
+  left: $GRID_PADDING;
+  right: $GRID_PADDING;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #ccc;
+
+  > .grid {
+    width: 100%;
+    height: 100%;
+    border: none !important;
+
+    // override a rule from the "legacy" styles.  ugh
+    //box-sizing: border-box !important;
+  }
+}

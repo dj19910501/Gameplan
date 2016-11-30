@@ -114,7 +114,7 @@ var config = {
                     engine: "util/templateEngine",
                     withImports: false,
                     prependFilenameComment: IS_RELEASE ? undefined : path.resolve("src"),
-                    variable: "data"
+                    variable: "o"
                 }
             }
         ]
