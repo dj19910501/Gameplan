@@ -7,6 +7,8 @@
   "engineStrict": true,
   "name": "revenue-planner",
   "scripts": {
+    "start": "npm run clean && npm run watch",
+    "watch": "webpack --config build/webpack.config.js --watch",
     "clean": "rimraf dist",
     "build": "webpack --config build/webpack.config.js",
     "cleanbuild": "npm run clean && npm run build"
