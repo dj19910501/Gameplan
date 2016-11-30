@@ -1,6 +1,6 @@
 import moment from 'moment';
 import $ from 'jquery';
-import {GET_HEADER_MAPPINGS_URI} from './apiUri';
+import {GET_HEADER_MAPPINGS_URI, GET_TRANSACTIONS_URI} from './apiUri';
 
 /**
  * We will use this default mapping if we are unable to retrieve a mapping from the server
@@ -43,7 +43,10 @@ export default class TransactionModel {
                 startDate: now.clone().subtract(1, 'year'),
                 includeProcessedTransactions: true,
             },
-            pageSize: 100, // TODO make user selectable and/or change default based on Browser speed
+            paging: {
+                skip: 0,
+                take: 100, // TODO make user selectable and/or change default based on Browser speed
+            },
             headerMappings: undefined,
         };
 
@@ -61,5 +64,30 @@ export default class TransactionModel {
             // notify listeners about the change
             $(this).trigger($.Event(`change-${key}`, {oldValue, newValue}));
         }
+    }
+
+    get GET_TRANSACTIONS_URI() {
+        const {filter, paging} = this.state;
+        const params = [
+            `start=${filter.startDate.format("YYYY-MM-DD")}`,
+            `end=${filter.endDate.format("YYYY-MM-DD")}`,
+            `unprocessedOnly=${!filter.includeProcessedTransactions}`,
+            `skip=${paging.skip}`,
+            `take=${paging.take}`,
+        ];
+
+        return `${GET_TRANSACTIONS_URI}?${params.join("&")}`;
+    }
+
+    getGridDataAsync() {
+        return $.getJSON(this.GET_TRANSACTIONS_URI).then(result => {
+            // Transform the grid data into the format that DHTMLX wants
+            return {
+                rows: result.map(record => ({
+                    id: record.TransactionId,
+                    data: this.state.headerMappings.map(h => record[h.Hive9Header])
+                })),
+            };
+        });
     }
 }

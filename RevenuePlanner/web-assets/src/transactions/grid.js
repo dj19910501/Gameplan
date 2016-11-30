@@ -14,4 +14,5 @@ export default function createGrid(model, $container, $grid) {
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
     setupColumns(grid, model.state.headerMappings);
     grid.init();
+    model.getGridDataAsync().then(r => grid.parse(r, "json"));
 }

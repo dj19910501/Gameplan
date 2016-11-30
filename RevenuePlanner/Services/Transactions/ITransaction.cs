@@ -142,16 +142,16 @@ namespace RevenuePlanner.Services.Transactions
         /// <returns></returns>
         int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessedOnly = true);
         /// <summary>
-        /// returns a page of transactions according page size and page index
+        /// returns at most <param name="take" /> transactions after skipping the first <param name="skip" />
         /// </summary>
         /// <param name="clientId"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <param name="unprocessedOnly"></param>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
         /// <returns></returns>
-        List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessedOnly = true, List<ColumnFilter> columnFilters = null,  int pageIndex = 1, int pageSize = 10000);
+        List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessedOnly = true, List<ColumnFilter> columnFilters = null,  int skip = 0, int take = 10000);
 
         List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId);
 
