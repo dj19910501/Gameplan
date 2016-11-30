@@ -2871,9 +2871,9 @@ BEGIN
 				,F.ParentId
 				,F.Name
 				-- Budget, Forecast, Planned, Actuals columns for Quarter 4
-				,(Y10_Budget * @CurrencyRate) AS Y10_Budget ,(Y10_Forecast * @CurrencyRate) AS Y10_Budget ,(Y10_Planned * @CurrencyRate) AS Y10_Budget ,(Y10_Actual * @CurrencyRate) AS Y10_Budget 
-				,(Y11_Budget * @CurrencyRate) AS Y11_Budget ,(Y11_Forecast * @CurrencyRate) AS Y11_Budget ,(Y11_Planned * @CurrencyRate) AS Y11_Budget ,(Y11_Actual * @CurrencyRate) AS Y11_Budget 
-				,(Y12_Budget * @CurrencyRate) AS Y12_Budget ,(Y12_Forecast * @CurrencyRate) AS Y12_Budget ,(Y12_Planned * @CurrencyRate) AS Y12_Budget ,(Y12_Actual * @CurrencyRate) AS Y12_Budget 
+				,(Y10_Budget * @CurrencyRate) AS Y10_Budget ,(Y10_Forecast * @CurrencyRate) AS Y10_Forecast ,(Y10_Planned * @CurrencyRate) AS Y10_Planned ,(Y10_Actual * @CurrencyRate) AS Y10_Actual 
+				,(Y11_Budget * @CurrencyRate) AS Y11_Budget ,(Y11_Forecast * @CurrencyRate) AS Y11_Forecast ,(Y11_Planned * @CurrencyRate) AS Y11_Planned ,(Y11_Actual * @CurrencyRate) AS Y11_Actual 
+				,(Y12_Budget * @CurrencyRate) AS Y12_Budget ,(Y12_Forecast * @CurrencyRate) AS Y12_Forecast ,(Y12_Planned * @CurrencyRate) AS Y12_Planned ,(Y12_Actual * @CurrencyRate) AS Y12_Actual 
 				
 				,F.TotalBudget * @CurrencyRate as 'Total_Budget'
 				,F.TotalForecast * @CurrencyRate as 'Total_Forecast'
