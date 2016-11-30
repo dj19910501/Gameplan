@@ -1,13 +1,12 @@
 ﻿@using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
-@model RevenuePlanner.Models.ReportTableParameters
+@model RevenuePlanner.Models.ReportParameters
 
 @{
-    string reportTableId = "ReportTableAll" + Model.DashboardContentId.ToString();
-    string TotalTableId = "ReporttotlaTableAll" + Model.DashboardContentId.ToString();
-    string formId = "Export_ViewAll_" + reportTableId;
+    //string reportTableId = "ReportTableAll" + Model.DashboardContentId.ToString();
+    //string TotalTableId = "ReporttotlaTableAll" + Model.DashboardContentId.ToString();
+    string formId = "Export_ViewAll_" + Model.Id;
     <style type="text/css">
-         /* Below CSS is necessary on page level */
         div.gridbox .objbox {
             width: inherit;
             /*Added by sunita for #685 21/1/2016*/
@@ -19,9 +18,56 @@
             overflow-x: hidden !important;
             overflow-y: hidden !important;
             width: inherit;
-        }              
-    </style>   
-    <div id="tbltoCSVdata_@reportTableId"></div>
+        }
+        /* */
+        table.dataTable thead .sorting_asc {
+            background: url("../images/new_sort_asc.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;
+        }
+
+        table.dataTable thead .sorting {
+            background: url("../images/new_sort_both.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;
+        }
+
+        table.dataTable thead .sorting_desc {
+            background: url("../images/new_sort_desc.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;
+        }
+
+        .TableRowsViewAll {
+            border-radius: 5px;
+            border: medium none;
+            color: black;
+            font-size: 12px !important;
+            height: 25px;
+            line-height: 15px;
+            margin-left: 10px;
+            background-color: #fff;
+        }
+
+        .ViewAllReportPopUp {
+            background-color: white;
+            margin: 30px auto;
+            text-align: center;
+            max-height: 700px;
+        }
+
+        .form-ViewAllReportPopUp {
+            border-radius: 5px;
+            left: 19%;
+            position: fixed;
+            text-align: center;
+            top: 0%;
+            z-index: 2002;
+            width: 60%;
+        }
+
+        .ViewAllReportPopUp .tab-head {
+            text-align: left;
+            background: #F8710E none repeat scroll 0 0;
+            color: #ffffff;
+            border: medium none;
+        }
+    </style>
+    <div id="tbltoCSVdata_@Model.Id"></div>
     <div class="container-fluid all-height">
         <div class="row-fluid calc-height">
             <div class="span12">
@@ -31,22 +77,20 @@
                         {
                             @Html.HiddenFor(x => x.DisplayName)
                             <div id="ViewAllDataModule">
-                                <div class="tab-head">@Model.DisplayName <a class="close-popup-btn"> Close</a>
-                                @*<img src="@Url.Content("~/content/images/help-icon.png")" alt="help" style="float:right; height:15px; width:15px; margin:13px;" title="Use shift key to allow sorting on multiple columns" />*@
-                                </div>
+                                <div class="tab-head">@Model.DisplayName<a class="close-popup-btn" onmouseover="this.style.color='white'">Close</a><img src="@Url.Content("~/content/images/help-icon.png")" alt="help" style="float:right; height:15px; width:15px; margin:13px;" title="Use shift key to allow sorting on multiple columns" /></div>
                                 <div class="home-chart-header  col-xs-12">
                                     <div class="row date-value-wrapper">
                                         <div class="col-xs-5">
-                                            <div class="datetitle">Date Range</div>
+                                            <div style="width: 100%">Date Range</div>
                                             <span class="lblheader">From: </span><span class="lblvalue">@Sessions.StartDate </span>
-                                            <span class="lblheader margin-left20">To: </span><span class="lblvalue">@Sessions.EndDate</span>
+                                            <span class="lblheader">To: </span><span class="lblvalue">@Sessions.EndDate</span>
                                         </div>
 
                                     </div>
                                 </div>
-                                <div class="tab-content-wrap tab-content-scroll">
+                                <div class="tab-content tab-content-scroll">
                                     <div class="table1-responsive" style="overflow: auto">
-                                        <div id="divViewReprtTable_@Model.DashboardContentId" class="table-popup">
+                                        <div id="divViewChartTable_@Model.Id" class="table-popup">
                                         </div>
 
                                     </div>
@@ -63,12 +107,12 @@
 <script type="text/javascript">
 
     $(function () {
-       
+
         $('.close-popup-btn').click(function () {
             close_popup();
         });
         //Following is function to close pop up.
-        function close_popup() {          
+        function close_popup() {
             if (document.body.style.overflow == "hidden") {
                 document.body.style.overflow = "visible";
             }
@@ -77,11 +121,11 @@
             $('#DivBackground').remove();
             $('#DivViewAll').remove();
         }
-        $(document).ready(function () {  
+        $(document).ready(function () {
+
             
-            var ReportDashboardID = '@Model.DashboardContentId';          
             var model = @Html.Raw(Json.Encode(Model.SDV));
-            var URL = '@Url.Content("~/MeasureDashboard/GetReportTable/")';
+            var URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
             //Prepare list of parameter to get report table.
             var params = {};
             params.Id = '@Model.Id';
@@ -92,9 +136,8 @@
             params.ViewBy = '@Model.ViewBy';
             params.StartDate ='@Model.StartDate';
             params.EndDate = '@Model.EndDate';
-            params.DashboardId = '@Model.DashboardId';
-            params.DashboardPageid = '@Model.DashboardPageid';
-            params.DashboardContentId ='@Model.DashboardContentId';
+            params.IsViewData = 'True';
+
 
             $.ajax({
                 url: URL,
@@ -102,11 +145,12 @@
                 traditional: true,
                 data: $.param(params, true),
                 dataType: "json",
-                success: function (data) {                  
-                    LoadReportTable(params.DashboardContentId, "divViewReprtTable_", data,"ReportTable","_wrapper",true);
+                success: function (data) {
+                    debugger;
+                    LoadReportTable(params.Id, "divViewChartTable_", data.data,"ReportTable","_wrapper");
                 },
                 error: function (err) {
-                    $("#divChart" + ReportDashboardID).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
+                    $("#divChart" + '@Model.Id').html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
                 }
             });
 

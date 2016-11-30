@@ -84,7 +84,6 @@
         border-left: 1px solid #ededed !important;
     }
     .tooltip{z-index:2222 !important;}
-
 </style>
 <div class="error-box data_error_box source-sans-proregular" id="divAggregationStatus">The data in the application is currently being updated, performance may be degraded during this process.<span><i style="cursor: pointer;" class="fa fa-times aggregationmsg"></i></span></div>
 <div class="col-sm-9  col-md-9 col-lg-10 main report-main">
@@ -129,9 +128,8 @@
 
                     <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); float:left; ">
                         <div class="tab-head">
-                           
                             @ReportGraph.DisplayName
-                            <span class="IconResize" id='@ReportGraph.ReportTableID' title="View All" clickon="ViewAll" reporttableid='@ReportGraph.ReportTableID' displayName="@ReportGraph.DisplayName" onclick="ViewAllContent(this);" dashboardcontentid='@ReportGraph.DashboardContentId'>
+                            <span class="IconResize" id='@ReportGraph.ReportTableID' title="View All" clickon="ViewAll" reporttableid='@ReportGraph.ReportTableID' reportgraphid='@ReportGraph.ReportID' displayName="@ReportGraph.DisplayName" onclick="ViewAllContent(this);" dashboardcontentid='@ReportGraph.DashboardContentId'>
                                 <i class="fa fa-info-circle"></i>
                             </span>
                         </div>
@@ -222,9 +220,8 @@
         //called update viewby function to update session
         UpdateViewBy();
         $('div[id^=divChart]').each(function () {
-            LoadReport(this);
+            LoadReport(this, appCode, "@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi", "@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured", '@ApiUrl', '@DashId', '@DashPageID');
         });
-
     }
     //insertation start for ticket no #246 05/09/2016
     function UpdateViewBy() {
@@ -247,70 +244,13 @@
 
     }
     //insertation start for ticket no #246 05/09/2016
+    //Moved function from cshtml to js so Following urlContent and appCode  parameter is define to access in js
+    var urlContent = '@Url.Content("~/")';
+    var appCode = '@Enums.ApplicationCode.RPC.ToString()'
 
-    function LoadReport(obj) {
-        var IsGraph = true;
-        var id = $(obj).attr('ReportGraphId');
-        var DashboardContentId = $(obj).attr('dashboardcontentid');
-        if (Number(id) == 0) {
-            id = $(obj).attr('ReportTableId');
-            IsGraph = false;
-        }
-        var ViewBy = $("#ddlViewBy").val();
 
-        var StartDate = '';
-        var EndDate = '';
-        $('div[id=reportrange]').each(function () {
-            StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
-            EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
-        });
-
-        var SelectedDimensionValue = GetSelectedValues();
-        var URL;
-        if ('@ApiUrl' == '') {
-            $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured");
-        }
-        else {
-            var params = {};
-            params.Id = id;
-            params.DbName = '@Enums.ApplicationCode.RPC.ToString()';
-            params.Container = $(obj).attr('id');
-            params.SDV = SelectedDimensionValue;
-            params.TopOnly = 'True';
-            params.ViewBy = ViewBy;
-            params.StartDate = StartDate;
-            params.EndDate = EndDate;
-            if (IsGraph) {
-                URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
-            }
-            else {
-                params.DashboardId = '@DashId';
-                params.DashboardPageid = '@DashPageID';
-                params.DashboardContentId = DashboardContentId;
-                URL = '@Url.Content("~/MeasureDashboard/GetReportTable/")';
-            }
-
-            $.ajax({
-                url: URL,
-                async: true,
-                traditional: true,
-                data: $.param(params, true),
-                dataType: "json",
-                success: function (data) {
-                    if (IsGraph) {
-                        eval(JSON.parse(data.data));
-                    }
-                    else {
-                        LoadReportTable(DashboardContentId, "divChart", data);
-                    }
-                },
-                error: function (err) {
-                    $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
-                }
-            });
-        }
-    }
-     @*Following function is used to get selected filters value*@
+   
+    @*Following function is used to get selected filters value*@
     function GetSelectedValues() {
         var ulListing = [];
         var SelectedDimensionValue = [];
@@ -329,118 +269,9 @@
         });
         return SelectedDimensionValue;
     }
-    //Following common function is created which will be used to load reporttable for dashboard and viewall both. 
-    function LoadReportTable(DashboardContentId, divName, data) {
-        $('#' + divName + DashboardContentId).html(data);
-        var reportTableId = "ReportTable" + DashboardContentId;
-        var defaultRows = $('#hdn_' + reportTableId).attr('defaultRows');
-        var defaultSortColumn = $('#hdn_' + reportTableId).attr('defaultSortColumn');
-        var defaultSortOrder = $('#hdn_' + reportTableId).attr('defaultSortOrder');
-        if (defaultSortOrder != 'asc')
-            defaultSortOrder = 'des';
 
-        var ShowFooterRow = $('#hdn_' + reportTableId).attr('ShowFooterRow');
 
-        $('#' + reportTableId + '_wrapper').css('overflow-x', 'auto');
-        $('#' + reportTableId + '_wrapper').css('overflow-y', 'auto');
-        $('#' + reportTableId + '_wrapper').css('height', '100%');
-
-        if (data.indexOf('ReportTable' + DashboardContentId) > -1) {
-            var mygrid = dhtmlXGridFromTable(reportTableId);
-
-            $('#' + reportTableId + '_wrapper').find('.objbox').find('table').attr('id', reportTableId + '_tbl');
-
-            var tblTotal = $(mygrid.obj).find('.totalRow').clone();
-            $(mygrid.obj).find('tbody').find('.totalRow').remove();
-
-            if (ShowFooterRow == 'True') {
-                var foot = $(mygrid.obj).find('tfoot');
-                if (!foot.length) foot = $('<tfoot>').appendTo(mygrid.obj);
-                foot.append($(tblTotal));
-            }
-            $('#' + reportTableId).find('.objbox').find('table').find('tr').each(function (i, row) {
-                $(row).find('td').each(function (j, cell) {
-                    if (j > 1) {                      
-                            var originalValue = $(cell).text();
-                            $(cell).text(ME_number_format(originalValue, 2, '.', ','));
-                            $(cell).attr('title', originalValue);
-                            $(cell).addClass('north');
-                            $(cell).attr('title', $(cell).attr('data-original-title'));
-                            $(".north").tooltip({
-                                'container': 'body',
-                                'placement': 'bottom'
-                            }); 
-                    }
-                });
-            });
-
-            mygrid.setEditable(false);
-            mygrid.enableAutoHeight(true);
-            mygrid.setColumnHidden(1, true);
-
-            $('#' + reportTableId).find('tfoot').find('.totalRow').find('td').each(function (j, cell) {
-                if (j == 1) {
-                    $(this).css('display', 'none');
-                }
-            });
-            $('#' + reportTableId).find('tfoot').find('.goalRow').find('td').each(function (j, cell) {
-                if (j == 1) {
-                    $(this).css('display', 'none');
-                }
-                else {
-                    if ($(cell).text() == "0" || $(cell).text().trim() == "") {
-                        $(this).text('');
-                        $(this).removeAttr('data-toggle');
-                        $(this).removeAttr('data-original-title');
-                        $(this).removeAttr('data-sort');
-                    }
-                }
-            });
-
-            mygrid.enableAutoWidth(true);
-
-            var count = mygrid.getColumnsNum();
-            for (var j = 0; j < count; j++) {
-                mygrid.adjustColumnSize(j);
-            }
-            var widthx = (parseInt($('#' + reportTableId).parent().width()) * 75) / 100;
-
-            $('#' + reportTableId).css('margin', '0 auto');
-            $('#' + reportTableId).css('width', '100%');
-            $('#' + reportTableId).find('.xhdr').css('width', '100%');
-            $('#' + reportTableId).find('.hdr').css('width', '100%');
-
-            var widthArray = [];
-            $('#' + reportTableId).find('.xhdr table' + ' tr:first').find('th').each(function (key, data) {
-                $('#' + reportTableId).find('.objbox table' + ' tr:first').find('th').each(function (key1, data1) {
-                    if (key == key1) {
-                        var totalWt = $(data).width();
-                        widthArray.push(totalWt);
-                    }
-                });
-            });
-            $('#' + reportTableId).find('.objbox table' + ' tr:first').find('th').each(function (j, data1) {
-                for (var i = 0; i < widthArray.length; i++) {
-                    if (j == i) {
-                        mygrid.setColWidth(j, widthArray[i]);
-                    }
-                }
-            });
-
-            mygrid.attachEvent("onMouseOver", function () { return false; });
-            $('#' + reportTableId).find('tfoot').find('.totalRow').css('display', 'table-row');
-
-            var parenttblHeight = $('#' + reportTableId).find('.objbox').find('table').height();
-            var childtblHeight = $('#' + reportTableId).find('.xhdr').find('table').height();
-            $('#' + reportTableId).height(parenttblHeight + childtblHeight);
-
-            mygrid.attachEvent("onAfterSorting", function (index, type, direction) {
-                $(mygrid.obj).find('tbody').find('.totalRow').remove();
-                mygrid.setSortImgState(false);
-                return true;
-            });
-        }
-    }
+   
     function BulkOwnerOperationSelect(id) {
         var hvParentUlID = "#ulListing" + id;
         var totalcnt = 0;
@@ -554,51 +385,51 @@
 
     });
 
-    function getFiscalDateRange() {      
-            var cbMainDate = function (start, end, label) {
-                console.log(start.toISOString(), end.toISOString(), label);
-                $('div[id=reportrange]').each(function () {
-                    $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
-                });
-            };
-
-            var optionSet1 = {
-                showDropdowns: true,
-                showWeekNumbers: true,
-                timePicker: false,
-                timePickerIncrement: 1,
-                timePicker12Hour: true,
-                ranges: {
-                    'This Quarter': [moment().startOf('quarter'), moment().endOf('quarter')],
-                    'This Year': [moment().startOf('year'), moment().endOf('year')],
-                    'Year to Date': [moment().startOf('year'), moment()],
-                    'Last 12 Months': [moment().subtract(12, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 4 Quarters': [moment().subtract(4, 'quarter').startOf('quarter'), moment().subtract(1, 'quarter').endOf('quarter')],
-                    'Last Calendar Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
-                },
-                opens: 'left',
-                buttonClasses: ['btn btn-default'],
-                applyClass: 'btn-sm btn-primary',
-                cancelClass: 'btn-sm',
-                format: 'MM/DD/YYYY',
-                separator: ' to ',
-                locale: {
-                    applyLabel: 'Apply',
-                    cancelLabel: 'Cancel',
-                    fromLabel: 'From',
-                    toLabel: 'To',
-                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                    firstDay: 1
-                }
-            };
-
+    function getFiscalDateRange() {
+        var cbMainDate = function (start, end, label) {
+            console.log(start.toISOString(), end.toISOString(), label);
             $('div[id=reportrange]').each(function () {
-                optionSet1.startDate = '@Sessions.StartDate';
-                optionSet1.endDate = '@Sessions.EndDate';
-                $(this).daterangepicker(optionSet1, cbMainDate);
+                $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
             });
-       
+        };
+
+        var optionSet1 = {
+            showDropdowns: true,
+            showWeekNumbers: true,
+            timePicker: false,
+            timePickerIncrement: 1,
+            timePicker12Hour: true,
+            ranges: {
+                'This Quarter': [moment().startOf('quarter'), moment().endOf('quarter')],
+                'This Year': [moment().startOf('year'), moment().endOf('year')],
+                'Year to Date': [moment().startOf('year'), moment()],
+                'Last 12 Months': [moment().subtract(12, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 4 Quarters': [moment().subtract(4, 'quarter').startOf('quarter'), moment().subtract(1, 'quarter').endOf('quarter')],
+                'Last Calendar Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+            },
+            opens: 'left',
+            buttonClasses: ['btn btn-default'],
+            applyClass: 'btn-sm btn-primary',
+            cancelClass: 'btn-sm',
+            format: 'MM/DD/YYYY',
+            separator: ' to ',
+            locale: {
+                applyLabel: 'Apply',
+                cancelLabel: 'Cancel',
+                fromLabel: 'From',
+                toLabel: 'To',
+                daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                firstDay: 1
+            }
+        };
+
+        $('div[id=reportrange]').each(function () {
+            optionSet1.startDate = '@Sessions.StartDate';
+            optionSet1.endDate = '@Sessions.EndDate';
+            $(this).daterangepicker(optionSet1, cbMainDate);
+        });
+
     }
 
     function toggleOwner(obj) {
@@ -663,11 +494,16 @@
         LoadAllReports();
     });
     //Following function is created to load reporttable
+    //Follwing function is common for view Data of Grpah and Table
     function ViewAllContent(sender) {
-        try {
-
-            var SelectedDimensionValue = GetSelectedValues();           
-            var id = $(sender).attr('reporttableid');
+        try{
+            var IsGraph = true;
+            var id = $(sender).attr('reportgraphid');
+            if (Number(id) == 0) {
+                id = $(sender).attr('reporttableid');
+                IsGraph = false;
+            }
+            var SelectedDimensionValue = GetSelectedValues();      
             var DisplayName = $(sender).attr('displayName');
             var DashboardContentId = $(sender).attr('dashboardcontentid');
             var StartDate = '';
@@ -677,12 +513,18 @@
                 StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
                 EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
             });
-            var url = '@Url.Action("/LoadReportTablePartial/")';
-            document.body.style.overflow = "hidden";          
+            //Method will be called as per graph and table
+            var url = "";
+            if(IsGraph)
+                url = '@Url.Action("/LoadChartTablePartial/")';
+            else
+                url = '@Url.Action("/LoadReportTablePartial/")';
+
+            document.body.style.overflow = "hidden";
             var params = {};
-            params.Id = id;            
+            params.Id = id;
             params.Container = "divChart" + DashboardContentId;
-            params.SDV = SelectedDimensionValue;            
+            params.SDV = SelectedDimensionValue;
             params.ViewBy = ViewBy;
             params.StartDate = StartDate;
             params.EndDate = EndDate;
@@ -691,17 +533,16 @@
             params.DashboardContentId = DashboardContentId;
             params.DisplayName= DisplayName;
             $.ajax({
-                url: url,             
-                async: true,              
-                data: $.param(params, true),                
+                url: url,
+                async: true,
+                data: $.param(params, true),
                 success: function (data) {
-               
                     $("#div_ViewAllReport").html(data);
                 },
-                error: function (err) {                  
+                error: function (err) {
                     $("divChart" + DashboardContentId).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
                 }
-            });         
+            });
         }
         catch (e) {
             $("divChart" + DashboardContentId).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
