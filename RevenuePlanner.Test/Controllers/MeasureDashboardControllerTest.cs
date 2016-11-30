@@ -9,7 +9,6 @@ using RevenuePlanner.Helpers;
 using System.Web.Mvc;
 using RevenuePlanner.Test.MockHelpers;
 using System.Collections.Generic;
-using static RevenuePlanner.BDSService.User;
 using System.Configuration;
 using System.Threading.Tasks;
 using System.Data;
@@ -98,8 +97,8 @@ System.Configuration.ConfigurationManager.AppSettings.Get(connectionString);
 
 objMeasureDashboiardController);
                         //Set Connection string in UserApplicationId of session
-                        List<ApplicationDetail> lstApplicationDetail = new List<ApplicationDetail>();
-                        ApplicationDetail objApplicationDetail = new ApplicationDetail();
+                        List<RevenuePlanner.BDSService.User.ApplicationDetail> lstApplicationDetail = new List<RevenuePlanner.BDSService.User.ApplicationDetail>();
+                        RevenuePlanner.BDSService.User.ApplicationDetail objApplicationDetail = new RevenuePlanner.BDSService.User.ApplicationDetail();
                         objApplicationDetail.ApplicationTitle = Enums.ApplicationCode.RPC.ToString();
                         objApplicationDetail.ConnectionString = dbconnectionString;
                         lstApplicationDetail.Add(objApplicationDetail);
