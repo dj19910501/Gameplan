@@ -1328,6 +1328,12 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
+                //This is cross client check, #2878 Security - Account Creation – Client Id and User Id
+                BDSService.User objUser = objBDSServiceClient.GetTeamMemberDetailsEx(UserId, Sessions.ApplicationId);
+                if (objUser.CID != Sessions.User.CID)
+                {
+                    return Json(Common.objCached.UserAssignRestrictionMessage, JsonRequestBehavior.AllowGet);
+                }
                 int res = objBDSServiceClient.AssignUserEx(UserId, Guid.Parse(RoleId), Sessions.ApplicationId, Sessions.User.ID);
                 TempData["SuccessMessage"] = Common.objCached.UserAdded;
                 return Json("success", JsonRequestBehavior.AllowGet);

@@ -43,6 +43,18 @@ namespace RevenuePlanner.Helpers
                 _UserPermissionRestrictionMessage = value;
             }
         }
+        private string _UserAssignRestrictionMessage;
+        public string UserAssignRestrictionMessage
+        {
+            get
+            {
+                return _UserAssignRestrictionMessage;
+            }
+            set
+            {
+                _UserAssignRestrictionMessage = value;
+            }
+        }
 
         private string _ServiceUnavailableMessage;
         public string ServiceUnavailableMessage
@@ -4119,6 +4131,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "UserPermissionRestrictionMessage":
                                             _UserPermissionRestrictionMessage = strMsgValue;
+                                            break;
+                                        case "UserAssignRestrictionMessage":
+                                            _UserAssignRestrictionMessage = strMsgValue;
                                             break;
 
                                     }
