@@ -26,3 +26,24 @@ $GRID_PADDING: 5px;
     //box-sizing: border-box !important;
   }
 }
+
+.pager {
+  padding: $GRID_PADDING !important;
+  height: $GRID_PADDING * 2 + 40px;
+  text-align: center;
+  > ul {
+    height: 40px;
+    line-height: 50px;
+    display: inline-block;
+    > li {
+      display: inline-block;
+      float: none;
+
+      input {
+        margin-bottom: 0;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+    }
+  }
+}

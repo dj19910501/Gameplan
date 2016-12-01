@@ -93,7 +93,7 @@ export default function transactionGridDataSource() {
     };
     const paging = {
         skip: 0,
-        take: 3, // TODO make user selectable and/or change default based on Browser speed
+        take: 2, // TODO make user selectable and/or change default based on Browser speed
     };
 
     const dataSource = gridDataSource(filter, paging, undefined, undefined, undefined, getRecordId, getColumnValue);
