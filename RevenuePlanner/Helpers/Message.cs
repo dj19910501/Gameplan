@@ -18,6 +18,32 @@ namespace RevenuePlanner.Helpers
 
         #region Variables
 
+        //#2878 Security - Account Creation – Client Id and User Id
+        private string _UserDeleteRestrictionMessage;
+        public string UserDeleteRestrictionMessage
+        {
+            get
+            {
+                return _UserDeleteRestrictionMessage;
+            }
+            set
+            {
+                _UserDeleteRestrictionMessage = value;
+            }
+        }
+        private string _UserPermissionRestrictionMessage;
+        public string UserPermissionRestrictionMessage
+        {
+            get
+            {
+                return _UserPermissionRestrictionMessage;
+            }
+            set
+            {
+                _UserPermissionRestrictionMessage = value;
+            }
+        }
+
         private string _ServiceUnavailableMessage;
         public string ServiceUnavailableMessage
         {
@@ -4087,6 +4113,12 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "SuccessColumnView":
                                             _SuccessColumnView = strMsgValue;
+                                            break;
+                                        case "UserDeleteRestrictionMessage":
+                                            _UserDeleteRestrictionMessage = strMsgValue;
+                                            break;
+                                        case "UserPermissionRestrictionMessage":
+                                            _UserPermissionRestrictionMessage = strMsgValue;
                                             break;
 
                                     }

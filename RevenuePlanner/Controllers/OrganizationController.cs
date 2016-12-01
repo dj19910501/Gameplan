@@ -595,7 +595,12 @@ namespace RevenuePlanner.Controllers
                     return RedirectToAction("Index", "NoAccess");
 
                 //// End - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
-
+                BDSService.User objUser = objBDSServiceClient.GetTeamMemberDetailsEx(Id, Sessions.ApplicationId); //This is cross client check, #2878 Security - Account Creation – Client Id and User Id
+                if (objUser.CID != Sessions.User.CID) //here we check the cross client data edit
+                {
+                    TempData["ErrorMessage"] = Common.objCached.UserPermissionRestrictionMessage;
+                    return RedirectToAction("OrganizationHierarchy", "Organization");
+                }
                 ViewBag.PermissionMode = Mode;
                 int UserId = Id;
                 if (UserId != 0)

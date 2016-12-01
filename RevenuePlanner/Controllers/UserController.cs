@@ -52,6 +52,7 @@ namespace RevenuePlanner.Controllers
             List<BDSService.User> lstOtherUser = new List<BDSService.User>();   /* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
             try
             {
+                TempData["CurrentEditingData"] = null;  //clean up the TempData variable that holds the current editable user information, #2878 Security - Account Creation – Client Id and User Id
                 //// Get TeamMembers list by Client,Application & User Id.
                 lstUser = objBDSServiceClient.GetTeamMemberListEx(Sessions.User.CID, Sessions.ApplicationId, Sessions.User.ID, true).OrderBy(teamlist => teamlist.FirstName, new AlphaNumericComparer()).ToList();
                 if (lstUser.Count() > 0)
@@ -311,6 +312,13 @@ namespace RevenuePlanner.Controllers
             {
                 if (id != 0)
                 {
+                    //This is cross client check, #2878 Security - Account Creation – Client Id and User Id
+                    BDSService.User objUser = objBDSServiceClient.GetTeamMemberDetailsEx(id, Sessions.ApplicationId);
+                    if (objUser.CID != Sessions.User.CID)
+                    {
+                        TempData["ErrorMessage"] = TempData["ErrorMessage"] = Common.objCached.UserDeleteRestrictionMessage;
+                        return RedirectToAction("Index");
+                    }
                     //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                     string userRole = objBDSServiceClient.GetUserRoleEx(id, Sessions.ApplicationId, Sessions.User.CID);
                     int retVal = objBDSServiceClient.DeleteUserEx(id, Sessions.ApplicationId);
@@ -443,7 +451,7 @@ namespace RevenuePlanner.Controllers
                         if ((!file.ContentType.ToLower().Contains("jpg") && !file.ContentType.ToLower().Contains("jpeg") && !file.ContentType.ToLower().Contains("png")) || (file.ContentLength > 1 * 1024 * 1024))
                         {
                             TempData["ErrorMessage"] = Common.objCached.InvalidProfileImage;
-                            LoadCreateModeComponents(form.ClientId);
+                            LoadCreateModeComponents(Sessions.User.CID);
                             return View(form);
                         }
                     }
@@ -456,7 +464,7 @@ namespace RevenuePlanner.Controllers
                     objUser.Email = form.Email;
                     objUser.Phone = form.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     objUser.JobTitle = form.JobTitle;
-                    objUser.CID = form.ClientId;
+                    objUser.CID = Sessions.User.CID;
                     objUser.RoleId = form.RoleId;
                     if (file != null)
                     {
@@ -491,7 +499,7 @@ namespace RevenuePlanner.Controllers
                         TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                     }
                 }
-                LoadCreateModeComponents(form.ClientId);
+                LoadCreateModeComponents(Sessions.User.CID);
             }
             catch (Exception e)
             {
@@ -640,8 +648,20 @@ namespace RevenuePlanner.Controllers
             try
             {
                 objUser = objBDSServiceClient.GetTeamMemberDetailsEx(userId, Sessions.ApplicationId);
+                if (objUser.CID != Sessions.User.CID) //This is cross client check, #2878 Security - Account Creation – Client Id and User Id
+                {
+                    if (Request.UrlReferrer.AbsolutePath.Contains("OrganizationHierarchy"))
+                    {
+                        return Json(new { redirectto = "organization" }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new { redirectto = "index" }, JsonRequestBehavior.AllowGet);
+                    }
+                }
                 if (objUser != null)
                 {
+                    TempData["CurrentEditingData"] = objUser; //storing the current editable user information into TempData so read only fields can be managed using this object
                     //// Set User details to Model.
                     objUserModel.ClientId = objUser.CID;
                     objUserModel.Client = objUser.Client;
@@ -780,6 +800,16 @@ namespace RevenuePlanner.Controllers
         [ValidateInput(false)]////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         public ActionResult Edit(UserModel form, HttpPostedFileBase file, FormCollection formcollection)//formcollection added by uday#555 )
         {
+            if (TempData["CurrentEditingData"] != null) //checking if temp data is not null then assigning hidden filds values from temp data so no one can temper using developer tool
+            {
+                BDSService.User objCurrentEditingData = (BDSService.User)TempData["CurrentEditingData"];
+                form.Email = objCurrentEditingData.Email;
+                form.UserId = objCurrentEditingData.ID;
+                form.RoleCode = objCurrentEditingData.RoleCode;
+                form.Password = objCurrentEditingData.Password;
+                form.ConfirmPassword = objCurrentEditingData.Password;
+                form.IsManager = objCurrentEditingData.IsManager;
+            }
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
@@ -816,11 +846,11 @@ namespace RevenuePlanner.Controllers
                             TempData["ErrorMessage"] = Common.objCached.InvalidProfileImage;
                             if (form.UserId == Sessions.User.ID)
                             {
-                                LoadEditModeComponents(form.ClientId, "myaccount");
+                                LoadEditModeComponents(Sessions.User.CID, "myaccount");
                             }
                             else
                             {
-                                LoadEditModeComponents(form.ClientId, "myteam");
+                                LoadEditModeComponents(Sessions.User.CID, "myteam");
                             }
                             return View(form);
                         }
@@ -870,7 +900,7 @@ namespace RevenuePlanner.Controllers
                             objUser.ProfilePhoto = objUsernew.ProfilePhoto;
                         }
                     }
-                    objUser.CID = form.ClientId;
+                    objUser.CID = Sessions.User.CID;
                     objUser.PreferredCurrencyCode = form.PreferredCurrencyCode;
                     objUser.RoleId = form.RoleId;
                     if (form.RoleId != null)
@@ -946,13 +976,13 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    LoadEditModeComponents(form.ClientId, "myteam");
+                    LoadEditModeComponents(Sessions.User.CID, "myteam");
 
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                    if ((bool)ViewBag.IsUserAdminAuthorized && form.ClientId != 0)
+                    if ((bool)ViewBag.IsUserAdminAuthorized && Sessions.User.CID != 0)
                     {
                         // Get All User List for Manager
-                        ViewData["ManagerList"] = GetManagersList(form.UserId, form.ClientId);
+                        ViewData["ManagerList"] = GetManagersList(form.UserId, Sessions.User.CID);
                     }
                     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                 }
@@ -960,7 +990,7 @@ namespace RevenuePlanner.Controllers
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
-
+                TempData["CurrentEditingData"] = null; 
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
@@ -973,6 +1003,7 @@ namespace RevenuePlanner.Controllers
             }
             // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917         
             // add inner if condition to redirect organization hierarchy by Rahul Shah on 04/09/2015 fo PL Ticket #1112
+            TempData["CurrentEditingData"] = null;//clean up the TempData variable that holds the current editable user information, #2878 Security - Account Creation – Client Id and User Id
             if (Request.UrlReferrer.AbsolutePath.Contains("OrganizationHierarchy"))
             {
                 return RedirectToAction("OrganizationHierarchy", "Organization", new { area = "" });
@@ -1127,6 +1158,10 @@ namespace RevenuePlanner.Controllers
                     objUser = objBDSServiceClient.GetTeamMemberDetailsEx(userId, Sessions.ApplicationId);
                     if (objUser != null)
                     {
+                        if (objUser.CID != Sessions.User.CID)//This is cross client check, #2878 Security - Account Creation – Client Id and User Id
+                        {
+                            objUser.ProfilePhoto = null;
+                        }
                         if (objUser.ProfilePhoto != null)
                         {
                             imageBytes = objUser.ProfilePhoto;
