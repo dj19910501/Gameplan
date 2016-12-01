@@ -105,8 +105,16 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult GetColumns(int ColumnSetId = 0)
         {
-            List<BindDropdownData> lstColumns = _MarketingBudget.GetColumns(ColumnSetId);// Columns  dropdown
-            return Json(lstColumns, JsonRequestBehavior.AllowGet);
+            List<RevenuePlanner.Models.Budget_Columns> BudgetColumns = _MarketingBudget.GetColumns(ColumnSetId);// Columns  dropdown
+
+            //All standard and custom columns
+            List<BindDropdownData> lstColumns = BudgetColumns.Select(a => new { a.CustomField.Name, a.CustomField.CustomFieldId }).ToList()
+               .Select(a => new BindDropdownData { Text = a.Name, Value = Convert.ToString(a.CustomFieldId) }).ToList(); 
+
+            //standard columns list
+            List<string> StandardTimeFrameColumns = BudgetColumns.Where(a => a.IsTimeFrame == true).Select(a => a.CustomField.Name).ToList();
+
+            return Json( new { Columnlist = lstColumns, standardlist = StandardTimeFrameColumns }, JsonRequestBehavior.AllowGet);
         }
 
         public BudgetSummary GetBudgetSummary(int budgetId)

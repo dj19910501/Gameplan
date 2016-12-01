@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RevenuePlanner.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Xml;
@@ -216,7 +217,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         List<BindDropdownData> GetColumnSet(int ClientId);// Column set dropdown
 
-        List<BindDropdownData> GetColumns(int ColumnSetId);// Column set dropdown
+        List<Budget_Columns> GetColumns(int ColumnSetId);// Column set dropdown
 
         BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol);
 

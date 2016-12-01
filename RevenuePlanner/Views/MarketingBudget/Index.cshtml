@@ -1,12 +1,14 @@
 ﻿@model RevenuePlanner.Services.MarketingBudget.MarketingActivities
+@using RevenuePlanner.Helpers;
 
 @{
-    ViewBag.Title = "Finance";
+    ViewBag.Title = "Finance - Marketing Budget";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
 
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" /> 
+
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
@@ -147,7 +149,8 @@
     var budgetgrid;
     var BudgetGridData;
     var AddNewrow = true;
-    var backBudgetid = '';
+    var backBudgetid = '';	 
+ var standardcolumns;
     $(document).ready(function () {
         $('#proceed-button_DeleteItem').on("click", function () {
             DeleteBudget();
@@ -212,16 +215,32 @@
             data: { ColumnSetId: ColumnSetId },
             async: false,
             dataType: "json",
-            success: function (data) {
+            success: function (result) {
                 $("#budget-select").html("");
+                var data = result.Columnlist;
+                standardcolumns = result.standardlist;
                 for (var i = 0; i < data.length; i++) {
-                    $('#budget-select').append("<option value=" + data[i].Value + " id='div" + data[i].Text + "'>" + data[i].Text + "</option>");
+                    $('#budget-select').append("<option value=" + data[i].Value + " id='" + data[i].Text + "'>" + data[i].Text + "</option>");
                 }
             }
         });
 
         $('#budget-select').multiselect({ multiple: true, title: 'Filter Columns', noneSelectedText: "Filter Columns", });
+        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
+        $.each(ColumnsCheckBox, function () {
+            if ($(this).attr('id').indexOf('Forecast') < 0) {
+                $(this).attr("aria-selected", "true");
+                $(this).attr("checked", "checked");
+            }
+            else {
+                $(this).attr("aria-selected", "false");
+            }
 
+        });
+
+        $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').click(function () {
+            HideShowColumns();
+        });
     }
 
     function GetGridData(budgetId) {
@@ -248,14 +267,18 @@
                 budgetgrid.setImageSize(1, 1);
                 budgetgrid.enableAutoHeight(true);
                 budgetgrid.enableAutoWidth(false);
-                if (mainTimeFrame != "@RevenuePlanner.Helpers.Enums.QuarterFinance.Yearly.ToString()") {
+                if (mainTimeFrame != "@Enums.QuarterFinance.Yearly.ToString()") {
                     budgetgrid.attachHeader(data.AttacheHeader);
                 }
                 budgetgrid.init();
                 BudgetGridData = data.GridData;
                 budgetgrid.parse(BudgetGridData, "json");
-
+                var IdIndex = budgetgrid.getColIndexById('Id');
                 var TaskNameIndex = budgetgrid.getColIndexById('Name');
+               
+                budgetgrid.setColumnHidden(IdIndex, true)
+                HideShowColumns();
+
 
                 budgetgrid.expandAll();
                 budgetgrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
@@ -468,5 +491,46 @@
         $('#input-43').off('fileuploaderror').on('fileuploaderror', function (event, data, msg) {
             $('.fileinput-upload-button').hide();
         });
-    }
+    }	
+
+
+    function HideShowColumns() {
+        var columnid = 0;
+        var Title = "";
+        var Hidecol = [];
+        var ColumnsCheckBox = $("#multipleselect_budget-select label[class^=ui-corner-all] input:not(:checked)");
+
+
+        for (var i = 0; i < budgetgrid.getColumnsNum() ; i++) {
+            columnid = budgetgrid.getColumnId(i);
+            if (columnid != "@Enums.DefaultGridColumn.Id" && columnid != "@Enums.DefaultGridColumn.Name"
+                         && columnid != "Add Row" && columnid != "@Enums.DefaultGridColumn.LineItems") {
+                $.each(ColumnsCheckBox, function () {
+                    Title = $(this).parent().find('span').attr('title');
+                    if (standardcolumns.indexOf(Title) >= 0) {
+                        if (columnid.indexOf(Title) >= 0) {
+                            Hidecol.push(i);
+                        }
+
+                    }
+                    else {
+                        if (columnid == Title) {
+                            Hidecol.push(i);
+                        }
+
+                    }
+                });
+                budgetgrid.setColumnHidden(i, false)
+            }
+          
+        }
+
+        if (Hidecol != null && Hidecol != undefined && Hidecol.length > 0) {
+            $.each(Hidecol, function (index, val) {
+                budgetgrid.setColumnHidden(val, true)
+            });
+
+        }
+
+        }
 </script>

@@ -57,12 +57,10 @@ namespace RevenuePlanner.Services.MarketingBudget
             return lstColumnset;
         }
 
-        public List<BindDropdownData> GetColumns(int ColumnSetId)
+        public List<Budget_Columns> GetColumns(int ColumnSetId)
         {
-            List<BindDropdownData> lstColumns = _database.Budget_Columns.Where(a => a.Column_SetId == ColumnSetId && a.IsDeleted == false)
-               .Select(a => new { a.CustomField.Name, a.CustomField.CustomFieldId }).ToList()
-               .Select(a => new BindDropdownData { Text = a.Name, Value = Convert.ToString(a.CustomFieldId) }).ToList();
-            return lstColumns;
+            List<Budget_Columns> BudgetColumns = _database.Budget_Columns.Where(a => a.Column_SetId == ColumnSetId && a.IsDeleted == false).ToList();
+            return BudgetColumns;
         }
 
 
@@ -177,7 +175,15 @@ namespace RevenuePlanner.Services.MarketingBudget
                         {
                             double value;
                             double.TryParse(Convert.ToString(objValue), out value);
-                            DisplayValue = string.Format("{0}{1}", CurSymbol, value.ToString(formatThousand));
+                            if (ColumnName != Enums.DefaultGridColumn.BudgetDetailId.ToString())
+                            {
+                                DisplayValue = string.Format("{0}{1}", CurSymbol, value.ToString(formatThousand));
+                            }
+                            else
+                            {
+                                DisplayValue = Convert.ToString(objValue);
+                            }
+                         
                         }
                         Data.Add(DisplayValue);
                     }
@@ -327,7 +333,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     }
 
                     headObj.sort = "na";
-                    headObj.width = 0;
+                    headObj.width = 100;
                     headObj.align = "center";
                     headObj.type = "ro";
                     headObj.id = "Id";
@@ -348,7 +354,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                         sbAttachedHeaders.Append(string.Empty + ",");
                     }
                     headObj.sort = "na";
-                    headObj.width = 100;
+                    headObj.width = 200;
                     headObj.align = "center";
                     headObj.type = "tree";
                     headObj.id = columns;
@@ -359,7 +365,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj = new GridDataStyle();
                     headObj.value = string.Empty;
                     headObj.sort = "na";
-                    headObj.width = 100;
+                    headObj.width = 50;
                     headObj.align = "center";
                     headObj.type = "ro";
                     headObj.id = "Add Row";
@@ -410,15 +416,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                     headObj.id = columns;
                     headObj.sort = "na";
-                    if (columns.Contains(Enums.DefaultGridColumn.Forecast.ToString()))
-                    {
-                        headObj.width = 0;
-                    }
-                    else
-                    {
                         headObj.width = 100;
-                    }
-
                     headObj.align = "center";
 
                     // columns will have data like eg.Y1_Budget in case of time frame like This year(Monthly)
