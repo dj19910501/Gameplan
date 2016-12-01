@@ -147,11 +147,11 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     if (Permission == "View" || Permission == "None")
                     {
-                        BindColumnDataatend.Add(string.Format("<div onclick=Edit({0},false,{1},'" + rowId + "',this) class='finance_link' Rowid='" + rowId + "'><a>" + Convert.ToInt32(row[ColumnName]) + "</a><span style='border-left:1px solid #000;height:20px'></span><span><span style='text-decoration: underline;'>View</div>", id, HttpUtility.HtmlEncode(Convert.ToString("'User'"))));
+                        BindColumnDataatend.Add(string.Format("<div onclick=Edit({0},false,{1},'" + rowId + "',this) class='finance_link' Rowid='" + rowId + "'><a class='marketing-tbl-link'>" + Convert.ToInt32(row[ColumnName]) + "</a><span class='pipeLine'></span><span class='marketing-tbl-link'>View</span></div>", id, HttpUtility.HtmlEncode(Convert.ToString("'User'"))));
                     }
                     else
                     {
-                        BindColumnDataatend.Add(string.Format("<div onclick=Edit({0},false,{1},'" + rowId + "',this) class='finance_link' Rowid='" + rowId + "'><a>" + Convert.ToInt32(row[ColumnName]) + "</a><span style='border-left:1px solid #000;height:20px'></span><span><span style='text-decoration: underline;'>Edit</div>", id, HttpUtility.HtmlEncode(Convert.ToString("'User'"))));
+                        BindColumnDataatend.Add(string.Format("<div onclick=Edit({0},false,{1},'" + rowId + "',this) class='finance_link' Rowid='" + rowId + "'><a class='marketing-tbl-link'>" + Convert.ToInt32(row[ColumnName]) + "</a><span class='pipeLine'></span><span class='marketing-tbl-link'>Edit</span></div>", id, HttpUtility.HtmlEncode(Convert.ToString("'User'"))));
                     }
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.Owner.ToString())

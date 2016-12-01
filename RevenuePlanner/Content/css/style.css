@@ -3654,9 +3654,10 @@ a.link-gray {
 .fin-head-left .btn-blue {
 	margin-bottom: 0px;
 }
-.finance-tbl div.gridbox {
+.finance-tbl div.gridbox, .MarketingBudget-tbl div.gridbox {
 	width: 100% !important;
 }
+.MarketingBudget-tbl{padding : 0 15px 15px}
 #btnMultiselect_budget-select {
 	margin-left: 0; /*by bheru 1678 05-11-2015*/
 	margin-right: 0;
@@ -13765,7 +13766,7 @@ table .lblCustomCheckbox label{width:70%}
 .fin-head-left .btn.btn-fill-white, .fin-head-left .ui-multiselect{
     cursor: pointer; 
     float:left; 
-    line-height:30px !important;
+    line-height:26px !important;
     height:30px; 
     margin-right:10px ;
     margin-top:20px ;
@@ -13801,7 +13802,7 @@ table .lblCustomCheckbox label{width:70%}
     font: normal normal normal 14px/1 FontAwesome;
     position: absolute;
     left: 10px;
-    bottom: 6px;
+    bottom: 8px;
 }
 #btnAddNewBudget{    
     font-size: 12px;
@@ -13892,8 +13893,8 @@ table.dataTable thead .sorting_desc {
 }
 /* =========================== Measure Report CSS End =========================== */
 
-
-
+.MarketingBudget-tbl div.gridbox .pipeLine{border-left:1px solid #000;height:20px; margin:0 5px}
+.MarketingBudget-tbl span.marketing-tbl-link{text-decoration:underline}
 
 /************************************************ Responsive css start here **********************************************************/
 

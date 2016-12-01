@@ -2753,3 +2753,16 @@ div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td {
         border-bottom: 1px solid #f0f0f0;
         border-right: 1px solid #d4d4d4;
     }
+/* Common Css for all Grid */
+  div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+        text-align: center;
+        padding-left: 0px !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+        width: 100% !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+        width: 100% !important;
+    }

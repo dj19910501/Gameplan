@@ -6,13 +6,30 @@
 
 }
 
-<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" /> 
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
 }
+<style>
+    .ui-tooltip {
+        position: absolute !important;
+        background: #fff;
+        color: #666666;
+        border: 1px solid #666666;
+        font-size: 11px;
+        padding: 0 2px;
+        -webkit-box-shadow: 3px 3px 5px 0px rgba(107,107,107,1);
+        -moz-box-shadow: 3px 3px 5px 0px rgba(107,107,107,1);
+        box-shadow: 3px 3px 5px 0px rgba(107,107,107,1);
+    }
+
+    .ui-helper-hidden-accessible {
+        display: none;
+    }
+</style>
 
 <div class="light-blue-chart cf full-width-header" id="financeHeader">
     <div style="" class="fin-head-left">
@@ -95,7 +112,7 @@
     </div>
 </div>
 
-<div id="divGridView" style="" class="finance-tbl">
+<div id="divGridView" class="MarketingBudget-tbl">
     <div id="gridbox" style="width:100%; background-color:white;"></div>
 </div>
 
