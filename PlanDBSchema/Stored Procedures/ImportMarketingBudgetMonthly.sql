@@ -1,23 +1,38 @@
--- Created BY Nishant Sheth
--- Created Date 06-Jul-2016
--- Desc :: Import Data from excel data in marketing budget
-IF EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'ImportMarketingBudgetMonthly') AND TYPE IN ( N'P', N'PC' ))
-    DROP PROCEDURE [dbo].ImportMarketingBudgetMonthly
+
+
+/****** Object:  StoredProcedure [dbo].[ImportMarketingBudgetMonthly]    Script Date: 12/01/2016 12:41:52 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ImportMarketingBudgetMonthly]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[ImportMarketingBudgetMonthly]
 GO
 
-CREATE PROCEDURE ImportMarketingBudgetMonthly
+/****** Object:  StoredProcedure [dbo].[ImportMarketingBudgetMonthly]    Script Date: 12/01/2016 12:41:52 PM ******/
+SET ANSI_NULLS ON
+GO
+
+
+CREATE PROCEDURE [dbo].[ImportMarketingBudgetMonthly]
 @XMLData AS XML
 ,@ImportBudgetCol MarketingBudgetColumns READONLY
-,@ClientId NVARCHAR(MAX)
-,@UserId NVARCHAR(MAX)
+,@clientId INT
+,@UserId INT
 ,@BudgetDetailId BIGINT
 AS
 BEGIN
 SET NOCOUNT ON;
+----disable trigger for marketing budget
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalBudgetForecastMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_DetailAmount DISABLE TRIGGER TrgPreCalBudgetForecastMarketingBudget
+END
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgInsertDeletePreCalMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_Detail DISABLE TRIGGER TrgInsertDeletePreCalMarketingBudget
+END
 
-CREATE TABLE #tmpXmlData (ROWNUM BIGINT)
-CREATE TABLE #tmpCustomDeleteDropDown (EntityId BIGINT,CustomFieldId BIGINT)
-CREATE TABLE #tmpCustomDeleteTextBox (EntityId BIGINT,CustomFieldId BIGINT)
+----end
+CREATE TABLE  #tmpXmlData  (ROWNUM BIGINT)
+Declare @tmpCustomDeleteDropDown TABLE(EntityId BIGINT,CustomFieldId BIGINT)
+Declare @tmpCustomDeleteTextBox TABLE(EntityId BIGINT,CustomFieldId BIGINT)
 
 DECLARE @Textboxcol nvarchar(max)=''
 DECLARE @UpdateColumn NVARCHAR(255)
@@ -31,7 +46,6 @@ DECLARE @ColName nvarchar(100)
 DECLARE @IsMonth nvarchar(100)
 
 SELECT @RowCount = COUNT(*) FROM @ImportBudgetCol
-
 DECLARE @XmldataQuery NVARCHAR(MAX)=''
 
 DECLARE @tmpXmlDataAlter NVARCHAR(MAX)=''
@@ -73,7 +87,6 @@ SELECT  * Into #tmpChildBudgets
 OPTION(MAXRECURSION 0)
 
 INSERT INTO #tmpXmlData EXECUTE sp_executesql @XmldataQuery, N'@XmlData XML OUT', @XmlData = @XmlData  OUT
-	
 	-- Remove Other Child items which are not related to parent
 	DELETE tmpXmlData FROM #tmpXmlData tmpXmlData
 	OUTER APPLY(
@@ -89,6 +102,11 @@ INSERT INTO #tmpXmlData EXECUTE sp_executesql @XmldataQuery, N'@XmlData XML OUT'
 	AND (BudgetPermission.IsOwner=1 OR BudgetPermission.PermisssionCode=0)
 	) BudgetPermission WHERE BudgetPermission.Id IS NULL
 
+	-- Add only Child/Forecast item
+	Select *  into #childtempData from #tmpXmlData
+	inner join (select * from dbo.fnGetBudgetForeCast_List (@BudgetDetailId,@clientId)) child
+	on CAST(#tmpXmlData.[Id#1] AS INT) = child.Id
+
 -- Update Process
 DECLARE @GetBudgetAmoutData2 NVARCHAR(MAX)=''
 DECLARE @MonthNumber varchar(2)
@@ -97,7 +115,6 @@ WHILE(@Count<=@RowCount)
 BEGIN
 
 	SELECT @UpdateColumn=[ColumnName],@Ismonth = CASE  WHEN  ISNULL(Month,'')='' THEN '' ELSE [Month] END FROM @ImportBudgetCol WHERE ColumnIndex=@Count
-	
 	-- Insert/Update values for budget and forecast
 	 IF((@UpdateColumn='Budget' OR @UpdateColumn='Forecast'))
 	 BEGIN
@@ -110,15 +127,20 @@ BEGIN
 			UPDATE BudgetDetailAmount SET ['+(@UpdateColumn)+']=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
 			THEN 
 			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
-			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
-			ELSE 0 END FROM 
+			THEN 
+			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) 
+			ELSE 0 END
+			ELSE 0 END 
+			FROM 
 			Budget_DetailAmount BudgetDetailAmount
-			CROSS APPLY (SELECT * FROM #tmpXmlData tmpXmlData WHERE BudgetDetailAmount.BudgetDetailId=CAST([Id#1] AS INT) 
+			CROSS APPLY (SELECT * FROM #childtempData tmpXmlData WHERE BudgetDetailAmount.BudgetDetailId=CAST([Id#1] AS INT) 
 			AND BudgetDetailAmount.Period=''Y'+@MonthNumber+''' AND ISNULL(['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')<>'''' 
 			AND CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
 			THEN 
 			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
-			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
+			THEN 
+			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) 
+			ELSE 0 END
 			ELSE 0 END <> ISNULL(['+(@UpdateColumn)+'],0)
 			) tmpXmlData
 			
@@ -129,17 +151,41 @@ BEGIN
 			,CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
 			THEN 
 			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
-			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
+			THEN 
+			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) 
 			ELSE 0 END
-			FROM #tmpXmlData  tmpXmlData
+			ELSE 0 END
+			FROM #childtempData  tmpXmlData
 			OUTER APPLY (SELECT A.BudgetDetailId,A.Period,A.Id FROM Budget_DetailAmount A
 			WHERE A.BudgetDetailId = CAST(tmpXmlData.[Id#1] AS INT) 
 			AND A.Period=''Y'+@MonthNumber+''')
 			A WHERE A.Id IS NULL 
 			
 			 '
-			 
 		END
+		Else If(@Ismonth!='' AND @Ismonth='Total') -- Update total budget and Forecast for child items
+		Begin
+			Declare @UpdateTotal NVARCHAR(max)
+			IF(@UpdateColumn='Budget')
+			begin
+				set @UpdateTotal='UPDATE BudgetDetail set BudgetDetail.TotalBudget=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+				THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) 
+				ELSE 0 END 
+				from Budget_Detail BudgetDetail
+				inner join (SELECT * FROM #childtempData) tmpXmlData on BudgetDetail.Id=CAST(tmpXmlData.[Id#1] AS INT)'
+				exec sp_executesql @UpdateTotal
+			end
+			Else
+			begin
+				set @UpdateTotal='UPDATE BudgetDetail set BudgetDetail.TotalForeCast=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+				THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT)
+				ELSE 0 END 
+				from Budget_Detail BudgetDetail
+				inner join (SELECT * FROM #childtempData) tmpXmlData on BudgetDetail.Id=CAST(tmpXmlData.[Id#1] AS INT)'
+				exec sp_executesql @UpdateTotal
+			End
+
+		End
 	END
 
 	-- Custom Columns
@@ -150,36 +196,35 @@ BEGIN
 
 			SELECT @IsCutomFieldDrp = CASE WHEN CustomFieldType.Name='TextBox' THEN 0 ELSE 1 END FROM CustomField 
 			CROSS APPLY(SELECT CustomFieldType.Name,CustomFieldType.CustomFieldTypeId FROM CustomFieldType WHERE CustomFieldType.CustomFieldTypeId=CustomField.CustomFieldTypeId) CustomFieldType
-			WHERE CustomField.Name=''+@UpdateColumn+'' AND CustomField.ClientId=''+@ClientId+'' AND CustomField.IsDeleted=0 AND CustomField.EntityType='Budget'
+			WHERE CustomField.Name=''+@UpdateColumn+'' AND CustomField.ClientId=@ClientId AND CustomField.IsDeleted=0 AND CustomField.EntityType='Budget'
 			
 			-- Insert/Update/Delete values for custom field as dropdown
 			IF(@IsCutomFieldDrp=1)
 			BEGIN
-
 				SET @GetBudgetAmoutData+=' 
 				-- Get List of record which need to delete from CustomField Entity Table
 
-				INSERT INTO #tmpCustomDeleteDropDown 
+				INSERT INTO @tmpCustomDeleteDropDown 
 				SELECT DISTINCT CAST(CustomFieldEntity.EntityId AS BIGINT),CAST(CustomField.CustomFieldId AS BIGINT) FROM CustomField_Entity CustomFieldEntity
 				CROSS APPLY (SELECT * FROM #tmpXmlData tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId AND ISNULL(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')='''') tmpXmlData
 				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
-				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+@ClientId+''' AND CustomField.IsDeleted=0
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
 				AND CustomField.EntityType=''Budget'') CustomField
 				WHERE  CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId
 				AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
 
-				SELECT @CustomEntityDeleteDropdownCount=COUNT(*) FROM #tmpCustomDeleteDropDown tmpCustomDelete
+				SELECT @CustomEntityDeleteDropdownCount=COUNT(*) FROM @tmpCustomDeleteDropDown tmpCustomDelete
 
 				-- Delete from CustomField Entity Table
 				DELETE TOP(@CustomEntityDeleteDropdownCount) FROM CustomField_Entity
-				WHERE CustomField_Entity.EntityId IN(SELECT EntityId FROM #tmpCustomDeleteDropDown)
-				AND CustomField_Entity.CustomFieldId IN(SELECT CustomFieldId FROM #tmpCustomDeleteDropDown)
+				WHERE CustomField_Entity.EntityId IN(SELECT EntityId FROM @tmpCustomDeleteDropDown)
+				AND CustomField_Entity.CustomFieldId IN(SELECT CustomFieldId FROM @tmpCustomDeleteDropDown)
 
 				-- Insert new values of CustomField_Entity tables 
 				INSERT INTO CustomField_Entity (EntityId,CustomFieldId,Value,CreatedBy,CreatedDate) 
-				SELECT tmpXmlData.[Id#1],CustomField.CustomFieldId,CustOpt.CustomFieldOptionId,'''+@UserId+''',GETDATE() FROM #tmpXmlData tmpXmlData 
+				SELECT tmpXmlData.[Id#1],CustomField.CustomFieldId,CustOpt.CustomFieldOptionId,'''+CAST(@UserId AS VARCHAR(50))+''',GETDATE() FROM #tmpXmlData tmpXmlData 
 				CROSS APPLY(SELECT CustomField.* FROM CustomField WHERE
-				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+@ClientId+''' AND CustomField.IsDeleted=0 AND CustomField.EntityType=''Budget'')CustomField
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0 AND CustomField.EntityType=''Budget'')CustomField
 				CROSS APPLY (SELECT * FROM CustomFieldOption CustOpt WHERE CustomField.CustomFieldId=CustOpt.CustomFieldId AND CustOpt.IsDeleted=0
 				AND CustOpt.Value=tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+']) CustOpt
 				OUTER APPLY (
@@ -192,7 +237,7 @@ BEGIN
 				CustomField_Entity CustomFieldEntity
 				CROSS APPLY (SELECT * FROM #tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId ) tmpXmlData
 				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
-				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+@ClientId+''' AND CustomField.IsDeleted=0
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
 				AND CustomField.EntityType=''Budget'') CustomField
 				CROSS APPLY (SELECT * FROM CustomFieldOption CustOpt WHERE CustomField.CustomFieldId=CustOpt.CustomFieldId AND CustOpt.IsDeleted=0
 				AND CustOpt.Value=tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+']) CustOpt 
@@ -204,29 +249,28 @@ BEGIN
 			-- Insert/Update/Delete values for custom field as Textbox
 			IF(@IsCutomFieldDrp<>1)
 			BEGIN
-
 				SET @GetBudgetAmoutData+='  
 				-- Get List of record which need to delete from CustomField Entity Table
-				INSERT INTO #tmpCustomDeleteTextBox 
+				INSERT INTO @tmpCustomDeleteTextBox 
 				SELECT DISTINCT CAST(CustomFieldEntity.EntityId AS BIGINT),CAST(CustomField.CustomFieldId AS BIGINT) FROM CustomField_Entity CustomFieldEntity
 				CROSS APPLY (SELECT * FROM #tmpXmlData tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId AND ISNULL(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')='''') tmpXmlData
 				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
-				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+@ClientId+''' AND CustomField.IsDeleted=0
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
 				AND CustomField.EntityType=''Budget'') CustomField
 				WHERE  CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
 
-				SELECT @CustomEntityDeleteTextBoxCount=COUNT(*) FROM #tmpCustomDeleteTextBox tmpCustomDelete
+				SELECT @CustomEntityDeleteTextBoxCount=COUNT(*) FROM @tmpCustomDeleteTextBox tmpCustomDelete
 				
 				-- Delete from CustomField Entity Table
 				DELETE TOP(@CustomEntityDeleteTextBoxCount) FROM CustomField_Entity
-				WHERE CustomField_Entity.EntityId IN(SELECT EntityId FROM #tmpCustomDeleteTextBox)
-				AND CustomField_Entity.CustomFieldId IN(SELECT CustomFieldId FROM #tmpCustomDeleteTextBox)
+				WHERE CustomField_Entity.EntityId IN(SELECT EntityId FROM @tmpCustomDeleteTextBox)
+				AND CustomField_Entity.CustomFieldId IN(SELECT CustomFieldId FROM @tmpCustomDeleteTextBox)
 
 				-- Insert new values of CustomField_Entity tables 
 				INSERT INTO CustomField_Entity (EntityId,CustomFieldId,Value,CreatedBy,CreatedDate) 
-				SELECT tmpXmlData.[Id#1],CustomField.CustomFieldId,tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''+@UserId+''',GETDATE() FROM #tmpXmlData tmpXmlData 
+				SELECT tmpXmlData.[Id#1],CustomField.CustomFieldId,tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''+CAST(@UserId AS VARCHAR(50))+''',GETDATE() FROM #tmpXmlData tmpXmlData 
 				CROSS APPLY(SELECT CustomField.* FROM CustomField WHERE
-				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+@ClientId+''' AND CustomField.IsDeleted=0 AND CustomField.EntityType=''Budget'')CustomField
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0 AND CustomField.EntityType=''Budget'')CustomField
 				OUTER APPLY (
 				SELECT EntityId,CustomFieldEntityId FROM CustomField_Entity CustomFieldEntity WHERE CustomFieldEntity.EntityId=CAST(tmpXmlData.[Id#1] AS INT)
 				AND CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId
@@ -237,7 +281,7 @@ BEGIN
 				CustomField_Entity CustomFieldEntity
 				CROSS APPLY (SELECT * FROM #tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId ) tmpXmlData
 				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
-				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+@ClientId+''' AND CustomField.IsDeleted=0
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
 				AND CustomField.EntityType=''Budget'') CustomField 
 				WHERE tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'] IS NOT NULL
 				AND CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
@@ -246,6 +290,7 @@ BEGIN
 			END
 			
 		END
+		
 	END
 	SET @Ismonth=''
 	SET @Count=@Count+1;
@@ -253,4 +298,26 @@ BEGIN
 END
 
 EXECUTE sp_executesql @GetBudgetAmoutData, N'@CustomEntityDeleteDropdownCount BIGINT,@CustomEntityDeleteTextBoxCount BIGINT OUT', @CustomEntityDeleteDropdownCount = @CustomEntityDeleteDropdownCount,@CustomEntityDeleteTextBoxCount = @CustomEntityDeleteTextBoxCount OUT
+
+---call sp of pre calculation for marketing budget
+Declare @BudgetId int=(select BudgetId from budget_detail where id=@BudgetDetailId)
+exec PreCalFinanceGridForExistingData @BudgetId
+---end
+----Enable trigger for marketing budget
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalBudgetForecastMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_DetailAmount ENABLE TRIGGER TrgPreCalBudgetForecastMarketingBudget
 END
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgInsertDeletePreCalMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_Detail ENABLE TRIGGER TrgInsertDeletePreCalMarketingBudget
+END
+----end
+END
+
+
+
+
+GO
+
+

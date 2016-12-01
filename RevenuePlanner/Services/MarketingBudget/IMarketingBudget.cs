@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Xml;
 
 namespace RevenuePlanner.Services.MarketingBudget
 {
@@ -189,7 +191,13 @@ namespace RevenuePlanner.Services.MarketingBudget
     {
         public int Id { get; set; }
     }
-
+    // Get list of columns and data wtih xml format for Import
+    public class BudgetImportData
+    {
+        public DataTable MarketingBudgetColumns { get; set; }
+        public XmlDocument XmlData { get; set; }
+        public string ErrorMsg { get; set; }
+    }
     /// <summary>
     /// Operational interface for budget related data retrieval or manipulations 
     /// </summary>
@@ -228,6 +236,11 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// New values expected to see update update (regardless monthly or quarterly viewz)
         /// <returns></returns>
         Dictionary<BudgetCloumn, double> UpdateBudgetCell(int budgetId, BudgetCloumn columnIndex, double oldValue, double newValue);
-        int DeleteBudget(int selectedBudgetId, int ClientId);
+        int DeleteBudget(int selectedBudgetId, int ClientId);	
+
+		// Methods for import budget files
+        BudgetImportData GetXLSXData(string viewByType, string fileLocation, int BudgetDetailId = 0, double PlanExchangeRate = 0);
+        BudgetImportData GetXLSData(string viewByType, DataSet ds, int BudgetDetailId = 0, double PlanExchangeRate = 0);
+        int ImportMarketingFinance( XmlDocument XMLData, DataTable ImportBudgetCol, int BudgetDetailId = 0);
     }
 }

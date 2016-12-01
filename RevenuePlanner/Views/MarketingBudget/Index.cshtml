@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
-}
+}	
+<script src="~/Scripts/js/fileinput.js"></script>
 <style>
     .ui-tooltip {
         position: absolute !important;
@@ -115,7 +116,33 @@
 <div id="divGridView" class="MarketingBudget-tbl">
     <div id="gridbox" style="width:100%; background-color:white;"></div>
 </div>
-
+@* Design for import modal pop up *@
+<div id="ImportModal" class="modal hide fade import-popover">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4> Import Data  </h4>
+    </div>
+    <div class="modal-body">
+        <ul>
+            <li>
+                <strong>Download file <a onclick="return ExportToExcel();">here</a></strong>
+                <br />
+                <span>Note: Here is sample file in month format with some specific columns. You can import this file or can import from (Edit Foreacast/Edit Budget) screen export fromat.</span>
+            </li>
+            <li>
+                <strong>Make any necessary changes</strong><br />
+                <span>Note: Any additional rows or columns added will not appear after imported</span>
+            </li>
+            <li>
+                <strong>Import the file</strong><br />
+                <span>Note:The file format must match with Finance(Budget)/Finance(Forecast) export format.</span>
+            </li>
+        </ul>
+        <input id="input-43" name="input43[]" type="file" class="file-loading select-file">
+        <div id="errorBlock" class="help-block"></div>
+        <div id="successBlock" class="help-block alert alert-success hide message-position-small">Your Data Save Successfully</div>
+    </div>
+</div>
 <script>
     var budgetgrid;
     var BudgetGridData;
@@ -162,9 +189,21 @@
     });
 
     $("#ddlMainGridTimeFrame").change(function () {
+        ShowHideSuccessDiv();
         GetGridData();
     });
-
+    // function to show hide success message
+    function ShowHideSuccessDiv()
+    {
+        var sucesstextmessagespan = $("#spanMsgSuccess");
+        var sucesstextmessagediv = $("#SuccessMsg");
+        if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
+            sucesstextmessagespan.text('')
+            if (sucesstextmessagediv != undefined && sucesstextmessagediv != null) {
+                sucesstextmessagediv.css('display', 'none');
+            }
+        }
+    }
 
     function BindColumnsfilter(ColumnSetId) {
         $.ajax({
@@ -365,5 +404,69 @@
         if ($('#nl-formParentFinanceMain .nl-field-toggle').text().length > 30) {
             $('#nl-formParentFinanceMain .nl-field-toggle').text().substring(0, 30) + '...';
         }
+    }
+    // Open modal popup for import file
+    function showModal() {
+        ShowHideSuccessDiv();
+        LoadInputModelBox();
+        $('#ImportModal').modal('show');
+    }
+    function ExportToExcel() {
+        ShowHideSuccessDiv();
+        budgetgrid.setColumnHidden(0, false);
+        budgetgrid.setColumnHidden(2, true);
+        budgetgrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
+        budgetgrid.setColumnHidden(0, true);
+        budgetgrid.setColumnHidden(2, false);
+    }
+
+    // #2804 File input popup function for import finance marketing budget
+    function LoadInputModelBox() {
+        var importurl = '@Url.Content("~/MarketingBudget/ExcelFileUpload")';
+        $('.fileinput-upload-button').hide();
+        $('#ImportModal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+            $('#input-43').fileinput('clear');
+        });
+        $('#input-43').off('fileclear').on('fileclear', function (event) {
+            $('.fileinput-upload-button').hide();
+        });
+
+        $("#input-43").fileinput({
+            type: 'POST',
+            showPreview: false,
+            uploadUrl: importurl,
+            allowedFileExtensions: ["xls", "xlsx"],
+            msgInvalidFileExtension: 'Incorrect file format. Please export the file and use that file to upload your changes',
+            elErrorContainer: "#errorBlock"
+        });
+
+        $('#input-43').off('filepreupload').on('filepreupload', function (event, data, previewId, index) {
+            myApp.showPleaseWait();
+        });
+
+        $('#input-43').off('fileuploaded').on('fileuploaded', function (event, data, previewId, index) {
+            if (data.response.conflict == true) {
+                ShowMessage(false, data.response.message);
+            }
+
+            var sucesstextmessagespan = $("#spanMsgSuccess");
+            var sucesstextmessagediv = $("#SuccessMsg");
+            if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
+                sucesstextmessagespan.text('file imported successfully.')
+                if (sucesstextmessagediv != undefined && sucesstextmessagediv != null) {
+                    sucesstextmessagediv.css('display', 'block');
+                }
+            }
+            myApp.hidePleaseWait();
+            $('#ImportModal').modal('hide');
+            GetGridData();
+        });
+
+        $('#input-43').off('fileloaded').on('fileloaded', function (event, file, previewId, index, reader) {
+            $('.fileinput-upload-button').show();
+        });
+        $('#input-43').off('fileuploaderror').on('fileuploaderror', function (event, data, msg) {
+            $('.fileinput-upload-button').hide();
+        });
     }
 </script>

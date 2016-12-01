@@ -9,7 +9,11 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Text;
 using RevenuePlanner.BDSService;
+using System.Xml;
 using System.Runtime.CompilerServices;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+
 
 
 namespace RevenuePlanner.Services.MarketingBudget
@@ -314,19 +318,19 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj = new GridDataStyle();
                     if (timeframe == Enums.QuarterFinance.Yearly.ToString())
                     {
-                        headObj.value = columns;
+                        headObj.value = "Id";
                     }
                     else
                     {
                         headObj.value = string.Empty;
-                        sbAttachedHeaders.Append(columns + ",");
+                        sbAttachedHeaders.Append("Id,");
                     }
 
                     headObj.sort = "na";
                     headObj.width = 0;
                     headObj.align = "center";
                     headObj.type = "ro";
-                    headObj.id = columns;
+                    headObj.id = "Id";
                     ListHead.Add(headObj);
 
                 }
@@ -580,5 +584,500 @@ namespace RevenuePlanner.Services.MarketingBudget
             catch { throw; }
             return NextBudgetId; //return new budgetid if user delete root/Parent budget.
         }
+
+        #region Import Marketing Budget
+
+        /// <summary>
+        /// Read Data from excel 2007/(.xlsx) and above version format file to xml
+        /// </summary>
+        /// <param name="fileLocation"></param>
+        /// <param name="BudgetDetailId"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <returns></returns>
+        public BudgetImportData GetXLSXData(string viewByType, string fileLocation, int BudgetDetailId = 0, double PlanExchangeRate = 0)
+        {
+            BudgetImportData objImportData = new BudgetImportData();
+            DataTable dtColumns = new DataTable();
+            XmlDocument xmlDoc = new XmlDocument();
+            dtColumns.Columns.Add("Month", typeof(string));
+            dtColumns.Columns.Add("ColumnName", typeof(string));
+            dtColumns.Columns.Add("ColumnIndex", typeof(Int64));
+            BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
+
+            using (SpreadsheetDocument doc = SpreadsheetDocument.Open(fileLocation, false))
+            {
+                //Read the first Sheet from Excel file.
+                Sheet sheet = doc.WorkbookPart.Workbook.Sheets.GetFirstChild<Sheet>();
+
+                //Get the Worksheet instance.
+                Worksheet worksheet = (doc.WorkbookPart.GetPartById(sheet.Id.Value) as WorksheetPart).Worksheet;
+                //Fetch all the rows present in the Worksheet.
+                IEnumerable<Row> rowsData = worksheet.GetFirstChild<SheetData>().Descendants<Row>();
+                var RowsListData = rowsData.ToList();
+                RowsListData.Remove(RowsListData.LastOrDefault());
+
+                if (viewByType == Enums.QuarterFinance.Yearly.ToString())
+                {
+                    RowsListData.Insert(0, RowsListData[0]);
+                }
+                var rows = RowsListData;
+                //Loop through the Worksheet rows.
+                XmlNode rootNode = xmlDoc.CreateElement("data");
+                xmlDoc.AppendChild(rootNode);
+
+                List<XmlColumns> listColumnIndex = new List<XmlColumns>();
+                List<CustomColumnModel> ListCustomCols = GetCustomColumns();// Get List of Custom Columns 
+                int matchrowforbudget = 3;  // RowIndex 3 is for first row
+                int firstrowindex = 2;
+                if (viewByType == Enums.QuarterFinance.Yearly.ToString())
+                {
+                    matchrowforbudget = 2;
+                    firstrowindex = 1;
+                }
+                string colName = string.Empty, colValue = string.Empty;
+                double coldata;
+                foreach (Row row in rows)
+                {
+                    //Use the first row to add columns to DataTable.
+                    if (row.RowIndex.Value > firstrowindex)
+                    {
+                        XmlNode childnode = xmlDoc.CreateElement("row");
+                        rootNode.AppendChild(childnode);
+
+                        int i = 0;
+                        foreach (Cell cell in row.Descendants<Cell>())
+                        {
+                            XmlColumns CellData = listColumnIndex.Where(a => a.ColumnIndex == i).Select(a => a).FirstOrDefault();
+                            if (CellData != null)
+                            {
+                                //  To handle the multi currency for budget,foracast and custom columns which have currency validation type
+                                colName = Convert.ToString(CellData.ColumName);
+                                colValue = GetCellValue(doc, cell).Trim();
+
+                                double.TryParse(colValue, out coldata);
+
+                                if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
+                                {
+                                    colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                }
+                                else if (ListCustomCols != null)
+                                {
+                                    CustomColumnModel CustomCol = ListCustomCols
+                                        .Where(a => a.ColName == colName)
+                                        .Select(a => a).FirstOrDefault();
+
+                                    if (CustomCol != null)
+                                    {
+                                        if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
+                                        {
+                                            colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                        }
+                                    }
+                                }
+                                XmlNode datanode = xmlDoc.CreateElement("value");
+                                XmlAttribute attribute = xmlDoc.CreateAttribute("code");
+                                attribute.Value = colName;
+                                datanode.Attributes.Append(attribute);
+                                datanode.InnerText = colValue;
+
+                                if (row.RowIndex == matchrowforbudget)
+                                {
+                                    if (!string.IsNullOrEmpty(attribute.Value) && Convert.ToString(attribute.Value).ToLower() == "id")
+                                    {
+                                        int n;
+                                        bool isNumeric = int.TryParse(datanode.InnerText, out n);
+                                        if (isNumeric)
+                                        {
+                                            if (BudgetDetailId != n)
+                                            {
+                                                objImportData = new BudgetImportData();
+                                                objImportData.ErrorMsg = "Data getting uploaded does not relate to specific Budget/Forecast.";
+                                                return objImportData;
+                                            }
+                                        }
+                                    }
+                                }
+                                childnode.AppendChild(datanode);
+                            }
+                            i++;
+                        }
+                    }
+                    else
+                    {
+                        // Get list of columns and its time frame
+                        if (row.RowIndex.Value == 1 && dtColumns.Rows.Count == 0)
+                        {
+                            string columnName = string.Empty;
+                            string columnNameLower = string.Empty;
+                            string InnerColName = string.Empty;
+                            List<Row> HeaderRows = RowsListData.Where(a => a.RowIndex.Value == 1 || a.RowIndex.Value == 2).ToList();
+                            if (HeaderRows.Count > 0)
+                            {
+                                List<Cell> InnerHeader = HeaderRows[0].Descendants<Cell>().Select(a => a).ToList();
+                                int p = 0;
+                                int j = 1;
+                                foreach (Cell cell in HeaderRows[1].Descendants<Cell>())
+                                {
+                                    columnName = GetCellValue(doc, cell);
+                                    if (!string.IsNullOrEmpty(columnName))
+                                    {
+                                        columnNameLower = columnName.ToLower();
+                                        if (columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Planned).ToLower() && columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Actual).ToLower())
+                                        {
+                                            Cell InnerCol = InnerHeader[p];
+                                            InnerColName = GetCellValue(doc, InnerCol);
+                                            if (viewByType == Enums.QuarterFinance.Yearly.ToString())
+                                            {
+                                                if (InnerColName == Enums.FinanceHeader_Label.Budget.ToString() || InnerColName == Enums.FinanceHeader_Label.Forecast.ToString())
+                                                    InnerColName = "Total";
+                                                else
+                                                    InnerColName = string.Empty;
+                                            }
+                                        
+                                            listColumnIndex.Add(new XmlColumns { ColumName = columnName, ColumnIndex = p });
+                                            dtColumns.Rows.Add();
+                                            dtColumns.Rows[j - 1]["Month"] = InnerColName;
+                                            dtColumns.Rows[j - 1]["ColumnIndex"] = j;
+                                            dtColumns.Rows[j - 1]["ColumnName"] = columnName;
+                                            j++;
+                                        }
+                                    }
+                                    p++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // check if import monthly/quaterly data file for total(yearly) view
+            List<string> monthcolumn = dtColumns.Rows.Cast<DataRow>().Select(x => x.Field<string>("Month").ToLower()).Distinct().ToList();
+            if (viewByType == Convert.ToString(Enums.QuarterFinance.Yearly))
+            {
+                if (monthcolumn.Count() == 1 && string.IsNullOrEmpty(monthcolumn.FirstOrDefault()))
+                    objImportData.ErrorMsg = "Data getting uploaded does not relate to specific view.";
+            }
+            //end
+            objImportData.MarketingBudgetColumns = dtColumns;
+            objImportData.XmlData = xmlDoc;
+
+            return objImportData;
+        }
+
+
+        /// <summary>
+        /// Read Data from excel 2003/(.xls) format file to xml
+        /// </summary>
+        /// <param name="fileLocation"></param>
+        /// <param name="BudgetDetailId"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <returns></returns>
+        public BudgetImportData GetXLSData(string viewByType, DataSet ds, int BudgetDetailId = 0, double PlanExchangeRate = 0)
+        {
+            List<XmlColumns> listColumnIndex = new List<XmlColumns>();
+            DataTable dtExcel = new DataTable();
+            BudgetImportData objImportData = new BudgetImportData();
+            DataTable dtColumns = new DataTable();
+            XmlDocument xmlDoc = new XmlDocument();
+            dtColumns.Columns.Add("Month", typeof(string));
+            dtColumns.Columns.Add("ColumnName", typeof(string));
+            dtColumns.Columns.Add("ColumnIndex", typeof(Int64));
+            int RowCount = 0, ColumnCount = 0;
+            string colName = string.Empty, colValue = string.Empty;
+
+            BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
+            try
+            {
+                List<CustomColumnModel> ListCustomCols = GetCustomColumns();// Get List of Custom Columns 
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    dtExcel = ds.Tables[0];
+                    if (dtExcel != null)
+                    {
+                        if (dtExcel.Rows.Count > 0)
+                        {
+                            RowCount = dtExcel.Rows.Count;
+                        }
+                        if (dtExcel.Columns.Count > 0)
+                        {
+                            ColumnCount = dtExcel.Columns.Count;
+                        }
+                    }
+                }
+
+                XmlNode childnode = null;
+                if (RowCount > 0)
+                {
+                    dtExcel.Rows[RowCount - 1].Delete();
+                    dtExcel.AcceptChanges();
+
+                    XmlNode rootNode = xmlDoc.CreateElement("data");
+                    xmlDoc.AppendChild(rootNode);
+                    // In case of yearly view add extra row to match with all other view
+                    if (viewByType == Convert.ToString(Enums.QuarterFinance.Yearly))
+                    {
+                        DataRow dr = dtExcel.NewRow();
+                        for (int k = 0; k < ColumnCount; k++)
+                        {
+                            string columnname = dtExcel.Rows[0][k].ToString();
+                            if (columnname.ToLower() == Convert.ToString(Enums.FinanceHeader_Label.Budget).ToLower() || columnname.ToLower() == Convert.ToString(Enums.FinanceHeader_Label.Forecast).ToLower())
+                            {
+                                dr[k] = "Total";
+                            }
+                            else
+                                dr[k] = string.Empty;
+                        }
+                        dtExcel.Rows.InsertAt(dr, 0);
+                        dtExcel.AcceptChanges();
+                    }
+                    //end
+                    RowCount = dtExcel.Rows.Count;
+                    string columnName = string.Empty;
+                    string columnNameLower = string.Empty;
+                    for (int i = 0; i < RowCount; i++)
+                    {
+
+                        int p = 0;
+                        int j = 1;
+                        // Create Child Node For Data
+                        if (i > 1)
+                        {
+                            childnode = xmlDoc.CreateElement("row");
+                            rootNode.AppendChild(childnode);
+                        }
+                        for (int k = 0; k < ColumnCount; k++)
+                        {
+                            #region Create Data Table For Column name and it's TimeFrame
+                            if (i == 0)
+                            {
+                               //  Get list of columns and its time frame
+                                if (RowCount > (i + 2)) // Set Condition for invalid file where only first two rows (Timeframe and column names) without data
+                                {
+                                    columnName = Convert.ToString(dtExcel.Rows[i + 1][k]);
+                                    if (!string.IsNullOrEmpty(columnName))
+                                    {
+                                        columnNameLower = columnName.ToLower();
+                                        if (columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Planned).ToLower() && columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Actual).ToLower())
+                                        {
+                                            var InnerColName = Convert.ToString(dtExcel.Rows[i][k]);
+                                            listColumnIndex.Add(new XmlColumns { ColumName = columnName, ColumnIndex = p });
+                                            dtColumns.Rows.Add();
+                                            dtColumns.Rows[j - 1]["Month"] = InnerColName;
+                                            dtColumns.Rows[j - 1]["ColumnIndex"] = j;
+                                            dtColumns.Rows[j - 1]["ColumnName"] = columnName;
+                                            j++;
+                                        }
+                                    }
+                                    p++;
+                                }
+                            }
+                            #endregion
+
+                            #region Insert Record to XML
+                            if (i > 1)
+                            {
+                                XmlColumns CellData = listColumnIndex.Where(a => a.ColumnIndex == k).Select(a => a).FirstOrDefault();
+
+                                if (CellData != null)
+                                {
+                                    // To handle the multi currency for budget,foracast and custom columns which have currency validation type
+                                    colName = CellData.ColumName;
+                                    colValue = Convert.ToString(dtExcel.Rows[i][k]).Trim();
+
+                                    double coldata;
+                                    double.TryParse(colValue, out coldata);
+
+                                    if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
+                                    {
+                                        colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                    }
+                                    else if (ListCustomCols != null)
+                                    {
+                                        CustomColumnModel CustomCol = ListCustomCols
+                                            .Where(a => a.ColName == colName)
+                                            .Select(a => a).FirstOrDefault();
+
+                                        if (CustomCol != null)
+                                        {
+                                            if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
+                                            {
+                                                colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                            }
+                                        }
+                                    }
+                                    XmlNode datanode = xmlDoc.CreateElement("value");
+                                    XmlAttribute attribute = xmlDoc.CreateAttribute("code");
+                                    attribute.Value = colName;
+                                    datanode.Attributes.Append(attribute);
+                                    datanode.InnerText = colValue;
+
+                                    // RowIndex 2 is for first row
+                                    if (i == 2)
+                                    {
+                                        if (!string.IsNullOrEmpty(attribute.Value) && Convert.ToString(attribute.Value).ToLower() == "id")
+                                        {
+                                            int n;
+                                            bool isNumeric = int.TryParse(datanode.InnerText, out n);
+                                            if (isNumeric)
+                                            {
+                                                if (BudgetDetailId != n)
+                                                {
+                                                    objImportData = new BudgetImportData();
+                                                    objImportData.ErrorMsg = "Data getting uploaded does not relate to specific Budget/Forecast.";
+                                                    return objImportData;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    childnode.AppendChild(datanode);
+                                }
+                            }
+                            #endregion
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return null;
+            }
+            // check if import monthly/quaterly data file  for total(yearly) view
+            List<string> monthcolumn = dtColumns.Rows.Cast<DataRow>().Select(x => x.Field<string>("Month").ToLower()).Distinct().ToList();
+            if (viewByType == Convert.ToString(Enums.QuarterFinance.Yearly))
+            {
+                if (monthcolumn.Count() == 1 && string.IsNullOrEmpty(monthcolumn.FirstOrDefault()))
+                    objImportData.ErrorMsg = "Data getting uploaded does not relate to specific view.";
+            }
+            //end
+            objImportData.MarketingBudgetColumns = dtColumns;
+            objImportData.XmlData = xmlDoc;
+
+            return objImportData;
+        }
+
+        /// <summary>
+        /// Get the value of cell from excel sheet.
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        private string GetCellValue(SpreadsheetDocument doc, Cell cell)
+        {
+            string value = string.Empty;
+            try
+            {
+                if (cell.CellValue != null)
+                {
+                    value = cell.CellValue.InnerText;
+                }
+                if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+                {
+                    return doc.WorkbookPart.SharedStringTablePart.SharedStringTable.ChildElements.GetItem(int.Parse(value)).InnerText;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// Method to get list of custom column for budget
+        /// </summary>
+        /// <returns></returns>
+        private List<CustomColumnModel> GetCustomColumns()
+        {
+            List<CustomColumnModel> lstColumns = (from objColumnSet in _database.Budget_ColumnSet
+                                                  join objColumn in _database.Budget_Columns on objColumnSet.Id equals objColumn.Column_SetId
+                                                  join objCustomField in _database.CustomFields on objColumn.CustomFieldId equals objCustomField.CustomFieldId
+                                                  where objColumnSet.ClientId == Sessions.User.CID
+                                                  && objColumn.IsTimeFrame == false
+                                                  && objColumnSet.IsDeleted == false && objColumn.IsDeleted == false && objCustomField.IsDeleted == false
+                                                  select new CustomColumnModel
+                                                  {
+                                                      ColName = objCustomField.Name,
+                                                      CustomColumSetId = objColumnSet.Id,
+                                                      CustomFieldId = objCustomField.CustomFieldId,
+                                                      ValidationType = objColumn.ValidationType
+                                                  }).ToList();
+            return lstColumns;
+        }
+        /// <summary>
+        /// Convert Value From other currency to USD Dollar
+        /// </summary>
+        /// <param name="DataValue"></param>
+        /// <param name="ExchangeRate"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private double SetValueByExchangeRate(double DataValue = 0, double ExchangeRate = 1)
+        {
+            double ConvertedValue = DataValue;
+            if (ExchangeRate != 0)
+            {
+                ConvertedValue = DataValue / ExchangeRate;
+            }
+            return ConvertedValue;
+        }
+        /// <summary>
+        /// Desc:: Import Marketing finance Data from excel 
+        /// </summary>
+        /// <param name="XMLData"></param>
+        /// <param name="ImportBudgetCol"></param>
+        /// <param name="BudgetDetailId"></param>
+        /// <param name="dtColumns"></param>
+        /// <returns></returns>
+        public int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int BudgetDetailId = 0)
+        {
+            // Check the file data is monthly or quarterly
+            List<string> MonthList = new List<string>();
+            List<string> DefaultMonthList = new List<string>();
+
+            MonthList = ImportBudgetCol.Rows.Cast<DataRow>().Select(x => x.Field<string>("Month").ToLower()).Distinct().ToList();
+
+            DefaultMonthList = Enums.ReportMonthDisplayValuesWithPeriod.Select(a => a.Key.ToLower()).ToList();
+
+            var IsMonthly = (from dtMonth in MonthList
+                             join defaultMonth in DefaultMonthList on dtMonth equals defaultMonth
+                             select new { dtMonth }).Any();
+          //end
+            BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
+
+            ///If connection is closed then it will be open
+            var Connection = _database.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+            {
+                Connection.Open();
+            }
+            SqlCommand command = new SqlCommand();
+            int ExecuteCommand = 0;
+            string spname = string.Empty;
+
+            if (!IsMonthly)
+            {
+                spname = "ImportMarketingBudgetQuarter";
+            }
+            else
+            {
+                spname = "ImportMarketingBudgetMonthly";
+            }
+            using (command = new SqlCommand(spname, Connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@UserId", Sessions.User.ID);
+                command.Parameters.AddWithValue("@ClientId", Sessions.User.CID);
+                command.Parameters.AddWithValue("@XMLData", XMLData.InnerXml);
+                command.Parameters.AddWithValue("@ImportBudgetCol", ImportBudgetCol);
+                command.Parameters.AddWithValue("@BudgetDetailId", BudgetDetailId);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                ExecuteCommand = command.ExecuteNonQuery();
+            }
+            Connection.Close();
+            return ExecuteCommand;
+
+        }
+
+        #endregion
     }
 }
