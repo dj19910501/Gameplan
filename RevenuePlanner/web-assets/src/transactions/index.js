@@ -1,7 +1,8 @@
 import mainView from './views/main.ejs';
 import css from './transactions.scss';
-import createGrid from './grid';
-import TransactionModel from './transactionModel';
+import Grid from 'dhtmlXGridObject';
+import resolveAppUri from 'util/resolveAppUri';
+import transactionGridDataSource from './transactionGridDataSource';
 
 export default function main($rootElement) {
 
@@ -11,7 +12,8 @@ export default function main($rootElement) {
 
     const $gridContainer = $rootElement.find(`.${css.gridContainer}`);
     const $grid = $gridContainer.find(`.${css.grid}`);
-
-    const model = new TransactionModel();
-    $(model).on("change-headerMappings", () => createGrid(model, $gridContainer, $grid));
+    const grid = new Grid($grid.get(0));
+    grid.setImagePath(resolveAppUri("codebase/imgs/"));
+    const dataSource = transactionGridDataSource();
+    dataSource.bindToGrid(grid);
 }
