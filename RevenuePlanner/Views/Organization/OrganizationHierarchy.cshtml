@@ -240,13 +240,22 @@
             async: false,
             contentType: "application/json; charset=utf-8",
             success: function (data) {
+
                 if (data != null && data != 'undefined') {
+
                     if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                         //// Function to redirect to login page on unavailability of web service.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.
                         //// Ticket: 942 Exception handeling in Gameplan.
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                    } else {
+                    }
+                    else if (data.redirectto != 'undefined' && data.redirectto == 'organization') {
+                        window.location = '@Url.Content("~/Organization/OrganizationHierarchy")';
+                    }
+                    else if (data.redirectto != 'undefined' && data.redirectto == 'index') {
+                        window.location = '@Url.Content("~/User/Index")';
+                    }
+                    else {
                         $("#content").css('display', 'none');
                         $("#hdrOrganization").css('display', 'none');
                         $("#hdrEditUser").css('display', 'block');
