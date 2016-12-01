@@ -4552,8 +4552,8 @@ namespace RevenuePlanner.Controllers
 
                                         if (Convert.ToInt32(form.EndDate.Year) - Convert.ToInt32(pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Year) > 0)
                                         {
-                                            //string linkedYear = string.Format(Common.objCached.LinkedTacticExtendedYear, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                            return Json(new { IsExtended = true, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }) });
+                                            pcpobj.LinkedPlanId = null;
+                                            pcpobj.LinkedTacticId = null;
                                         }
 
                                     }

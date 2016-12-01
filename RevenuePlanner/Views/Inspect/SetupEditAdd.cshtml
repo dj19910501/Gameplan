@@ -931,11 +931,6 @@
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
-                    if (data.IsExtended) {
-                        alert("Since the Tactic is linked to another Plan, it cannot be extended");
-                        $('#InspectTab').removeClass('SpanDisable');
-                        return false;
-                    }
                     if (!data.IsDuplicate) {
                         // Added by Viral Kadiya for PL ticket #1970 - Show Error messaage when Tactic Planned Cost lesser than Total lineItems cost.
                         if (data.IsError) {
