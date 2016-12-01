@@ -4,17 +4,18 @@
 @{
     ViewBag.Title = "Finance - Marketing Budget";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
+    // Get currency symbol from session
+    string CurrencySymbol = Sessions.PlanCurrencySymbol;
 }
 
-<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" /> 
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" />
 
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
-}	
+}
 <script src="~/Scripts/js/fileinput.js"></script>
 <style>
     .ui-tooltip {
@@ -74,19 +75,19 @@
     <div class="plancart-box finance-cart">
         <div class="white-chart">
             <p class="source-sans-probold" title="Actual">Actual</p>
-            <p class="value source-sans-prolight" id="ActualID" data-original-title="0" title="">$0</p>
+            <p class="value source-sans-prolight" id="ActualID" data-original-title="0" title="">0</p>
         </div>
         <div class="white-chart">
             <p class="source-sans-probold" id="plannedLabel" title="Planned">Planned</p>
-            <p class="value source-sans-prolight" id="PlannedID" data-original-title="$14,711" title="">$14.7k</p>
+            <p class="value source-sans-prolight" id="PlannedID" data-original-title="0" title="">0</p>
         </div>
         <div class="white-chart">
             <p class="source-sans-probold" id="forecastLabel" title="Forecast">Forecast</p>
-            <p class="value source-sans-prolight" id="ForecastID" data-original-title="2000" title="">$2,000</p>
+            <p class="value source-sans-prolight" id="ForecastID" data-original-title="0" title="">0</p>
         </div>
         <div id="dvBudgetHeader" class="white-chart">
             <p class="source-sans-probold" id="budgetLabel" title="Budget">Budget</p>
-            <p class="value source-sans-prolight" id="budgetID" data-original-title="$12,000" title="">$12.0k</p>
+            <p class="value source-sans-prolight" id="budgetID" data-original-title="0" title="">0</p>
         </div>
     </div>
 
@@ -149,8 +150,8 @@
     var budgetgrid;
     var BudgetGridData;
     var AddNewrow = true;
-    var backBudgetid = '';	 
- var standardcolumns;
+    var backBudgetid = '';
+    var standardcolumns;
     $(document).ready(function () {
         $('#proceed-button_DeleteItem').on("click", function () {
             DeleteBudget();
@@ -159,6 +160,7 @@
         var Columnsetval = $("#ddlColumnSet").val();
         $("#sidebar").css("display", "none");
         $("#content_wraper").css("width", "100%");
+        UpdateFinanceHeaderValues(); // Update header values
         BindColumnsfilter(Columnsetval);
         GetGridData();
 
@@ -171,6 +173,7 @@
                 var budgetIDMain = $(this).attr('value');
                 $("#ddlParentFinanceMain").val(budgetIDMain);
                 if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
+                    UpdateFinanceHeaderValues(); // Update header values
                     GetGridData();
                 }
             });
@@ -193,11 +196,11 @@
 
     $("#ddlMainGridTimeFrame").change(function () {
         ShowHideSuccessDiv();
+        UpdateFinanceHeaderValues(); // Update header values
         GetGridData();
     });
     // function to show hide success message
-    function ShowHideSuccessDiv()
-    {
+    function ShowHideSuccessDiv() {
         var sucesstextmessagespan = $("#spanMsgSuccess");
         var sucesstextmessagediv = $("#SuccessMsg");
         if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
@@ -275,7 +278,7 @@
                 budgetgrid.parse(BudgetGridData, "json");
                 var IdIndex = budgetgrid.getColIndexById('Id');
                 var TaskNameIndex = budgetgrid.getColIndexById('Name');
-               
+
                 budgetgrid.setColumnHidden(IdIndex, true)
                 HideShowColumns();
 
@@ -309,7 +312,7 @@
         });
 
     }
-    
+
     function DeleteBudgetIconClick(data) {
         var LineItemCount = $(data).attr('licount');
         //Check blank row if user clicks on new row delete icon then delete popup not display
@@ -346,8 +349,9 @@
                 SelectedBudgetId: SelectedBudgetId,
                 BudgetId: currentBudgetId,
             },
-            success: function (data) {               
+            success: function (data) {
                 var BudgetId = data.budgetId;
+                UpdateFinanceHeaderValues(); // Update header values
                 GetGridData(BudgetId);
                 RefreshBudgetDropdown(false, BudgetId);
                 //TODO :  here we need to call Finance Header function to refresh the header after deleting budget data
@@ -399,13 +403,14 @@
         $Budgetdropdown.find("input[type='search']").val(_budgetId);
         nlformParentFinanceMain = new NLForm(document.getElementById('nl-formParentFinanceMain'));
 
-        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {            
+        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             $('#errorMsg').css('display', 'none');
             $('#SuccessMsg').css('display', 'none');
             $("#divGridView").show();
             $("#dvNoData").hide();
             var budgetId = $(this).attr('value');
             if (budgetId != null && budgetId != 'undefined' && budgetId != '0') {
+                UpdateFinanceHeaderValues(); // Update header values
                 GetGridData(budgetId);
                 //TODO : Call Finance Header Function.
                 $("#dvExportToExcel").css("display", "block");
@@ -482,6 +487,7 @@
             }
             myApp.hidePleaseWait();
             $('#ImportModal').modal('hide');
+            UpdateFinanceHeaderValues(); // Update header values
             GetGridData();
         });
 
@@ -491,7 +497,7 @@
         $('#input-43').off('fileuploaderror').on('fileuploaderror', function (event, data, msg) {
             $('.fileinput-upload-button').hide();
         });
-    }	
+    }
 
 
     function HideShowColumns() {
@@ -522,7 +528,7 @@
                 });
                 budgetgrid.setColumnHidden(i, false)
             }
-          
+
         }
 
         if (Hidecol != null && Hidecol != undefined && Hidecol.length > 0) {
@@ -532,5 +538,42 @@
 
         }
 
+    }
+
+    // Function to update header values for finance
+    function UpdateFinanceHeaderValues() {
+        // Get selected budget id
+        var BudgetId = $('#ddlParentFinanceMain').val();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/MarketingBudget/GetFinanceHeaderValues/")',
+            dataType: 'json',
+            data: { BudgetId: BudgetId },
+            success: function (data) {
+                
+                // update header values
+                $("#budgetID").text('@CurrencySymbol' + data.Budget);
+                $("#ForecastID").text('@CurrencySymbol' + data.Forecast);
+                $("#PlannedID").text('@CurrencySymbol' + data.Planned);
+                $("#ActualID").text('@CurrencySymbol' + data.Actual);
+
+                // format values and apply bootstrap tooltip
+                ApplyFormattingAndTooltip("#budgetID");
+                ApplyFormattingAndTooltip("#ForecastID");
+                ApplyFormattingAndTooltip("#PlannedID");
+                ApplyFormattingAndTooltip("#ActualID");
+            }
+        });
+    }
+
+    // Function to format values and apply bootstrap tooltip
+    function ApplyFormattingAndTooltip(idName) {
+        var originalValue = $(idName).html();
+        if (typeof (maxsize) === 'undefined') maxsize = 5;
+        $(idName).popover('destroy');
+        if (originalValue != undefined && originalValue != null && originalValue != '') {
+            $(idName).attr("data-original-title", originalValue);
+            setBootstrapTooltip(idName, originalValue, maxsize, true); // Apply tooltip
         }
+    }
 </script>

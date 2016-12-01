@@ -94,7 +94,7 @@ namespace RevenuePlanner.Controllers
         {
             // set budgetId  and timeframe in session for import
             Sessions.ImportTimeFrame = viewByType;
-            Sessions.BudgetDetailId = budgetId; 
+            Sessions.BudgetDetailId = budgetId;
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             //Get all budget grid data.
             objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, viewByType, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol);
@@ -109,12 +109,12 @@ namespace RevenuePlanner.Controllers
 
             //All standard and custom columns
             List<BindDropdownData> lstColumns = BudgetColumns.Select(a => new { a.CustomField.Name, a.CustomField.CustomFieldId }).ToList()
-               .Select(a => new BindDropdownData { Text = a.Name, Value = Convert.ToString(a.CustomFieldId) }).ToList(); 
+               .Select(a => new BindDropdownData { Text = a.Name, Value = Convert.ToString(a.CustomFieldId) }).ToList();
 
             //standard columns list
             List<string> StandardTimeFrameColumns = BudgetColumns.Where(a => a.IsTimeFrame == true).Select(a => a.CustomField.Name).ToList();
 
-            return Json( new { Columnlist = lstColumns, standardlist = StandardTimeFrameColumns }, JsonRequestBehavior.AllowGet);
+            return Json(new { Columnlist = lstColumns, standardlist = StandardTimeFrameColumns }, JsonRequestBehavior.AllowGet);
         }
 
         public BudgetSummary GetBudgetSummary(int budgetId)
@@ -273,6 +273,32 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return new EmptyResult();
+        }
+        #endregion
+        #region Header
+        /// <summary>
+        /// Get finance header values(Budget, Forecast, Planned and Actual)
+        /// </summary>
+        /// <param name="BudgetId">Id of the Budget</param>
+        /// <returns>Returns values in json format</returns>
+        public JsonResult GetFinanceHeaderValues(int BudgetId)
+        {
+            // Call function to get header values 
+            DataTable dtHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate);
+
+            string Budget = string.Empty;
+            string Forecast = string.Empty;
+            string Planned = string.Empty;
+            string Actual = string.Empty;
+            if (dtHeader != null && dtHeader.Rows.Count > 0)
+            {
+                // Get values from datatable
+                Budget = Convert.ToString(dtHeader.Rows[0][Convert.ToString(Enums.FinanceHeader_Label.Budget)]);
+                Forecast = Convert.ToString(dtHeader.Rows[0][Convert.ToString(Enums.FinanceHeader_Label.Forecast)]);
+                Planned = Convert.ToString(dtHeader.Rows[0][Convert.ToString(Enums.FinanceHeader_Label.Planned)]);
+                Actual = Convert.ToString(dtHeader.Rows[0][Convert.ToString(Enums.FinanceHeader_Label.Actual)]);
+            }
+            return Json(new { Budget = Budget, Forecast = Forecast, Planned = Planned, Actual = Actual }, JsonRequestBehavior.AllowGet);
         }
         #endregion
     }

@@ -173,7 +173,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     }
                     else
                     {
-                        
+
                         object objValue = row[Convert.ToString(ColumnName)];
                         string DisplayValue = string.Empty;
                         if (objValue != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(objValue)))
@@ -188,7 +188,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                             {
                                 DisplayValue = Convert.ToString(objValue);
                             }
-                         
+
                         }
                         Data.Add(DisplayValue);
                     }
@@ -421,7 +421,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                     headObj.id = columns;
                     headObj.sort = "na";
-                        headObj.width = 100;
+                    headObj.width = 100;
                     headObj.align = "center";
 
                     // columns will have data like eg.Y1_Budget in case of time frame like This year(Monthly)
@@ -578,7 +578,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 returnParameter.Direction = ParameterDirection.ReturnValue;
                 command.ExecuteNonQuery();
                 NextBudgetId = (int)returnParameter.Value;
-                
+
                 if (Connection.State == System.Data.ConnectionState.Open)
                 {
                     Connection.Close();
@@ -736,7 +736,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                                                 else
                                                     InnerColName = string.Empty;
                                             }
-                                        
+
                                             listColumnIndex.Add(new XmlColumns { ColumName = columnName, ColumnIndex = p });
                                             dtColumns.Rows.Add();
                                             dtColumns.Rows[j - 1]["Month"] = InnerColName;
@@ -852,7 +852,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                             #region Create Data Table For Column name and it's TimeFrame
                             if (i == 0)
                             {
-                               //  Get list of columns and its time frame
+                                //  Get list of columns and its time frame
                                 if (RowCount > (i + 2)) // Set Condition for invalid file where only first two rows (Timeframe and column names) without data
                                 {
                                     columnName = Convert.ToString(dtExcel.Rows[i + 1][k]);
@@ -1043,7 +1043,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             var IsMonthly = (from dtMonth in MonthList
                              join defaultMonth in DefaultMonthList on dtMonth equals defaultMonth
                              select new { dtMonth }).Any();
-          //end
+            //end
             BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
 
             ///If connection is closed then it will be open
@@ -1082,5 +1082,40 @@ namespace RevenuePlanner.Services.MarketingBudget
         }
 
         #endregion
+
+        /// <summary>
+        /// Get values of Budget, Forecast, Planned and Actual for HUD
+        /// </summary>
+        /// <param name="BudgetId">Id of the Budget</param>
+        /// <param name="ExchangeRate">Currency exchange rate</param>
+        /// <returns>Returns datatable having 4 values(Budget,Forecast,Planned,Actual)</returns>
+        public DataTable GetFinanceHeaderValues(int BudgetId, double ExchangeRate)
+        {
+            DataTable dtHeader = new DataTable();
+
+            try
+            {
+                ///If connection is closed then it will be open
+                var Connection = _database.Database.Connection as SqlConnection;
+                if (Connection.State == ConnectionState.Closed)
+                {
+                    Connection.Open();
+                }
+                SqlCommand command = new SqlCommand("GetHeaderValuesForFinance", Connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@BudgetId", BudgetId);
+                command.Parameters.AddWithValue("@CurrencyRate", ExchangeRate);
+
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                adp.Fill(dtHeader);
+                if (Connection.State == ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
+            }
+            catch { throw; }
+            return dtHeader; // Returns datatable having 4 values(Budget, Forecast, Planned, Actual)
+
+        }
     }
 }

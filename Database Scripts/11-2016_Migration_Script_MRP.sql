@@ -2360,7 +2360,7 @@ BEGIN
 	LEFT JOIN 
 	(	
 		-- Get Planned Cost values
-		SELECT BD.Id AS BudgetDetailId, SUM((PCPTL.Cost * Weightage/100)) AS TotalPlanned FROM 
+		SELECT BD.Id AS BudgetDetailId, SUM((PCPTL.Cost * CAST(Weightage AS FLOAT)/100)) AS TotalPlanned FROM 
 		[dbo].[Budget_Detail] BD 
 		INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
 		INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
@@ -2371,6 +2371,7 @@ BEGIN
 	RETURN 
 END
 GO
+
 
 
 
@@ -2765,28 +2766,28 @@ BEGIN
 				,F.Name
 
 				-- Budget, Forecast, Planned, Actuals for Quarter 1
-				,(ISNULL(Y1_Budget,0)+ISNULL(Y2_Budget,0)+ISNULL(Y3_Budget,0)) * @CurrencyRate as Y1_Budget
-				,(ISNULL(Y1_Forecast,0)+ISNULL(Y2_Forecast,0)+ISNULL(Y3_Forecast,0)) * @CurrencyRate as Y1_Forecast
-				,(ISNULL(Y1_Planned,0)+ISNULL(Y2_Planned,0)+ISNULL(Y3_Planned,0)) * @CurrencyRate as Y1_Planned
-				,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0)) * @CurrencyRate as Y1_Actual
+				,(ISNULL(Y1_Budget,0)+ISNULL(Y2_Budget,0)+ISNULL(Y3_Budget,0)) * @CurrencyRate as Q1_Budget
+				,(ISNULL(Y1_Forecast,0)+ISNULL(Y2_Forecast,0)+ISNULL(Y3_Forecast,0)) * @CurrencyRate as Q1_Forecast
+				,(ISNULL(Y1_Planned,0)+ISNULL(Y2_Planned,0)+ISNULL(Y3_Planned,0)) * @CurrencyRate as Q1_Planned
+				,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0)) * @CurrencyRate as Q1_Actual
 
 				-- Budget, Forecast, Planned, Actuals for Quarter 2
-				,(ISNULL(Y4_Budget,0)+ISNULL(Y5_Budget,0)+ISNULL(Y6_Budget,0)) * @CurrencyRate as Y4_Budget
-				,(ISNULL(Y4_Forecast,0)+ISNULL(Y5_Forecast,0)+ISNULL(Y6_Forecast,0)) * @CurrencyRate as Y4_Forecast
-				,(ISNULL(Y4_Planned,0)+ISNULL(Y5_Planned,0)+ISNULL(Y6_Planned,0)) * @CurrencyRate as Y4_Planned
-				,(ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0)) * @CurrencyRate as Y4_Actual
+				,(ISNULL(Y4_Budget,0)+ISNULL(Y5_Budget,0)+ISNULL(Y6_Budget,0)) * @CurrencyRate as Q2_Budget
+				,(ISNULL(Y4_Forecast,0)+ISNULL(Y5_Forecast,0)+ISNULL(Y6_Forecast,0)) * @CurrencyRate as Q2_Forecast
+				,(ISNULL(Y4_Planned,0)+ISNULL(Y5_Planned,0)+ISNULL(Y6_Planned,0)) * @CurrencyRate as Q2_Planned
+				,(ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0)) * @CurrencyRate as Q2_Actual
 				
 				-- Budget, Forecast, Planned, Actuals for Quarter 3
-				,(ISNULL(Y7_Budget,0)+ISNULL(Y8_Budget,0)+ISNULL(Y9_Budget,0)) * @CurrencyRate as Y7_Budget
-				,(ISNULL(Y7_Forecast,0)+ISNULL(Y8_Forecast,0)+ISNULL(Y9_Forecast,0)) * @CurrencyRate as Y7_Forecast
-				,(ISNULL(Y7_Planned,0)+ISNULL(Y8_Planned,0)+ISNULL(Y9_Planned,0)) * @CurrencyRate as Y7_Planned
-				,(ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0)) * @CurrencyRate as Y7_Actual
+				,(ISNULL(Y7_Budget,0)+ISNULL(Y8_Budget,0)+ISNULL(Y9_Budget,0)) * @CurrencyRate as Q3_Budget
+				,(ISNULL(Y7_Forecast,0)+ISNULL(Y8_Forecast,0)+ISNULL(Y9_Forecast,0)) * @CurrencyRate as Q3_Forecast
+				,(ISNULL(Y7_Planned,0)+ISNULL(Y8_Planned,0)+ISNULL(Y9_Planned,0)) * @CurrencyRate as Q3_Planned
+				,(ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0)) * @CurrencyRate as Q3_Actual
 
 				-- Budget, Forecast, Planned, Actuals for Quarter 4
-				,(ISNULL(Y10_Budget,0)+ISNULL(Y11_Budget,0)+ISNULL(Y12_Budget,0)) * @CurrencyRate as Y10_Budget
-				,(ISNULL(Y10_Forecast,0)+ISNULL(Y11_Forecast,0)+ISNULL(Y12_Forecast,0)) * @CurrencyRate as Y10_Forecast
-				,(ISNULL(Y10_Planned,0)+ISNULL(Y11_Planned,0)+ISNULL(Y12_Planned,0)) * @CurrencyRate as Y10_Planned
-				,(ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as Y10_Actual
+				,(ISNULL(Y10_Budget,0)+ISNULL(Y11_Budget,0)+ISNULL(Y12_Budget,0)) * @CurrencyRate as Q4_Budget
+				,(ISNULL(Y10_Forecast,0)+ISNULL(Y11_Forecast,0)+ISNULL(Y12_Forecast,0)) * @CurrencyRate as Q4_Forecast
+				,(ISNULL(Y10_Planned,0)+ISNULL(Y11_Planned,0)+ISNULL(Y12_Planned,0)) * @CurrencyRate as Q4_Planned
+				,(ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as Q4_Actual
 
 				,F.TotalBudget * @CurrencyRate as 'Total_Budget'
 				,F.TotalForecast * @CurrencyRate as 'Total_Forecast'
@@ -4213,6 +4214,67 @@ END
 
 GO
 ------end-------
+
+-- Start - Added by Arpita Soni for Ticket #2788
+-- DROP AND CREATE STORED PROCEDURE [dbo].[GetHeaderValuesForFinance]
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[GetHeaderValuesForFinance]') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[GetHeaderValuesForFinance]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 11/30/2016
+-- Description:	Get HUD values for finance grid
+-- =============================================
+-- GetHeaderValuesForFinance 85
+CREATE PROCEDURE [dbo].[GetHeaderValuesForFinance]
+	-- Add the parameters for the stored procedure here
+	@BudgetId		INT,
+	@CurrencyRate	FLOAT = 1.0
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	DECLARE @Budget		FLOAT,
+			@Forecast	FLOAT,
+			@Planned	FLOAT,
+			@Actual		FLOAT
+
+	-- Get Budget, Forecast for Header
+	SELECT @Budget = SUM(TotalBudget) * @CurrencyRate, @Forecast = SUM(TotalForecast) * @CurrencyRate
+	FROM Budget_Detail 
+	WHERE BudgetId = @BudgetId AND IsDeleted = 0
+
+	-- Get Planned Cost for Header
+	SELECT @Planned = SUM((ISNULL(PCPTL.Cost,0) * CAST(Weightage AS FLOAT)/100)) * @CurrencyRate
+	FROM [dbo].[Budget_Detail] BD 
+	INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
+	INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
+	WHERE BD.IsDeleted = 0 AND BD.BudgetId = @BudgetId AND PCPTL.LineItemTypeId IS NOT NULL AND PCPTL.IsDeleted = 0
+
+	-- Get Actual for Header
+	SELECT @Actual = SUM((ISNULL(PCPTLA.Value,0) * CAST(Weightage AS FLOAT)/100)) * @CurrencyRate
+	FROM [dbo].[Budget_Detail] BD 
+	INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
+	INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+	INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
+	WHERE BD.IsDeleted = 0 AND BD.BudgetId = @BudgetId AND PCPTL.LineItemTypeId IS NOT NULL AND PCPTL.IsDeleted = 0
+	AND REPLACE(Period,'Y','') < 13
+
+	SELECT ISNULL(@Budget,0) AS Budget, ISNULL(@Forecast,0) AS Forecast, ISNULL(@Planned,0) AS Planned, ISNULL(@Actual,0) AS Actual
+END
+GO
+
+-- End - Added by Arpita Soni for Ticket #2788
+
+
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
 -- ======================================================================================

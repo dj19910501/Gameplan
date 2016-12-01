@@ -66,6 +66,7 @@ BEGIN
 			SELECT B.Id AS BudgetDetailId, Period, Forecast FROM Budget A
 			INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
 			INNER JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+			WHERE A.IsDeleted = 0
 		) P
 		PIVOT
 		(

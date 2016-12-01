@@ -221,6 +221,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol);
 
+        DataTable GetFinanceHeaderValues(int BudgetId, double ExchangeRate); // Header values
 
         /// <summary>
         /// Update budget data only!
@@ -237,11 +238,11 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// New values expected to see update update (regardless monthly or quarterly viewz)
         /// <returns></returns>
         Dictionary<BudgetCloumn, double> UpdateBudgetCell(int budgetId, BudgetCloumn columnIndex, double oldValue, double newValue);
-        int DeleteBudget(int selectedBudgetId, int ClientId);	
+        int DeleteBudget(int selectedBudgetId, int ClientId);
 
-		// Methods for import budget files
-        BudgetImportData GetXLSXData(string viewByType, string fileLocation, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol="$");
+        // Methods for import budget files
+        BudgetImportData GetXLSXData(string viewByType, string fileLocation, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$");
         BudgetImportData GetXLSData(string viewByType, DataSet ds, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$");
-        int ImportMarketingFinance( XmlDocument XMLData, DataTable ImportBudgetCol, int BudgetDetailId = 0);
+        int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int BudgetDetailId = 0);
     }
 }
