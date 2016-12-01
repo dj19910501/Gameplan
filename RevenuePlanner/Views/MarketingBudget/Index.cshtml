@@ -38,7 +38,7 @@
 <div class="light-blue-chart cf full-width-header" id="financeHeader">
     <div style="" class="fin-head-left">
         <div class="finance-main-title">
-            <h2 id="lblfinanceTitle" style="display:block;">Finance (Home)</h2>
+            <h2 id="lblfinanceTitle" style="display:block;">Marketing Budget</h2>
         </div>
         <div style="float:left;" id="drpParentMain">
             <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
@@ -241,6 +241,15 @@
         });
 
         $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').click(function () {
+            HideShowColumns();
+        });
+
+        $("#selectAll_budget-select").click(function () {
+            $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input").prop('checked', 'checked');
+            HideShowColumns();
+        });
+        $("#deselectAll_budget-select").click(function () {
+            $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input").removeAttr('checked');
             HideShowColumns();
         });
     }

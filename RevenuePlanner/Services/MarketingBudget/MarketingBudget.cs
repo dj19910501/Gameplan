@@ -167,7 +167,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 }
                 else
                 {
-                    if (Permission == "None")
+                    if (Permission == "None" && ColumnName != Enums.DefaultGridColumn.BudgetDetailId.ToString())
                     {
                         Data.Add(TripleDash); // if none permission show tripe dash.
                     }
@@ -360,7 +360,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     }
                     headObj.sort = "na";
                     headObj.width = 200;
-                    headObj.align = "center";
+                    headObj.align = "left";
                     headObj.type = "tree";
                     headObj.id = columns;
                     ListHead.Add(headObj);
