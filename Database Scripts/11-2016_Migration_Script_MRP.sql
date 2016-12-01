@@ -3469,8 +3469,7 @@ END
 
 ----end
 CREATE TABLE #tmpXmlData (ROWNUM BIGINT) --create # table because there are dynamic columns added as per file imported for marketing budget
-DECLARE  @tmpCustomDeleteDropDown TABLE(EntityId BIGINT,CustomFieldId BIGINT)
-DECLARE  @tmpCustomDeleteTextBox TABLE(EntityId BIGINT,CustomFieldId BIGINT)
+
 
 DECLARE @Textboxcol nvarchar(max)=''
 DECLARE @UpdateColumn NVARCHAR(255)
@@ -3864,7 +3863,10 @@ BEGIN
 	SET @MonthNumber=0;
 END
 
-
+set @GetBudgetAmoutData='
+DECLARE  @tmpCustomDeleteDropDown TABLE(EntityId BIGINT,CustomFieldId BIGINT)
+DECLARE  @tmpCustomDeleteTextBox TABLE(EntityId BIGINT,CustomFieldId BIGINT)'
++@GetBudgetAmoutData
 EXECUTE sp_executesql @GetBudgetAmoutData, N'@CustomEntityDeleteDropdownCount BIGINT,@CustomEntityDeleteTextBoxCount BIGINT OUT', @CustomEntityDeleteDropdownCount = @CustomEntityDeleteDropdownCount,@CustomEntityDeleteTextBoxCount = @CustomEntityDeleteTextBoxCount OUT
 
 ---call sp of pre calculation for marketing budget
@@ -3923,8 +3925,6 @@ END
 
 ----end
 CREATE TABLE  #tmpXmlData  (ROWNUM BIGINT) --create # table because there are dynamic columns added as per file imported for marketing budget
-Declare @tmpCustomDeleteDropDown TABLE(EntityId BIGINT,CustomFieldId BIGINT)
-Declare @tmpCustomDeleteTextBox TABLE(EntityId BIGINT,CustomFieldId BIGINT)
 
 DECLARE @Textboxcol nvarchar(max)=''
 DECLARE @UpdateColumn NVARCHAR(255)
@@ -4188,6 +4188,10 @@ BEGIN
 	SET @Count=@Count+1;
 	SET @MonthNumber=0;
 END
+set @GetBudgetAmoutData='
+Declare @tmpCustomDeleteDropDown TABLE(EntityId BIGINT,CustomFieldId BIGINT)
+Declare @tmpCustomDeleteTextBox TABLE(EntityId BIGINT,CustomFieldId BIGINT)'
++ @GetBudgetAmoutData
 
 EXECUTE sp_executesql @GetBudgetAmoutData, N'@CustomEntityDeleteDropdownCount BIGINT,@CustomEntityDeleteTextBoxCount BIGINT OUT', @CustomEntityDeleteDropdownCount = @CustomEntityDeleteDropdownCount,@CustomEntityDeleteTextBoxCount = @CustomEntityDeleteTextBoxCount OUT
 

@@ -30,9 +30,7 @@ BEGIN
 END
 
 ----end
-CREATE TABLE  #tmpXmlData  (ROWNUM BIGINT)
-Declare @tmpCustomDeleteDropDown TABLE(EntityId BIGINT,CustomFieldId BIGINT)
-Declare @tmpCustomDeleteTextBox TABLE(EntityId BIGINT,CustomFieldId BIGINT)
+CREATE TABLE  #tmpXmlData  (ROWNUM BIGINT) --create # table because there are dynamic columns added as per file imported for marketing budget
 
 DECLARE @Textboxcol nvarchar(max)=''
 DECLARE @UpdateColumn NVARCHAR(255)
@@ -102,7 +100,7 @@ INSERT INTO #tmpXmlData EXECUTE sp_executesql @XmldataQuery, N'@XmlData XML OUT'
 	AND (BudgetPermission.IsOwner=1 OR BudgetPermission.PermisssionCode=0)
 	) BudgetPermission WHERE BudgetPermission.Id IS NULL
 
-	-- Add only Child/Forecast item
+	-- Add only Child/Forecast item and store into # table because there are dynamic columns added as per imported file.
 	Select *  into #childtempData from #tmpXmlData
 	inner join (select * from dbo.fnGetBudgetForeCast_List (@BudgetDetailId,@clientId)) child
 	on CAST(#tmpXmlData.[Id#1] AS INT) = child.Id
@@ -296,6 +294,10 @@ BEGIN
 	SET @Count=@Count+1;
 	SET @MonthNumber=0;
 END
+set @GetBudgetAmoutData='
+Declare @tmpCustomDeleteDropDown TABLE(EntityId BIGINT,CustomFieldId BIGINT)
+Declare @tmpCustomDeleteTextBox TABLE(EntityId BIGINT,CustomFieldId BIGINT)'
++ @GetBudgetAmoutData
 
 EXECUTE sp_executesql @GetBudgetAmoutData, N'@CustomEntityDeleteDropdownCount BIGINT,@CustomEntityDeleteTextBoxCount BIGINT OUT', @CustomEntityDeleteDropdownCount = @CustomEntityDeleteDropdownCount,@CustomEntityDeleteTextBoxCount = @CustomEntityDeleteTextBoxCount OUT
 
@@ -314,9 +316,6 @@ BEGIN
 END
 ----end
 END
-
-
-
 
 GO
 

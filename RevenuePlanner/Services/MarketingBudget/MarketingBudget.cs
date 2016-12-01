@@ -597,7 +597,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetDetailId"></param>
         /// <param name="PlanExchangeRate"></param>
         /// <returns></returns>
-        public BudgetImportData GetXLSXData(string viewByType, string fileLocation, int BudgetDetailId = 0, double PlanExchangeRate = 0)
+        public BudgetImportData GetXLSXData(string viewByType, string fileLocation, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
             BudgetImportData objImportData = new BudgetImportData();
             DataTable dtColumns = new DataTable();
@@ -656,7 +656,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                                 //  To handle the multi currency for budget,foracast and custom columns which have currency validation type
                                 colName = Convert.ToString(CellData.ColumName);
                                 colValue = GetCellValue(doc, cell).Trim();
-
+                                colValue = colValue.Replace(CurrencySymbol, "");
                                 double.TryParse(colValue, out coldata);
 
                                 if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
@@ -774,7 +774,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetDetailId"></param>
         /// <param name="PlanExchangeRate"></param>
         /// <returns></returns>
-        public BudgetImportData GetXLSData(string viewByType, DataSet ds, int BudgetDetailId = 0, double PlanExchangeRate = 0)
+        public BudgetImportData GetXLSData(string viewByType, DataSet ds, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
             List<XmlColumns> listColumnIndex = new List<XmlColumns>();
             DataTable dtExcel = new DataTable();
@@ -885,7 +885,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                                     // To handle the multi currency for budget,foracast and custom columns which have currency validation type
                                     colName = CellData.ColumName;
                                     colValue = Convert.ToString(dtExcel.Rows[i][k]).Trim();
-
+                                    colValue = colValue.Replace(CurrencySymbol, "");
                                     double coldata;
                                     double.TryParse(colValue, out coldata);
 

@@ -193,6 +193,7 @@ namespace RevenuePlanner.Controllers
             string viewByType = Enums.QuarterFinance.Yearly.ToString();
             int BudgetDetailId = Sessions.BudgetDetailId;
             double PlanExchangeRate = Sessions.PlanExchangeRate;
+            string CurrencySymbol = Sessions.PlanCurrencySymbol;
             XmlDocument xmlData = new XmlDocument();
             DataTable dtColumns = new DataTable();
             BudgetImportData objImprtData = new BudgetImportData();
@@ -225,7 +226,7 @@ namespace RevenuePlanner.Controllers
                                 ds = excelReader.AsDataSet();
                                 if (ds != null && ds.Tables.Count > 0)
                                 {
-                                    objImprtData = _MarketingBudget.GetXLSData(viewByType,ds, BudgetDetailId, PlanExchangeRate); // Read Data from excel 2003/(.xls) format file to xml
+                                    objImprtData = _MarketingBudget.GetXLSData(viewByType, ds, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2003/(.xls) format file to xml
                                 }
                                 if (ds == null)
                                 {
@@ -234,7 +235,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                objImprtData = _MarketingBudget.GetXLSXData(viewByType,fileLocation, BudgetDetailId, PlanExchangeRate); // Read Data from excel 2007/(.xlsx) and above version format file to xml
+                                objImprtData = _MarketingBudget.GetXLSXData(viewByType, fileLocation, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2007/(.xlsx) and above version format file to xml
                             }
                             dtColumns = objImprtData.MarketingBudgetColumns;
                             xmlData = objImprtData.XmlData;
