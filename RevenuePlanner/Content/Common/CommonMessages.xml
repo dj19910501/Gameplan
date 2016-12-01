@@ -1239,6 +1239,10 @@
     <value>You don't have permission to delete this user.</value>
   </Field>
   <Field>
+    <Name>UserAssignRestrictionMessage</Name>
+    <value>You don't have permission to assign this user.</value>
+  </Field>
+  <Field>
     <Name>UserPermissionRestrictionMessage</Name>
     <value>You don't have permission to view/modify permission of this user.</value>
   </Field>
