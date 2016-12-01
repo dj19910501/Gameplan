@@ -18,7 +18,11 @@ function createPager($pager, dataSource) {
         cssStyle: "light-theme",
         pages: dataSource.numPages || 1,
         currentPage: dataSource.pageNumber || 1,
-        onPageClick: pageNumber => dataSource.gotoPage(pageNumber)
+        onPageClick: (pageNumber, ev) => {
+            dataSource.gotoPage(pageNumber);
+            // do not let the click event update the URL hash
+            ev.preventDefault();
+        }
     });
 
     // listen to the datasource and whenever the paging changes, update the pager
