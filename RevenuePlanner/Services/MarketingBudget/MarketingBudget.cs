@@ -29,7 +29,12 @@ namespace RevenuePlanner.Services.MarketingBudget
             _database = database;
             _ServiceDatabase = ServiceDatabase;
         }
-
+        /// <summary>
+        /// Function to Get Budget List
+        /// Added By: Rahul Shah on 11/30/2016.
+        /// </summary>        
+        /// <param name="ClientId">Client Id.</param>        
+        /// <returns>Return Budget List.</returns>
         public List<BindDropdownData> GetBudgetlist(int ClientId)
         {
             //get budget name list for budget drop-down data binding.
