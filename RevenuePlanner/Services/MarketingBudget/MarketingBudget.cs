@@ -597,7 +597,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetDetailId"></param>
         /// <param name="PlanExchangeRate"></param>
         /// <returns></returns>
-        public BudgetImportData GetXLSXData(string viewByType, string fileLocation, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
+        public BudgetImportData GetXLSXData(string viewByType, string fileLocation, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
             BudgetImportData objImportData = new BudgetImportData();
             DataTable dtColumns = new DataTable();
@@ -629,7 +629,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 xmlDoc.AppendChild(rootNode);
 
                 List<XmlColumns> listColumnIndex = new List<XmlColumns>();
-                List<CustomColumnModel> ListCustomCols = GetCustomColumns();// Get List of Custom Columns 
+                List<CustomColumnModel> ListCustomCols = GetCustomColumns(ClientId);// Get List of Custom Columns 
                 int matchrowforbudget = 3;  // RowIndex 3 is for first row
                 int firstrowindex = 2;
                 if (viewByType == Enums.QuarterFinance.Yearly.ToString())
@@ -774,7 +774,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetDetailId"></param>
         /// <param name="PlanExchangeRate"></param>
         /// <returns></returns>
-        public BudgetImportData GetXLSData(string viewByType, DataSet ds, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
+        public BudgetImportData GetXLSData(string viewByType, DataSet ds,int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
             List<XmlColumns> listColumnIndex = new List<XmlColumns>();
             DataTable dtExcel = new DataTable();
@@ -790,7 +790,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
             try
             {
-                List<CustomColumnModel> ListCustomCols = GetCustomColumns();// Get List of Custom Columns 
+                List<CustomColumnModel> ListCustomCols = GetCustomColumns(ClientId);// Get List of Custom Columns 
                 if (ds != null && ds.Tables.Count > 0)
                 {
                     dtExcel = ds.Tables[0];
@@ -989,12 +989,12 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// Method to get list of custom column for budget
         /// </summary>
         /// <returns></returns>
-        private List<CustomColumnModel> GetCustomColumns()
+        private List<CustomColumnModel> GetCustomColumns(int ClientId)
         {
             List<CustomColumnModel> lstColumns = (from objColumnSet in _database.Budget_ColumnSet
                                                   join objColumn in _database.Budget_Columns on objColumnSet.Id equals objColumn.Column_SetId
                                                   join objCustomField in _database.CustomFields on objColumn.CustomFieldId equals objCustomField.CustomFieldId
-                                                  where objColumnSet.ClientId == Sessions.User.CID
+                                                  where objColumnSet.ClientId == ClientId
                                                   && objColumn.IsTimeFrame == false
                                                   && objColumnSet.IsDeleted == false && objColumn.IsDeleted == false && objCustomField.IsDeleted == false
                                                   select new CustomColumnModel
@@ -1030,7 +1030,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetDetailId"></param>
         /// <param name="dtColumns"></param>
         /// <returns></returns>
-        public int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int BudgetDetailId = 0)
+        public int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol,int UserID,int ClientID, int BudgetDetailId = 0)
         {
             // Check the file data is monthly or quarterly
             List<string> MonthList = new List<string>();
@@ -1067,8 +1067,8 @@ namespace RevenuePlanner.Services.MarketingBudget
             using (command = new SqlCommand(spname, Connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@UserId", Sessions.User.ID);
-                command.Parameters.AddWithValue("@ClientId", Sessions.User.CID);
+                command.Parameters.AddWithValue("@UserId", UserID);
+                command.Parameters.AddWithValue("@ClientId", ClientID);
                 command.Parameters.AddWithValue("@XMLData", XMLData.InnerXml);
                 command.Parameters.AddWithValue("@ImportBudgetCol", ImportBudgetCol);
                 command.Parameters.AddWithValue("@BudgetDetailId", BudgetDetailId);

@@ -198,6 +198,8 @@ namespace RevenuePlanner.Controllers
             DataTable dtColumns = new DataTable();
             BudgetImportData objImprtData = new BudgetImportData();
             DataSet ds = new DataSet();
+            int ClientId = Sessions.User.CID;
+            int UserID = Sessions.User.ID;
             if (Sessions.ImportTimeFrame != null)
             {
                 viewByType = Convert.ToString(Sessions.ImportTimeFrame);
@@ -226,7 +228,7 @@ namespace RevenuePlanner.Controllers
                                 ds = excelReader.AsDataSet();
                                 if (ds != null && ds.Tables.Count > 0)
                                 {
-                                    objImprtData = _MarketingBudget.GetXLSData(viewByType, ds, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2003/(.xls) format file to xml
+                                    objImprtData = _MarketingBudget.GetXLSData(viewByType, ds,ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2003/(.xls) format file to xml
                                 }
                                 if (ds == null)
                                 {
@@ -235,7 +237,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                objImprtData = _MarketingBudget.GetXLSXData(viewByType, fileLocation, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2007/(.xlsx) and above version format file to xml
+                                objImprtData = _MarketingBudget.GetXLSXData(viewByType, fileLocation,ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2007/(.xlsx) and above version format file to xml
                             }
                             dtColumns = objImprtData.MarketingBudgetColumns;
                             xmlData = objImprtData.XmlData;
@@ -255,7 +257,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                             }
-                            _MarketingBudget.ImportMarketingFinance(xmlData, dtColumns, BudgetDetailId); // Import data to the database using store procedure
+                            _MarketingBudget.ImportMarketingFinance(xmlData, dtColumns,UserID,ClientId, BudgetDetailId); // Import data to the database using store procedure
                         }
                     }
                 }
