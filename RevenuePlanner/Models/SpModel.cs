@@ -229,6 +229,8 @@ namespace RevenuePlanner.Models
         public string UserName { get; set; }
         public string Password { get; set; }
         public string[] CurrencyRate { get; set; }
+        //Following parameter is added on 30/11/2016 for ticket no #2818 by kausha to display Graph name in drilldown popup.
+        public string DisplayName { get; set; }
     }
     public class ReportTableParameters
     {
@@ -247,6 +249,7 @@ namespace RevenuePlanner.Models
         public int DashboardContentId { get; set; }
         public string UserId { get; set; }
         public string RoleId { get; set; }
+        //Following parameter is added on 28/11/2016 for ticket no #2819 by kausha to display ReportTable name in drilldown popup.
         public string DisplayName { get; set; }
     }
 }

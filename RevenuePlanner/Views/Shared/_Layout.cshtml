@@ -2,6 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    @{
+        ViewBag.IncludeLibHive9 = ViewBag.IncludeLibHive9 ?? false;
+        ViewBag.NewLayout = ViewBag.NewLayout ?? false;
+        ViewBag.NoSideBar = ViewBag.NoSideBar ?? false;
+    }
     <meta charset="utf-8" />
     <title>@ViewBag.Title</title>
     <link rel="shortcut icon" href="@Url.Content("~/Content/images/favicon.png")">
@@ -17,12 +22,23 @@
     
     @*<link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css" />*@
     
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_Nov_28.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_Dec_1.css")" type="text/css" />
     @*<link rel="stylesheet" href="@Url.Content("~/content/css/style.css")" type="text/css" />*@
    
     <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Aug_2.css")" type="text/css" />
     
-   
+    @if (ViewBag.IncludeLibHive9)
+    {
+        foreach (var css in File.ReadAllLines(HttpContext.Current.Server.MapPath("~/web-assets/dist/include-css.txt")))
+        {
+            var file = css.Trim();
+            if (!string.IsNullOrEmpty(file))
+            {
+                <link rel="stylesheet" href="@Url.Content("~/web-assets/dist/" + file)" type="text/css"/>
+            }
+        }
+    }
+
     @RenderSection("FilterEx", false)
      @Scripts.Render("~/bundles/GetJS")
      <script type="text/javascript">
@@ -30,9 +46,25 @@
          var PlanExchangeRate = '@Sessions.PlanExchangeRate';
          var GetCurrencyURL = '@Url.Content("~/Currency/GetPlanCurrencyDetail")';
          var logErrorUrl = '@Url.Action("LogJavaScriptError", "Error")';
-</script>
+         var URL_BASE = '@Url.Content("~/")';
+     </script>
     <script src="@Url.Content("~/Scripts/js/bootstrap-notify.min.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
+    
+    @RenderSection("Dependencies", false)
+    @* Include the new Hive9 JS library after all the global 3rd party stuff from old code *@
+    @if (ViewBag.IncludeLibHive9)
+    {
+        foreach (var script in File.ReadAllLines(HttpContext.Current.Server.MapPath("~/web-assets/dist/include-js.txt")))
+        {
+            var file = script.Trim();
+            if (!string.IsNullOrEmpty(file))
+            {
+                <script src="@Url.Content("~/web-assets/dist/" + file)"></script>
+            }
+        }
+    }
+
     <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">
     @*<script>
         (function (h, o, t, j, a, r) {
@@ -46,7 +78,7 @@
     </script>*@
 </head>
 <body>
-    <div class="container-fluid ">@* 'all-height' removed for #2219 - Bhumika *@
+    <div class="container-fluid @(ViewBag.NewLayout ? "header-content-footer-layout" : "")">
 
         @{
             string a = Convert.ToString(ViewBag.ActiveMenu);
@@ -59,19 +91,37 @@
                 a = a.ToLower();
             }
         }
-        @Html.Hidden("ActiveMenu", a)
         <div class="row-fluid">
+            @Html.Hidden("ActiveMenu", a)
             @Html.Partial("_header")
+            @if (ViewBag.NewLayout)
+            {
+                @* New Layout uses flexbox and requires we have *exactly* 3 child elements, so we need to render PlanHeader as part of Header *@
+                <div>
+                    @RenderSection("PlanHeader", false)
+                </div>
+            }
         </div>
-        <div>
-            @RenderSection("PlanHeader", false)
-        </div>
-        <div class="row-fluid midl-wrap clearfix ">@* 'calc-height' removed for #2219 - Bhumika *@
-            <div id="sidebar" class="span2">                
+        @if (!ViewBag.NewLayout)
+        {
+            <div>
+                @RenderSection("PlanHeader", false)
+            </div>
+        }
+        <div class="row-fluid midl-wrap clearfix">@* 'calc-height' removed for #2219 - Bhumika *@
+        @if (ViewBag.NoSideBar)
+        {
+            <div id="full-width-content-wrapper">
+                @RenderBody()
+            </div>
+        }
+        else
+        {
+            <div id="sidebar" class="span2">
                 @RenderSection("Sidebar", false)
             </div>
 
-            <div id="content_wraper" class="span10">  @*all-height*@
+            <div id="content_wraper" class="span10"> @*all-height*@
                 <div id="MessageDisplay">
                     <div id="errorMsg" class="alert alert-error hide message-position-small">
                         <a class="close" id="aclose">×</a>
@@ -86,10 +136,17 @@
                 @RenderBody()
             </div>
             <div class="clear"></div>
+        }
         </div>
-        @*<div style="clear: both; margin-bottom: 50px;"></div>*@ 
+        @if (ViewBag.NewLayout)
+        {
+            <footer><span class="source-sans-proregular">Copyright &copy; @System.DateTime.Now.Year.ToString() Hive9, Inc. All rights reserved.<a href="http://www.hive9.com/ssa-sla" target="_blank">Terms of Use</a></span></footer>
+        }
     </div>
+@if (!ViewBag.NewLayout)
+{
     <footer><span class="source-sans-proregular">Copyright &copy; @System.DateTime.Now.Year.ToString() Hive9, Inc. All rights reserved.<a href="http://www.hive9.com/ssa-sla" target="_blank">Terms of Use</a></span></footer>
+}
     <div id="slidepanel" class="sidebar-form source-sans-proregular scrolled_div_form panel_right loading" style="display: none">
         <div id="slidepanel-container">
         </div>

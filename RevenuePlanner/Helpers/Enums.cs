@@ -1405,10 +1405,14 @@ namespace RevenuePlanner.Helpers
             Quarter2,
             Quarter3,
             Quarter4,
+            months,
+            quarters
         }
         public static Dictionary<string, string> QuartersFinance = new Dictionary<string, string>()
         {
-           {"This Year",Enums.QuarterFinance.Yearly.ToString()},
+           {"This Year(Total)",Enums.QuarterFinance.Yearly.ToString()},
+           {"This Year(Monthly)",Enums.QuarterFinance.months.ToString()},
+           {"This Year(Quarterly)",Enums.QuarterFinance.quarters.ToString()},
            {"Quarter 1",Enums.QuarterFinance.Quarter1.ToString()},
            {"Quarter 2",Enums.QuarterFinance.Quarter2.ToString()},
            {"Quarter 3",Enums.QuarterFinance.Quarter3.ToString()},
@@ -1491,7 +1495,17 @@ namespace RevenuePlanner.Helpers
             Owner = 9,
             RowId = 10,
             User = 11,
-            Permission = 12
+            Permission = 12,
+            Budget = 13,
+            Forecast = 14,
+            Planned = 15,
+            Actual = 16,
+            BudgetDetailId = 17,
+            LineItems = 18,
+            TotalBudget = 19,
+            TotalForecast = 20,
+            TotalPlanned=21,
+            TotalActual=22
         }
 
         public static Dictionary<string, string> DefaultGridColumnValues = new Dictionary<string, string>()

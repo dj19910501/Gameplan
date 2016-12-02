@@ -761,3 +761,187 @@ function ME_GetSymbolforValues(value, symbolType) {
 
     return value;
 }
+//Added Following function to load graph,table and view data.
+function LoadReport(obj, applicationCode, errorMsg, apiUrlNotConfigured, ApiUrl,dashId,dashPageId) {
+  
+    var IsGraph = true;
+    var id = $(obj).attr('ReportGraphId');
+    var DashboardContentId = $(obj).attr('dashboardcontentid');
+    if (Number(id) == 0) {
+        id = $(obj).attr('ReportTableId');
+        IsGraph = false;
+    }
+    var ViewBy = $("#ddlViewBy").val();
+
+    var StartDate = '';
+    var EndDate = '';
+    $('div[id=reportrange]').each(function () {
+        StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
+        EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
+    });
+
+    var SelectedDimensionValue = GetSelectedValues();
+    var URL;
+    if (ApiUrl == '') {
+        $(obj).html(apiUrlNotConfigured);
+    }
+    else {
+        var params = {};
+        params.Id = id;
+        params.DbName = "RPC";
+        params.Container = $(obj).attr('id');
+        params.SDV = SelectedDimensionValue;
+        params.TopOnly = 'True';
+        params.ViewBy = ViewBy;
+        params.StartDate = StartDate;
+        params.EndDate = EndDate;
+        if (IsGraph) {
+            URL = urlContent+"MeasureDashboard/GetChart/";
+        }
+        else {
+            params.DashboardId = dashId;
+            params.DashboardPageid = dashPageId;
+            params.DashboardContentId = DashboardContentId;
+            URL = urlContent + "MeasureDashboard/GetReportTable/";
+        }
+
+        $.ajax({
+            url: URL,
+            async: true,
+            traditional: true,
+            data: $.param(params, true),
+            dataType: "json",
+            success: function (data) {
+            
+                if (IsGraph) {
+                    eval(JSON.parse(data.data));
+                }
+                else {
+                    LoadReportTable(DashboardContentId, "divChart", data, "ReportTable", "_wrapper", true);
+                }
+            },
+            error: function (err) {
+             
+                $(obj).html(errorMsg);
+            }
+        });
+    }
+}
+function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperName, isReportTable) {
+    $('#' + divName + DashboardContentId).html(data);
+    var reportTableId = tableType + DashboardContentId;
+    var defaultRows = $('#hdn_' + reportTableId).attr('defaultRows');
+    var defaultSortColumn = $('#hdn_' + reportTableId).attr('defaultSortColumn');
+    var defaultSortOrder = $('#hdn_' + reportTableId).attr('defaultSortOrder');
+    if (defaultSortOrder != 'asc')
+        defaultSortOrder = 'des'; 
+    var ShowFooterRow = $('#hdn_' + reportTableId).attr('ShowFooterRow');
+
+    $('#' + reportTableId + wrapperName).css('overflow-x', 'auto');
+    $('#' + reportTableId + wrapperName).css('overflow-y', 'auto');
+    $('#' + reportTableId + wrapperName).css('height', '100%');
+
+    if (data.indexOf(reportTableId) > -1) {
+        var mygrid = dhtmlXGridFromTable(reportTableId);
+
+        $('#' + reportTableId + wrapperName).find('.objbox').find('table').attr('id', reportTableId + '_tbl');
+
+        var tblTotal = $(mygrid.obj).find('.totalRow').clone();
+        $(mygrid.obj).find('tbody').find('.totalRow').remove();
+
+        if (ShowFooterRow == 'True') {
+            var foot = $(mygrid.obj).find('tfoot');
+            if (!foot.length) foot = $('<tfoot>').appendTo(mygrid.obj);
+            foot.append($(tblTotal));
+        }
+        var columnCheckCount = 0;
+        if (isReportTable)
+            columnCheckCount = 1;
+        $('#' + reportTableId).find('.objbox').find('table').find('tr').each(function (i, row) {
+            $(row).find('td').each(function (j, cell) {
+                if (j > columnCheckCount) {
+                    try {
+                        var originalValue = $(cell).text();
+                        $(cell).text(ME_number_format(originalValue, 2, '.', ','));
+                        $(cell).attr('title', originalValue);
+                        $(cell).addClass('north');
+                        $(cell).attr('title', $(cell).attr('data-original-title'));
+                        $(".north").tooltip({
+                            'container': 'body',
+                            'placement': 'bottom'
+                        });
+                    } catch (e) {
+                    }
+                    
+                }
+            });
+        });
+
+        mygrid.setEditable(false);
+        mygrid.enableAutoHeight(true);
+        if (isReportTable)
+            mygrid.setColumnHidden(1, true);
+
+        $('#' + reportTableId).find('tfoot').find('.totalRow').find('td').each(function (j, cell) {
+            if (j == 1) {
+                $(this).css('display', 'none');
+            }
+        });
+        $('#' + reportTableId).find('tfoot').find('.goalRow').find('td').each(function (j, cell) {
+            if (j == 1) {
+                $(this).css('display', 'none');
+            }
+            else {
+                if ($(cell).text() == "0" || $(cell).text().trim() == "") {
+                    $(this).text('');
+                    $(this).removeAttr('data-toggle');
+                    $(this).removeAttr('data-original-title');
+                    $(this).removeAttr('data-sort');
+                }
+            }
+        });
+
+        mygrid.enableAutoWidth(true);
+
+        var count = mygrid.getColumnsNum();
+        for (var j = 0; j < count; j++) {
+            mygrid.adjustColumnSize(j);
+        }
+        var widthx = (parseInt($('#' + reportTableId).parent().width()) * 75) / 100;
+
+        $('#' + reportTableId).css('margin', '0 auto');
+        $('#' + reportTableId).css('width', '100%');
+        $('#' + reportTableId).find('.xhdr').css('width', '100%');
+        $('#' + reportTableId).find('.hdr').css('width', '100%');
+
+        var widthArray = [];
+        $('#' + reportTableId).find('.xhdr table' + ' tr:first').find('th').each(function (key, data) {
+            $('#' + reportTableId).find('.objbox table' + ' tr:first').find('th').each(function (key1, data1) {
+                if (key == key1) {
+                    var totalWt = $(data).width();
+                    widthArray.push(totalWt);
+                }
+            });
+        });
+        $('#' + reportTableId).find('.objbox table' + ' tr:first').find('th').each(function (j, data1) {
+            for (var i = 0; i < widthArray.length; i++) {
+                if (j == i) {
+                    mygrid.setColWidth(j, widthArray[i]);
+                }
+            }
+        });
+
+        mygrid.attachEvent("onMouseOver", function () { return false; });
+        $('#' + reportTableId).find('tfoot').find('.totalRow').css('display', 'table-row');
+
+        var parenttblHeight = $('#' + reportTableId).find('.objbox').find('table').height();
+        var childtblHeight = $('#' + reportTableId).find('.xhdr').find('table').height();
+        $('#' + reportTableId).height(parenttblHeight + childtblHeight);
+
+        mygrid.attachEvent("onAfterSorting", function (index, type, direction) {
+            $(mygrid.obj).find('tbody').find('.totalRow').remove();
+            mygrid.setSortImgState(false);
+            return true;
+        });
+    }
+}

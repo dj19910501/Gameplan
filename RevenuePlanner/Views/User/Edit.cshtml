@@ -76,6 +76,12 @@
                 //// Ticket: 942 Exception handeling in Gameplan.
                 window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
+            else if (response == '{"redirectto":"organization"}') {
+                window.location = '@Url.Content("~/Organization/OrganizationHierarchy")';
+            }
+            else if (response == '{"redirectto":"index"}') {
+                window.location = '@Url.Content("~/User/Index")';
+            }
         });
     });
     $('#btn-close').click(function () {

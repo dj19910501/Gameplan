@@ -1,3 +1,226 @@
+-- START #2802: Added by Viral on 11/30/2016
+-- Desc: Adde User & Owner columns for Marketing Budget screen
+
+DECLARE @ClientId INT 	
+DECLARE @CreatedBy INT
+-- END: Please modify the below variable values as per requirement
+
+
+DECLARE @CustomeFieldTypeId INT -- fetch CustomeFieldTypeId from CustomFieldType table used for insert in customfield table
+DECLARE @ColumnSetId INT   -- fetch id from Budget_ColumnSet table used for insert in Budget_Columns table
+DECLARE @UserCustomFieldId INT --fetch inserted CustomFieldId in customfield table as UserCustomFieldId for further insert in Budget_Columns table
+DECLARE @OwnerCustomFieldId INT --fetch inserted CustomFieldId customfield table as UserCustomFieldId for further insert in Budget_Columns table
+
+
+  DECLARE db_cursor CURSOR FOR   --create cursor for get all clientid,createdby
+			select Distinct ClientId,CreatedBy 
+             FROM [dbo].[CustomField] where EntityType = 'Budget' and Name IN ('Budget','Forecast','Planned','Actual') and IsDeleted='0'
+			
+			OPEN db_cursor   
+			FETCH NEXT FROM db_cursor INTO @ClientId,@CreatedBy   
+			
+			WHILE @@FETCH_STATUS = 0   
+			BEGIN 
+
+				SELECT @CustomeFieldTypeId = CustomFieldTypeId  FROM [dbo].CustomFieldType WHERE Name = 'TextBox'  --get client specific CustomFieldTypeId for TextBox to insert CustomFieldTypeId for User,Owner 
+				SELECT TOP 1 @ColumnSetId = [Id]  FROM [dbo].[Budget_ColumnSet] where ClientId = @ClientId and IsDeleted='0' and Name ='Finance'  --get client specific ColumnSetId from Budget_ColumnSet
+ 
+
+				  IF NOT EXISTS(SELECT CustomFieldid FROM [dbo].[CustomField] WHERE Name = 'User' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0) -- check client specific User name already exists in CustomField Table
+					BEGIN
+					   INSERT INTO [dbo].[CustomField]
+						([Name] ,[CustomFieldTypeId],[Description] ,[IsRequired] ,[EntityType],[IsDeleted],[CreatedDate] ,[ModifiedDate] ,[IsDisplayForFilter] ,
+						[AbbreviationForMulti] ,[IsDefault] ,[IsGet],[ClientId],[CreatedBy],[ModifiedBy]) 
+
+							SELECT 'User', @CustomeFieldTypeId, null, 0, 'Budget', 0, GETDATE(), null, 0, 'MULTI', 0 , 0, @ClientId, @CreatedBy, 0  --insert new row in CustomField Table for User Name CustomField
+
+							 SELECT @UserCustomFieldId = SCOPE_IDENTITY() --get last inserted CustomFieldId  as UserCustomFieldId for further insert in Budget_Columns table
+							
+							IF NOT EXISTS(SELECT Id FROM [dbo].[Budget_Columns] WHERE Column_SetId = @ColumnSetId AND IsDeleted = 0 AND CustomFieldId = @UserCustomFieldId ) --check Column_Set specific same customfield for User already exist in Budget_Columns
+							BEGIN
+							INSERT INTO [dbo].[Budget_Columns]  ([Column_SetId],[CustomFieldId] ,[CreatedDate] ,[IsTimeFrame],[IsDeleted]
+							           ,[MapTableName],[ValueOnEditable] ,[ValidationType],[CreatedBy])
+							     
+								 SELECT  @ColumnSetId , @UserCustomFieldId , GETDATE() , 0, 0,'', 4, 'None', @CreatedBy --insert new row in Budget_Columns table for User Custom Field for Column_Set specific
+							END
+					END
+					
+					    IF NOT EXISTS(SELECT CustomFieldid FROM [dbo].[CustomField] WHERE Name = 'Owner' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0) --check client specific Owner name already exists in CustomField Table
+					BEGIN
+					   INSERT INTO [dbo].[CustomField]
+						([Name] ,[CustomFieldTypeId],[Description] ,[IsRequired] ,[EntityType],[IsDeleted],[CreatedDate] ,[ModifiedDate] ,[IsDisplayForFilter] ,
+						[AbbreviationForMulti] ,[IsDefault] ,[IsGet],[ClientId],[CreatedBy],[ModifiedBy]) 
+
+							SELECT 'Owner', @CustomeFieldTypeId, null, 0, 'Budget', 0, GETDATE(), null, 0, 'MULTI', 0, 0, @ClientId, @CreatedBy, 0--insert new row in CustomField Table for Owner Name CustomField
+
+							SELECT @OwnerCustomFieldId = SCOPE_IDENTITY() --get last inserted CustomFieldId as OwnerCustomFieldId  for further insert in Budget_Columns table
+							
+							IF NOT EXISTS(SELECT Id FROM [dbo].[Budget_Columns] WHERE Column_SetId = @ColumnSetId AND IsDeleted = 0 AND CustomFieldId = @OwnerCustomFieldId )--check Column_Set specific same customfield for Owner already exist in Budget_Columns
+							BEGIN
+							INSERT INTO [dbo].[Budget_Columns]  ([Column_SetId],[CustomFieldId] ,[CreatedDate] ,[IsTimeFrame],[IsDeleted]
+							           ,[MapTableName],[ValueOnEditable] ,[ValidationType],[CreatedBy])
+							     
+								 SELECT  @ColumnSetId , @OwnerCustomFieldId , GETDATE() , 0, 0,'', 4, 'None', @CreatedBy --insert new row in Budget_Columns table for User Custom Field for Column_Set specific
+							END
+					END
+
+
+			FETCH NEXT FROM db_cursor INTO @ClientId,@CreatedBy      
+			END   
+			
+			CLOSE db_cursor   
+			DEALLOCATE db_cursor
+
+-- END #2802: Added by Viral on 11/30/2016
+
+/****** Object:  StoredProcedure [INT].[PullLineItemActuals]    Script Date: 11/28/2016 12:26:49 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[INT].[PullFinancialTransactions]'))
+	DROP PROCEDURE [INT].[PullFinancialTransactions]
+GO
+
+CREATE PROCEDURE [INT].[PullFinancialTransactions](@DataSource NVARCHAR(255), @ClientID INT, @UserID INT, @IntegrationInstanceID INT)
+AS
+BEGIN 
+	DECLARE @CustomQuery NVARCHAR(MAX)
+	DECLARE @Start DATETIME = GETDATE()
+		
+	--DELETE, UPDATE AND INSERT plan tactic actuals for stage title ProjectedStageValue which match with measure sfdc tactics	
+	SET @CustomQuery='
+
+		DECLARE @Updated INT;
+		DECLARE @Inserted INT;
+		DECLARE @Start DATETIME = GETDATE();
+
+		DECLARE @LastDate DATETIME
+
+		SELECT @LastDate = MAX(DateCreated) FROM dbo.Transactions;
+		IF (@LastDate IS NULL) SET @LastDate = DATEADD(YEAR,-2,GETDATE()) --goes 2 years back 
+
+		UPDATE dbo.Transactions 
+		SET 
+			 ClientTransactionID = V.ClientTransactionID 
+			,TransactionDescription = V.TransactionDescription
+			,Amount = V.Amount 
+			,Account = V.Account
+			,AccountDescription = V.AccountDescription 
+			,SubAccount = V.SubAccount 
+			,Department = V.Department 
+			,TransactionDate = V.TransactionDate 
+			,AccountingDate = V.AccountingDate 
+			,Vendor = V.Vendor 
+			,PurchaseOrder = V.PurchaseOrder 
+			,LineItemId = V.LineItemId 
+			,CustomField1 = V.CustomField1 
+			,CustomField2 = V.CustomField2 
+			,CustomField3 = V.CustomField3 
+			,CustomField4 = V.CustomField4 
+			,CustomField5 = V.CustomField5 
+			,CustomField6 = V.CustomField6
+			,DateCreated = V.DateCreated 
+	
+		FROM '+@DataSource+' V
+		WHERE V.DateCreated > @LastDate 
+			AND dbo.Transactions.ClientTransactionID = V.ClientTransactionID
+			AND dbo.Transactions.ClientId = '+STR(@ClientId)+'
+
+		SET @Updated = @@ROWCOUNT; 
+
+		INSERT INTO dbo.Transactions
+				   ( ClientID 
+					,ClientTransactionID
+					,TransactionDescription
+					,Amount
+					,Account 
+					,AccountDescription 
+					,SubAccount 
+					,Department 
+					,TransactionDate 
+					,AccountingDate 
+					,Vendor 
+					,PurchaseOrder 
+					,CustomField1 
+					,CustomField2 
+					,CustomField3 
+					,CustomField4 
+					,CustomField5 
+					,CustomField6 
+					,LineItemId 
+					,DateCreated
+				)
+
+		SELECT  ' + STR(@ClientID) + ' 
+				,V.ClientTransactionID 
+				,V.TransactionDescription 
+				,V.Amount 
+				,V.Account 
+				,V.AccountDescription 
+				,V.SubAccount 
+				,V.Department 
+				,V.TransactionDate 
+				,V.AccountingDate 
+				,V.Vendor 
+				,V.PurchaseOrder 
+				,V.CustomField1 
+				,V.CustomField2 
+				,V.CustomField3 
+				,V.CustomField4 
+				,V.CustomField5 
+				,V.CustomField6 
+				,V.LineItemId 
+				,V.DateCreated
+		FROM ' + @DataSource + ' V 
+			LEFT JOIN dbo.Transactions T ON T.ClientTransactionID = T.ClientTransactionID
+		WHERE  V.DateCreated > @LastDate 
+			AND T.ClientTransactionID IS NULL
+
+
+		SET @Inserted = @@ROWCOUNT;
+
+		INSERT INTO [dbo].[IntegrationInstanceLog] ( 
+			   [IntegrationInstanceID]
+			  ,[SyncStart]
+			  ,[SyncEnd]
+			  ,[Status]
+			  ,[ErrorDescription]
+			  ,[CreatedDate]
+			  ,[CreatedBy]
+			  ,[IsAutoSync]) 
+		SELECT ' + STR(@IntegrationInstanceID) + '
+			, @Start
+			, GETDATE()
+			, ''SUCCESS'' 
+			, ''Pulled Financial Transactions From'' +''' + @DataSource + '''+STR(@Updated) + '' Updated.'' + STR(@Inserted) + '' Inserted.'' 
+			, GETDATE()
+			, ' + STR(@UserID) + '
+			, 1  
+
+	'
+		BEGIN TRY 
+			--PRINT @CustomQuery;
+			EXEC (@CustomQuery)
+		END TRY 
+
+		BEGIN CATCH 
+			INSERT INTO [dbo].[IntegrationInstanceLog] ( 
+				   [IntegrationInstanceID]
+				  ,[SyncStart]
+				  ,[SyncEnd]
+				  ,[Status]
+				  ,[ErrorDescription]
+				  ,[CreatedDate]
+				  ,[CreatedBy]
+				  ,[IsAutoSync]) 
+			SELECT @IntegrationInstanceID, @Start, GETDATE(), 'ERROR' ,ERROR_MESSAGE(), GETDATE(), @UserID, 1  
+		END CATCH 
+
+END 
+GO
+
 --NOTE: this is a correction of existing function used in integration -zz
 /****** Object:  UserDefinedFunction [INT].[Period]    Script Date: 11/23/2016 2:21:17 PM ******/
 SET ANSI_NULLS ON
@@ -714,29 +937,39 @@ BEGIN
 	SELECT T.PlanTacticId AS TacticId
 			, T.Title
 			, T.Cost AS PlannedCost
-			, SUM(ISNULL(M.Amount, 0.0)) AS TotalLinkedCost --only the portion of the transaction that is linked to this tactic 
-			, SUM(LA.Value) AS TotalActual 
- 
-	FROM Plan_Campaign_Program_tactic T 
+			, SUM(ISNULL(M.Amount, 0.0)) AS TotalLinkedCost --only the portion of the transaction that is linked to this tactic
+			, SUM(ISNULL(LA.Value, 0.0)) AS TotalActual
+
+	FROM Plan_Campaign_Program_tactic T
 		JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanTacticId = T.PlanTacticId
-		JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
-		LEFT JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId 
+		LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
+		JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId
 	WHERE M.TransactionId = @TransactionId
 	GROUP BY T.PlanTacticId, T.Title, T.Cost
 
-	--dataset 2: line items linked to the @transaction 
+	--dataset 2: line items linked to the @transaction
 	SELECT    L.PlanTacticId AS TacticId
-			, L.PlanLineItemId -- this the prmary key, the rest of non aggregate columns are auxiliary info. 
+			, L.PlanLineItemId -- this the prmary key, the rest of non aggregate columns are auxiliary info.
 			, L.Title
 			, L.Cost AS Cost
-			, SUM(M.Amount) AS TotalLinkedCost -- SUM is a no-op as a transaction can only be linked once per line item 
-			, SUM(LA.Value) AS TotalActual 
- 
-	FROM dbo.Plan_Campaign_Program_Tactic_LineItem L 
-		JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
-		JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId 
+            , T.Title AS TacticTitle
+			, P.Title AS ProgramTitle
+			, C.Title AS CampaignTitle
+			, PL.Title AS PlanTitle
+            , M.TransactionLineItemMappingId
+            , M.TransactionId
+            , SUM(M.Amount) AS TotalLinkedCost -- SUM is a no-op as a transaction can only be linked once per line item
+			, SUM(ISNULL(LA.Value, 0.0)) AS Actual
+
+	FROM dbo.Plan_Campaign_Program_Tactic_LineItem L
+        JOIN dbo.Plan_Campaign_Program_Tactic T ON T.PlanTacticId = L.PlanTacticId
+        JOIN dbo.Plan_Campaign_Program P ON P.PlanProgramId = T.PlanProgramId
+        JOIN dbo.Plan_Campaign C ON C.PlanCampaignId = P.PlanCampaignId
+        JOIN dbo.[Plan] PL ON PL.PlanId = C.PlanId
+		LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
+		JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId
 	WHERE M.TransactionId = @TransactionId
-	GROUP BY L.PlanTacticId, L.PlanLineItemId, L.Title, L.Cost
+	GROUP BY L.PlanTacticId, L.PlanLineItemId, L.Title, L.Cost, T.Title, P.Title, C.Title, PL.Title, M.TransactionLineItemMappingId, M.TransactionId
 
 END 
 GO
@@ -830,6 +1063,22 @@ BEGIN
 		) A
 	WHERE dbo.Plan_Campaign_Program_Tactic_LineItem_Actual.PlanLineItemId = A.PlanLineItemId 
 		AND dbo.Plan_Campaign_Program_Tactic_LineItem_Actual.Period = A.Period
+
+
+	--update transactions table with AmountAttributed and LastProcessed
+	UPDATE dbo.Transactions
+	SET AmountAttributed = A.TotalAttributed, 
+	    LastProcessed = GETDATE()
+	FROM (	
+			SELECT SUM(A.Value) AS TotalAttributed, TX.TransactionId 
+			FROM dbo.Transactions TX 
+				JOIN dbo.TransactionLineItemMapping M ON M.TransactionId = TX.TransactionId
+				JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = M.LineItemId 
+				JOIN dbo.Plan_Campaign_Program_Tactic T ON T.PlanTacticId = L.PlanLineItemId
+				JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual A ON A.PlanLineItemId = M.LineItemId AND A.Period = [INT].Period(T.StartDate, TX.AccountingDate)
+			WHERE TX.TransactionId IN (SELECT TransactionID FROM Deleted UNION ALL SELECT TransactionId FROM INSERTED)
+			GROUP BY TX.TransactionId
+	) A
 
 END
 Go
@@ -1743,7 +1992,2291 @@ END
 
 --Insertation End #2623 import multiple plan
 Go
+
+-- Start - Added by Arpita Soni for Ticket #2790 on 11/28/2016
+
+/****** Object:  Table [MV].[PreCalculatedMarketingBudget]    Script Date: 11/18/2016 03:00:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- Add new table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[MV].[PreCalculatedMarketingBudget]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [MV].[PreCalculatedMarketingBudget](
+		[Id] [int] IDENTITY(1,1) NOT NULL,
+		[BudgetDetailId] [int] NULL,
+		[Year] [int] NULL,
+		[Y1_Budget] [float] NULL,
+		[Y2_Budget] [float] NULL,
+		[Y3_Budget] [float] NULL,
+		[Y4_Budget] [float] NULL,
+		[Y5_Budget] [float] NULL,
+		[Y6_Budget] [float] NULL,
+		[Y7_Budget] [float] NULL,
+		[Y8_Budget] [float] NULL,
+		[Y9_Budget] [float] NULL,
+		[Y10_Budget] [float] NULL,
+		[Y11_Budget] [float] NULL,
+		[Y12_Budget] [float] NULL,
+		[Y1_Forecast] [float] NULL,
+		[Y2_Forecast] [float] NULL,
+		[Y3_Forecast] [float] NULL,
+		[Y4_Forecast] [float] NULL,
+		[Y5_Forecast] [float] NULL,
+		[Y6_Forecast] [float] NULL,
+		[Y7_Forecast] [float] NULL,
+		[Y8_Forecast] [float] NULL,
+		[Y9_Forecast] [float] NULL,
+		[Y10_Forecast] [float] NULL,
+		[Y11_Forecast] [float] NULL,
+		[Y12_Forecast] [float] NULL,
+		[Y1_Planned] [float] NULL,
+		[Y2_Planned] [float] NULL,
+		[Y3_Planned] [float] NULL,
+		[Y4_Planned] [float] NULL,
+		[Y5_Planned] [float] NULL,
+		[Y6_Planned] [float] NULL,
+		[Y7_Planned] [float] NULL,
+		[Y8_Planned] [float] NULL,
+		[Y9_Planned] [float] NULL,
+		[Y10_Planned] [float] NULL,
+		[Y11_Planned] [float] NULL,
+		[Y12_Planned] [float] NULL,
+		[Y1_Actual] [float] NULL,
+		[Y2_Actual] [float] NULL,
+		[Y3_Actual] [float] NULL,
+		[Y4_Actual] [float] NULL,
+		[Y5_Actual] [float] NULL,
+		[Y6_Actual] [float] NULL,
+		[Y7_Actual] [float] NULL,
+		[Y8_Actual] [float] NULL,
+		[Y9_Actual] [float] NULL,
+		[Y10_Actual] [float] NULL,
+		[Y11_Actual] [float] NULL,
+		[Y12_Actual] [float] NULL
+	) ON [PRIMARY]
+END
+GO
+
+-- DROP AND CREATE STORED PROCEDURE [MV].[PreCalPlannedActualForFinanceGrid]
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[MV].[PreCalPlannedActualForFinanceGrid]') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [MV].[PreCalPlannedActualForFinanceGrid]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 11/18/2016
+-- Description:	SP to insert/update precalculated data for marketing budget grid
+-- =============================================
+-- [MV].[PreCalculatePlannedActualForFinance] 'Planned','Y1',5555, 109415
+CREATE PROCEDURE [MV].[PreCalPlannedActualForFinanceGrid]
+	@UpdatedColumn		VARCHAR(30),  -- Enum which is used to identify Planned/Actuals
+	@Year				INT,		  -- Year 
+	@Period				VARCHAR(5),   -- Period in case of editing Monthly/Quarterly allocation
+	@NewValue			FLOAT,        -- New value for Budget/Forecast/Custom column
+	@OldValue			FLOAT,
+	@PlanLineItemId		INT           -- Line Item Id in which Budget is associated
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	DECLARE @InsertQuery		NVARCHAR(MAX), 
+			@UpdateColumnName	NVARCHAR(50)
+	
+	SET @UpdateColumnName = @Period + '_' + @UpdatedColumn
+	
+	-- Insert Planned/Actual values in PreCalculatedMarketingBudget table if already exists 
+	SET @InsertQuery = ' MERGE INTO [MV].[PreCalculatedMarketingBudget] AS T1
+						 USING
+						 (	
+							SELECT BudgetDetailId, 
+							' + CAST(@Year AS VARCHAR(30))+ ' AS [Year], 
+							'+CAST(ISNULL(@OldValue,0) AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) AS OldValue, 
+						 	'+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) AS '+@UpdateColumnName+' 
+							FROM LineItem_Budget WHERE PlanLineItemid = '+CAST(@PlanLineItemId AS VARCHAR(30))+'
+						 ) AS T2
+						 ON (T2.BudgetDetailId = T1.BudgetDetailId AND T2.Year = T1.Year)
+						 WHEN MATCHED THEN
+						 UPDATE SET ' + @UpdateColumnName + ' = (ISNULL(T1.' + @UpdateColumnName + ',0) - T2.OldValue + ' +'T2.' + @UpdateColumnName +')
+						 WHEN NOT MATCHED THEN  
+						 INSERT (BudgetDetailId, [Year], ' + @UpdateColumnName + ')
+						 VALUES (BudgetDetailId, [Year], ' + @UpdateColumnName + ');'
+	
+	EXEC(@InsertQuery)
+END
+GO
+
+
+-- DROP AND CREATE STORED PROCEDURE [MV].[PreCalBudgetForecastForFinanceGrid]
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[MV].[PreCalBudgetForecastForFinanceGrid]') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [MV].[PreCalBudgetForecastForFinanceGrid]
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 11/18/2016
+-- Description:	SP to insert/update precalculated data for marketing budget grid
+-- =============================================
+-- [MV].[PreCalBudgetForecastForFinanceGrid] 12538,2,0,2016,'Y1',5555
+CREATE PROCEDURE [MV].[PreCalBudgetForecastForFinanceGrid]
+	@BudgetDetailId INT,		-- Id of the Budget_Detail table
+	@Year INT,					-- Year 
+	@Period VARCHAR(5),			-- Period in case of editing Monthly/Quarterly allocation
+	@BudgetValue FLOAT,			-- New value for Budget/Forecast/Custom column
+	@ForecastValue FLOAT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	DECLARE @InsertQuery		NVARCHAR(MAX), 
+			@BudgetColumnName	NVARCHAR(50),
+			@ForecastColumnName	NVARCHAR(50)
+
+	SET @BudgetColumnName = @Period+'_Budget'
+	SET @ForecastColumnName = @Period+'_Forecast'
+	
+	-- Insert Budget/Forecast values in PreCalculatedMarketingBudget table if already exists 
+	SET @InsertQuery = ' MERGE INTO [MV].[PreCalculatedMarketingBudget] AS T1
+						 USING
+						 (
+							SELECT ' + CAST(@BudgetDetailId AS VARCHAR(30))+ ' AS BudgetDetailId, 
+							' + CAST(@Year AS VARCHAR(30))+ ' AS [Year], 
+							'+CAST(@BudgetValue AS VARCHAR(30))+' AS '+@BudgetColumnName+',
+							'+CAST(@ForecastValue AS VARCHAR(30))+' AS '+@ForecastColumnName+'
+						 ) AS T2
+						 ON (T2.BudgetDetailId = T1.BudgetDetailId AND T2.Year = T1.Year)
+						 WHEN MATCHED THEN
+						 UPDATE SET ' + @BudgetColumnName + ' = T2.'+CAST(@BudgetValue AS VARCHAR(30))+',
+									' + @ForecastColumnName + ' = T2.'+CAST(@ForecastValue AS VARCHAR(30))+'
+						 WHEN NOT MATCHED THEN  
+						 INSERT (BudgetDetailId, [Year], ' + @BudgetColumnName + ',' + @ForecastColumnName + ')
+						 VALUES (BudgetDetailId, [Year], ' + @BudgetColumnName + ',' + @ForecastColumnName + ');'
+	
+	EXEC (@InsertQuery)
+END
+GO
+
+
+-- DROP AND CREATE FUNCTION
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[GetLineItemIdsByBudgetDetailId]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[GetLineItemIdsByBudgetDetailId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Viral
+-- Create date: 22/11/2016
+-- Description:	Returns Commaseparated LineItems group by BudgetDetailId
+-- =============================================
+CREATE FUNCTION [dbo].[GetLineItemIdsByBudgetDetailId]
+(
+	-- Add the parameters for the function here
+	@BudgetId int 
+)
+RETURNS 
+@tblLineItem TABLE 
+(
+	-- Add the column definitions for the TABLE variable here
+	BudgetDetailId int,
+	LineItemCount int,
+	PlanLineItemIds varchar(max)
+)
+AS
+BEGIN
+		-- SELECT * FROM GetLineItemIdsByBudgetDetailId(2807)
+	
+		-- For child records, Get comma separated LineItemIds by BudgetDetailId 
+		;WITH MyData AS
+		(
+			SELECT L.BudgetDetailId,L.PlanLineItemId 
+			FROM LineItem_Budget L
+			INNER JOIN Budget_Detail B ON B.Id = L.BudgetDetailId AND B.BudgetId = @BudgetId
+			WHERE B.IsDeleted = 0
+		)
+		
+		INSERT INTO @tblLineItem(BudgetDetailId,LineItemCount,PlanLineItemIds)
+		SELECT BudgetDetailId,COUNT(*)as LineItemCount, PlanLineItemId = STUFF((
+		    SELECT ', ' + CAST(PlanLineItemId AS VARCHAR) FROM MyData
+		    WHERE BudgetDetailId = x.BudgetDetailId
+		    FOR XML PATH(''), TYPE).value('.[1]', 'nvarchar(max)'), 1, 2, '')
+		FROM MyData x
+		GROUP BY BudgetDetailId;
+
+	RETURN 
+END
+GO
+
+-- DROP AND CREATE FUNCTION
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'GetFinanceBasicData') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[GetFinanceBasicData]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[GetFinanceBasicData]
+(
+	@BudgetId		INT,
+	@ClientId		INT,
+	@lstUserIds		NVARCHAR(MAX),
+	@UserId			INT,
+	@CurrencyRate	FLOAT
+)
+RETURNS 
+@ResultFinanceData TABLE 
+(
+	Permission		VARCHAR(20),
+	BudgetDetailId	INT,
+	ParentId		INT,
+	Name			VARCHAR(MAX),
+	[Owner]			INT,
+	TotalBudget		FLOAT,
+	TotalForecast	FLOAT,
+	TotalPlanned	FLOAT,
+	LineItems		INT,
+	[User]			INT
+)
+AS
+
+BEGIN
+	
+	-- SELECT * FROM [dbo].GetFinanceBasicData(2807,24,'470,308,104',470)
+	
+	DECLARE @tblUserIds TABLE (UserId INT)
+
+	INSERT INTO @tblUserIds
+	SELECT val FROM [dbo].comma_split(@lstUserIds,',')
+
+	BEGIN
+		DECLARE @tblResult TABLE
+		(
+			Permission		VARCHAR(20),
+			BudgetDetailId	INT,
+			ParentId		INT,
+			Name			VARCHAR(MAX),
+			[Owner]			INT,
+			TotalBudget		FLOAT,
+			TotalForecast	FLOAT
+		)
+
+		-- Get Budget details based on permissions
+		INSERT INTO @tblResult(Permission,BudgetDetailId,ParentId,Name,[Owner],TotalBudget,TotalForecast)
+		SELECT
+				CASE WHEN BP.PermisssionCode = 0 THEN 'Edit'
+					  WHEN BP.PermisssionCode = 1 THEN 'View'
+					  ELSE 'None' 
+				END AS Permission	
+				,BD.Id AS BudgetDetailId
+				,BD.ParentId
+				,BD.Name
+				,U.UserId as '[Owner]'
+				,BD.TotalBudget
+				,BD.TotalForecast
+		FROM [dbo].Budget_Detail BD 
+		INNER JOIN @tblUserIds U ON BD.CreatedBy = U.UserId 
+		LEFT JOIN [dbo].[Budget_Permission] BP ON BD.Id = BP.BudgetDetailId AND BP.UserId = @UserId
+		WHERE BD.IsDeleted='0' AND BD.BudgetId = @BudgetId
+	END
+
+	DECLARE @tblLineItemIds TABLE
+	(
+		BudgetDetailId	INT,
+		LineItems		VARCHAR(MAX)
+	)
+
+	-- Get Parent & Children comma separated LineItemIds by BudgetDetailIds
+	;With TblLineItem as(
+		
+		-- Get Children records
+		SELECT R.BudgetDetailId,R.ParentId,L.PlanLineItemIds FROM @tblResult R
+		JOIN [dbo].[GetLineItemIdsByBudgetDetailId](@BudgetId) L ON R.BudgetDetailId = L.BudgetDetailId
+		WHERE R.BudgetDetailId NOT IN (SELECT ISNULL(ParentId,0) FROM @tblResult)
+
+		UNION ALL 
+		
+		-- Get parent records
+		SELECT P.BudgetDetailId,P.ParentId,c.PlanLineItemIds
+		FROM @tblResult p
+		JOIN TblLineItem c ON c.ParentId = p.BudgetDetailId
+	)
+
+	-- Insert Parent,child distinct lineItem count by comma separated lineItemsIds.
+	INSERT INTO @tblLineItemIds(BudgetDetailId,LineItems)
+	SELECT	BudgetDetailId
+			,SUM(LEN(PlanLineItemIds) - LEN(REPLACE(PlanLineItemIds, ',', '')) +1) AS LineItems	-- Get distinct comma separated lineItemIds count.
+	FROM
+	(
+		SELECT BudgetDetailId
+				-- Get Distinct comma separated lineItemIds for each parent-child level record
+				,REPLACE(
+						CAST(
+							CAST('<d>'+ REPLACE(PlanLineItemIds, ', ','</d><d>')+'</d>'  AS XML)
+							.query('distinct-values(/d)') AS VARCHAR(MAX)
+							), ' ', ', ')AS [PlanLineItemIds]
+		
+		FROM (
+				SELECT BudgetDetailId,PlanLineItemIds = STUFF((
+				    SELECT ', ' + CAST(PlanLineItemIds AS VARCHAR(MAX)) FROM TblLineItem
+				    WHERE BudgetDetailId = x.BudgetDetailId
+				    FOR XML PATH(''), TYPE).value('.[1]', 'nvarchar(max)'), 1, 2, '')
+				FROM TblLineItem x
+				GROUP BY BudgetDetailId
+			) AS planlineIds
+	) AS linecnts
+	GROUP BY BudgetDetailId
+
+	INSERT INTO @ResultFinanceData(Permission,BudgetDetailId,ParentId,Name,[Owner],TotalBudget,TotalForecast,TotalPlanned,LineItems,[User])
+	SELECT DISTINCT R.Permission,R.BudgetDetailId,R.ParentId,R.Name,R.[Owner],R.TotalBudget,R.TotalForecast,LineItem.TotalPlanned,
+	ISNULL(L.LineItems,0) AS LineItems,ISNULL(usrcnt.[User],0) AS [User]
+	FROM @tblResult R
+	LEFT JOIN @tblLineItemIds L on R.BudgetDetailId = L.BudgetDetailId
+	LEFT JOIN 
+	(
+		-- Get User Count
+		SELECT  BD.Id as BudgetDetailId,COUNT(BP.UserId) as [User]
+		FROM [dbo].[Budget_Detail] BD
+		JOIN @tblUserIds U ON BD.CreatedBy = U.UserId 
+		JOIN [dbo].[Budget_Permission] BP ON BD.Id = BP.BudgetDetailId 
+		WHERE BD.IsDeleted='0' AND BD.BudgetId = @BudgetId
+		GROUP BY BD.Id
+	) AS usrcnt ON R.BudgetDetailId = usrcnt.BudgetDetailId
+	LEFT JOIN 
+	(	
+		-- Get Planned Cost values
+		SELECT BD.Id AS BudgetDetailId, SUM((PCPTL.Cost * CAST(Weightage AS FLOAT)/100)) AS TotalPlanned FROM 
+		[dbo].[Budget_Detail] BD 
+		INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
+		INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
+		WHERE BD.IsDeleted=0 AND BD.BudgetId = @BudgetId AND PCPTL.LineItemTypeId IS NOT NULL and PCPTL.IsDeleted = 0
+		GROUP BY BD.Id
+	) LineItem ON L.BudgetDetailId = LineItem.BudgetDetailId
+
+	RETURN 
+END
+GO
+
+
+
+
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalBudgetForecastMarketingBudget]'))
+BEGIN
+	DROP TRIGGER [dbo].[TrgPreCalBudgetForecastMarketingBudget]
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita
+-- Create date: 24/11/2016
+-- Description:	Trigger which Insert records into pre-calculate table for Marketing Budget
+-- =============================================
+CREATE TRIGGER [dbo].[TrgPreCalBudgetForecastMarketingBudget]
+   ON  [dbo].[Budget_DetailAmount]
+   AFTER INSERT,DELETE,UPDATE
+AS 
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	DECLARE @Period VARCHAR(30),
+			@BudgetValue FLOAT,
+			@ForecastValue FLOAT,
+			@BudgetDetailId INT,
+			@Year INT,
+			@DeleteQuery NVARCHAR(MAX),
+			@BudgetColumnName	NVARCHAR(50),
+			@ForecastColumnName	NVARCHAR(50)
+
+	SET @BudgetColumnName = @Period+'_Budget'
+	SET @ForecastColumnName = @Period+'_Forecast'	
+
+	IF ((SELECT COUNT(*) FROM INSERTED) > 0)
+	BEGIN
+		-- Get values which are inserted/updated
+		SELECT @Period = Period,
+			   @BudgetValue = Budget,
+			   @ForecastValue = Forecast,
+			   @BudgetDetailId = BudgetDetailId,
+			   @Year = YEAR(CreatedDate)
+		FROM INSERTED I
+		INNER JOIN Budget_Detail BD ON I.BudgetDetailId = BD.Id
+
+		-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
+		EXEC [MV].[PreCalBudgetForecastForFinanceGrid] @BudgetDetailId, @Year, @Period, @BudgetValue, @ForecastValue
+	END
+	ELSE 
+	BEGIN
+		-- Get values which are deleted
+		SELECT @Period = Period,
+			   @BudgetDetailId = BudgetDetailId,
+			   @Year = YEAR(CreatedDate) FROM DELETED D
+			   INNER JOIN Budget_Detail BD ON D.BudgetDetailId = BD.Id
+
+		-- Delete/Update record into pre-calculated table while Cost entry is deleted
+		SET @DeleteQuery = 'UPDATE P SET ' +@Period + '_'+@BudgetColumnName +' = NULL, 
+										 ' +@Period + '_'+@ForecastColumnName +' = NULL  
+							FROM [MV].[PreCalculatedMarketingBudget] P
+							WHERE P.BudgetDetailId = ' +CAST(@BudgetDetailId AS VARCHAR(30)) +' AND P.Year = ' + CAST(@Year AS VARCHAR(30)) 
+		EXEC (@DeleteQuery)
+	END
+
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalPlannedMarketingBudget]'))
+BEGIN
+	DROP TRIGGER [dbo].[TrgPreCalPlannedMarketingBudget]
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita
+-- Create date: 24/11/2016
+-- Description:	Trigger which Insert records into pre-calculate table for Marketing Budget
+-- =============================================
+CREATE TRIGGER [dbo].[TrgPreCalPlannedMarketingBudget]
+   ON  [dbo].[Plan_Campaign_Program_Tactic_LineItem_Cost]
+   AFTER INSERT,DELETE,UPDATE
+AS 
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	DECLARE @UpdatedColumn VARCHAR(30) = 'Planned',
+			@Period VARCHAR(30),
+			@NewValue FLOAT,
+			@OldValue FlOAT = 0,
+			@PlanLineItemId INT,
+			@Year INT,
+			@DeleteQuery NVARCHAR(MAX)
+
+	IF ((SELECT COUNT(*) FROM INSERTED) > 0)
+	BEGIN
+		-- Get values which are inserted/updated
+		SELECT @Period = Period,
+			   @NewValue = Value,
+			   @PlanLineItemId = PlanLineItemId,
+			   @Year = YEAR(CreatedDate)
+		FROM INSERTED 
+
+		-- Get old value in case of update
+		SELECT @OldValue = Value FROM DELETED
+
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
+		BEGIN
+			-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
+			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Year, @Period, @NewValue,@OldValue, @PlanLineItemId
+		END
+	END
+	ELSE 
+	BEGIN
+		-- Get values which are deleted
+		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate) FROM DELETED 
+
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
+		BEGIN
+			-- Delete/Update record into pre-calculated table while Cost entry is deleted
+			SET @DeleteQuery = 'UPDATE P SET 
+								' +@Period + '_'+@UpdatedColumn +' = (P.' +@Period + '_'+ @UpdatedColumn + ' - '+CAST(@OldValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) + '+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100))
+								FROM [MV].[PreCalculatedMarketingBudget] P
+								INNER JOIN [dbo].[LineItem_Budget] LB ON P.BudgetDetailId = LB.BudgetDetailId 
+								WHERE LB.PlanLineItemId = ' +CAST(@PlanLineItemId AS VARCHAR(30)) + ' AND P.Year = ' + CAST(@Year AS VARCHAR(30))
+			EXEC (@DeleteQuery)
+		END
+	END
+
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalActualMarketingBudget]'))
+BEGIN
+	DROP TRIGGER [dbo].[TrgPreCalActualMarketingBudget]
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita
+-- Create date: 24/11/2016
+-- Description:	Trigger which Insert records into pre-calculate table for Marketing Budget
+-- =============================================
+CREATE TRIGGER [dbo].[TrgPreCalActualMarketingBudget]
+   ON  [dbo].[Plan_Campaign_Program_Tactic_LineItem_Actual]
+   AFTER INSERT,DELETE,UPDATE
+AS 
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	DECLARE @UpdatedColumn VARCHAR(30) = 'Actual',
+			@Period VARCHAR(30),
+			@NewValue FLOAT,
+			@OldValue FLOAT,
+			@PlanLineItemId INT,
+			@Year INT,
+			@DeleteQuery NVARCHAR(MAX)
+
+	IF ((SELECT COUNT(*) FROM INSERTED) > 0)
+	BEGIN
+		-- Get values which are inserted/updated
+		SELECT @Period = Period,
+			   @NewValue = Value,
+			   @PlanLineItemId = PlanLineItemId,
+			   @Year = YEAR(CreatedDate)
+		FROM INSERTED 
+
+		-- Get old value in case of update
+		SELECT @OldValue = Value FROM DELETED
+
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
+		BEGIN
+			-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
+			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Year, @Period, @NewValue,@OldValue, @PlanLineItemId
+		END
+	END
+	ELSE 
+	BEGIN
+		-- Get values which are deleted
+		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate) FROM DELETED 
+
+		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
+		BEGIN
+			-- Delete/Update record into pre-calculated table while Cost entry is deleted
+			SET @DeleteQuery = 'UPDATE P SET 
+								' +@Period + '_'+@UpdatedColumn +' = (P.' +@Period + '_'+ @UpdatedColumn + ' - '+CAST(@OldValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) + '+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100))
+								FROM [MV].[PreCalculatedMarketingBudget] P
+								INNER JOIN [dbo].[LineItem_Budget] LB ON P.BudgetDetailId = LB.BudgetDetailId 
+								WHERE LB.PlanLineItemId = ' +CAST(@PlanLineItemId AS VARCHAR(30)) + ' AND P.Year = ' + CAST(@Year AS VARCHAR(30))
+			EXEC (@DeleteQuery)
+		END
+	END
+
+END
+GO
+
+
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgInsertDeletePreCalMarketingBudget]'))
+BEGIN
+	DROP TRIGGER [dbo].[TrgInsertDeletePreCalMarketingBudget]
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita
+-- Create date: 24/11/2016
+-- Description:	Trigger which Insert records into pre-calculate table for Marketing Budget
+-- =============================================
+CREATE TRIGGER [dbo].[TrgInsertDeletePreCalMarketingBudget]
+   ON  [dbo].[Budget_Detail]
+   AFTER INSERT, DELETE
+AS 
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	IF ((SELECT COUNT(*) FROM INSERTED) > 0)
+	BEGIN
+		-- Insert new record into pre calculate when new budget is generated
+		INSERT INTO [MV].[PreCalculatedMarketingBudget] (BudgetDetailId, [Year])
+		SELECT Id, YEAR(CreatedDate) FROM INSERTED
+	END
+	ELSE
+	BEGIN
+		-- Delete record from pre calculate table
+		DELETE P FROM [MV].[PreCalculatedMarketingBudget] P
+		INNER JOIN DELETED D ON P.BudgetDetailId = D.Id
+	END
+
+END
+GO
+
+-- DROP AND CREATE STORED PROCEDURE [dbo].[GetFinanceCustomfieldColumnsData]
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[GetFinanceCustomfieldColumnsData]') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[GetFinanceCustomfieldColumnsData]
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetFinanceCustomfieldColumnsData]    Script Date: 11/28/2016 06:31:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Viral
+-- Create date: 11/21/2016
+-- Description:	Get Finance Customfield Columns
+-- =============================================
+CREATE PROCEDURE [dbo].[GetFinanceCustomfieldColumnsData]
+	-- Add the parameters for the stored procedure here
+	@BudgetId int, 
+	@ClientId int 
+AS
+BEGIN
+
+	-- Exec GetFinanceCustomfieldColumnsData 2766,24
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+		-- Insert statements for procedure here
+		Declare @query varchar(max)=''
+		
+		Declare @columns varchar(max)
+		Declare @drpdCustomType varchar(50)='DropDownList'
+		
+		SELECT @columns= COALESCE(@columns+', ' ,'')+C.Name
+		FROM Budget_ColumnSet A
+		INNER JOIN Budget_Columns B ON A.Id= B.Column_SetId
+		INNER JOIN CustomField C ON B.CustomFieldId = C.CustomFieldId and C.EntityType='Budget'
+		WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND A.ClientId = @clientID AND MapTableName = 'CustomField_Entity'
+		
+		SET @query = '
+		SELECT *
+		FROM (
+		     SELECT C.Name as Name,CF.EntityId as BudgetDetailId, 
+			 		CASE 
+					WHEN CT.Name='''+@drpdCustomType+''' THEN CFO.Value ELSE CF.Value
+				END as Value
+			FROM Budget_ColumnSet A
+			INNER JOIN Budget_Columns B ON A.Id= B.Column_SetId
+			INNER JOIN CustomField C ON B.CustomFieldId = C.CustomFieldId and C.EntityType=''Budget''
+			INNER JOIN CustomFieldType CT ON C.CustomFieldTypeId = CT.CustomFieldTypeId
+			LEFT JOIN CustomField_Entity CF ON C.CustomFieldId = CF.CustomFieldId and EntityID IN (select Id FROM Budget_Detail where BudgetId = '+Cast(@budgetID as varchar(20)) +' and IsDeleted=0) 
+			--INNER JOIN Budget_Detail BD ON CF.EntityId = BD.Id and BD.IsDeleted=0 and BD.BudgetId ='+Cast(@budgetID as varchar(20)) +'
+			LEFT JOIN CustomFieldOption CFO ON CF.Value = CAST(CFO.CustomFieldOptionId AS nvarchar(30)) and CT.Name='''+@drpdCustomType+''' AND CFO.IsDeleted = 0 
+			WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND 
+			A.ClientId = '+Cast(@clientID as varchar(20))+' AND MapTableName = ''CustomField_Entity'' and IsNUll(CF.EntityId,'''') <> ''''
+		) as s
+		PIVOT
+		(
+		    MIN(Value)
+		    FOR [Name] IN ('+@columns+')
+		)AS pvt'
+	EXEC (@query)
+END
+GO
+
+
+-- DROP AND CREATE STORED PROCEDURE [MV].[GetFinanceGridData]
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[MV].[GetFinanceGridData]') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [MV].[GetFinanceGridData]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 11/18/2016
+-- Description:	SP to fetch finance grid data
+-- =============================================
+CREATE PROCEDURE [MV].[GetFinanceGridData]
+	@BudgetId		INT,
+	@ClientId		INT,
+	@timeframe		VARCHAR(50),
+	@lstUserIds		NVARCHAR(MAX),
+	@UserId			INT,
+	@CurrencyRate	FLOAT
+AS
+BEGIN
+	
+	-- EXEC MV.[GetFinanceGridData] 2807,24,'months','470,308,104',470,0.5
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Declare local variables
+	BEGIN
+
+		-- Start: declare timeframe related variables
+		Declare @ThisYear varchar(100) ='Yearly' -- This Year
+		Declare @ThisQuarters varchar(100) ='quarters' -- This Year (Quarterly)
+		Declare @ThisMonthly varchar(100) ='months' -- This Year (Monthly)
+		Declare @Quarter1 varchar(100) ='Quarter1' -- Quarter1
+		Declare @Quarter2 varchar(100) ='Quarter2' -- Quarter2
+		Declare @Quarter3 varchar(100) ='Quarter3' -- Quarter3
+		Declare @Quarter4 varchar(100) ='Quarter4' -- Quarter4
+		-- End: declare timeframe related variables
+
+	END
+	
+	IF(@timeframe = @ThisYear)	-- This Year
+	BEGIN
+		SELECT 
+			F.Permission	
+			,F.BudgetDetailId
+			,F.ParentId
+			,F.Name
+			,F.TotalBudget * @CurrencyRate as Budget
+			,F.TotalForecast * @CurrencyRate as Forecast
+			,F.TotalPlanned * @CurrencyRate as Planned
+			,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0) +
+				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
+				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
+				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate  as Actual
+			,F.[User]
+			,F.LineItems
+			,F.[Owner]
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
+	END
+	IF(@timeframe = @ThisQuarters)	-- This Year (Quarterly)
+	BEGIN
+		SELECT 
+				F.Permission	
+				,F.BudgetDetailId
+				,F.ParentId
+				,F.Name
+
+				-- Budget, Forecast, Planned, Actuals for Quarter 1
+				,(ISNULL(Y1_Budget,0)+ISNULL(Y2_Budget,0)+ISNULL(Y3_Budget,0)) * @CurrencyRate as Q1_Budget
+				,(ISNULL(Y1_Forecast,0)+ISNULL(Y2_Forecast,0)+ISNULL(Y3_Forecast,0)) * @CurrencyRate as Q1_Forecast
+				,(ISNULL(Y1_Planned,0)+ISNULL(Y2_Planned,0)+ISNULL(Y3_Planned,0)) * @CurrencyRate as Q1_Planned
+				,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0)) * @CurrencyRate as Q1_Actual
+
+				-- Budget, Forecast, Planned, Actuals for Quarter 2
+				,(ISNULL(Y4_Budget,0)+ISNULL(Y5_Budget,0)+ISNULL(Y6_Budget,0)) * @CurrencyRate as Q2_Budget
+				,(ISNULL(Y4_Forecast,0)+ISNULL(Y5_Forecast,0)+ISNULL(Y6_Forecast,0)) * @CurrencyRate as Q2_Forecast
+				,(ISNULL(Y4_Planned,0)+ISNULL(Y5_Planned,0)+ISNULL(Y6_Planned,0)) * @CurrencyRate as Q2_Planned
+				,(ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0)) * @CurrencyRate as Q2_Actual
+				
+				-- Budget, Forecast, Planned, Actuals for Quarter 3
+				,(ISNULL(Y7_Budget,0)+ISNULL(Y8_Budget,0)+ISNULL(Y9_Budget,0)) * @CurrencyRate as Q3_Budget
+				,(ISNULL(Y7_Forecast,0)+ISNULL(Y8_Forecast,0)+ISNULL(Y9_Forecast,0)) * @CurrencyRate as Q3_Forecast
+				,(ISNULL(Y7_Planned,0)+ISNULL(Y8_Planned,0)+ISNULL(Y9_Planned,0)) * @CurrencyRate as Q3_Planned
+				,(ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0)) * @CurrencyRate as Q3_Actual
+
+				-- Budget, Forecast, Planned, Actuals for Quarter 4
+				,(ISNULL(Y10_Budget,0)+ISNULL(Y11_Budget,0)+ISNULL(Y12_Budget,0)) * @CurrencyRate as Q4_Budget
+				,(ISNULL(Y10_Forecast,0)+ISNULL(Y11_Forecast,0)+ISNULL(Y12_Forecast,0)) * @CurrencyRate as Q4_Forecast
+				,(ISNULL(Y10_Planned,0)+ISNULL(Y11_Planned,0)+ISNULL(Y12_Planned,0)) * @CurrencyRate as Q4_Planned
+				,(ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as Q4_Actual
+
+				,F.TotalBudget * @CurrencyRate as 'Total_Budget'
+				,F.TotalForecast * @CurrencyRate as 'Total_Forecast'
+				,F.TotalPlanned * @CurrencyRate as 'Total_Planned'
+				-- Total Actual
+				,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0) +
+				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
+				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
+				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
+
+				,F.[User]
+				,F.LineItems
+				,F.[Owner]
+
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
+	END
+	ELSE IF(@timeframe = @ThisMonthly)	-- This Year (Monthly)
+	BEGIN
+		SELECT 
+				 F.Permission	
+				,F.BudgetDetailId
+				,F.ParentId
+				,F.Name
+
+				-- Budget, Forecast, Planned, Actuals month wise columns 
+				,(Y1_Budget * @CurrencyRate  ) AS Y1_Budget,  (Y1_Forecast * @CurrencyRate ) AS Y1_Forecast
+				,(Y1_Planned * @CurrencyRate ) AS Y1_Planned, (Y1_Actual * @CurrencyRate   ) AS Y1_Actual 
+				,(Y2_Budget * @CurrencyRate  ) AS Y2_Budget,  (Y2_Forecast * @CurrencyRate ) AS Y2_Forecast 
+				,(Y2_Planned * @CurrencyRate ) AS Y2_Planned, (Y2_Actual * @CurrencyRate   ) AS Y2_Actual
+				,(Y3_Budget * @CurrencyRate  ) AS Y3_Budget,  (Y3_Forecast * @CurrencyRate ) AS Y3_Forecast
+				,(Y3_Planned * @CurrencyRate ) AS Y3_Planned, (Y3_Actual * @CurrencyRate   ) AS Y3_Actual
+				,(Y4_Budget * @CurrencyRate  ) AS Y4_Budget,  (Y4_Forecast * @CurrencyRate ) AS Y4_Forecast 
+				,(Y4_Planned * @CurrencyRate ) AS Y4_Planned, (Y4_Actual * @CurrencyRate   ) AS Y4_Actual 
+				,(Y5_Budget * @CurrencyRate  ) AS Y5_Budget,  (Y5_Forecast * @CurrencyRate ) AS Y5_Forecast 
+				,(Y5_Planned * @CurrencyRate ) AS Y5_Planned, (Y5_Actual * @CurrencyRate   ) AS Y5_Actual 
+				,(Y6_Budget * @CurrencyRate  ) AS Y6_Budget,  (Y6_Forecast * @CurrencyRate ) AS Y6_Forecast 
+				,(Y6_Planned * @CurrencyRate ) AS Y6_Planned, (Y6_Actual * @CurrencyRate   ) AS Y6_Actual 
+				,(Y7_Budget * @CurrencyRate  ) AS Y7_Budget,  (Y7_Forecast * @CurrencyRate ) AS Y7_Forecast 
+				,(Y7_Planned * @CurrencyRate ) AS Y7_Planned, (Y7_Actual * @CurrencyRate   ) AS Y7_Actual 
+				,(Y8_Budget * @CurrencyRate  ) AS Y8_Budget,  (Y8_Forecast * @CurrencyRate ) AS Y8_Forecast 
+				,(Y8_Planned * @CurrencyRate ) AS Y8_Planned, (Y8_Actual * @CurrencyRate   ) AS Y8_Actual 
+				,(Y9_Budget * @CurrencyRate  ) AS Y9_Budget,  (Y9_Forecast * @CurrencyRate ) AS Y9_Forecast 
+				,(Y9_Planned * @CurrencyRate ) AS Y9_Planned, (Y9_Actual * @CurrencyRate   ) AS Y9_Actual 
+				,(Y10_Budget * @CurrencyRate ) AS Y10_Budget, (Y10_Forecast * @CurrencyRate) AS  Y10_Forecast 
+				,(Y10_Planned * @CurrencyRate) AS Y10_Planned,(Y10_Actual * @CurrencyRate  ) AS Y10_Actual 
+				,(Y11_Budget * @CurrencyRate ) AS Y11_Budget, (Y11_Forecast * @CurrencyRate) AS  Y11_Forecast 
+				,(Y11_Planned * @CurrencyRate) AS Y11_Planned,(Y11_Actual * @CurrencyRate  ) AS Y11_Actual 
+				,(Y12_Budget * @CurrencyRate ) AS Y12_Budget, (Y12_Forecast * @CurrencyRate) AS  Y12_Forecast 
+				,(Y12_Planned * @CurrencyRate) AS Y12_Planned,(Y12_Actual * @CurrencyRate  ) AS Y12_Actual 
+
+				,F.TotalBudget * @CurrencyRate as 'Total_Budget'
+				,F.TotalForecast * @CurrencyRate as 'Total_Forecast'
+				,F.TotalPlanned * @CurrencyRate as 'Total_Planned'
+
+				-- Total Actual
+				,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0) +
+				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
+				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
+				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
+
+				,F.[User]
+				,F.LineItems
+				,F.[Owner]
+
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
+	END
+	ELSE IF(@timeframe = @Quarter1)	-- Quarter1
+	BEGIN
+		SELECT 
+				 F.Permission	
+				,F.BudgetDetailId
+				,F.ParentId
+				,F.Name
+
+				-- Budget, Forecast, Planned, Actuals columns for Quarter 1
+				,(Y1_Budget * @CurrencyRate) AS Y1_Budget,(Y1_Forecast * @CurrencyRate) AS Y1_Forecast,(Y1_Planned * @CurrencyRate) AS Y1_Planned,(Y1_Actual * @CurrencyRate) AS Y1_Actual 
+				,(Y2_Budget * @CurrencyRate) AS Y2_Budget,(Y2_Forecast * @CurrencyRate) AS Y2_Forecast,(Y2_Planned * @CurrencyRate) AS Y2_Planned,(Y2_Actual * @CurrencyRate) AS Y2_Actual 
+				,(Y3_Budget * @CurrencyRate) AS Y3_Budget,(Y3_Forecast * @CurrencyRate) AS Y3_Forecast,(Y3_Planned * @CurrencyRate) AS Y3_Planned,(Y3_Actual * @CurrencyRate) AS Y3_Actual 
+				
+				,F.TotalBudget * @CurrencyRate as 'Total_Budget'
+				,F.TotalForecast * @CurrencyRate as 'Total_Forecast'
+				,F.TotalPlanned * @CurrencyRate as 'Total_Planned'
+
+				-- Total Actual
+				,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0) +
+				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
+				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
+				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
+				
+				,F.[User]
+				,F.LineItems
+				,F.[Owner]
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
+	END
+	ELSE IF(@timeframe = @Quarter2)	-- Quarter2
+	BEGIN
+		SELECT 
+				F.Permission	
+				,F.BudgetDetailId
+				,F.ParentId
+				,F.Name
+
+				-- Budget, Forecast, Planned, Actuals columns for Quarter 2
+				,(Y4_Budget * @CurrencyRate) AS Y4_Budget,(Y4_Forecast * @CurrencyRate) AS Y4_Forecast,(Y4_Planned * @CurrencyRate) AS Y4_Planned,(Y4_Actual * @CurrencyRate) AS Y4_Actual
+				,(Y5_Budget * @CurrencyRate) AS Y5_Budget,(Y5_Forecast * @CurrencyRate) AS Y5_Forecast,(Y5_Planned * @CurrencyRate) AS Y5_Planned,(Y5_Actual * @CurrencyRate) AS Y5_Actual
+				,(Y6_Budget * @CurrencyRate) AS Y6_Budget,(Y6_Forecast * @CurrencyRate) AS Y6_Forecast,(Y6_Planned * @CurrencyRate) AS Y6_Planned,(Y6_Actual * @CurrencyRate) AS Y6_Actual
+				
+				,F.TotalBudget * @CurrencyRate as 'Total_Budget'
+				,F.TotalForecast * @CurrencyRate as 'Total_Forecast'
+				,F.TotalPlanned * @CurrencyRate as 'Total_Planned'
+
+				-- Total Actual
+				,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0) +
+				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
+				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
+				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
+				,F.[User]
+				,F.LineItems
+				,F.[Owner]
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
+	END
+	ELSE IF(@timeframe = @Quarter3)	-- Quarter3
+	BEGIN
+		SELECT 
+				F.Permission	
+				,F.BudgetDetailId
+				,F.ParentId
+				,F.Name
+				-- Budget, Forecast, Planned, Actuals columns for Quarter 3
+				,(Y7_Budget * @CurrencyRate) AS Y7_Budget ,(Y7_Forecast * @CurrencyRate) AS Y7_Forecast ,(Y7_Planned * @CurrencyRate) AS Y7_Planned ,(Y7_Actual * @CurrencyRate) AS Y7_Actual 
+				,(Y8_Budget * @CurrencyRate) AS Y8_Budget ,(Y8_Forecast * @CurrencyRate) AS Y8_Forecast ,(Y8_Planned * @CurrencyRate) AS Y8_Planned ,(Y8_Actual * @CurrencyRate) AS Y8_Actual 
+				,(Y9_Budget * @CurrencyRate) AS Y9_Budget ,(Y9_Forecast * @CurrencyRate) AS Y9_Forecast ,(Y9_Planned * @CurrencyRate) AS Y9_Planned ,(Y9_Actual * @CurrencyRate) AS Y9_Actual 
+				
+				,F.TotalBudget * @CurrencyRate as 'Total_Budget'
+				,F.TotalForecast * @CurrencyRate as 'Total_Forecast'
+				,F.TotalPlanned * @CurrencyRate as 'Total_Planned'
+				-- Total Actual
+				,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0) +
+				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
+				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
+				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
+				,F.[User]
+				,F.LineItems
+				,F.[Owner]
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
+	END
+	ELSE IF(@timeframe = @Quarter4)	-- Quarter 4
+	BEGIN
+		SELECT 
+				F.Permission	
+				,F.BudgetDetailId
+				,F.ParentId
+				,F.Name
+				-- Budget, Forecast, Planned, Actuals columns for Quarter 4
+				,(Y10_Budget * @CurrencyRate) AS Y10_Budget ,(Y10_Forecast * @CurrencyRate) AS Y10_Forecast ,(Y10_Planned * @CurrencyRate) AS Y10_Planned ,(Y10_Actual * @CurrencyRate) AS Y10_Actual 
+				,(Y11_Budget * @CurrencyRate) AS Y11_Budget ,(Y11_Forecast * @CurrencyRate) AS Y11_Forecast ,(Y11_Planned * @CurrencyRate) AS Y11_Planned ,(Y11_Actual * @CurrencyRate) AS Y11_Actual 
+				,(Y12_Budget * @CurrencyRate) AS Y12_Budget ,(Y12_Forecast * @CurrencyRate) AS Y12_Forecast ,(Y12_Planned * @CurrencyRate) AS Y12_Planned ,(Y12_Actual * @CurrencyRate) AS Y12_Actual 
+				
+				,F.TotalBudget * @CurrencyRate as 'Total_Budget'
+				,F.TotalForecast * @CurrencyRate as 'Total_Forecast'
+				,F.TotalPlanned * @CurrencyRate as 'Total_Planned'
+				-- Total Actual
+				,(ISNULL(Y1_Actual,0)+ISNULL(Y2_Actual,0)+ISNULL(Y3_Actual,0) +
+				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
+				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
+				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
+				
+				,F.[User]
+				,F.LineItems
+				,F.[Owner]
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
+	END
+
+	-- Get custom columns data
+	 EXEC [dbo].[GetFinanceCustomfieldColumnsData] @BudgetId, @ClientId
+
+
+END
+GO
+
+-- End - Added by Arpita Soni for Ticket #2790 on 11/28/2016
+
 Go
+
+
+
+-- Start - Added by Viral for Ticket #2763 on 11/29/2016
+
+/****** Object:  StoredProcedure [dbo].[GetGridFilters]    Script Date: 11/29/2016 4:12:04 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridFilters]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetGridFilters]
+GO
+/****** Object:  StoredProcedure [dbo].[GetGridFilters]    Script Date: 11/29/2016 4:12:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridFilters]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetGridFilters] AS' 
+END
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[GetGridFilters] 
+	@userId int
+	,@ClientId int
+	,@IsDefaultCustomRestrictionsViewable bit 
+AS --Todo: New user login then need to some more 
+BEGIN
+	
+	--EXEC GetGridFilters 549,4,0
+
+	SET NOCOUNT ON;
+
+		Declare @PlanId NVARCHAR(MAX) = ''
+		Declare @OwnerIds NVARCHAR(MAX) = ''
+		Declare @TacticTypeIds varchar(max)=''
+		Declare @StatusIds varchar(max)=''
+		Declare @customFields varchar(max)=''
+
+		Declare @viewname  varchar(max)
+
+		Declare @tblUserSavedViews Table(
+		Id INT
+		,ViewName NVARCHAR(max)
+		,FilterName NVARCHAR(1000)
+		,FilterValues NVARCHAR(max)
+		,LastModifiedDate DATETIME
+		,IsDefaultPreset BIT
+		,Userid INT
+		)
+
+		Declare @keyPlan varchar(30)='Plan'
+		Declare @keyOwner varchar(30)='Owner'
+		Declare @keyStatus varchar(30)='Status'
+		Declare @keyTacticType varchar(30)='TacticType'
+		Declare @keyAll varchar(10)='All'
+		Declare @keyCustomField varchar(100)='CustomField'
+		
+
+		select TOP 1 @viewname =  ViewName from Plan_UserSavedViews where Userid=@userId AND IsDefaultPreset = 1
+		SET @viewname = ISNULL(@viewname,'')
+
+		-- Insert user filters to local variables.
+		INSERT INTO @tblUserSavedViews(Id,ViewName,FilterName,FilterValues,LastModifiedDate,IsDefaultPreset,Userid)
+		select Id,ViewName,FilterName,FilterValues,LastModifiedDate,IsDefaultPreset,Userid from Plan_UserSavedViews where Userid=@userId AND ISNULL(ViewName,'') = IsNull(@viewname,'')
+
+		IF EXISTS(select Id from @tblUserSavedViews)
+		BEGIN
+			
+		
+
+		-- Get PlanIds that user has selected under filter.
+		SELECT TOP 1 @PlanId = FilterValues from @tblUserSavedViews where FilterName=@keyPlan
+
+		-- Get OwnerIds that user has selected under filter.
+		SELECT TOP 1 @OwnerIds = FilterValues from @tblUserSavedViews where FilterName=@keyOwner
+
+		-- Get TacticTypeIds that user has selected under filter.
+		SELECT TOP 1 @TacticTypeIds = FilterValues from @tblUserSavedViews where FilterName=@keyTacticType
+
+		-- Get Status that user has selected under filter.
+		SELECT TOP 1 @StatusIds = FilterValues from @tblUserSavedViews where FilterName=@keyStatus
+
+		-- Get Status that user has selected under filter.
+		SET @customFields = ''
+
+
+		BEGIN
+
+			Declare @customFieldId varchar(100)
+			Declare @FilterValues varchar(max)
+			Declare @cntFiltr INT
+			Declare @cntPermsn INT
+			Declare @CustomFilters varchar(max) 
+
+
+			  Declare @CustomFieldIDs varchar(max)=''
+
+			 SELECT  @CustomFieldIDs = COALESCE(@CustomFieldIDs + ',', '') + CONVERT(varchar(100), CF.[CustomFieldId])  + '_null'  FROM [CustomField] CF
+			 inner join CustomFieldType CT on CT.CustomFieldTypeId = CF.CustomFieldTypeId and CT.name = 'DropDownList'
+			  where  CF.EntityType = 'Tactic'  and CF.isdeleted = 0 and CF.IsDisplayForFilter = 1 AND CF.ClientId = @ClientId 
+             AND ( CF.[CustomFieldId] NOT IN
+			  (select  CAST((CASE WHEN REPLACE(FilterName,'CF_','') NOT LIKE '%[^0-9]%' THEN REPLACE(FilterName,'CF_','') END) AS INT)  from Plan_UserSavedViews where Userid=@userId and FilterName like'CF_%')
+			  )
+
+			   if( LEFT(@CustomFieldIDs,1) = ',')
+			     SET  @CustomFieldIDs = substring(@CustomFieldIDs,2,LEN(@CustomFieldIDs))
+
+			select @cntPermsn = count(*) from CustomRestriction as CR Where UserId = @userId
+
+			
+
+
+			
+			DECLARE db_cursor CURSOR FOR  
+			select REPLACE(FilterName,'CF_',''),FilterValues from @tblUserSavedViews where Userid=@userId and FilterName like'CF_%'
+			
+			OPEN db_cursor   
+			FETCH NEXT FROM db_cursor INTO @customFieldId,@FilterValues   
+			
+			WHILE @@FETCH_STATUS = 0   
+			BEGIN   
+				
+				IF(IsNull(@cntPermsn,0) > 0)
+				BEGIN
+				   select @cntFiltr = count(*) from CustomRestriction as CR
+					JOIN CustomField as C on CR.CustomFieldId = C.CustomFieldId and C.ClientId=@ClientId and IsDeleted='0' and C.IsRequired='1' and ( (CR.Permission = 1)  OR (CR.Permission = 2) )
+					where UserId = @userId and C.CustomFieldId=Cast(@customFieldId as INT) and cr.CustomFieldOptionId not in (select val from comma_split(@FilterValues,','))
+			
+				
+
+				END
+				ELSE IF(@IsDefaultCustomRestrictionsViewable = '1' )
+				BEGIN
+						SELECT @cntFiltr = count(*) from CustomField as C
+						Join CustomFieldType as CT on C.CustomFieldTypeId = C.CustomFieldTypeId and CT.Name ='DropDownList'
+						JOIN CustomFieldOption as CO on C.CustomFieldId = CO.CustomFieldId and CO.IsDeleted='0' and CO.CustomFieldOptionId not in (select val from comma_split(@FilterValues,','))
+						where ClientId=@ClientId and C.IsDeleted='0' and  EntityType='Tactic' and IsDisplayForFilter='1' and C.CustomFieldId= Cast(@customFieldId as INT)
+				END
+
+				IF (IsNull(@cntFiltr,0) > 0)
+				BEGIN
+					SET @customFields = @customFields + ',' + @customFieldId + '_' + REPLACE(@FilterValues,',',','+@customFieldId + '_' ) 
+				END
+				
+			       FETCH NEXT FROM db_cursor INTO @customFieldId,@FilterValues      
+			END   
+			
+			CLOSE db_cursor   
+			DEALLOCATE db_cursor
+			if(LEN(@customFields) > 2)
+			SET @customFields = SUBSTRING(@customFields,2, LEN(@customFields)-1) 
+
+		END
+
+		END
+		ELSE
+		BEGIN
+			
+			SELECT Top 1 @PlanId = p.PlanId from Model as M
+			JOIN [Plan] as P on M.ModelId = P.ModelId and M.ClientId=@ClientId and P.IsDeleted='0' and M.IsDeleted='0' and P.[Year]<=Datepart(yyyy,GETDATE())
+			Order by P.Year desc, P.Title
+			
+			SET @OwnerIds=@keyAll
+			SET @TacticTypeIds=@keyAll
+			SET @StatusIds='Created,Submitted,Approved,In-Progress,Complete,Declined'
+			SET @customFields = ''
+		END
+		
+		IF(@CustomFieldIDs != '')
+		BEGIN
+		 IF(@customFields = '')
+				    BEGIN
+				       SET @customFields =  @CustomFieldIDs
+				   END
+				   ELSE
+				   BEGIN
+				      SET @customFields = @customFields + ',' + @CustomFieldIDs
+				   END
+		END
+	             	
+				
+			
+
+		select @PlanId PlanIds,@OwnerIds OwnerIds,@StatusIds StatusIds,@TacticTypeIds TacticTypeIds,@customFields CustomFieldIds
+
+    
+END
+
+
+
+GO
+
+-- End - Added by Viral for Ticket #2763 on 11/29/2016
+
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'DeleteMarketingBudget') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE DeleteMarketingBudget
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Rahul Shah
+-- Create date: 11/30/2016
+-- Description:	SP to Delete Marketing Budget data
+-- =============================================
+
+CREATE  PROCEDURE [dbo].[DeleteMarketingBudget]
+@BudgetDetailId int = 0,
+@ClientId INT = 0
+AS 
+
+BEGIN
+	SET NOCOUNT ON
+	Declare @ErrorMeesgae varchar(3000) = ''
+	Declare @OtherBudgetId int = 0
+	Declare @ParentIdCount int = 0
+	Declare @LineItemBudgetCount int = 0
+	Declare @NextBudgetId int = 0
+	Declare @RowCount int = 0
+	Declare @BudgetDetailData Table (Id int, ParentId int null, BudgetId int )
+	BEGIN TRY
+		-- GET 'N' Level Heirarchy for selected budget from budget detail table
+		;WITH BudgetCTE AS
+		( 
+			SELECT Id
+			,ParentId
+			,BudgetId
+			,IsDeleted
+			FROM [dbo].[Budget_Detail] 
+			WHERE ParentId = @BudgetDetailId OR Id = @BudgetDetailId
+			AND IsDeleted=0 OR IsDeleted is null
+			UNION ALL
+			SELECT a.Id
+			,a.ParentId
+			,a.BudgetId
+			,a.IsDeleted
+			FROM [dbo].[Budget_Detail] a 
+			INNER JOIN BudgetCTE s on a.ParentId=s.Id
+			where Isnull(a.IsDeleted,0) = 0 and Isnull(s.IsDeleted,0) = 0
+		)
+		 
+		INSERT INTO @BudgetDetailData SELECT Distinct Id,ParentId,BudgetId FROM BudgetCTE Order by ID asc	
+		Select @RowCount = COUNT(Id) From @BudgetDetailData 
+		IF @RowCount > 0 
+		BEGIN
+		-- check if any of the selected budgets is a root budget
+		Select @ParentIdCount=Count(*) From @BudgetDetailData where ParentId is null
+
+		--- if there is a parent/root budget found than delete that from budget table and get the next id of next budget that we should show on UI after deletion of root budget
+		If @ParentIdCount > 0 
+		BEGIN
+			UPDATE [dbo].[Budget] SET IsDeleted=1 Where Id = (Select Top(1) BudgetId From @BudgetDetailData)	
+			SELECT Top(1) @NextBudgetId = Id from Budget where ClientId=@ClientId and IsDeleted = 0 order by Name asc 	
+		END
+		
+		-- delete budget from budget details table
+		UPDATE [dbo].[Budget_Detail] SET IsDeleted=1 Where Id in (Select Id From @BudgetDetailData)
+		
+		Select @LineItemBudgetCount = Count(*) From [LineItem_Budget] where BudgetDetailId in (
+				Select Id from @BudgetDetailData)
+		
+		-- If any of the selected budgets are linked to a line item, update respective Line item detail records with other budget id
+		if @LineItemBudgetCount > 0
+		BEGIN
+		
+		-- get Other budget Ids
+			Select @OtherBudgetId = ChildDetail.Id From Budget_Detail ChildDetail
+			INNER JOIN Budget ParentDetail on  ParentDetail.Id = ChildDetail.BudgetId
+			where (ParentDetail.IsDeleted=0 OR ParentDetail.IsDeleted is null) and (ChildDetail.IsDeleted=0  OR ChildDetail.IsDeleted is null)
+			and ParentDetail.IsOther=1
+			and ParentDetail.ClientId=@ClientId
+			IF(@OtherBudgetId Is Not Null)
+			BEGIN
+				Update [dbo].[LineItem_Budget] SET BudgetDetailId=@OtherBudgetId
+					Where Id In(
+					Select Id From [dbo].[LineItem_Budget] Where BudgetDetailId in (
+						Select Id from @BudgetDetailData))
+			END
+		END
+		
+	END
+	RETURN @NextBudgetId -- return next budget Id.
+	
+END TRY
+BEGIN CATCH
+	SET @ErrorMeesgae= 'Object=DeleteBudget , ErrorMessage='+ERROR_MESSAGE()
+	SELECT @ErrorMeesgae as 'ErrorMessage'
+END CATCH
+END
+
+GO
+
+----added by devanshi for #2804 Import marketing budget
+
+/****** Object:  UserDefinedFunction [dbo].[fnGetBudgetForeCast_List]    Script Date: 12/01/2016 12:47:57 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetBudgetForeCast_List]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+DROP FUNCTION [dbo].[fnGetBudgetForeCast_List]
+GO
+/****** Object:  UserDefinedFunction [dbo].[fnGetBudgetForeCast_List]    Script Date: 12/01/2016 12:47:57 PM ******/
+SET ANSI_NULLS ON
+GO
+-- =============================================
+-- Author:		Devanshi
+-- Create date: 01 Dec 2016
+-- Description:	Function to get list of all childs for marketing budget
+-- =============================================
+CREATE FUNCTION [dbo].[fnGetBudgetForeCast_List]
+(	
+	@BudgetId int,
+	@ClientId int
+)
+RETURNS TABLE 
+AS
+RETURN 
+(
+	WITH ForeCastBudgetDetail as
+	(
+	SELECT Budget_Detail.id,parentid from Budget_Detail
+	INNER JOIN Budget on Budget_Detail.BudgetId=Budget.Id
+	WHERE Budget.ClientId=@ClientId and 
+	 Budget_Detail.Id=@BudgetId and ParentID is null
+
+    UNION ALL
+
+    SELECT BD.id,BD.ParentID  FROM Budget_Detail BD 
+	INNER JOIN Budget on BD.BudgetId=Budget.Id
+	INNER JOIN ForeCastBudgetDetail FBD	  ON FBD.Id = BD.ParentID
+	WHERE Budget.ClientId=@ClientId
+	)
+	SELECT convert(nvarchar(20),a.id) as Id From ForeCastBudgetDetail a
+	WHERE   NOT EXISTS ( SELECT *   FROM   ForeCastBudgetDetail b  WHERE  b.parentid = a.Id )
+)
+
+GO
+
+
+/****** Object:  StoredProcedure [dbo].[PreCalFinanceGridForExistingData]    Script Date: 12/01/2016 12:46:46 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PreCalFinanceGridForExistingData]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[PreCalFinanceGridForExistingData]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PreCalFinanceGridForExistingData]    Script Date: 12/01/2016 12:46:46 PM ******/
+SET ANSI_NULLS ON
+GO
+
+-- =============================================
+-- Author:		Devanshi
+-- Create date: 28/11/2016
+-- Description:	Dump existing budget,forecast,planned,actual data into pre calculated table
+-- =============================================
+CREATE PROCEDURE [dbo].[PreCalFinanceGridForExistingData]
+	@BudgetId int=0
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    BEGIN
+	-- Update Budget values into [MV].[PreCalculatedMarketingBudget] table
+	UPDATE PreCal SET Y1_Budget = [Y1],Y2_Budget = [Y2],
+					  Y3_Budget = [Y3],Y4_Budget = [Y4],
+					  Y5_Budget = [Y5],Y6_Budget = [Y6],
+					  Y7_Budget = [Y7],Y8_Budget = [Y8],
+					  Y9_Budget = [Y9],Y10_Budget = [Y10],
+					  Y11_Budget = [Y11],Y12_Budget = [Y12]
+	FROM [MV].PreCalculatedMarketingBudget PreCal
+	INNER JOIN 
+	(
+		-- Get monthly budget amount with pivoting
+		SELECT * FROM 
+		(
+			SELECT B.Id AS BudgetDetailId, Period, Budget 
+			FROM Budget A
+			INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+			INNER JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+			WHERE A.IsDeleted = 0 and A.Id=@BudgetId
+		) P
+		PIVOT
+		(
+			MIN(BUDGET)
+			FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+		) AS Pvt
+	) ExistingFinanceData ON PreCal.BudgetDetailId = ExistingFinanceData.BudgetDetailId
+END
+
+BEGIN
+	-- Insert Budget records into [MV].[PreCalculatedMarketingBudget] table
+	INSERT INTO [MV].PreCalculatedMarketingBudget (BudgetDetailId, [Year], Y1_Budget, Y2_Budget, Y3_Budget, Y4_Budget, Y5_Budget, 
+													Y6_Budget, Y7_Budget,Y8_Budget, Y9_Budget, Y10_Budget, Y11_Budget, Y12_Budget)
+	SELECT Pvt.BudgetDetailId,Pvt.[Year],[Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12] FROM 
+	(
+		-- Get monthly budget amount with pivoting
+		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget 
+		FROM Budget A
+		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+		WHERE A.IsDeleted = 0 and A.Id=@BudgetId
+	) P
+	PIVOT
+	(
+		MIN(BUDGET)
+		FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+	) AS Pvt
+	LEFT JOIN [MV].PreCalculatedMarketingBudget PreCal ON PreCal.BudgetDetailId = Pvt.BudgetDetailId
+	WHERE PreCal.Id IS NULL
+END
+
+BEGIN
+	-- Update Forecast values into [MV].[PreCalculatedMarketingBudget] table
+	UPDATE PreCal SET Y1_Forecast = [Y1],Y2_Forecast = [Y2],
+					  Y3_Forecast = [Y3],Y4_Forecast = [Y4],
+					  Y5_Forecast = [Y5],Y6_Forecast = [Y6],
+					  Y7_Forecast = [Y7],Y8_Forecast = [Y8],
+					  Y9_Forecast = [Y9],Y10_Forecast = [Y10],
+					  Y11_Forecast = [Y11],Y12_Forecast = [Y12]
+	FROM [MV].PreCalculatedMarketingBudget PreCal
+	INNER JOIN 
+	(
+		-- Get monthly forecast amount with pivoting
+		SELECT * FROM 
+		(
+			SELECT B.Id AS BudgetDetailId, Period, Forecast FROM Budget A
+			INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+			INNER JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+			WHERE A.IsDeleted = 0 and A.Id=@BudgetId
+		) P
+		PIVOT
+		(
+			MIN(Forecast)
+			FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+		) AS Pvt
+	) ExistingFinanceData ON PreCal.BudgetDetailId = ExistingFinanceData.BudgetDetailId
+END
+BEGIN
+	-- Insert Forecast records into [MV].[PreCalculatedMarketingBudget] table
+	INSERT INTO [MV].PreCalculatedMarketingBudget (BudgetDetailId, [Year], Y1_Forecast, Y2_Forecast, Y3_Forecast, Y4_Forecast, Y5_Forecast, 
+													Y6_Forecast, Y7_Forecast,Y8_Forecast, Y9_Forecast, Y10_Forecast, Y11_Forecast, Y12_Forecast)
+	SELECT Pvt.BudgetDetailId,Pvt.[Year],[Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12] FROM 
+	(
+		-- Get monthly forecast amount with pivoting
+		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget FROM Budget A
+		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+		WHERE A.IsDeleted = 0 and A.Id=@BudgetId
+	) P
+	PIVOT
+	(
+		MIN(BUDGET)
+		FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+	) AS Pvt
+	LEFT JOIN [MV].PreCalculatedMarketingBudget PreCal ON PreCal.BudgetDetailId = Pvt.BudgetDetailId
+	WHERE PreCal.Id IS NULL
+END
+
+END
+
+GO
+
+/****** Object:  StoredProcedure [dbo].[ImportMarketingBudgetQuarter]    Script Date: 12/01/2016 12:44:37 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ImportMarketingBudgetQuarter]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[ImportMarketingBudgetQuarter]
+GO
+/****** Object:  StoredProcedure [dbo].[ImportMarketingBudgetQuarter]    Script Date: 12/01/2016 12:44:37 PM ******/
+SET ANSI_NULLS ON
+GO
+
+CREATE PROCEDURE [dbo].[ImportMarketingBudgetQuarter]
+@XMLData AS XML
+,@ImportBudgetCol MarketingBudgetColumns READONLY
+,@clientId INT
+,@UserId int
+,@BudgetDetailId BIGINT
+AS
+BEGIN
+SET NOCOUNT ON;
+BEGIN TRY
+----disable trigger For Marketing Budget
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalBudgetForecastMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_DetailAmount DISABLE TRIGGER TrgPreCalBudgetForecastMarketingBudget
+END
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgInsertDeletePreCalMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_Detail DISABLE TRIGGER TrgInsertDeletePreCalMarketingBudget
+END
+
+----end
+CREATE TABLE #tmpXmlData (ROWNUM BIGINT) --create # table because there are dynamic columns added as per file imported for marketing budget
+
+
+DECLARE @Textboxcol nvarchar(max)=''
+DECLARE @UpdateColumn NVARCHAR(255)
+DECLARE @CustomEntityDeleteDropdownCount BIGINT
+DECLARE @CustomEntityDeleteTextBoxCount BIGINT
+DECLARE @IsCutomFieldDrp BIT
+DECLARE @GetBudgetAmoutData NVARCHAR(MAX)=''
+DECLARE @Count Int = 1;
+DECLARE @RowCount INT;
+DECLARE @ColName nvarchar(100)
+DECLARE @IsMonth nvarchar(100)
+
+-- Declare variable for time frame
+DECLARE @QFirst NVARCHAR(MAX)=''
+DECLARE @QSecond NVARCHAR(MAX)=''
+DECLARE @QThird NVARCHAR(MAX)=''
+-- Declare Variable for forecast/budget column is exist or not
+
+DECLARE @BudgetOrForecastIndex INT
+
+SELECT @RowCount = COUNT(*) FROM @ImportBudgetCol
+
+DECLARE @XmldataQuery NVARCHAR(MAX)=''
+
+DECLARE @tmpXmlDataAlter NVARCHAR(MAX)=''
+
+SET @XmldataQuery += '
+	SELECT 
+	ROW_NUMBER() OVER(ORDER BY(SELECT 100)),
+	'
+DECLARE @ConcatColumns NVARCHAR(MAX)=''
+
+WHILE(@Count<=@RowCount)
+BEGIN
+SELECT @ColName = ColumnName FROM @ImportBudgetCol WHERE ColumnIndex=@Count
+
+SET @ConcatColumns  += '
+	pref.value(''(value)['+CAST(@Count AS VARCHAR(50))+']'', ''nvarchar(max)'') as ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'],'
+
+	SET @tmpXmlDataAlter+= ' ALTER TABLE #tmpXmlData ADD ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'] NVARCHAR(MAX) '
+	SET @Count=@Count+1;
+END
+SELECT @ConcatColumns=LEFT(@ConcatColumns, LEN(@ConcatColumns) - 1)
+
+SET @XmldataQuery+= @ConcatColumns+' FROM  
+	
+	@XmlData.nodes(''/data/row'') AS People(pref);'
+
+EXEC(@tmpXmlDataAlter)
+
+;WITH tblChild AS
+(
+    SELECT Id,ParentId,BudgetId
+        FROM Budget_Detail WHERE Id = @BudgetDetailId 
+    UNION ALL
+    SELECT Budget_Detail.Id,Budget_Detail.ParentId,Budget_Detail.BudgetId FROM Budget_Detail  
+	CROSS APPLY (SELECT * FROM tblChild WHERE Budget_Detail.ParentId = tblChild.Id) tblChild
+)
+SELECT  * Into #tmpChildBudgets
+    FROM tblChild
+OPTION(MAXRECURSION 0)
+
+
+INSERT INTO #tmpXmlData EXECUTE sp_executesql @XmldataQuery, N'@XmlData XML OUT', @XmlData = @XmlData  OUT
+
+	-- Remove Other Child items which are not related to parent
+	DELETE tmpXmlData FROM #tmpXmlData tmpXmlData
+	OUTER APPLY(
+	SELECT * FROM #tmpChildBudgets tmpChildBudgets
+	WHERE CAST(tmpXmlData.[Id#1] AS INT)= tmpChildBudgets.Id
+	) tmpChildBudgets WHERE tmpChildBudgets.Id IS NULL
+	
+	-- Remove View/None Permission budgets
+	DELETE tmpXmlData FROM #tmpXmlData tmpXmlData
+	OUTER APPLY(
+	SELECT * FROM Budget_Permission BudgetPermission
+	WHERE CAST(tmpXmlData.[Id#1] AS INT)=BudgetPermission.BudgetDetailId AND UserId=@UserId
+	AND (BudgetPermission.IsOwner=1 OR BudgetPermission.PermisssionCode=0)
+	) BudgetPermission WHERE BudgetPermission.Id IS NULL
+
+	-- Add only Child/Forecast item
+	Select *  into #childtempData from #tmpXmlData
+	inner join (select * from dbo.fnGetBudgetForeCast_List (@BudgetDetailId,@clientId)) child
+	on CAST(#tmpXmlData.[Id#1] AS INT) = child.Id
+-- Update Process
+DECLARE @GetBudgetAmoutData2 NVARCHAR(MAX)=''
+DECLARE @MonthNumber varchar(2)
+SET @Count=3;
+WHILE(@Count<=@RowCount)
+BEGIN
+
+	SELECT  @Ismonth = CASE  WHEN  ISNULL(Month,'')='' THEN '' ELSE LTRIM(RTRIM([Month])) END
+		,@UpdateColumn = CASE  WHEN  ISNULL(ColumnName,'')='' THEN '' ELSE [ColumnName] END
+		,@BudgetOrForecastIndex = ColumnIndex FROM @ImportBudgetCol WHERE ColumnIndex=@Count
+		
+	IF (@Ismonth<>'')
+	BEGIN
+		-- Set Time frame based on Quarters
+		IF(@IsMonth='Q1')
+		BEGIN	
+			SET @QFirst ='Y1'
+			SET @QSecond ='Y2'
+			SET @QThird ='Y3'
+		END
+
+		IF(@IsMonth='Q2')
+		BEGIN	
+			SET @QFirst ='Y4'
+			SET @QSecond ='Y5'
+			SET @QThird ='Y6'
+		END
+
+		IF(@IsMonth='Q3')
+		BEGIN	
+			SET @QFirst ='Y7'
+			SET @QSecond ='Y8'
+			SET @QThird ='Y9'
+		END
+
+		IF(@IsMonth='Q4')
+		BEGIN	
+			SET @QFirst ='Y10'
+			SET @QSecond ='Y11'
+			SET @QThird ='Y12'
+		END
+
+	 -- Insert/Update values for budget and forecast
+	 IF((@UpdateColumn='Budget' OR @UpdateColumn='Forecast'))
+	 BEGIN
+		IF(@Ismonth!='' AND @Ismonth!='Total')
+		BEGIN
+			
+			SET @GetBudgetAmoutData=' 
+			-- Update the Budget Detail amount table for Forecast and Budget values
+			UPDATE BudgetDetailAmount
+			SET BudgetDetailAmount.['+@UpdateColumn+']=TableData.['+@UpdateColumn+']
+			FROM Budget_DetailAmount BudgetDetailAmount
+			CROSS APPLY(
+			SELECT * FROM (
+			SELECT [Id#1]
+			'+CASE WHEN ISNULL(@UpdateColumn,'')!='' THEN ',['+@QThird+'] = CASE WHEN SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+']) > MIN(['+@IsMonth+@UpdateColumn+'])
+			THEN 
+				CASE WHEN SUM(['+@QThird+@UpdateColumn+']) < (SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+']))
+				THEN 0
+			ELSE 
+				SUM(['+@QThird+@UpdateColumn+'])-(SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+']))
+			END
+			ELSE SUM(['+@QThird+@UpdateColumn+'])
+			END  
+			,['+@QSecond+'] = CASE WHEN SUM(['+@QThird+@UpdateColumn+']) < (SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+']))
+			THEN 
+				CASE WHEN SUM(['+@QSecond+@UpdateColumn+']) < (SUM(['+@QThird+@UpdateColumn+'])-(SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+'])))
+			THEN 0
+			WHEN 0 > (SUM(['+@QSecond+@UpdateColumn+']) + (SUM(['+@QThird+@UpdateColumn+'])-(SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+']))))
+				THEN 0
+			ELSE SUM(['+@QSecond+@UpdateColumn+']) + (SUM(['+@QThird+@UpdateColumn+'])-(SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+']))) 
+			END
+			ELSE SUM(['+@QSecond+@UpdateColumn+'])
+			END
+			,['+@QFirst+'] = CASE WHEN 0 > (SUM(['+@QSecond+@UpdateColumn+']) + (SUM(['+@QThird+@UpdateColumn+'])-(SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+']))))
+						THEN SUM(['+@QFirst+@UpdateColumn+']) + (SUM(['+@QSecond+@UpdateColumn+']) + (SUM(['+@QThird+@UpdateColumn+'])-(SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+']))))
+				  ELSE 
+						CASE WHEN SUM(['+@QFirst+@UpdateColumn+']) > SUM(['+@QFirst+@UpdateColumn+']) - (SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+']))
+						THEN SUM(['+@QFirst+@UpdateColumn+'])
+						ELSE
+						SUM(['+@QFirst+@UpdateColumn+']) - (SUM(['+@QFirst+@UpdateColumn+']+['+@QSecond+@UpdateColumn+']+['+@QThird+@UpdateColumn+'])-MIN(['+@IsMonth+@UpdateColumn+']))
+						END
+					END
+			' END +'
+
+			FROM(
+			SELECT [Id#1]
+			'+CASE WHEN ISNULL(@UpdateColumn,'')!='' THEN ',SUM(ISNULL(['+@QFirst+@UpdateColumn+'],0)) AS '+@QFirst+@UpdateColumn+'
+			,SUM(ISNULL(['+@QSecond+@UpdateColumn+'],0)) AS '+@QSecond+@UpdateColumn+'
+			,SUM(ISNULL(['+@QThird+@UpdateColumn+'],0)) AS '+@QThird+@UpdateColumn+'
+			,MIN(ISNULL(['+@IsMonth+@UpdateColumn+'],0)) AS '+@IsMonth+@UpdateColumn+'' END +'
+			FROM
+			(
+			-- First Month Of Quarter
+			SELECT tmpXmlData.[Id#1]
+			'+CASE WHEN ISNULL(@UpdateColumn,'')!='' THEN '
+			,CASE WHEN ISNUMERIC(['+@UpdateColumn+']) = 1 THEN CASE WHEN ['+@UpdateColumn+'] > 0 THEN ['+@UpdateColumn+']
+			ELSE 0 END ELSE 0 END AS '+@QFirst+@UpdateColumn+'
+			,NULL AS '+@QSecond+@UpdateColumn+'
+			,NULL AS '+@QThird+@UpdateColumn+'
+			,CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
+			ELSE 0 END AS '+@IsMonth+@UpdateColumn+'' END +'
+			FROM #childtempData tmpXmlData
+			CROSS APPLY(SELECT BudgetDetailId,Period
+			'+CASE WHEN ISNULL(@UpdateColumn,'')!='' THEN ','+@UpdateColumn END +'
+			FROM Budget_DetailAmount BudgetDetailAmount WHERE 
+			tmpXmlData.[Id#1]=BudgetDetailAmount.BudgetDetailId AND Period = '''+@QFirst+''') BudgetDetailAmount 
+			-- Second Month Of Quarter
+			UNION ALL
+			SELECT tmpXmlData.[Id#1]
+			'+CASE WHEN ISNULL(@UpdateColumn,'')!='' THEN ',NULL AS '+@QFirst+@UpdateColumn+'
+			,CASE WHEN ISNUMERIC(['+@UpdateColumn+']) = 1 THEN CASE WHEN ['+@UpdateColumn+'] > 0 THEN ['+@UpdateColumn+']
+			ELSE 0 END ELSE 0 END AS '+@QSecond+@UpdateColumn+'
+			,NULL AS '+@QThird+@UpdateColumn+'
+			,CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
+			ELSE 0 END AS '+@IsMonth+@UpdateColumn+'' END +'
+			FROM #childtempData tmpXmlData
+			CROSS APPLY(SELECT BudgetDetailId,Period
+			'+CASE WHEN ISNULL(@UpdateColumn,'')!='' THEN ','+@UpdateColumn END +'
+			FROM Budget_DetailAmount BudgetDetailAmount WHERE 
+			tmpXmlData.[Id#1]=BudgetDetailAmount.BudgetDetailId AND Period = '''+@QSecond+''') BudgetDetailAmount 
+			-- Third Month Of Quarter
+			UNION ALL
+			SELECT tmpXmlData.[Id#1]
+			'+CASE WHEN ISNULL(@UpdateColumn,'')!='' THEN ',NULL AS '+@QFirst+@UpdateColumn+'
+			,NULL AS '+@QSecond+@UpdateColumn+'
+			,CASE WHEN ISNUMERIC(['+@UpdateColumn+']) = 1 THEN CASE WHEN ['+@UpdateColumn+'] > 0 THEN ['+@UpdateColumn+']
+			ELSE 0 END ELSE 0 END AS '+@QThird+@UpdateColumn+'
+			,CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
+			ELSE 0 END AS '+@IsMonth+@UpdateColumn+'' END +'
+			FROM #childtempData tmpXmlData
+			CROSS APPLY(SELECT BudgetDetailId,Period
+			'+CASE WHEN ISNULL(@UpdateColumn,'')!='' THEN ','+@UpdateColumn END +'
+			FROM Budget_DetailAmount BudgetDetailAmount WHERE 
+			tmpXmlData.[Id#1]=BudgetDetailAmount.BudgetDetailId AND Period = '''+@QThird+''') BudgetDetailAmount 
+			) AS A
+			GROUP BY [Id#1]
+			) AS QuarterData
+			GROUP BY Id#1
+			) As P
+			UNPIVOT(
+			['+@UpdateColumn+'] FOR Period
+			IN(['+@QFirst+'],['+@QSecond+'],['+@QThird+'])
+			) as TableData
+			WHERE TableData.[Id#1]=BudgetDetailAmount.BudgetDetailId
+			AND TableData.Period=BudgetDetailAmount.Period			
+			) TableData
+
+			-- Insert into the Budget Detail amount table for Forecast and Budget values if that period values are not exist
+			INSERT INTO Budget_DetailAmount (BudgetDetailId,Period,'+@UpdateColumn+')
+			SELECT tmpXmlData.[Id#1],'''+@QFirst+'''
+			,CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@BudgetOrForecastIndex AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
+			ELSE 0 END
+			FROM #childtempData tmpXmlData
+			OUTER APPLY (SELECT A.BudgetDetailId,A.Period,A.Id FROM Budget_DetailAmount A
+			WHERE A.BudgetDetailId = CAST(tmpXmlData.[Id#1] AS INT) 
+			AND A.Period IN('''+@QFirst+''','''+@QSecond+''','''+@QThird+''')
+			) A WHERE A.Id IS NULL 
+			'
+			EXECUTE sp_executesql @GetBudgetAmoutData
+			SET @GetBudgetAmoutData=''
+		END
+		Else If(@Ismonth!='' AND @Ismonth='Total') -- update total budget and Forecast for child items
+		Begin
+			Declare @UpdateTotal NVARCHAR(max)
+			IF(@UpdateColumn='Budget')
+			begin
+				set @UpdateTotal='UPDATE BudgetDetail set BudgetDetail.TotalBudget= CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+				THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) 
+				ELSE 0 END 
+				from Budget_Detail BudgetDetail
+				inner join (SELECT * FROM #childtempData) tmpXmlData on BudgetDetail.Id=CAST(tmpXmlData.[Id#1] AS INT)'
+				exec sp_executesql @UpdateTotal
+			end
+			Else
+			begin
+				set @UpdateTotal='UPDATE BudgetDetail set BudgetDetail.TotalForeCast=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+				THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT)
+				ELSE 0 END 
+				from Budget_Detail BudgetDetail
+				inner join (SELECT * FROM #childtempData) tmpXmlData on BudgetDetail.Id=CAST(tmpXmlData.[Id#1] AS INT)'
+				exec sp_executesql @UpdateTotal
+			End
+		End
+	END
+	--END
+	END
+	-- Custom Columns
+	IF((@UpdateColumn!='Budget' OR @UpdateColumn!='Forecast'))
+	 BEGIN
+		IF(@Ismonth='' AND @Ismonth!='Total')
+		BEGIN
+			SELECT @IsCutomFieldDrp = CASE WHEN CustomFieldType.Name='TextBox' THEN 0 ELSE 1 END FROM CustomField 
+			CROSS APPLY(SELECT CustomFieldType.Name,CustomFieldType.CustomFieldTypeId FROM CustomFieldType WHERE CustomFieldType.CustomFieldTypeId=CustomField.CustomFieldTypeId) CustomFieldType
+			WHERE CustomField.Name=''+@UpdateColumn+'' AND CustomField.ClientId=@ClientId AND CustomField.IsDeleted=0 AND CustomField.EntityType='Budget'
+						print @IsCutomFieldDrp
+
+			-- Insert/Update/Delete values for custom field as dropdown
+			IF(@IsCutomFieldDrp=1)
+			BEGIN
+				SET @GetBudgetAmoutData+=' 
+				-- Get List of record which need to delete from CustomField Entity Table
+
+				INSERT INTO @tmpCustomDeleteDropDown 
+				SELECT DISTINCT CAST(CustomFieldEntity.EntityId AS BIGINT),CAST(CustomField.CustomFieldId AS BIGINT) FROM CustomField_Entity CustomFieldEntity
+				CROSS APPLY (SELECT * FROM #tmpXmlData tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId AND ISNULL(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')='''') tmpXmlData
+				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
+				AND CustomField.EntityType=''Budget'') CustomField
+				WHERE  CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId
+				AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
+
+				SELECT @CustomEntityDeleteDropdownCount=COUNT(*) FROM @tmpCustomDeleteDropDown tmpCustomDelete
+
+				-- Delete from CustomField Entity Table
+				DELETE TOP(@CustomEntityDeleteDropdownCount) FROM CustomField_Entity
+				WHERE CustomField_Entity.EntityId IN(SELECT EntityId FROM @tmpCustomDeleteDropDown)
+				AND CustomField_Entity.CustomFieldId IN(SELECT CustomFieldId FROM @tmpCustomDeleteDropDown)
+
+				-- Insert new values of CustomField_Entity tables 
+				INSERT INTO CustomField_Entity (EntityId,CustomFieldId,Value,CreatedBy,CreatedDate) 
+				SELECT tmpXmlData.[Id#1],CustomField.CustomFieldId,CustOpt.CustomFieldOptionId,'''+CAST(@UserId AS VARCHAR(50))+''',GETDATE() FROM #tmpXmlData tmpXmlData 
+				CROSS APPLY(SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0 AND CustomField.EntityType=''Budget'')CustomField
+				CROSS APPLY (SELECT * FROM CustomFieldOption CustOpt WHERE CustomField.CustomFieldId=CustOpt.CustomFieldId AND CustOpt.IsDeleted=0
+				AND CustOpt.Value=tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+']) CustOpt
+				OUTER APPLY (
+				SELECT EntityId,CustomFieldEntityId FROM CustomField_Entity CustomFieldEntity WHERE CustomFieldEntity.EntityId=CAST(tmpXmlData.[Id#1] AS INT)
+				AND CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId
+				)CustomFieldEntity WHERE CustomFieldEntity.CustomFieldEntityId IS NULL
+				
+				-- Update values of CustomField_Entity tables 
+				UPDATE CustomFieldEntity SET Value=CustOpt.CustomFieldOptionId FROM
+				CustomField_Entity CustomFieldEntity
+				CROSS APPLY (SELECT * FROM #tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId ) tmpXmlData
+				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
+				AND CustomField.EntityType=''Budget'') CustomField
+				CROSS APPLY (SELECT * FROM CustomFieldOption CustOpt WHERE CustomField.CustomFieldId=CustOpt.CustomFieldId AND CustOpt.IsDeleted=0
+				AND CustOpt.Value=tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+']) CustOpt 
+				WHERE CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
+				'
+				
+			END
+
+			-- Insert/Update/Delete values for custom field as Textbox
+			IF(@IsCutomFieldDrp<>1)
+			BEGIN
+				SET @GetBudgetAmoutData+=' 
+				-- Get List of record which need to delete from CustomField Entity Table
+				INSERT INTO @tmpCustomDeleteTextBox 
+				SELECT DISTINCT CAST(CustomFieldEntity.EntityId AS BIGINT),CAST(CustomField.CustomFieldId AS BIGINT) FROM CustomField_Entity CustomFieldEntity
+				CROSS APPLY (SELECT * FROM #tmpXmlData tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId AND ISNULL(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')='''') tmpXmlData
+				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
+				AND CustomField.EntityType=''Budget'') CustomField
+				WHERE  CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
+
+				SELECT @CustomEntityDeleteTextBoxCount=COUNT(*) FROM @tmpCustomDeleteTextBox tmpCustomDelete
+				
+				-- Delete from CustomField Entity Table
+				DELETE TOP(@CustomEntityDeleteTextBoxCount) FROM CustomField_Entity
+				WHERE CustomField_Entity.EntityId IN(SELECT EntityId FROM @tmpCustomDeleteTextBox)
+				AND CustomField_Entity.CustomFieldId IN(SELECT CustomFieldId FROM @tmpCustomDeleteTextBox)
+
+				-- Insert new values of CustomField_Entity tables 
+				INSERT INTO CustomField_Entity (EntityId,CustomFieldId,Value,CreatedBy,CreatedDate) 
+				SELECT tmpXmlData.[Id#1],CustomField.CustomFieldId,tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''+CAST(@UserId AS VARCHAR(50))+''',GETDATE() FROM #tmpXmlData tmpXmlData 
+				CROSS APPLY(SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0 AND CustomField.EntityType=''Budget'')CustomField
+				OUTER APPLY (
+				SELECT EntityId,CustomFieldEntityId FROM CustomField_Entity CustomFieldEntity WHERE CustomFieldEntity.EntityId=CAST(tmpXmlData.[Id#1] AS INT)
+				AND CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId
+				)CustomFieldEntity WHERE tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'] IS NOT NULL AND CustomFieldEntity.CustomFieldEntityId IS NULL 
+
+				-- Update values of CustomField_Entity tables 
+				UPDATE CustomFieldEntity SET Value=tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'] FROM
+				CustomField_Entity CustomFieldEntity
+				CROSS APPLY (SELECT * FROM #tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId ) tmpXmlData
+				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
+				AND CustomField.EntityType=''Budget'') CustomField 
+				WHERE tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'] IS NOT NULL
+				AND CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
+				'
+
+			END
+			
+		END
+	END
+
+	SET @Ismonth=''
+	SET @Count=@Count+1;
+	SET @MonthNumber=0;
+END
+
+set @GetBudgetAmoutData='
+DECLARE  @tmpCustomDeleteDropDown TABLE(EntityId BIGINT,CustomFieldId BIGINT)
+DECLARE  @tmpCustomDeleteTextBox TABLE(EntityId BIGINT,CustomFieldId BIGINT)'
++@GetBudgetAmoutData
+EXECUTE sp_executesql @GetBudgetAmoutData, N'@CustomEntityDeleteDropdownCount BIGINT,@CustomEntityDeleteTextBoxCount BIGINT OUT', @CustomEntityDeleteDropdownCount = @CustomEntityDeleteDropdownCount,@CustomEntityDeleteTextBoxCount = @CustomEntityDeleteTextBoxCount OUT
+
+---call sp of pre calculation for marketing budget
+Declare @BudgetId int=(select BudgetId from budget_detail where id=@BudgetDetailId)
+exec PreCalFinanceGridForExistingData @BudgetId
+-----end
+
+----Enable trigger for marketing budget
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalBudgetForecastMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_DetailAmount ENABLE TRIGGER TrgPreCalBudgetForecastMarketingBudget
+END
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgInsertDeletePreCalMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_Detail ENABLE TRIGGER TrgInsertDeletePreCalMarketingBudget
+END
+----end
+END TRY
+BEGIN CATCH
+	
+END CATCH
+END
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].[ImportMarketingBudgetMonthly]    Script Date: 12/01/2016 12:41:52 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ImportMarketingBudgetMonthly]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[ImportMarketingBudgetMonthly]
+GO
+
+/****** Object:  StoredProcedure [dbo].[ImportMarketingBudgetMonthly]    Script Date: 12/01/2016 12:41:52 PM ******/
+SET ANSI_NULLS ON
+GO
+
+
+CREATE PROCEDURE [dbo].[ImportMarketingBudgetMonthly]
+@XMLData AS XML
+,@ImportBudgetCol MarketingBudgetColumns READONLY
+,@clientId INT
+,@UserId INT
+,@BudgetDetailId BIGINT
+AS
+BEGIN
+SET NOCOUNT ON;
+----disable trigger for marketing budget
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalBudgetForecastMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_DetailAmount DISABLE TRIGGER TrgPreCalBudgetForecastMarketingBudget
+END
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgInsertDeletePreCalMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_Detail DISABLE TRIGGER TrgInsertDeletePreCalMarketingBudget
+END
+
+----end
+CREATE TABLE  #tmpXmlData  (ROWNUM BIGINT) --create # table because there are dynamic columns added as per file imported for marketing budget
+
+DECLARE @Textboxcol nvarchar(max)=''
+DECLARE @UpdateColumn NVARCHAR(255)
+DECLARE @CustomEntityDeleteDropdownCount BIGINT
+DECLARE @CustomEntityDeleteTextBoxCount BIGINT
+DECLARE @IsCutomFieldDrp BIT
+DECLARE @GetBudgetAmoutData NVARCHAR(MAX)=''
+DECLARE @Count Int = 1;
+DECLARE @RowCount INT;
+DECLARE @ColName nvarchar(100)
+DECLARE @IsMonth nvarchar(100)
+
+SELECT @RowCount = COUNT(*) FROM @ImportBudgetCol
+DECLARE @XmldataQuery NVARCHAR(MAX)=''
+
+DECLARE @tmpXmlDataAlter NVARCHAR(MAX)=''
+
+SET @XmldataQuery += '
+	SELECT 
+	ROW_NUMBER() OVER(ORDER BY(SELECT 100)),
+	'
+DECLARE @ConcatColumns NVARCHAR(MAX)=''
+
+WHILE(@Count<=@RowCount)
+BEGIN
+SELECT @ColName = ColumnName FROM @ImportBudgetCol WHERE ColumnIndex=@Count
+
+SET @ConcatColumns  += '
+	pref.value(''(value)['+CAST(@Count AS VARCHAR(50))+']'', ''nvarchar(max)'') as ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'],'
+
+	SET @tmpXmlDataAlter+= ' ALTER TABLE #tmpXmlData ADD ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'] NVARCHAR(MAX) '
+	SET @Count=@Count+1;
+END
+SELECT @ConcatColumns=LEFT(@ConcatColumns, LEN(@ConcatColumns) - 1)
+
+SET @XmldataQuery+= @ConcatColumns+' FROM  
+	
+	@XmlData.nodes(''/data/row'') AS People(pref);'
+
+EXEC(@tmpXmlDataAlter)
+
+;WITH tblChild AS
+(
+    SELECT Id,ParentId,BudgetId
+        FROM Budget_Detail WHERE Id = @BudgetDetailId 
+    UNION ALL
+    SELECT Budget_Detail.Id,Budget_Detail.ParentId,Budget_Detail.BudgetId FROM Budget_Detail  
+	CROSS APPLY (SELECT * FROM tblChild WHERE Budget_Detail.ParentId = tblChild.Id) tblChild
+)
+SELECT  * Into #tmpChildBudgets
+    FROM tblChild
+OPTION(MAXRECURSION 0)
+
+INSERT INTO #tmpXmlData EXECUTE sp_executesql @XmldataQuery, N'@XmlData XML OUT', @XmlData = @XmlData  OUT
+	-- Remove Other Child items which are not related to parent
+	DELETE tmpXmlData FROM #tmpXmlData tmpXmlData
+	OUTER APPLY(
+	SELECT * FROM #tmpChildBudgets tmpChildBudgets
+	WHERE CAST(tmpXmlData.[Id#1] AS INT)= tmpChildBudgets.Id
+	) tmpChildBudgets WHERE tmpChildBudgets.Id IS NULL
+
+	-- Remove View/None Permission budgets
+	DELETE tmpXmlData FROM #tmpXmlData tmpXmlData
+	OUTER APPLY(
+	SELECT * FROM Budget_Permission BudgetPermission
+	WHERE CAST(tmpXmlData.[Id#1] AS INT)=BudgetPermission.BudgetDetailId AND UserId=@UserId
+	AND (BudgetPermission.IsOwner=1 OR BudgetPermission.PermisssionCode=0)
+	) BudgetPermission WHERE BudgetPermission.Id IS NULL
+
+	-- Add only Child/Forecast item and store into # table because there are dynamic columns added as per imported file.
+	Select *  into #childtempData from #tmpXmlData
+	inner join (select * from dbo.fnGetBudgetForeCast_List (@BudgetDetailId,@clientId)) child
+	on CAST(#tmpXmlData.[Id#1] AS INT) = child.Id
+
+-- Update Process
+DECLARE @GetBudgetAmoutData2 NVARCHAR(MAX)=''
+DECLARE @MonthNumber varchar(2)
+SET @Count=2;
+WHILE(@Count<=@RowCount)
+BEGIN
+
+	SELECT @UpdateColumn=[ColumnName],@Ismonth = CASE  WHEN  ISNULL(Month,'')='' THEN '' ELSE [Month] END FROM @ImportBudgetCol WHERE ColumnIndex=@Count
+	-- Insert/Update values for budget and forecast
+	 IF((@UpdateColumn='Budget' OR @UpdateColumn='Forecast'))
+	 BEGIN
+		IF(@Ismonth!='' AND @Ismonth!='Total')
+		BEGIN
+			SELECT  @MonthNumber = CAST(DATEPART(MM,''+@IsMonth+' 01 1990') AS varchar(2))
+			DECLARE @temp nvarchar(max)=''
+			SET @GetBudgetAmoutData+=' 
+			-- Update the Budget Detail amount table for Forecast and Budget values
+			UPDATE BudgetDetailAmount SET ['+(@UpdateColumn)+']=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN 
+			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) 
+			ELSE 0 END
+			ELSE 0 END 
+			FROM 
+			Budget_DetailAmount BudgetDetailAmount
+			CROSS APPLY (SELECT * FROM #childtempData tmpXmlData WHERE BudgetDetailAmount.BudgetDetailId=CAST([Id#1] AS INT) 
+			AND BudgetDetailAmount.Period=''Y'+@MonthNumber+''' AND ISNULL(['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')<>'''' 
+			AND CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN 
+			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) 
+			ELSE 0 END
+			ELSE 0 END <> ISNULL(['+(@UpdateColumn)+'],0)
+			) tmpXmlData
+			
+			-- Insert into the Budget Detail amount table for Forecast and Budget values if that period values are not exist
+			INSERT INTO Budget_DetailAmount (BudgetDetailId,Period,['+@UpdateColumn+'])
+			SELECT  tmpXmlData.[Id#1] 
+			,''Y'+@MonthNumber+'''
+			,CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN 
+			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) 
+			ELSE 0 END
+			ELSE 0 END
+			FROM #childtempData  tmpXmlData
+			OUTER APPLY (SELECT A.BudgetDetailId,A.Period,A.Id FROM Budget_DetailAmount A
+			WHERE A.BudgetDetailId = CAST(tmpXmlData.[Id#1] AS INT) 
+			AND A.Period=''Y'+@MonthNumber+''')
+			A WHERE A.Id IS NULL 
+			
+			 '
+		END
+		Else If(@Ismonth!='' AND @Ismonth='Total') -- Update total budget and Forecast for child items
+		Begin
+			Declare @UpdateTotal NVARCHAR(max)
+			IF(@UpdateColumn='Budget')
+			begin
+				set @UpdateTotal='UPDATE BudgetDetail set BudgetDetail.TotalBudget=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+				THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) 
+				ELSE 0 END 
+				from Budget_Detail BudgetDetail
+				inner join (SELECT * FROM #childtempData) tmpXmlData on BudgetDetail.Id=CAST(tmpXmlData.[Id#1] AS INT)'
+				exec sp_executesql @UpdateTotal
+			end
+			Else
+			begin
+				set @UpdateTotal='UPDATE BudgetDetail set BudgetDetail.TotalForeCast=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+				THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT)
+				ELSE 0 END 
+				from Budget_Detail BudgetDetail
+				inner join (SELECT * FROM #childtempData) tmpXmlData on BudgetDetail.Id=CAST(tmpXmlData.[Id#1] AS INT)'
+				exec sp_executesql @UpdateTotal
+			End
+
+		End
+	END
+
+	-- Custom Columns
+	 IF((@UpdateColumn!='Budget' OR @UpdateColumn!='Forecast'))
+	 BEGIN
+		IF(@Ismonth='' AND @Ismonth!='Total')
+		BEGIN
+
+			SELECT @IsCutomFieldDrp = CASE WHEN CustomFieldType.Name='TextBox' THEN 0 ELSE 1 END FROM CustomField 
+			CROSS APPLY(SELECT CustomFieldType.Name,CustomFieldType.CustomFieldTypeId FROM CustomFieldType WHERE CustomFieldType.CustomFieldTypeId=CustomField.CustomFieldTypeId) CustomFieldType
+			WHERE CustomField.Name=''+@UpdateColumn+'' AND CustomField.ClientId=@ClientId AND CustomField.IsDeleted=0 AND CustomField.EntityType='Budget'
+			
+			-- Insert/Update/Delete values for custom field as dropdown
+			IF(@IsCutomFieldDrp=1)
+			BEGIN
+				SET @GetBudgetAmoutData+=' 
+				-- Get List of record which need to delete from CustomField Entity Table
+
+				INSERT INTO @tmpCustomDeleteDropDown 
+				SELECT DISTINCT CAST(CustomFieldEntity.EntityId AS BIGINT),CAST(CustomField.CustomFieldId AS BIGINT) FROM CustomField_Entity CustomFieldEntity
+				CROSS APPLY (SELECT * FROM #tmpXmlData tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId AND ISNULL(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')='''') tmpXmlData
+				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
+				AND CustomField.EntityType=''Budget'') CustomField
+				WHERE  CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId
+				AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
+
+				SELECT @CustomEntityDeleteDropdownCount=COUNT(*) FROM @tmpCustomDeleteDropDown tmpCustomDelete
+
+				-- Delete from CustomField Entity Table
+				DELETE TOP(@CustomEntityDeleteDropdownCount) FROM CustomField_Entity
+				WHERE CustomField_Entity.EntityId IN(SELECT EntityId FROM @tmpCustomDeleteDropDown)
+				AND CustomField_Entity.CustomFieldId IN(SELECT CustomFieldId FROM @tmpCustomDeleteDropDown)
+
+				-- Insert new values of CustomField_Entity tables 
+				INSERT INTO CustomField_Entity (EntityId,CustomFieldId,Value,CreatedBy,CreatedDate) 
+				SELECT tmpXmlData.[Id#1],CustomField.CustomFieldId,CustOpt.CustomFieldOptionId,'''+CAST(@UserId AS VARCHAR(50))+''',GETDATE() FROM #tmpXmlData tmpXmlData 
+				CROSS APPLY(SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0 AND CustomField.EntityType=''Budget'')CustomField
+				CROSS APPLY (SELECT * FROM CustomFieldOption CustOpt WHERE CustomField.CustomFieldId=CustOpt.CustomFieldId AND CustOpt.IsDeleted=0
+				AND CustOpt.Value=tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+']) CustOpt
+				OUTER APPLY (
+				SELECT EntityId,CustomFieldEntityId FROM CustomField_Entity CustomFieldEntity WHERE CustomFieldEntity.EntityId=CAST(tmpXmlData.[Id#1] AS INT)
+				AND CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId
+				)CustomFieldEntity WHERE CustomFieldEntity.CustomFieldEntityId IS NULL
+				
+				-- Update values of CustomField_Entity tables 
+				UPDATE CustomFieldEntity SET Value=CustOpt.CustomFieldOptionId FROM
+				CustomField_Entity CustomFieldEntity
+				CROSS APPLY (SELECT * FROM #tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId ) tmpXmlData
+				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
+				AND CustomField.EntityType=''Budget'') CustomField
+				CROSS APPLY (SELECT * FROM CustomFieldOption CustOpt WHERE CustomField.CustomFieldId=CustOpt.CustomFieldId AND CustOpt.IsDeleted=0
+				AND CustOpt.Value=tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+']) CustOpt 
+				WHERE CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
+
+				'
+			END
+
+			-- Insert/Update/Delete values for custom field as Textbox
+			IF(@IsCutomFieldDrp<>1)
+			BEGIN
+				SET @GetBudgetAmoutData+='  
+				-- Get List of record which need to delete from CustomField Entity Table
+				INSERT INTO @tmpCustomDeleteTextBox 
+				SELECT DISTINCT CAST(CustomFieldEntity.EntityId AS BIGINT),CAST(CustomField.CustomFieldId AS BIGINT) FROM CustomField_Entity CustomFieldEntity
+				CROSS APPLY (SELECT * FROM #tmpXmlData tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId AND ISNULL(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')='''') tmpXmlData
+				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
+				AND CustomField.EntityType=''Budget'') CustomField
+				WHERE  CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
+
+				SELECT @CustomEntityDeleteTextBoxCount=COUNT(*) FROM @tmpCustomDeleteTextBox tmpCustomDelete
+				
+				-- Delete from CustomField Entity Table
+				DELETE TOP(@CustomEntityDeleteTextBoxCount) FROM CustomField_Entity
+				WHERE CustomField_Entity.EntityId IN(SELECT EntityId FROM @tmpCustomDeleteTextBox)
+				AND CustomField_Entity.CustomFieldId IN(SELECT CustomFieldId FROM @tmpCustomDeleteTextBox)
+
+				-- Insert new values of CustomField_Entity tables 
+				INSERT INTO CustomField_Entity (EntityId,CustomFieldId,Value,CreatedBy,CreatedDate) 
+				SELECT tmpXmlData.[Id#1],CustomField.CustomFieldId,tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''+CAST(@UserId AS VARCHAR(50))+''',GETDATE() FROM #tmpXmlData tmpXmlData 
+				CROSS APPLY(SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0 AND CustomField.EntityType=''Budget'')CustomField
+				OUTER APPLY (
+				SELECT EntityId,CustomFieldEntityId FROM CustomField_Entity CustomFieldEntity WHERE CustomFieldEntity.EntityId=CAST(tmpXmlData.[Id#1] AS INT)
+				AND CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId
+				)CustomFieldEntity WHERE tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'] IS NOT NULL AND CustomFieldEntity.CustomFieldEntityId IS NULL 
+				
+				-- Update values of CustomField_Entity tables 
+				UPDATE CustomFieldEntity SET Value=tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'] FROM
+				CustomField_Entity CustomFieldEntity
+				CROSS APPLY (SELECT * FROM #tmpXmlData WHERE CAST([Id#1] AS INT)=CustomFieldEntity.EntityId ) tmpXmlData
+				CROSS APPLY (SELECT CustomField.* FROM CustomField WHERE
+				CustomField.Name='''+@UpdateColumn+''' AND CustomField.ClientId='''+CAST(@ClientId AS VARCHAR(50))+''' AND CustomField.IsDeleted=0
+				AND CustomField.EntityType=''Budget'') CustomField 
+				WHERE tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'] IS NOT NULL
+				AND CustomField.CustomFieldId=CustomFieldEntity.CustomFieldId AND CAST(tmpXmlData.[Id#1] AS INT)=CustomFieldEntity.EntityId
+				'
+
+			END
+			
+		END
+		
+	END
+	SET @Ismonth=''
+	SET @Count=@Count+1;
+	SET @MonthNumber=0;
+END
+set @GetBudgetAmoutData='
+Declare @tmpCustomDeleteDropDown TABLE(EntityId BIGINT,CustomFieldId BIGINT)
+Declare @tmpCustomDeleteTextBox TABLE(EntityId BIGINT,CustomFieldId BIGINT)'
++ @GetBudgetAmoutData
+
+EXECUTE sp_executesql @GetBudgetAmoutData, N'@CustomEntityDeleteDropdownCount BIGINT,@CustomEntityDeleteTextBoxCount BIGINT OUT', @CustomEntityDeleteDropdownCount = @CustomEntityDeleteDropdownCount,@CustomEntityDeleteTextBoxCount = @CustomEntityDeleteTextBoxCount OUT
+
+---call sp of pre calculation for marketing budget
+Declare @BudgetId int=(select BudgetId from budget_detail where id=@BudgetDetailId)
+exec PreCalFinanceGridForExistingData @BudgetId
+---end
+----Enable trigger for marketing budget
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalBudgetForecastMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_DetailAmount ENABLE TRIGGER TrgPreCalBudgetForecastMarketingBudget
+END
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgInsertDeletePreCalMarketingBudget]'))
+BEGIN
+	ALTER TABLE Budget_Detail ENABLE TRIGGER TrgInsertDeletePreCalMarketingBudget
+END
+----end
+END
+
+GO
+------end-------
+
+-- Start - Added by Arpita Soni for Ticket #2788
+-- DROP AND CREATE STORED PROCEDURE [dbo].[GetHeaderValuesForFinance]
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[GetHeaderValuesForFinance]') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[GetHeaderValuesForFinance]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 11/30/2016
+-- Description:	Get HUD values for finance grid
+-- =============================================
+-- GetHeaderValuesForFinance 85
+CREATE PROCEDURE [dbo].[GetHeaderValuesForFinance]
+	-- Add the parameters for the stored procedure here
+	@BudgetId		INT,
+	@CurrencyRate	FLOAT = 1.0
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	DECLARE @Budget		FLOAT,
+			@Forecast	FLOAT,
+			@Planned	FLOAT,
+			@Actual		FLOAT
+
+	-- Get Budget, Forecast for Header
+	SELECT @Budget = SUM(TotalBudget) * @CurrencyRate, @Forecast = SUM(TotalForecast) * @CurrencyRate
+	FROM Budget_Detail 
+	WHERE BudgetId = @BudgetId AND IsDeleted = 0
+
+	-- Get Planned Cost for Header
+	SELECT @Planned = SUM((ISNULL(PCPTL.Cost,0) * CAST(Weightage AS FLOAT)/100)) * @CurrencyRate
+	FROM [dbo].[Budget_Detail] BD 
+	INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
+	INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
+	WHERE BD.IsDeleted = 0 AND BD.BudgetId = @BudgetId AND PCPTL.LineItemTypeId IS NOT NULL AND PCPTL.IsDeleted = 0
+
+	-- Get Actual for Header
+	SELECT @Actual = SUM((ISNULL(PCPTLA.Value,0) * CAST(Weightage AS FLOAT)/100)) * @CurrencyRate
+	FROM [dbo].[Budget_Detail] BD 
+	INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
+	INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+	INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
+	WHERE BD.IsDeleted = 0 AND BD.BudgetId = @BudgetId AND PCPTL.LineItemTypeId IS NOT NULL AND PCPTL.IsDeleted = 0
+	AND REPLACE(Period,'Y','') < 13
+
+	SELECT ISNULL(@Budget,0) AS Budget, ISNULL(@Forecast,0) AS Forecast, ISNULL(@Planned,0) AS Planned, ISNULL(@Actual,0) AS Actual
+END
+GO
+
+-- End - Added by Arpita Soni for Ticket #2788
+
+
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
 -- ======================================================================================
@@ -1771,3 +4304,4 @@ BEGIN
 insert into [dbo].[Versioning] values (@release, @date, @version)
 END
 GO
+

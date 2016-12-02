@@ -7,5 +7,24 @@
     <ExcludeFromPackageFiles Include="RevenuePlanner.wpp.targets">
       <FromTarget>RevenuePlanner.wpp.targets</FromTarget>
     </ExcludeFromPackageFiles>
+    <ExcludeFromPackageFolders Include="web-assets">
+        <FromTarget>RevenuePlanner.wpp.targets</FromTarget>
+    </ExcludeFromPackageFolders>
   </ItemGroup>
+    <Target Name="AddWebAssets">
+        <ItemGroup>
+            <WebAssets Include="web-assets/dist/**" />
+            <FilesForPackagingFromProject Include="@(WebAssets)">
+                <DestinationRelativePath>%(WebAssets.Identity)</DestinationRelativePath>
+                <FromTarget>WebAssetsDist</FromTarget>
+                <Category>Run</Category>
+            </FilesForPackagingFromProject>
+        </ItemGroup>
+    </Target>
+  <PropertyGroup>
+      <OnAfterPipelineTransformPhase>
+          $(OnAfterPipelineTransformPhase);
+          AddWebAssets
+      </OnAfterPipelineTransformPhase>  
+  </PropertyGroup>
 </Project>

@@ -509,7 +509,8 @@ function setBootstrapTooltip(lableId, value, maxSize, iscurrency, decimaldigit) 
             
         }
         else {
-            $(lableId).text(number_format(roundValue, 0, '.', ','));
+            //Modified by Preet Shah on 29/11/2016 for #2768 - Change passing value in number_format function 0 to digit variable.
+            $(lableId).text(number_format(roundValue, digit, '.', ','));
         }
     }
 }

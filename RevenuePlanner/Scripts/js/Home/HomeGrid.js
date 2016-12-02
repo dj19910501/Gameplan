@@ -409,7 +409,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
         $(".dhx_combo_edit").off("keydown");
         if (UpdateColumn == PlannedCostId || UpdateColumn == TargetStageGoalId) {
-
             $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
             HomeGrid.editor.obj.onkeypress = function (e) {
                 e = e || window.event;
@@ -434,7 +433,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
     }
     if (stage == 2) {
-
         if (nValue.trim() != null && nValue.trim() != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
             var oldAssetType = '';
             var NewValue = htmlDecode(nValue);
@@ -739,7 +737,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                             if (UpdateColumn == StartDateId) {
                                 if (states.IsExtended) {
-                                    alert("Since the Tactic is link to another Plan, it cannot be extended");
+                                    alert("Since the Tactic is linked to another Plan, it cannot be extended");
                                     HomeGrid.cells(rowId, cellInd).setValue(oValue);
                                     return false;
                                 }
@@ -775,12 +773,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
 
                             if (UpdateColumn == EndDateId) {
-
-                                if (states.IsExtended) {
-                                    alert("Since the Tactic is link to another Plan, it cannot be extended");
-                                    HomeGrid.cells(rowId, cellInd).setValue(oValue);
-                                    return false;
-                                }
                                 var StartDate = HomeGrid.cells(rowId, StartDateColIndex).getValue();
                                 var StartYear = new Date(StartDate).getFullYear(); //StartDate.split('/')[2];
                                 var EndYear = new Date(nValue).getFullYear();  //nValue.split('/')[2];
@@ -788,13 +780,15 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 var oldvalueofEndYear = new Date(oValue).getFullYear(); //oValue.split('/')[2];
                                 var _yrDiff = oldvalueofEndYear - StartYear;
                                 if (YearDiff > 0) {
+                                    debugger;
                                     var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
-                                    var Index = getvalue.indexOf("unlink-icon");
-                                    if (Index <= -1) {
-                                        var UnLinkIconDiv = "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
-                                        HomeGrid.cells(rowId, TaskNameColIndex).setValue(UnLinkIconDiv + getvalue);
-                                        $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
+                                    var Index = getvalue.indexOf("</div>");
+                                    if (Index > -1) {
+                                        getvalue = getvalue.split("</div>")[1];
                                     }
+                                    var UnLinkIconDiv = "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
+                                    HomeGrid.cells(rowId, TaskNameColIndex).setValue(UnLinkIconDiv + getvalue);
+                                    $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
                                 }
                                 else {
                                     if (_yrDiff == 0) {

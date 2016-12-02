@@ -1,5 +1,8 @@
-﻿using System;
+﻿using RevenuePlanner.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Xml;
 
 namespace RevenuePlanner.Services.MarketingBudget
 {
@@ -19,6 +22,14 @@ namespace RevenuePlanner.Services.MarketingBudget
         public bool IsOwner { get; set; }
     }
 
+
+
+    public class MarketingActivities
+    {
+        public List<BindDropdownData> ListofBudgets { get; set; }
+        public List<BindDropdownData> TimeFrame { get; set; }
+        public List<BindDropdownData> Columnset { get; set; }
+    }
     public class BudgetItem
     {
         public int Id { get; set; }
@@ -27,8 +38,51 @@ namespace RevenuePlanner.Services.MarketingBudget
         public int userCount { get; set; }
         public User Owner { get; set; }
         public BudgetLineData BudgetItemData { get; set; }
+
     }
 
+
+
+    public class BudgetGridDataModel
+    {
+        public List<BudgetGridRowModel> rows { get; set; }
+        public List<GridDataStyle> head { get; set; }
+    }
+
+    public class BudgetGridRowModel
+    {
+        public string id { get; set; }
+        public List<string> data { get; set; }
+        public List<BudgetGridRowModel> rows { get; set; }
+        public UserData userdata { get; set; }
+        public string Detailid { get; set; }
+        public string style { get; set; } //when no permission show all data in grey and dash
+
+    }
+
+    public class UserData
+    {
+        public string lo { get; set; } // lock non editable cells.
+        public string isTitleEdit { get; set; } //checks if title is editable
+        public string per { get; set; } //sets each row permission.
+
+    }
+    public class GridDataStyle
+    {
+        public string value { get; set; }
+        public int width { get; set; }
+        public string align { get; set; }
+        public string type { get; set; }
+        public string id { get; set; }
+        public string sort { get; set; }
+    }
+
+    public class BudgetGridModel
+    {
+        public List<GridDataStyle> GridDataStyleList { get; set; }
+        public string attachedHeader { get; set; }
+        public BudgetGridDataModel objGridDataModel { get; set; }
+    }
     public enum ViewByType
     {
         MonthlyForTheYear = 0, QuarterlyForTheYear, MonthlyForQ1, MonthlyForQ2, MonthlyForQ3, MonthlyForQ4
@@ -138,7 +192,13 @@ namespace RevenuePlanner.Services.MarketingBudget
     {
         public int Id { get; set; }
     }
-
+    // Get list of columns and data wtih xml format for Import
+    public class BudgetImportData
+    {
+        public DataTable MarketingBudgetColumns { get; set; }
+        public XmlDocument XmlData { get; set; }
+        public string ErrorMsg { get; set; }
+    }
     /// <summary>
     /// Operational interface for budget related data retrieval or manipulations 
     /// </summary>
@@ -152,6 +212,17 @@ namespace RevenuePlanner.Services.MarketingBudget
         void LinkPlansToAccounts(List<PlanAccountAssociation> planAccountAssociations); //link a plan  
         List<LineItemAllocatingAccount> GetAccountsForLineItem(int lineItemId); //line item page  
         List<PlanAllocatingAccount> GetAccountsForPlan(int planId); //plan page  
+
+        List<BindDropdownData> GetBudgetlist(int ClientId); //mainbudget dropdown
+
+        List<BindDropdownData> GetColumnSet(int ClientId);// Column set dropdown
+
+        List<Budget_Columns> GetColumns(int ColumnSetId);// Column set dropdown
+
+        BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol);
+
+        DataTable GetFinanceHeaderValues(int BudgetId, double ExchangeRate); // Header values
+
         /// <summary>
         /// Update budget data only!
         /// Planned and actuals are NOT updated through this interface
@@ -167,8 +238,11 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// New values expected to see update update (regardless monthly or quarterly viewz)
         /// <returns></returns>
         Dictionary<BudgetCloumn, double> UpdateBudgetCell(int budgetId, BudgetCloumn columnIndex, double oldValue, double newValue);
-        void DeleteBudgetData(int SelectedRowIDs, int ClientId);
-        List<BindDropdownData> GetBudgetlist(int ClientId);
-        int GetOtherBudgetId(int ClientId);
+        int DeleteBudget(int selectedBudgetId, int ClientId);
+
+        // Methods for import budget files
+        BudgetImportData GetXLSXData(string viewByType, string fileLocation, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$");
+        BudgetImportData GetXLSData(string viewByType, DataSet ds, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$");
+        int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int BudgetDetailId = 0);
     }
 }

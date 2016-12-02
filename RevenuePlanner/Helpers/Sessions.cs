@@ -723,6 +723,27 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["UserHierarchyList"] = value;
             }
         }
+        /// <summary>
+        /// Add By Devanshi
+        /// Set Time frame for import in Session
+        /// </summary>
+        /// <returns></returns>
+        public static string ImportTimeFrame
+        {
+            get
+            {
+                string viewBy = string.Empty;
+                if (HttpContext.Current.Session["ImportTimeFrame"] != null)
+                {
+                    viewBy = Convert.ToString(HttpContext.Current.Session["ImportTimeFrame"]);
+                }
+                return viewBy;
+            }
+            set
+            {
+                HttpContext.Current.Session["ImportTimeFrame"] = value;
+            }
+        }
 
     }
 }

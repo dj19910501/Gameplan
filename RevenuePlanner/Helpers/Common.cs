@@ -7350,6 +7350,9 @@ namespace RevenuePlanner.Helpers
                             List<CustomField> customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic)).ToList();
                             if (!customfieldlist.Any(customfield => customfield.IsRequired && !isDisplayForFilter))
                             {
+                                //Added by Preet Shah for #2862
+                                tx.Complete(); // complete transcation before return.
+
                                 return lstTactic;
                             }
 
@@ -7380,6 +7383,9 @@ namespace RevenuePlanner.Helpers
 
                             if (tblCustomFieldEntity == null || !tblCustomFieldEntity.Any())
                             {
+                                //Added by Preet Shah for #2862
+                                tx.Complete(); // complete transcation before return.
+
                                 return lstTactic;
                             }
                             // Add By Nishant Sheth
@@ -7448,6 +7454,9 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
+                            //Added by Preet Shah for #2862
+                            tx.Complete(); // complete transcation before return.
+
                             return lstTactic;
                         }
                     }
@@ -7847,7 +7856,10 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                            var lstTacticItemActuals = tblTacticItemActuals.Where(tac => tac.PlanTacticId == keyTactic).ToList()
+                            // Modified by Nandish Shah on 29/11/2016 for PL #2864
+                            // Add Where condition of filter only Actual Cost Data from Tactic Actual data
+                            string TitleCost = Convert.ToString(Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()]);
+                            var lstTacticItemActuals = tblTacticItemActuals.Where(tac => tac.PlanTacticId == keyTactic && tac.StageTitle == TitleCost).ToList()
                                 .Select(tac => new
                                 {
                                     Period = Convert.ToInt32(tac.Period.Replace("Y", "")),

@@ -20,14 +20,16 @@ namespace RevenuePlanner.Controllers
             _transaction = transaction; //DI will take care of populating this!
         }
 
+        [System.Web.Http.HttpPost]
         public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings)
         {
-            _transaction.SaveTransactionToLineItemMapping(transactionLineItemMappings, Sessions.User.ID);
+            _transaction.SaveTransactionToLineItemMapping(Sessions.User.CID, transactionLineItemMappings, Sessions.User.ID);
         }
 
+        [System.Web.Http.HttpPost]
         public void DeleteTransactionLineItemMapping(int mappingId)
         {
-            _transaction.DeleteTransactionLineItemMapping(mappingId);
+            _transaction.DeleteTransactionLineItemMapping(Sessions.User.CID, mappingId);
         }
 
         public IEnumerable<TransactionHeaderMapping> GetHeaderMappings()
@@ -37,28 +39,23 @@ namespace RevenuePlanner.Controllers
 
         public IEnumerable<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId)
         {
-            return _transaction.GetLinkedLineItemsForTransaction(transactionId);
+            return _transaction.GetLinkedLineItemsForTransaction(Sessions.User.CID, transactionId);
         }
 
-        public int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true)
+        public int GetTransactionCount(DateTime start, DateTime end, bool unprocessedOnly = true)
         {
-            return _transaction.GetTransactionCount(Sessions.User.CID, start, end, unprocessdedOnly);
+            return _transaction.GetTransactionCount(Sessions.User.CID, start, end, unprocessedOnly);
         }
 
-        public IEnumerable<Transaction> GetTransactions(DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null, int pageIndex = 1, int pageSize = 100)
+        public IEnumerable<Transaction> GetTransactions(DateTime start, DateTime end, bool unprocessedOnly = true, int skip = 0, int take = 10000)
         {
             //Potential data transformation or triming per client per column heading mapping
-            return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessdedOnly, columnFilters, pageIndex, pageSize);
-        }
-
-        public IEnumerable<Transaction> SearchForTransactions(DateTime start, DateTime end, string searchText, bool unprocessdedOnly = true)
-        {
-            return _transaction.SearchForTransactions(Sessions.User.CID, start, end, searchText, unprocessdedOnly);
+            return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, null, skip, take);
         }
 
         public IEnumerable<Transaction> GetTransactionsForLineItem(int lineItemId)
         {
-            return _transaction.GetTransactionsForLineItem(lineItemId);
+            return _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
         }
 
     }

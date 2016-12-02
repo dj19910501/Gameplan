@@ -11,13 +11,7 @@
             {
         @Html.ValidationSummary(true)
 
-        @Html.HiddenFor(model => model.UserId)
-        @Html.HiddenFor(model => model.RoleCode)
-        @Html.HiddenFor(model => model.Password)
-        @Html.HiddenFor(model => model.ConfirmPassword)
-        @Html.HiddenFor(model => model.IsManager)   // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517   
-
-        <div class="cf inputs-aligned-horizontal">
+                <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.FirstName)
             @if (Model.UserId == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
                     {
@@ -53,7 +47,6 @@
             @Html.Hidden("CurrEmail", Model.Email)
             @Html.LabelFor(model => model.Email)
             @* Start - Modified by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #51 *@
-            @Html.HiddenFor(model => model.Email)
             @Html.TextBox("txtEmail", Model.Email, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.Email })
             @* End - Modified by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #51 *@
         </div>
@@ -114,7 +107,6 @@
             @Html.LabelFor(model => model.ClientId)
             @*Start Modified by Dharmraj for ticket #583 on 7th July 2014 *@
 
-            @Html.HiddenFor(model => model.ClientId)
             @Html.HiddenFor(model => model.Client)
             @Html.TextBox("txtClient", Model.Client, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.Client })
 

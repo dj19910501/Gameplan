@@ -70,12 +70,13 @@ namespace RevenuePlanner.Services.Transactions
         public DateTime? LastProcessed { get; set; }
     }
 
-    public class LineItem
+    public class LinkedLineItem
     {
         public int LineItemId { get; set; }
         public string Title { get; set; }
         public double Cost { get; set; }
         public double Actual { get; set; }
+        public TransactionLineItemMapping LineItemMapping { get; set; }
 
         public string TacticTitle { get; set; }
         public string ProgramTitle { get; set; }
@@ -90,7 +91,7 @@ namespace RevenuePlanner.Services.Transactions
         public double TotalLinkedCost{ get; set; }
         public double PlannedCost { get; set; }
         public double ActualCost { get; set; }   
-        public List<LineItem> LineItems {get; set;}
+        public List<LinkedLineItem> LineItems {get; set;}
     }
 
     /// <summary>
@@ -137,29 +138,29 @@ namespace RevenuePlanner.Services.Transactions
         /// <param name="clientId"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="unprocessdedOnly"></param>
+        /// <param name="unprocessedOnly"></param>
         /// <returns></returns>
-        int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true);
+        int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessedOnly = true);
         /// <summary>
-        /// returns a page of transactions according page size and page index
+        /// returns at most <param name="take" /> transactions after skipping the first <param name="skip" />
         /// </summary>
         /// <param name="clientId"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="unprocessdedOnly"></param>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
+        /// <param name="unprocessedOnly"></param>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
         /// <returns></returns>
-        List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null,  int pageIndex = 1, int pageSize = 10000);
+        List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessedOnly = true, List<ColumnFilter> columnFilters = null,  int skip = 0, int take = 10000);
 
-        List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId);
+        List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int clientId, int transactionId);
 
         /// <summary>
         /// Reverse listing of transactions per line item 
         /// </summary>
         /// <param name="lineItemId"></param>
         /// <returns></returns>
-        List<Transaction> GetTransactionsForLineItem(int lineItemId);
+        List<Transaction> GetTransactionsForLineItem(int clientId, int lineItemId);
 
         /// <summary>
         /// Search for transactions that matches searchText in any textual field
@@ -168,15 +169,15 @@ namespace RevenuePlanner.Services.Transactions
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <param name="searchText"></param>
-        /// <param name="unprocessdedOnly"></param>
+        /// <param name="unprocessedOnly"></param>
         /// <returns></returns>
-        List<Transaction> SearchForTransactions(int clientId, DateTime start, DateTime end, string searchText, bool unprocessdedOnly = true);
+        //List<Transaction> SearchForTransactions(int clientId, DateTime start, DateTime end, string searchText, bool unprocessedOnly = true);
 
         /// <summary>
         /// This method handles both new mapping as well as updating existing mappings 
         /// </summary>
         /// <param name="transactionLineItemMappings"></param>
-        void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId);
+        void SaveTransactionToLineItemMapping(int clientId, List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId);
         /// <summary>
         /// Client may customize transaction column headers (to display on UI) to their taste by providing headers mappings
         /// from our standard header to theirs. Internally, we will always use standard headings (see Transaction class)
@@ -185,6 +186,6 @@ namespace RevenuePlanner.Services.Transactions
         /// <returns></returns>
         List<TransactionHeaderMapping> GetHeaderMappings(int clientId);
 
-        void DeleteTransactionLineItemMapping(int mappingId);
+        void DeleteTransactionLineItemMapping(int clientId, int mappingId);
     }
 }

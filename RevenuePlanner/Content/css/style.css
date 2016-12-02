@@ -134,6 +134,20 @@ a:hover, a:focus {
 	float: left;/*display: table-cell;*/
 }
 
+#full-width-content-wrapper {
+	background: #fff; /*for #2312 - Bhumika*/
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+	margin: 0;
+    padding: 0;
+	vertical-align: top;
+    border: none;
+    overflow-y: auto;
+}
+
 .WelcomeMessageBorder {
 	border-bottom: 2px solid #cecece;
 }
@@ -3640,9 +3654,10 @@ a.link-gray {
 .fin-head-left .btn-blue {
 	margin-bottom: 0px;
 }
-.finance-tbl div.gridbox {
+.finance-tbl div.gridbox, .MarketingBudget-tbl div.gridbox {
 	width: 100% !important;
 }
+.MarketingBudget-tbl{padding : 0 15px 15px}
 #btnMultiselect_budget-select {
 	margin-left: 0; /*by bheru 1678 05-11-2015*/
 	margin-right: 0;
@@ -13751,7 +13766,7 @@ table .lblCustomCheckbox label{width:70%}
 .fin-head-left .btn.btn-fill-white, .fin-head-left .ui-multiselect{
     cursor: pointer; 
     float:left; 
-    line-height:30px !important;
+    line-height:26px !important;
     height:30px; 
     margin-right:10px ;
     margin-top:20px ;
@@ -13787,7 +13802,7 @@ table .lblCustomCheckbox label{width:70%}
     font: normal normal normal 14px/1 FontAwesome;
     position: absolute;
     left: 10px;
-    bottom: 6px;
+    bottom: 8px;
 }
 #btnAddNewBudget{    
     font-size: 12px;
@@ -13878,8 +13893,8 @@ table.dataTable thead .sorting_desc {
 }
 /* =========================== Measure Report CSS End =========================== */
 
-
-
+.MarketingBudget-tbl div.gridbox .pipeLine{border-left:1px solid #000;height:20px; margin:0 5px}
+.MarketingBudget-tbl span.marketing-tbl-link{text-decoration:underline}
 
 /************************************************ Responsive css start here **********************************************************/
 
@@ -15527,3 +15542,45 @@ tbody.column2 {
 	display: block;
 }
 
+.header-content-footer-layout {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border: none;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    -webkit-align-content: stretch;
+    -ms-flex-line-pack: stretch;
+    align-content: stretch;
+    -webkit-align-items: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+}
+
+.header-content-footer-layout > *:nth-child(1) {
+    order: 0;
+    flex: 0 0 auto;
+    align-self: auto;
+}
+.header-content-footer-layout > *:nth-child(2) {
+    order: 1;
+    flex: 1 1 auto;
+    align-self: auto;
+    height: auto;
+    position: relative;
+}
+.header-content-footer-layout > *:nth-child(3) {
+    order: 2;
+    flex: 0 0 auto;
+    align-self: auto;
+}

@@ -334,11 +334,11 @@ namespace RevenuePlanner.Services
                     List<GridDefaultModel> SearchlistData = new List<GridDefaultModel>();
                     if ( string.IsNullOrEmpty(SearchBy) || SearchBy == Enums.GlobalSearch.ActivityName.ToString())
                     {
-                        SearchlistData = lstSelectedColumnsData.Where(a => a.EntityTitle.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.ToLower()))).ToList();
+                        SearchlistData = lstSelectedColumnsData.Where(a => a.EntityTitle.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.Trim().ToLower()))).ToList();
                     }
                     else
                     {
-                        SearchlistData = lstSelectedColumnsData.Where(a => a.MachineName != null && a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.ToLower()))).ToList();
+                        SearchlistData = lstSelectedColumnsData.Where(a => a.MachineName != null && a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.Trim().ToLower()))).ToList();
                     }
                     List<SearchParentDetail> parenttaskids = SearchlistData.Select(a => new SearchParentDetail
                     {
@@ -2061,11 +2061,11 @@ namespace RevenuePlanner.Services
                 List<calendarDataModel> SearchlistData = new List<calendarDataModel>();
                 if (string.IsNullOrEmpty(SearchBy) || SearchBy == Enums.GlobalSearch.ActivityName.ToString())
                 {
-                    SearchlistData = calResultset.Where(a => a.text.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                    SearchlistData = calResultset.Where(a => a.text.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.Trim().ToLower()))).ToList();
                 }
                 else
                 {
-                    SearchlistData = calResultset.Where(a => a.machineName != null && a.machineName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                    SearchlistData = calResultset.Where(a => a.machineName != null && a.machineName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.Trim().ToLower()))).ToList();
                 }
                 List<SearchParentDetail> parenttaskids = SearchlistData.Select(a => new SearchParentDetail
                 {
@@ -2256,13 +2256,14 @@ namespace RevenuePlanner.Services
             List<User> lstUsers = objAuthService.GetUserListByClientIdEx(_ClientId);
 
             List<int> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(_ClientId, lstUsers.Where(i => i.IsDeleted == false).ToList());
-            //Added following Code for #2784 on 22/11/2016
+            //Added following Code for #2784 on 22/11/2016  Following method is called to match user with user application table and 
+            //also checked Deleted user should not be return in this list.   
             lstClientUsers = objAuthService.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, Sessions.ApplicationId).Select(w => w.ID).ToList(); //PL #1532 Dashrath Prajapati                   
             return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new PlanOptions
             {
-                id = owner.ID,
-                value = owner.FirstName + " " + owner.LastName
-            }).ToList().OrderBy(tactype => tactype.value).ToList(); ;
+                id = owner.ID,             
+                value = string.Format("{0} {1}",owner.FirstName,owner.LastName)
+            }).OrderBy(tactype => tactype.value).ToList(); ;
         }
         /// <summary>
         /// This is tactic type list (client wise) used in plan grid

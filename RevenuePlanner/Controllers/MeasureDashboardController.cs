@@ -216,7 +216,7 @@ namespace RevenuePlanner.Controllers
         /// Get Chart Data
         /// </summary>
         /// <returns>List<CurrencyModel.ClientCurrency></returns>
-        public async Task<JsonResult> GetChart(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100")
+        public async Task<ActionResult> GetChart(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", bool IsViewData = false)
         {
             RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
             HttpResponseMessage response = new HttpResponseMessage();
@@ -302,8 +302,12 @@ namespace RevenuePlanner.Controllers
                     objParams.UserName = AuthorizedReportAPIUserName;
                     objParams.Password = AuthorizedReportAPIPassword;
                     objParams.CurrencyRate = CurrencyRate;
+                    //Following will be return chart or table based on passed parameter IsViewData
+                    if (IsViewData == false)
+                        response = await client.PostAsJsonAsync("api/Report/Chart ", objParams);
+                    else
+                        response = await client.PostAsJsonAsync("api/Report/GetChartTable", objParams);
 
-                    response = await client.PostAsJsonAsync("api/Report/Chart ", objParams);
                     result = response.Content.ReadAsStringAsync().Result;
                 }
                 catch (Exception ex)
@@ -384,6 +388,7 @@ namespace RevenuePlanner.Controllers
                     objParams.ConnectionString = ConnectionString;
                     objParams.Container = Container;
                     objParams.SDV = SDV;
+
                     objParams.TopOnly = TopOnly;
                     objParams.ViewBy = ViewBy;
                     objParams.StartDate = StartDate;
@@ -411,20 +416,8 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Date:25/11/2016 #2819 Following method is created to load _ViewAllReportTable partial view(pop-up)
         /// </summary>
-        /// <param name="Id"></param>
-        /// <param name="DbName"></param>
-        /// <param name="Container"></param>
-        /// <param name="SDV"></param>
-        /// <param name="TopOnly"></param>
-        /// <param name="ViewBy"></param>
-        /// <param name="StartDate"></param>
-        /// <param name="EndDate"></param>
-        /// <param name="DashboardId"></param>
-        /// <param name="DashboardPageid"></param>
-        /// <param name="DashboardContentId"></param>
-        /// <param name="DisplayName"></param>
-        /// <returns></returns>
-        public async  Task<PartialViewResult> LoadReportTablePartial(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0, string DisplayName = "")     
+      
+        public async  Task<PartialViewResult> LoadReportTablePartial(int Id, string Container, string[] SDV, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0, string DisplayName = "")     
         {
             ReportTableParameters objReportTable = new ReportTableParameters();
             objReportTable.Id = Id;
@@ -441,6 +434,25 @@ namespace RevenuePlanner.Controllers
             objReportTable.DashboardContentId = DashboardContentId;
             await Task.Delay(1);
             return  PartialView("_ViewAllReportTable", objReportTable);
+
+        }
+        /// <summary>
+        /// Date:30/11/2016 #2818 Following method is created to load _ViewAllReportGraph partial view(pop-up) for chart
+        /// </summary>
+        public async Task<PartialViewResult> LoadChartTablePartial(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", string DisplayName = "")
+        {
+            ReportParameters objReportTable = new ReportParameters();
+            objReportTable.Id = Id;
+            objReportTable.DisplayName = DisplayName;
+            objReportTable.Container = Container;
+            //SDV is parameter to pass selected filter
+            objReportTable.SDV = SDV;
+            objReportTable.TopOnly = false;
+            objReportTable.ViewBy = ViewBy;
+            objReportTable.StartDate = StartDate;
+            objReportTable.EndDate = EndDate;
+            await Task.Delay(1);
+            return PartialView("_ViewAllReportGraph", objReportTable);
 
         }
     }

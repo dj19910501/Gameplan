@@ -1,0 +1,49 @@
+$GRID_PADDING: 5px;
+
+.header {
+  padding-left: $GRID_PADDING;
+  padding-right: $GRID_PADDING;
+}
+
+.gridContainer {
+  position: absolute;
+  top: $GRID_PADDING;
+  bottom: $GRID_PADDING;
+  left: $GRID_PADDING;
+  right: $GRID_PADDING;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #ccc;
+
+  > .grid {
+    width: 100%;
+    height: 100%;
+    border: none !important;
+
+    // override a rule from the "legacy" styles.  ugh
+    //box-sizing: border-box !important;
+  }
+}
+
+.pager {
+  padding: $GRID_PADDING !important;
+  height: $GRID_PADDING * 2 + 40px;
+  text-align: center;
+  > ul {
+    height: 40px;
+    line-height: 50px;
+    display: inline-block;
+    > li {
+      display: inline-block;
+      float: none;
+
+      input {
+        margin-bottom: 0;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+    }
+  }
+}

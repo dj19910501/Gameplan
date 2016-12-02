@@ -128,11 +128,11 @@ namespace RevenuePlanner.Services
                 List<PlanBudgetModel> SearchlistData = new List<PlanBudgetModel>();
                 if (string.IsNullOrEmpty(SearchBy) || SearchBy == Enums.GlobalSearch.ActivityName.ToString())
                 {
-                    SearchlistData = model.Where(a => a.ActivityName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                    SearchlistData = model.Where(a => a.ActivityName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.Trim().ToLower()))).ToList();
                 }
                 else
                 {
-                    SearchlistData = model.Where(a => a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.ToLower()))).ToList();
+                    SearchlistData = model.Where(a => a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(Searchtext.Trim().ToLower()))).ToList();
                 }
                 List<SearchParentDetail> parenttaskids = SearchlistData.Select(a => new SearchParentDetail
                 {
@@ -1651,18 +1651,18 @@ namespace RevenuePlanner.Services
                         otherLine.MonthValues.CostY11 = l.MonthValues.CostY11 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY11) ?? 0;
                         otherLine.MonthValues.CostY12 = l.MonthValues.CostY12 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY12) ?? 0;
 
-                        otherLine.NextYearMonthValues.CostY1 = l.MonthValues.CostY1 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY1) ?? 0;
-                        otherLine.NextYearMonthValues.CostY2 = l.MonthValues.CostY2 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY2) ?? 0;
-                        otherLine.NextYearMonthValues.CostY3 = l.MonthValues.CostY3 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY3) ?? 0;
-                        otherLine.NextYearMonthValues.CostY4 = l.MonthValues.CostY4 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY4) ?? 0;
-                        otherLine.NextYearMonthValues.CostY5 = l.MonthValues.CostY5 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY5) ?? 0;
-                        otherLine.NextYearMonthValues.CostY6 = l.MonthValues.CostY6 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY6) ?? 0;
-                        otherLine.NextYearMonthValues.CostY7 = l.MonthValues.CostY7 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY7) ?? 0;
-                        otherLine.NextYearMonthValues.CostY8 = l.MonthValues.CostY8 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY8) ?? 0;
-                        otherLine.NextYearMonthValues.CostY9 = l.MonthValues.CostY9 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY9) ?? 0;
-                        otherLine.NextYearMonthValues.CostY10 = l.MonthValues.CostY10 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY10) ?? 0;
-                        otherLine.NextYearMonthValues.CostY11 = l.MonthValues.CostY11 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY11) ?? 0;
-                        otherLine.NextYearMonthValues.CostY12 = l.MonthValues.CostY12 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY12) ?? 0;
+                        otherLine.NextYearMonthValues.CostY1 = l.NextYearMonthValues.CostY1 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY1) ?? 0;
+                        otherLine.NextYearMonthValues.CostY2 = l.NextYearMonthValues.CostY2 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY2) ?? 0;
+                        otherLine.NextYearMonthValues.CostY3 = l.NextYearMonthValues.CostY3 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY3) ?? 0;
+                        otherLine.NextYearMonthValues.CostY4 = l.NextYearMonthValues.CostY4 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY4) ?? 0;
+                        otherLine.NextYearMonthValues.CostY5 = l.NextYearMonthValues.CostY5 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY5) ?? 0;
+                        otherLine.NextYearMonthValues.CostY6 = l.NextYearMonthValues.CostY6 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY6) ?? 0;
+                        otherLine.NextYearMonthValues.CostY7 = l.NextYearMonthValues.CostY7 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY7) ?? 0;
+                        otherLine.NextYearMonthValues.CostY8 = l.NextYearMonthValues.CostY8 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY8) ?? 0;
+                        otherLine.NextYearMonthValues.CostY9 = l.NextYearMonthValues.CostY9 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY9) ?? 0;
+                        otherLine.NextYearMonthValues.CostY10 = l.NextYearMonthValues.CostY10 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY10) ?? 0;
+                        otherLine.NextYearMonthValues.CostY11 = l.NextYearMonthValues.CostY11 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY11) ?? 0;
+                        otherLine.NextYearMonthValues.CostY12 = l.NextYearMonthValues.CostY12 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY12) ?? 0;
 
                       
                         double allocated = l.TotalAllocatedCost - lines.Sum(l1 => l1.TotalAllocatedCost);

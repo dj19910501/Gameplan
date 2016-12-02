@@ -98,6 +98,13 @@ namespace RevenuePlanner.Controllers
             return View(financeObj);
         }
 
+        #region "Transactions"
+        public ActionResult Transactions(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
+        {
+            return View();
+        }
+        #endregion
+
         #region "Create new Budget related methods"
         public ActionResult LoadnewBudget()
         {

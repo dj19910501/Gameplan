@@ -1233,5 +1233,18 @@
 		<Name>ValidateForPartialField</Name>
 		<value>Please fill all required fields in order to submit it for approval.</value>
 	</Field>
+  <!--#2878 Security - Account Creation – Client Id and User Id-->
+  <Field> 
+    <Name>UserDeleteRestrictionMessage</Name>
+    <value>You don't have permission to delete this user.</value>
+  </Field>
+  <Field>
+    <Name>UserAssignRestrictionMessage</Name>
+    <value>You don't have permission to assign this user.</value>
+  </Field>
+  <Field>
+    <Name>UserPermissionRestrictionMessage</Name>
+    <value>You don't have permission to view/modify permission of this user.</value>
+  </Field>
 	<!--//end for #2469 alert message.-->
 </Messages>

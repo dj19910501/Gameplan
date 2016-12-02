@@ -1,8 +1,14 @@
-﻿@{
-    ViewBag.Title = "Finance";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@model RevenuePlanner.Services.MarketingBudget.MarketingActivities
+@using RevenuePlanner.Helpers;
 
+@{
+    ViewBag.Title = "Finance - Marketing Budget";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    // Get currency symbol from session
+    string CurrencySymbol = Sessions.PlanCurrencySymbol;
 }
+
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" />
 
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
@@ -10,20 +16,33 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
 }
+<script src="~/Scripts/js/fileinput.js"></script>
+<style>
+    .ui-tooltip {
+        position: absolute !important;
+        background: #fff;
+        color: #666666;
+        border: 1px solid #666666;
+        font-size: 11px;
+        padding: 0 2px;
+        -webkit-box-shadow: 3px 3px 5px 0px rgba(107,107,107,1);
+        -moz-box-shadow: 3px 3px 5px 0px rgba(107,107,107,1);
+        box-shadow: 3px 3px 5px 0px rgba(107,107,107,1);
+    }
+
+    .ui-helper-hidden-accessible {
+        display: none;
+    }
+</style>
 
 <div class="light-blue-chart cf full-width-header" id="financeHeader">
     <div style="" class="fin-head-left">
         <div class="finance-main-title">
-            <h2 id="lblfinanceTitle" style="display:block;">Finance (Home)</h2>
+            <h2 id="lblfinanceTitle" style="display:block;">Marketing Budget</h2>
         </div>
         <div style="float:left;" id="drpParentMain">
             <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
-                @* Static HTML - Delete it when call dynamic *@
-                <div class="nl-field nl-dd">
-                    <a class="nl-field-toggle">########Budget SP Calculations</a>
-                </div>
-                @* Static HTML End *@
-                @*@Html.DropDownList("ddlParentFinanceMain", new SelectList(Model.ListofBudgets, "Value", "Text"))*@
+                @Html.DropDownList("ddlParentFinanceMain", new SelectList(Model.ListofBudgets, "Value", "Text"))
                 <div class="nl-overlay"></div>
             </div>
         </div>
@@ -41,67 +60,112 @@
         </div>
         <span class="selectBox quarter_selection" id="ddlMainTimeFrameSelectBox">
             <label id="" for="Time_Frame:">Time Frame:</label>
-            @*@Html.DropDownList("ddlMainGridTimeFrame", new SelectList(Model.TimeFrame, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })*@
-            @* Static HTML - Delete it when call dynamic *@
-            <button id="btnMultiselect_ddlMainGridTimeFrame" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" aria-haspopup="true" title="This Year">
-                <span>This Year</span>
-                <span class="ui-icon ui-icon-triangle-1-s"></span>
-            </button>
-            @* Static HTML End *@
+            @Html.DropDownList("ddlMainGridTimeFrame", new SelectList(Model.TimeFrame, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
         </span>
         <div id="ddlColumnsFrameBox" class="filter-columns selectBox">
-            <label id="" for="Filter Columns:">Filter Columns:</label>        
-
-            @*<select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>*@
-            @* Static HTML - Delete it when call dynamic *@
-            <button id="btnMultiselect_budget-select" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" title="Filter Columns" aria-haspopup="true">
-                <span>Filter Columns</span>
-                <span class="ui-icon ui-icon-triangle-1-s"></span>
-            </button>
-            @* Static HTML End *@
+            <label id="" for="Filter Columns:">Filter Columns:</label>
+            <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>
         </div>
         <span class="selectBox quarter_selection" id="ddlColumnSetFrameBox">
             <label id="" for="View by:">View by:</label>
-
-            @*@Html.DropDownList("ddlColumnSet", new SelectList(Model.Columnset, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })*@
-            @* Static HTML - Delete it when call dynamic *@
-            <button id="btnMultiselect_ddlColumnSet" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" aria-haspopup="true" title="Finance">
-                <span>Finance</span>
-                <span class="ui-icon ui-icon-triangle-1-s"></span>
-            </button>
-            @* Static HTML End *@
+            @Html.DropDownList("ddlColumnSet", new SelectList(Model.Columnset, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
         </span>
     </div>
 
     <div class="plancart-box finance-cart">
         <div class="white-chart">
             <p class="source-sans-probold" title="Actual">Actual</p>
-            <p class="value source-sans-prolight" id="ActualID" data-original-title="0" title="">$0</p> 
+            <p class="value source-sans-prolight" id="ActualID" data-original-title="0" title="">0</p>
         </div>
         <div class="white-chart">
             <p class="source-sans-probold" id="plannedLabel" title="Planned">Planned</p>
-            <p class="value source-sans-prolight" id="PlannedID" data-original-title="$14,711" title="">$14.7k</p>
+            <p class="value source-sans-prolight" id="PlannedID" data-original-title="0" title="">0</p>
         </div>
         <div class="white-chart">
             <p class="source-sans-probold" id="forecastLabel" title="Forecast">Forecast</p>
-            <p class="value source-sans-prolight" id="ForecastID" data-original-title="2000" title="">$2,000</p> 
+            <p class="value source-sans-prolight" id="ForecastID" data-original-title="0" title="">0</p>
         </div>
         <div id="dvBudgetHeader" class="white-chart">
             <p class="source-sans-probold" id="budgetLabel" title="Budget">Budget</p>
-            <p class="value source-sans-prolight" id="budgetID" data-original-title="$12,000" title="">$12.0k</p>
+            <p class="value source-sans-prolight" id="budgetID" data-original-title="0" title="">0</p>
         </div>
     </div>
 
 </div>
 
-<div id="divGridView" style="" class="finance-tbl">
+<div class="row-fluid calc-height">
+    <div class="span12">
+        <div id="divDeletePopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div>
+                <form>
+
+                    <h2 class="primary-title source-sans-prosemibold resubmission_header">Deleting an item</h2>
+                    <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to delete </label>
+
+
+                    <label id="lipname" style="text-align: center; width: 100%; font-weight:800;" class="resubmission_content"></label>
+                    <p id="LiWarning" style="text-align: center;color: #fff;font-size: 15px; display:none">Warning! There are line items associated with this item. Deleting this item will associate these line items with the default 'Other' budget</p>
+                    <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
+                    <input type="hidden" id="hdnsourceid" />
+                    <input type="hidden" id="hdndestid" />
+                    <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button_DeleteItem">Proceed</button>
+                    <button id="cancel-button_DeleteItem" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
+<div id="divGridView" class="MarketingBudget-tbl">
+    <div id="gridbox" style="width:100%; background-color:white;"></div>
+</div>
+@* Design for import modal pop up *@
+<div id="ImportModal" class="modal hide fade import-popover">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4> Import Data  </h4>
+    </div>
+    <div class="modal-body">
+        <ul>
+            <li>
+                <strong>Download file <a onclick="return ExportToExcel();">here</a></strong>
+                <br />
+                <span>Note: Here is sample file in month format with some specific columns. You can import this file or can import from (Edit Foreacast/Edit Budget) screen export fromat.</span>
+            </li>
+            <li>
+                <strong>Make any necessary changes</strong><br />
+                <span>Note: Any additional rows or columns added will not appear after imported</span>
+            </li>
+            <li>
+                <strong>Import the file</strong><br />
+                <span>Note:The file format must match with Finance(Budget)/Finance(Forecast) export format.</span>
+            </li>
+        </ul>
+        <input id="input-43" name="input43[]" type="file" class="file-loading select-file">
+        <div id="errorBlock" class="help-block"></div>
+        <div id="successBlock" class="help-block alert alert-success hide message-position-small">Your Data Save Successfully</div>
+    </div>
+</div>
 <script>
+    var budgetgrid;
+    var BudgetGridData;
+    var AddNewrow = true;
+    var backBudgetid = '';
+    var standardcolumns;
+    var colIdIndex;
+    var colIconIndex;
+    var ColTaskNameIndex;
     $(document).ready(function () {
-
+        $('#proceed-button_DeleteItem').on("click", function () {
+            DeleteBudget();
+            $('#divDeletePopup').modal("hide");
+        });
+        var Columnsetval = $("#ddlColumnSet").val();
         $("#sidebar").css("display", "none");
         $("#content_wraper").css("width", "100%");
+        UpdateFinanceHeaderValues(); // Update header values
+        BindColumnsfilter(Columnsetval);
+        GetGridData();
 
 
         var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');
@@ -109,41 +173,418 @@
             nlformParentFinanceMain = new NLForm(document.getElementById('nl-formParentFinanceMain'));
             $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
                 $('#nl-formParentFinanceMain .nl-field-toggle').text($(this).text());
+                var budgetIDMain = $(this).attr('value');
+                $("#ddlParentFinanceMain").val(budgetIDMain);
+                if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
+                    UpdateFinanceHeaderValues(); // Update header values
+                    GetGridData();
+                }
             });
         }
-        // uncomment below function when real data bind - Bhumika
-        //$("#ddlColumnSet").multiselect({
-        //    multiple: false,
-        //    noneSelectedText: "Please Select",
-        //    selectedList: 1
-        //});
 
-        //$("#ddlRevenueTimeFrame,#ddlMainGridTimeFrame").multiselect({
-        //    multiple: false,
-        //    noneSelectedText: "Please Select",
-        //    selectedList: 1
-        //}).multiselectfilter({
-        //});
+        $("#ddlColumnSet").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
+        });
+
+        $("#ddlRevenueTimeFrame,#ddlMainGridTimeFrame").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
+        }).multiselectfilter({
+        });
 
     });
-    // uncomment below function when real data bind - Bhumika
-    @*function BindColumnsfilter(ColumnSetId) {
+
+    $("#ddlMainGridTimeFrame").change(function () {
+        ShowHideSuccessDiv();
+        GetGridData();
+    });
+    // function to show hide success message
+    function ShowHideSuccessDiv() {
+        var sucesstextmessagespan = $("#spanMsgSuccess");
+        var sucesstextmessagediv = $("#SuccessMsg");
+        if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
+            sucesstextmessagespan.text('')
+            if (sucesstextmessagediv != undefined && sucesstextmessagediv != null) {
+                sucesstextmessagediv.css('display', 'none');
+            }
+        }
+    }
+
+    function BindColumnsfilter(ColumnSetId) {
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/MarketingBudget/GetColumns/")',
             data: { ColumnSetId: ColumnSetId },
-            dataType: "json",
             async: false,
-            success: function (data) {
+            dataType: "json",
+            success: function (result) {
                 $("#budget-select").html("");
+                var data = result.Columnlist;
+                standardcolumns = result.standardlist;
                 for (var i = 0; i < data.length; i++) {
-                    $('#budget-select').append("<option value=" + data[i].Value + " id='div" + data[i].Text + "'>" + data[i].Text + "</option>");
+                    $('#budget-select').append("<option value=" + data[i].Value + " id='" + data[i].Text + "'>" + data[i].Text + "</option>");
                 }
             }
         });
 
         $('#budget-select').multiselect({ multiple: true, title: 'Filter Columns', noneSelectedText: "Filter Columns", });
+        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
+        $.each(ColumnsCheckBox, function () {
+            if ($(this).attr('id').indexOf('Forecast') < 0) {
+                $(this).attr("aria-selected", "true");
+                $(this).attr("checked", "checked");
+            }
+            else {
+                $(this).attr("aria-selected", "false");
+            }
+
+        });
+
+        $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').click(function () {
+            HideShowColumns();
+        });
+
+        $("#selectAll_budget-select").click(function () {
+            $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input").prop('checked', 'checked');
+            HideShowColumns();
+        });
+        $("#deselectAll_budget-select").click(function () {
+            $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input").removeAttr('checked');
+            HideShowColumns();
+        });
+    }
+
+    function GetGridData(budgetId) {
+        var BudgetId = "";
+        if (budgetId != undefined && budgetId != "") {
+            var BudgetId = budgetId;
+        }
+        else {
+            BudgetId = $('#ddlParentFinanceMain').val();
+        }
+
+        var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+        var CheckedColumns = "";
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/MarketingBudget/GetBudgetData/")',
+            data: {
+                BudgetId: BudgetId,
+                viewByType: mainTimeFrame,
+            },
+            success: function (data) {
+                budgetgrid = new dhtmlXGridObject('gridbox');
+                budgetgrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+                budgetgrid.setImageSize(1, 1);
+                budgetgrid.enableAutoHeight(true);
+                budgetgrid.enableAutoWidth(false);
+                if (mainTimeFrame != "@Enums.QuarterFinance.Yearly.ToString()") {
+                    budgetgrid.attachHeader(data.AttacheHeader);
+                }
+                budgetgrid.init();
+                BudgetGridData = data.GridData;
+                budgetgrid.parse(BudgetGridData, "json");
+                colIdIndex = budgetgrid.getColIndexById('Id');
+                ColTaskNameIndex = budgetgrid.getColIndexById('Name');
+                colIconIndex = budgetgrid.getColIndexById('Add Row');
+                budgetgrid.setColumnHidden(colIdIndex, true)
+                HideShowColumns();
 
 
-    }*@
-    </script>
+                budgetgrid.expandAll();
+                budgetgrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
+                    var ColumnId = budgetgrid.getColumnId(cInd);
+                    var locked = budgetgrid.getUserData(rId, "lo");
+                    var Permission = budgetgrid.getUserData(rId, "per");
+                    if (locked == 1 && (Permission == "View" || Permission == "None")) {
+                        budgetgrid.cells(rId, cInd).setDisabled(true);
+                        return false;
+                    }
+                    else if (locked == 1 && (ColumnId.indexOf('Budget') >= 0 || ColumnId.indexOf('Forecast') >= 0)) {
+                        budgetgrid.cells(rId, cInd).setDisabled(true);
+                        return false;
+                    }
+
+                    if (cInd == ColTaskNameIndex) {
+                        var isTitleEdit = budgetgrid.getUserData(rId, "isTitleEdit");
+                        if (isTitleEdit == "0") {
+                            budgetgrid.cells(rId, ColTaskNameIndex).setDisabled(true);
+                            return false;
+                        }
+                    }
+
+
+
+                });
+            }
+        });
+
+    }
+
+    function DeleteBudgetIconClick(data) {
+        var LineItemCount = $(data).attr('licount');
+        //Check blank row if user clicks on new row delete icon then delete popup not display
+        if (AddNewrow == false) {
+            return false;
+        }
+        else {
+            if (LineItemCount != 0) {
+                $('#LiWarning').css('display', 'block');
+            }
+            else {
+                $('#LiWarning').css('display', 'none');
+            }
+            var BudgetRowId = $(data).attr('row-id').split('_')[1];
+            var Name = $(data).attr('name');
+            $("#lipname").html(Name);
+            $("#divDeletePopup").modal('show');
+            SelectedBudgetId = BudgetRowId;
+            $('#cancel-button_DeleteItem').on("click", function () {
+                SelectedBudgetId = "";
+                $('#divDeletePopup').modal("hide");
+
+            });
+        }
+    }
+
+    function DeleteBudget() {
+        var currentBudgetId = $("#ddlParentFinanceMain").val();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/MarketingBudget/DeleteBudgetData/")',
+            dataType: 'json',
+            data: {
+                SelectedBudgetId: SelectedBudgetId,
+                BudgetId: currentBudgetId,
+            },
+            success: function (data) {
+                var BudgetId = data.budgetId;
+                UpdateFinanceHeaderValues(); // Update header values
+                GetGridData(BudgetId);
+                RefreshBudgetDropdown(false, BudgetId);
+                //TODO :  here we need to call Finance Header function to refresh the header after deleting budget data
+            }
+        });
+    }
+
+    function RefreshBudgetDropdown(IsAddNew, BudgetId) {
+        var _budgetId = "";
+        if (BudgetId != undefined && BudgetId != "") {
+            _budgetId = BudgetId.toString();
+        }
+        else {
+            _budgetId = $('#ddlParentFinanceMain').val();
+        }
+
+        var $Budgetdropdown = $("#ddlParentFinanceMain");
+        $Budgetdropdown.empty();
+        var $html = '';
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/MarketingBudget/RefreshBudgetList/")',
+            data: {},
+            async: false,
+            success: function (result) {
+                if (result.length > 0) {
+                    $.each(result, function (index, item) {
+
+                        $html += '<option value="' + item.Value + '">' + item.Text + '</option>';
+
+                    });
+                }
+            }
+        });
+        $Budgetdropdown.append($html);
+        var BudgetOptions = {
+            values: []
+        }
+
+        $.each($("#ddlParentFinanceMain").find("option"), function () {
+            BudgetOptions.values.push($(this).val())
+        });
+        var CheckBudgetIdExist = BudgetOptions.values.indexOf(_budgetId);
+        if (CheckBudgetIdExist >= 0) {
+            $("#ddlParentFinanceMain option[value='" + _budgetId + "']").attr("selected", "selected");
+        }
+        $Budgetdropdown.val(_budgetId);
+        $Budgetdropdown.find("input[type='search']").val(_budgetId);
+        nlformParentFinanceMain = new NLForm(document.getElementById('nl-formParentFinanceMain'));
+
+        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            $('#errorMsg').css('display', 'none');
+            $('#SuccessMsg').css('display', 'none');
+            $("#divGridView").show();
+            $("#dvNoData").hide();
+            var budgetId = $(this).attr('value');
+            if (budgetId != null && budgetId != 'undefined' && budgetId != '0') {
+                UpdateFinanceHeaderValues(); // Update header values
+                GetGridData(budgetId);
+                //TODO : Call Finance Header Function.
+                $("#dvExportToExcel").css("display", "block");
+            }
+            else {
+                $("#divGridView").hide();
+                $("#dvNoData").show();
+                $("#dvExportToExcel").css("display", "none");
+            }
+            $('#hdn_BudgetId').val(budgetId);
+            $('#nl-formParentFinanceMain .nl-field-toggle').text($(this).text());
+        });
+        var NlForms = $("#nl-formParentFinanceMain .nl-field.nl-dd");
+
+        for (var i = 0; i < NlForms.length - 1 ; i++) {
+            $(NlForms[i]).remove();
+        }
+
+        if ($('#nl-formParentFinanceMain .nl-field-toggle').text().length > 30) {
+            $('#nl-formParentFinanceMain .nl-field-toggle').text().substring(0, 30) + '...';
+        }
+    }
+    // Open modal popup for import file
+    function showModal() {
+        ShowHideSuccessDiv();
+        LoadInputModelBox();
+        $('#ImportModal').modal('show');
+    }
+    function ExportToExcel() {
+        ShowHideSuccessDiv();
+        budgetgrid.setColumnHidden(colIdIndex, false);
+        budgetgrid.setColumnHidden(colIconIndex, true);
+        budgetgrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
+        budgetgrid.setColumnHidden(colIdIndex, true);
+        budgetgrid.setColumnHidden(colIconIndex, false);
+    }
+
+    // #2804 File input popup function for import finance marketing budget
+    function LoadInputModelBox() {
+        var importurl = '@Url.Content("~/MarketingBudget/ExcelFileUpload")';
+        $('.fileinput-upload-button').hide();
+        $('#ImportModal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+            $('#input-43').fileinput('clear');
+        });
+        $('#input-43').off('fileclear').on('fileclear', function (event) {
+            $('.fileinput-upload-button').hide();
+        });
+
+        $("#input-43").fileinput({
+            type: 'POST',
+            showPreview: false,
+            uploadUrl: importurl,
+            allowedFileExtensions: ["xls", "xlsx"],
+            msgInvalidFileExtension: 'Incorrect file format. Please export the file and use that file to upload your changes',
+            elErrorContainer: "#errorBlock"
+        });
+
+        $('#input-43').off('filepreupload').on('filepreupload', function (event, data, previewId, index) {
+            myApp.showPleaseWait();
+        });
+
+        $('#input-43').off('fileuploaded').on('fileuploaded', function (event, data, previewId, index) {
+            if (data.response.conflict == true) {
+                ShowMessage(false, data.response.message);
+            }
+
+            var sucesstextmessagespan = $("#spanMsgSuccess");
+            var sucesstextmessagediv = $("#SuccessMsg");
+            if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
+                sucesstextmessagespan.text('file imported successfully.')
+                if (sucesstextmessagediv != undefined && sucesstextmessagediv != null) {
+                    sucesstextmessagediv.css('display', 'block');
+                }
+            }
+            myApp.hidePleaseWait();
+            $('#ImportModal').modal('hide');
+            UpdateFinanceHeaderValues(); // Update header values
+            GetGridData();
+        });
+
+        $('#input-43').off('fileloaded').on('fileloaded', function (event, file, previewId, index, reader) {
+            $('.fileinput-upload-button').show();
+        });
+        $('#input-43').off('fileuploaderror').on('fileuploaderror', function (event, data, msg) {
+            $('.fileinput-upload-button').hide();
+        });
+    }
+
+
+    function HideShowColumns() {
+        var columnid = 0;
+        var Title = "";
+        var Hidecol = [];
+        var ColumnsCheckBox = $("#multipleselect_budget-select label[class^=ui-corner-all] input:not(:checked)");
+
+
+        for (var i = 0; i < budgetgrid.getColumnsNum() ; i++) {
+            columnid = budgetgrid.getColumnId(i);
+            if (columnid != "@Enums.DefaultGridColumn.Id" && columnid != "@Enums.DefaultGridColumn.Name"
+                         && columnid != "Add Row" && columnid != "@Enums.DefaultGridColumn.LineItems") {
+                $.each(ColumnsCheckBox, function () {
+                    Title = $(this).parent().find('span').attr('title');
+                    if (standardcolumns.indexOf(Title) >= 0) {
+                        if (columnid.indexOf(Title) >= 0) {
+                            Hidecol.push(i);
+                        }
+
+                    }
+                    else {
+                        if (columnid == Title) {
+                            Hidecol.push(i);
+                        }
+
+                    }
+                });
+                budgetgrid.setColumnHidden(i, false)
+            }
+
+        }
+
+        if (Hidecol != null && Hidecol != undefined && Hidecol.length > 0) {
+            $.each(Hidecol, function (index, val) {
+                budgetgrid.setColumnHidden(val, true)
+            });
+
+        }
+
+    }
+
+    // Function to update header values for finance
+    function UpdateFinanceHeaderValues() {
+        // Get selected budget id
+        var BudgetId = $('#ddlParentFinanceMain').val();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/MarketingBudget/GetFinanceHeaderValues/")',
+            dataType: 'json',
+            data: { BudgetId: BudgetId },
+            success: function (data) {
+                
+                // update header values
+                $("#budgetID").text('@CurrencySymbol' + data.Budget);
+                $("#ForecastID").text('@CurrencySymbol' + data.Forecast);
+                $("#PlannedID").text('@CurrencySymbol' + data.Planned);
+                $("#ActualID").text('@CurrencySymbol' + data.Actual);
+
+                // format values and apply bootstrap tooltip
+                ApplyFormattingAndTooltip("#budgetID");
+                ApplyFormattingAndTooltip("#ForecastID");
+                ApplyFormattingAndTooltip("#PlannedID");
+                ApplyFormattingAndTooltip("#ActualID");
+            }
+        });
+    }
+
+    // Function to format values and apply bootstrap tooltip
+    function ApplyFormattingAndTooltip(idName) {
+        var originalValue = $(idName).html();
+        if (typeof (maxsize) === 'undefined') maxsize = 5;
+        $(idName).popover('destroy');
+        if (originalValue != undefined && originalValue != null && originalValue != '') {
+            $(idName).attr("data-original-title", originalValue);
+            setBootstrapTooltip(idName, originalValue, maxsize, true); // Apply tooltip
+        }
+    }
+</script>

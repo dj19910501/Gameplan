@@ -7035,8 +7035,10 @@ namespace RevenuePlanner.Controllers
                                 {
                                     if (Convert.ToInt32(Convert.ToDateTime(UpdateVal).Year) - Convert.ToInt32(pcpobj.StartDate.Year) > 0)
                                     {
-
-                                        return Json(new { IsExtended = true }, JsonRequestBehavior.AllowGet);
+                                        //User is trying to extend an already extended tactic, no problem, we now allow user to do that.
+                                        //But first of all, we will break the link with the previously linked tactic (backward links only). 
+                                        pcpobj.LinkedPlanId = null;
+                                        pcpobj.LinkedTacticId = null;
                                     }
 
                                 }

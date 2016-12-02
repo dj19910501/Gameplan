@@ -1101,6 +1101,7 @@ function GetFilterIds() {
 }
 
 function ApplyFilters() {
+    isFirstTimeOnGrid = false; //changes related to ticket#2763
     $.ajax({
         url: $('#GetCacheValue').val(),
         async: false,

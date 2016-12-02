@@ -31,15 +31,15 @@
                         {
                             @Html.HiddenFor(x => x.DisplayName)
                             <div id="ViewAllDataModule">
-                                <div class="tab-head">@Model.DisplayName <a class="close-popup-btn" onmouseover="this.style.color='white'"> Close</a>
+                                <div class="tab-head">@Model.DisplayName <a class="close-popup-btn"> Close</a>
                                 @*<img src="@Url.Content("~/content/images/help-icon.png")" alt="help" style="float:right; height:15px; width:15px; margin:13px;" title="Use shift key to allow sorting on multiple columns" />*@
                                 </div>
                                 <div class="home-chart-header  col-xs-12">
                                     <div class="row date-value-wrapper">
                                         <div class="col-xs-5">
-                                            <div style="width: 100%">Date Range</div>
+                                            <div class="datetitle">Date Range</div>
                                             <span class="lblheader">From: </span><span class="lblvalue">@Sessions.StartDate </span>
-                                            <span class="lblheader">To: </span><span class="lblvalue">@Sessions.EndDate</span>
+                                            <span class="lblheader margin-left20">To: </span><span class="lblvalue">@Sessions.EndDate</span>
                                         </div>
 
                                     </div>
@@ -103,7 +103,7 @@
                 data: $.param(params, true),
                 dataType: "json",
                 success: function (data) {                  
-                    LoadReportTable(params.DashboardContentId, "divViewReprtTable_", data);
+                    LoadReportTable(params.DashboardContentId, "divViewReprtTable_", data,"ReportTable","_wrapper",true);
                 },
                 error: function (err) {
                     $("#divChart" + ReportDashboardID).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
