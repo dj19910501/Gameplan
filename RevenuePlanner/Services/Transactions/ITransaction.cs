@@ -109,12 +109,27 @@ namespace RevenuePlanner.Services.Transactions
     }
 
     /// <summary>
+    /// The format for the custom mapped fields, instead of specific css we are just categorizing them at the moment.
+    /// I explicitly gave values to the enum because this information will likely be pulled from a DB some day.
+    /// </summary>
+    public enum HeaderMappingFormat
+    {
+        Label = 0,
+        Text = 1,
+        Date = 2,
+        Currency = 3,
+        Number = 4,
+        Percent = 5 
+    }
+
+    /// <summary>
     /// TransactionHeaderMapping intends to customize transaction display on UI per client taste
     /// </summary>
     public class TransactionHeaderMapping
     {
         public string ClientHeader { get; set; }
         public string Hive9Header { get; set; }
+        public HeaderMappingFormat HeaderFormat { get; set; }
     }
 
     /// <summary>

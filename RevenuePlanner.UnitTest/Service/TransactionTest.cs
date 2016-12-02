@@ -26,30 +26,30 @@ namespace RevenuePlanner.UnitTest.Service
         {
             List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
             // tacticId = 2079, lineitemId = 301
-            TransactionLineItemMapping tlim = new TransactionLineItemMapping
-            { 
-                TransactionId = 75,
-                LineItemId = 301,
-                Amount = 300.10,
-            };
-            tlimList.Add(tlim);
+            tlimList.Add(new TransactionLineItemMapping { TransactionId = 75, LineItemId = 301, Amount = 300.10 });
             _transaction.SaveTransactionToLineItemMapping(ClientId, tlimList, 297);
 
-            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(ClientId, 75);
+            List<LineItemsGroupedByTactic> groupedLineItems = _transaction.GetLinkedLineItemsForTransaction(ClientId, 75);
 
-            LineItemsGroupedByTactic ligbt = lineItems.Find(item => item.TacticId == 2079);
+            LineItemsGroupedByTactic ligbt = groupedLineItems.Find(item => item.TacticId == 2079);
             Assert.IsNotNull(ligbt);
             LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == 301);
             Assert.IsNotNull(lineItem);
             _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
 
+
+            // delete non-existent line item mapping
+            _transaction.DeleteTransactionLineItemMapping(ClientId, 0);
         }
 
         [TestMethod]
         public void Test_Transaction_GetHeaderMappings()
         {
-            var mapping = _transaction.GetHeaderMappings(ClientId) ;
-            Assert.IsTrue(mapping.Count > 0);
+            List<TransactionHeaderMapping> mappings = _transaction.GetHeaderMappings(ClientId) ;
+            Assert.IsTrue(mappings.Count > 0);
+            Assert.AreEqual(HeaderMappingFormat.Currency, mappings.Find(mapping => mapping.Hive9Header == "Amount").HeaderFormat);
+
+            // TODOWCR: finish unit test, not sure what more there is to test though.
         }
 
         [TestMethod]
@@ -111,20 +111,8 @@ namespace RevenuePlanner.UnitTest.Service
         public void Test_Transaction_SaveTransactionToLineItemMapping()
         {
             List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
-            TransactionLineItemMapping tlim = new TransactionLineItemMapping
-            {
-                TransactionId = 120,
-                LineItemId = 297,
-                Amount = 300.10,
-            };
-            tlimList.Add(tlim);
-            TransactionLineItemMapping tlim2 = new TransactionLineItemMapping
-            {
-                TransactionId = 120,
-                LineItemId = 298,
-                Amount = 100.10,
-            };
-            tlimList.Add(tlim2);
+            tlimList.Add(new TransactionLineItemMapping { TransactionId = 120, LineItemId = 297, Amount = 300.10 });
+            tlimList.Add(new TransactionLineItemMapping { TransactionId = 120, LineItemId = 298, Amount = 100.10 });
 
             _transaction.SaveTransactionToLineItemMapping(ClientId, tlimList, 297);
 
@@ -132,9 +120,18 @@ namespace RevenuePlanner.UnitTest.Service
 
             LineItemsGroupedByTactic ligbt = lineItems.Find(item => item.TacticId == 2077);
             Assert.IsNotNull(ligbt);
+
             LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == 297);
             Assert.IsNotNull(lineItem);
             Assert.AreEqual(300.1, lineItem.LineItemMapping.Amount);
+            _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
+
+            // Edit items
+            tlimList = new List<TransactionLineItemMapping>();
+            lineItem.LineItemMapping.Amount = 400.4;
+            tlimList.Add(lineItem.LineItemMapping);
+            _transaction.SaveTransactionToLineItemMapping(ClientId, tlimList, 297);
+
             _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
 
 

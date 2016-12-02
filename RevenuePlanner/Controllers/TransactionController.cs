@@ -14,12 +14,23 @@ namespace RevenuePlanner.Controllers
     [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class TransactionController : ApiController
     {
-        ITransaction _transaction;
+        private ITransaction _transaction;
+
         public TransactionController(ITransaction transaction)
         {
+            if (transaction == null)
+            {
+                throw new ArgumentNullException("Transaction", "Argument Transaction cannot be null");
+            }
+
             _transaction = transaction; //DI will take care of populating this!
         }
 
+        /// <summary>
+        /// Save a list of Transaction to Line Item mappings with the associated amounts. This includes new mappings as well as 
+        /// udpates to existing mappings.
+        /// </summary>
+        /// <param name="transactionLineItemMappings">The list of mappings to create or update.</param>
         [System.Web.Http.HttpPost]
         public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings)
         {
