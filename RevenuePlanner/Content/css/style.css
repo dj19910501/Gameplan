@@ -13811,6 +13811,7 @@ table .lblCustomCheckbox label{width:70%}
 }
 
 /* =========================== Measure Report CSS =========================== */
+         
 .report-wrap .tab-content {
     background: #fff none repeat scroll 0 0;
     height: calc(100% - 37px);
@@ -13825,6 +13826,25 @@ table .lblCustomCheckbox label{width:70%}
 .tab-content div.gridbox_dhx_web.gridbox tr {
     color: #000000;
 }
+.tab-content div.gridbox{
+    min-width: 100% !important;    
+}
+.tab-content .div.gridbox .objbox {
+    width: 100% !important;
+    /*Added by sunita for #685 21/1/2016*/
+    overflow-x: hidden;
+}
+
+.tab-content div.gridbox .xhdr {
+    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    width: 100% !important;
+}  
+ .tab-content div.gridbox .objbox table, .tab-content div.gridbox .xhdr table{
+    width: 100% !important;  
+}
+
 
 .inspect-column-parent .lable_inline p{margin:0 8px 0 0}
 
@@ -13835,7 +13855,7 @@ table .lblCustomCheckbox label{width:70%}
 }
  
 .report-main .close-popup-btn {
-    color: #fff;
+    color: inherit;
     float: right;
     margin: 0 10px;
 }
@@ -13887,14 +13907,19 @@ table.dataTable thead .sorting_desc {
 
 .ViewAllReportPopUp .tab-head {
     text-align: left;           
-    background: #F8710E none repeat scroll 0 0; 
-    color: #ffffff; 
+    background: #88ccdc none repeat scroll 0 0; 
+    color: inherit; 
     border: medium none; 
 }
+.home-chart-header{width:100%; }
+.home-chart-header, .lblheader{ font-weight:bold }
 /* =========================== Measure Report CSS End =========================== */
 
 .MarketingBudget-tbl div.gridbox .pipeLine{border-left:1px solid #000;height:20px; margin:0 5px}
 .MarketingBudget-tbl span.marketing-tbl-link{text-decoration:underline}
+.MarketingBudget-tbl  tr td .treegrid_cell {
+    text-align: left;
+}
 
 /************************************************ Responsive css start here **********************************************************/
 

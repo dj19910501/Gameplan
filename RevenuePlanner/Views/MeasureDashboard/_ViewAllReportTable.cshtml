@@ -6,21 +6,7 @@
     string reportTableId = "ReportTableAll" + Model.DashboardContentId.ToString();
     string TotalTableId = "ReporttotlaTableAll" + Model.DashboardContentId.ToString();
     string formId = "Export_ViewAll_" + reportTableId;
-    <style type="text/css">
-         /* Below CSS is necessary on page level */
-        div.gridbox .objbox {
-            width: inherit;
-            /*Added by sunita for #685 21/1/2016*/
-            overflow-x: hidden;
-        }
-
-        div.gridbox .xhdr {
-            overflow: hidden !important;
-            overflow-x: hidden !important;
-            overflow-y: hidden !important;
-            width: inherit;
-        }              
-    </style>   
+    
     <div id="tbltoCSVdata_@reportTableId"></div>
     <div class="container-fluid all-height">
         <div class="row-fluid calc-height">

@@ -6,67 +6,7 @@
     //string reportTableId = "ReportTableAll" + Model.DashboardContentId.ToString();
     //string TotalTableId = "ReporttotlaTableAll" + Model.DashboardContentId.ToString();
     string formId = "Export_ViewAll_" + Model.Id;
-    <style type="text/css">
-        div.gridbox .objbox {
-            width: inherit;
-            /*Added by sunita for #685 21/1/2016*/
-            overflow-x: hidden;
-        }
 
-        div.gridbox .xhdr {
-            overflow: hidden !important;
-            overflow-x: hidden !important;
-            overflow-y: hidden !important;
-            width: inherit;
-        }
-        /* */
-        table.dataTable thead .sorting_asc {
-            background: url("../images/new_sort_asc.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;
-        }
-
-        table.dataTable thead .sorting {
-            background: url("../images/new_sort_both.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;
-        }
-
-        table.dataTable thead .sorting_desc {
-            background: url("../images/new_sort_desc.jpg") no-repeat scroll right 1px center rgba(0, 0, 0, 0) !important;
-        }
-
-        .TableRowsViewAll {
-            border-radius: 5px;
-            border: medium none;
-            color: black;
-            font-size: 12px !important;
-            height: 25px;
-            line-height: 15px;
-            margin-left: 10px;
-            background-color: #fff;
-        }
-
-        .ViewAllReportPopUp {
-            background-color: white;
-            margin: 30px auto;
-            text-align: center;
-            max-height: 700px;
-        }
-
-        .form-ViewAllReportPopUp {
-            border-radius: 5px;
-            left: 19%;
-            position: fixed;
-            text-align: center;
-            top: 0%;
-            z-index: 2002;
-            width: 60%;
-        }
-
-        .ViewAllReportPopUp .tab-head {
-            text-align: left;
-            background: #F8710E none repeat scroll 0 0;
-            color: #ffffff;
-            border: medium none;
-        }
-    </style>
     <div id="tbltoCSVdata_@Model.Id"></div>
     <div class="container-fluid all-height">
         <div class="row-fluid calc-height">
@@ -77,23 +17,26 @@
                         {
                             @Html.HiddenFor(x => x.DisplayName)
                             <div id="ViewAllDataModule">
-                                <div class="tab-head">@Model.DisplayName<a class="close-popup-btn" onmouseover="this.style.color='white'">Close</a><img src="@Url.Content("~/content/images/help-icon.png")" alt="help" style="float:right; height:15px; width:15px; margin:13px;" title="Use shift key to allow sorting on multiple columns" /></div>
+                                <div class="tab-head">@Model.DisplayName<a class="close-popup-btn">Close</a>
+                                @*<img src="@Url.Content("~/content/images/help-icon.png")" alt="help" style="float:right; height:15px; width:15px; margin:13px;" title="Use shift key to allow sorting on multiple columns" />*@
+                                </div>
                                 <div class="home-chart-header  col-xs-12">
                                     <div class="row date-value-wrapper">
                                         <div class="col-xs-5">
-                                            <div style="width: 100%">Date Range</div>
+                                            <div class="datetitle">Date Range</div>
                                             <span class="lblheader">From: </span><span class="lblvalue">@Sessions.StartDate </span>
                                             <span class="lblheader">To: </span><span class="lblvalue">@Sessions.EndDate</span>
                                         </div>
 
                                     </div>
                                 </div>
-                                <div class="tab-content tab-content-scroll">
-                                    <div class="table1-responsive" style="overflow: auto">
-                                        <div id="divViewChartTable_@Model.Id" class="table-popup">
+                                <div class="tab-content-wrap tab-content-scroll">
+                                    <div class="tab-content">
+                                        <div class="table1-responsive" style="overflow: auto">
+                                            <div id="divViewChartTable_@Model.Id" class="table-popup">
+                                            </div>
                                         </div>
-
-                                    </div>
+                                     </div>
                                 </div>
                             </div>
                         }
@@ -102,7 +45,8 @@
             </div>
         </div>
     </div>
-    <div id="DivBackground" class="modal-backdrop fade in" style="opacity:0.2"></div>}
+    <div id="DivBackground" class="modal-backdrop fade in" style="opacity:0.2"></div>
+    }
 
 <script type="text/javascript">
 
