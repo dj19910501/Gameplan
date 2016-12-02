@@ -41,7 +41,7 @@ namespace RevenuePlanner.Test.QA
 
         [TestMethod]
         [Priority(1)]
-        public async Task AINQSummaryReport()
+        public async Task INQSummaryReport()
         {
             try
             {

@@ -40,7 +40,7 @@ namespace RevenuePlanner.Test.QA
 
         [TestMethod()]
         [Priority(1)]
-        public void AMonthlyRevenueReport()
+        public void MonthlyRevenueReport()
         {
             try
             {
@@ -74,7 +74,7 @@ namespace RevenuePlanner.Test.QA
 
         [TestMethod()]
         [Priority(2)]
-        public void BQuaterlyRevenueReport()
+        public void QuaterlyRevenueReport()
         {
             try
             {
