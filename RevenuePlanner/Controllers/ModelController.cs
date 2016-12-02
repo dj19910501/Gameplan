@@ -1111,7 +1111,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (objModel.ClientId != Sessions.User.CID)
                     {
-                        throw new Exception(string.Format("Invalid model ID: {1}", id));
+                        throw new Exception(string.Format("Invalid model ID: {0}", id));
                     }
 
                     var objPlan = objDbMrpEntities.Plans.Where(plan => plan.ModelId == id && plan.IsDeleted == false).ToList();

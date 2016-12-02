@@ -837,7 +837,7 @@ namespace RevenuePlanner.Controllers
         private void ValidateUser(int UserId)
         {
             User u = objBDSServiceClient.GetUserDetailsByIdEx(UserId);
-            if (u == null || u.CID != Sessions.User.CID) throw new Exception(string.Format("UserId: {1} not valid", UserId));
+            if (u == null || u.CID != Sessions.User.CID) throw new Exception(string.Format("UserId: {0} not valid", UserId));
         }
 
         #endregion
