@@ -14,10 +14,10 @@ using System.Data;
 namespace RevenuePlanner.Test.QA
 {
     [TestClass]
-    public class LoginTest
+    public class Login
     {
         [TestMethod()]
-        public void Login()
+        public void ReportLogin()
         {
             try
             {

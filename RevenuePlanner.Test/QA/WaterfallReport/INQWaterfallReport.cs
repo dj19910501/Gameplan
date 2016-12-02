@@ -12,10 +12,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace RevenuePlanner.Test.QA
+namespace RevenuePlanner.Test.QA.WaterfallReport
 {
     [TestClass]
-    public class INQWaterfallReportTest
+    public class INQWaterfallReport
     {
         #region Variable Declaration
 
@@ -23,11 +23,9 @@ namespace RevenuePlanner.Test.QA
         PlanCommonFunctions ObjPlanCommonFunctions = new PlanCommonFunctions();
 
         DateTime NewStartDate; DateTime NewEndDate; DateTime TacticEndDate; DateTime TacticStartDate; int MonthDiff = 0; int currentMonth = DateTime.Now.Month;
-        decimal TacticRevenueAmount = 0; static decimal TotalProjected = 0;
+        static decimal TotalProjected = 0;
         decimal TacticINQ = 0; decimal TacticProjectedCost = 0; static string currentYear = DateTime.Now.Year.ToString();
-        decimal PlanBudget = 0; decimal TacticTQL = 0; decimal GoalAmount = 0; decimal actualProjected = 0; decimal TacticCW = 0;
-
-        List<int> PlanIds; List<int> ReportOwnerIds; List<int> ReportTacticTypeIds;
+        decimal TacticTQL = 0; decimal GoalAmount = 0;
 
         static List<double> ActualList; static List<double> ProjectedList; static List<double> GoalList; static List<string> PerformanceList;
         static List<string> TotalActualList;
@@ -35,7 +33,7 @@ namespace RevenuePlanner.Test.QA
         List<string> QuaterlyTotalActualList;
 
         ReportController objReportController; ReportModel objReportModel; ConversionToPlanModel objConversionToPlanModel; CardSectionModel objCardSection;
-        ConversionDataTable objConversionDataTable; ConversionSubDataTableModel SubDataTableModel; Projected_Goal objProjected_Goal; ReportOverviewModel objReportOverviewModel;
+        ConversionDataTable objConversionDataTable; ConversionSubDataTableModel SubDataTableModel; Projected_Goal objProjected_Goal;
 
         static decimal CardINQActual = 0; static decimal CardINQGoal = 0; static decimal CardINQPercentage = 0;
 
@@ -246,7 +244,7 @@ namespace RevenuePlanner.Test.QA
                             int currentMonthNo = DateTime.Now.Month - TacticStartDate.Month + 1;
                             if (DateTime.Now.Month == i)
                             {
-                                double TotalProjected = (GoalList[i] / MonthDiff) * currentMonthNo;
+                                double TotalProjected = (GoalList[i - 1] / MonthDiff) * currentMonthNo;
                                 Assert.AreEqual(Math.Round(Convert.ToDecimal(ProjectedList[i - 1].ToString()), 2), Math.Round(Convert.ToDecimal(TotalProjected), 2));
                                 Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report  \n The assert value of projected inquiry is " + ProjectedList[i - 1].ToString() + ".");
                             }
