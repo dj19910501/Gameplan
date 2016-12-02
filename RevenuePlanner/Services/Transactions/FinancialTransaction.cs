@@ -16,7 +16,7 @@ namespace RevenuePlanner.Services.Transactions
             _database = database;
         }
 
-        public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId)
+        public void SaveTransactionToLineItemMapping(int clientId, List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId)
         {
 
             foreach (TransactionLineItemMapping tlim in transactionLineItemMappings)
@@ -45,7 +45,7 @@ namespace RevenuePlanner.Services.Transactions
             _database.SaveChanges();
         }
 
-        public void DeleteTransactionLineItemMapping(int mappingId)
+        public void DeleteTransactionLineItemMapping(int clientId, int mappingId)
         {
             // TODOWCR: I don't like having to look this up to delete it, how to otherwise guard against deleting non-existent item?
             Models.TransactionLineItemMapping modelTLIM = _database.TransactionLineItemMappings.Where(dbtlim => dbtlim.TransactionLineItemMappingId == mappingId).SingleOrDefault();
@@ -74,7 +74,7 @@ namespace RevenuePlanner.Services.Transactions
             return _defaultHeaderMapping;
         }
 
-        public List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId)
+        public List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int clientId, int transactionId)
         {
             // TODOWCR: Is there a better way to get multiple results from a stored procedure?
             DataSet dataset = new DataSet();
@@ -191,7 +191,7 @@ namespace RevenuePlanner.Services.Transactions
             return sqlQuery.Skip(skip).Take(take).ToList();
         }
 
-        public List<Transaction> GetTransactionsForLineItem(int lineItemId)
+        public List<Transaction> GetTransactionsForLineItem(int clientId, int lineItemId)
         {
             IQueryable<Transaction> sqlQuery =
                 from tlim in _database.TransactionLineItemMappings

@@ -153,14 +153,14 @@ namespace RevenuePlanner.Services.Transactions
         /// <returns></returns>
         List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessedOnly = true, List<ColumnFilter> columnFilters = null,  int skip = 0, int take = 10000);
 
-        List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId);
+        List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int clientId, int transactionId);
 
         /// <summary>
         /// Reverse listing of transactions per line item 
         /// </summary>
         /// <param name="lineItemId"></param>
         /// <returns></returns>
-        List<Transaction> GetTransactionsForLineItem(int lineItemId);
+        List<Transaction> GetTransactionsForLineItem(int clientId, int lineItemId);
 
         /// <summary>
         /// Search for transactions that matches searchText in any textual field
@@ -177,7 +177,7 @@ namespace RevenuePlanner.Services.Transactions
         /// This method handles both new mapping as well as updating existing mappings 
         /// </summary>
         /// <param name="transactionLineItemMappings"></param>
-        void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId);
+        void SaveTransactionToLineItemMapping(int clientId, List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId);
         /// <summary>
         /// Client may customize transaction column headers (to display on UI) to their taste by providing headers mappings
         /// from our standard header to theirs. Internally, we will always use standard headings (see Transaction class)
@@ -186,6 +186,6 @@ namespace RevenuePlanner.Services.Transactions
         /// <returns></returns>
         List<TransactionHeaderMapping> GetHeaderMappings(int clientId);
 
-        void DeleteTransactionLineItemMapping(int mappingId);
+        void DeleteTransactionLineItemMapping(int clientId, int mappingId);
     }
 }

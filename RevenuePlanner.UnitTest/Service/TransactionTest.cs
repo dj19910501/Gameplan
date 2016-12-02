@@ -33,15 +33,15 @@ namespace RevenuePlanner.UnitTest.Service
                 Amount = 300.10,
             };
             tlimList.Add(tlim);
-            _transaction.SaveTransactionToLineItemMapping(tlimList, 297);
+            _transaction.SaveTransactionToLineItemMapping(ClientId, tlimList, 297);
 
-            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(75);
+            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(ClientId, 75);
 
             LineItemsGroupedByTactic ligbt = lineItems.Find(item => item.TacticId == 2079);
             Assert.IsNotNull(ligbt);
             LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == 301);
             Assert.IsNotNull(lineItem);
-            _transaction.DeleteTransactionLineItemMapping(lineItem.LineItemMapping.TransactionLineItemMappingId);
+            _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
 
         }
 
@@ -55,7 +55,7 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_GetLinkedLineItemsForTransaction()
         {
-            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(30);
+            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(ClientId, 30);
 
             Assert.AreEqual(lineItems.Count, 4);
 
@@ -104,7 +104,7 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_GetTransactionsForLineItem()
         {
-            List<Transaction> transactions = _transaction.GetTransactionsForLineItem(297);
+            List<Transaction> transactions = _transaction.GetTransactionsForLineItem(ClientId, 297);
         }
 
         [TestMethod]
@@ -126,22 +126,22 @@ namespace RevenuePlanner.UnitTest.Service
             };
             tlimList.Add(tlim2);
 
-            _transaction.SaveTransactionToLineItemMapping(tlimList, 297);
+            _transaction.SaveTransactionToLineItemMapping(ClientId, tlimList, 297);
 
-            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(120);
+            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(ClientId, 120);
 
             LineItemsGroupedByTactic ligbt = lineItems.Find(item => item.TacticId == 2077);
             Assert.IsNotNull(ligbt);
             LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == 297);
             Assert.IsNotNull(lineItem);
             Assert.AreEqual(300.1, lineItem.LineItemMapping.Amount);
-            _transaction.DeleteTransactionLineItemMapping(lineItem.LineItemMapping.TransactionLineItemMappingId);
+            _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
 
 
             lineItem = ligbt.LineItems.Find(item => item.LineItemId == 298);
             Assert.IsNotNull(lineItem);
             Assert.AreEqual(100.1, lineItem.LineItemMapping.Amount);
-            _transaction.DeleteTransactionLineItemMapping(lineItem.LineItemMapping.TransactionLineItemMappingId);
+            _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
 
 
             // TODOWCR: Finish unit test

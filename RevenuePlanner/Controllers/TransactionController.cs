@@ -23,13 +23,13 @@ namespace RevenuePlanner.Controllers
         [System.Web.Http.HttpPost]
         public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings)
         {
-            _transaction.SaveTransactionToLineItemMapping(transactionLineItemMappings, Sessions.User.ID);
+            _transaction.SaveTransactionToLineItemMapping(Sessions.User.CID, transactionLineItemMappings, Sessions.User.ID);
         }
 
         [System.Web.Http.HttpPost]
         public void DeleteTransactionLineItemMapping(int mappingId)
         {
-            _transaction.DeleteTransactionLineItemMapping(mappingId);
+            _transaction.DeleteTransactionLineItemMapping(Sessions.User.CID, mappingId);
         }
 
         public IEnumerable<TransactionHeaderMapping> GetHeaderMappings()
@@ -39,7 +39,7 @@ namespace RevenuePlanner.Controllers
 
         public IEnumerable<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId)
         {
-            return _transaction.GetLinkedLineItemsForTransaction(transactionId);
+            return _transaction.GetLinkedLineItemsForTransaction(Sessions.User.CID, transactionId);
         }
 
         public int GetTransactionCount(DateTime start, DateTime end, bool unprocessedOnly = true)
@@ -55,7 +55,7 @@ namespace RevenuePlanner.Controllers
 
         public IEnumerable<Transaction> GetTransactionsForLineItem(int lineItemId)
         {
-            return _transaction.GetTransactionsForLineItem(lineItemId);
+            return _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
         }
 
     }
