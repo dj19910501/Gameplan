@@ -5,35 +5,8 @@ const DEFAULT_PAGING = {
     take: 100,
 };
 
-/**
- * transforms the records into DHTMLX format
- * @param records
- * @param columns
- * @param getRecordId
- * @param getColumnValue
- * @returns {{rows}}
- */
-function transformRecords(records, columns, getRecordId, getColumnValue) {
-    if (records && columns) {
-        return {
-            rows: records.map(record => ({
-                id: getRecordId(record),
-                data: columns.map(column => getColumnValue(record, column)),
-            })),
-        }
-    }
-}
-
-function initializeGridColumns(grid, columns) {
-    grid.setHeader(columns.map(c => c.label).join(","));
-    grid.setInitWidths(columns.map(c => c.width).join(","));
-    grid.setColAlign(columns.map(c => c.align).join(","));
-}
-
 class GridDataSource {
-    constructor(initialFilter, initialPaging, initialColumns, initialRecords, initialTotalRecords, getRecordId, getColumnValue) {
-        this._getRecordId = getRecordId;
-        this._getColumnValue = getColumnValue;
+    constructor(initialFilter, initialPaging, initialColumns, initialRecords, initialTotalRecords) {
         this.state = {
             filter: initialFilter,
             paging: {...DEFAULT_PAGING, ...initialPaging},
@@ -56,19 +29,30 @@ class GridDataSource {
     }
 
     _initializeGridColumns(grid) {
-        initializeGridColumns(grid, this.state.columns);
-        grid.init();
+        let firstTime = true;
 
         // Now listen for records
         const renderGridData = ev => {
             if (!ev || ev.which.records) {
                 const records = this.state.records;
-                this.gridData = transformRecords(records, this.state.columns, this._getRecordId, this._getColumnValue);
 
-                grid.clearAll(false);
-                if (this.gridData) {
-                    grid.parse(this.gridData, "json");
+                if (firstTime && !records) {
+                    // do not initialize the grid until we have records
+                    return;
                 }
+
+                const json = { data: records };
+
+                if (firstTime) {
+                    json.head = this.state.columns;
+                }
+                else {
+                    grid.clearAll(false);
+                }
+
+                firstTime = false;
+
+                grid.parse(json, "js");
             }
         };
 
@@ -114,6 +98,19 @@ class GridDataSource {
         this._notify({filter: true, totalRecords: true});
     }
 
+    /**
+     * @param newColumns
+     * newColumns should be an array of columns to use. e.g.: [ column1, column2, ...]
+     * Each column should be an object with these properties:
+     *
+     * id {string} - The name of the property on your data records to use for the value of this column
+     * value {string} - the column label to display in the Header row
+     * width {number|string} (optional) - the width (pixels) of this column.  Use "*" to make this column expand to fill space https://docs.dhtmlx.com/api__dhtmlxgrid_setinitwidths.html
+     * type {string} (optional) - the DHTMLX grid cell type https://docs.dhtmlx.com/api__dhtmlxgrid_setcoltypes.html
+     * align {string} (optional) - the column alignment: left, center, right, justify https://docs.dhtmlx.com/api__dhtmlxgrid_setcolalign.html
+     * sort {string} (optional) - the column sorting type https://docs.dhtmlx.com/api__dhtmlxgrid_setcolsorting.html
+     * hidden {bool} (optional) - mark the column as hidden
+     */
     updateColumns(newColumns) {
         this.state.columns = newColumns;
         this._notify({columns: true});
@@ -181,7 +178,7 @@ class GridDataSource {
     }
 }
 
-export default function gridDataSource(initialFilter, initialPaging, initialColumns, initialRecords, initialTotalRecords, getRecordId, getColumnValue) {
-    return new GridDataSource(initialFilter, initialPaging, initialColumns, initialRecords, initialTotalRecords, getRecordId, getColumnValue);
+export default function gridDataSource(initialFilter, initialPaging, initialColumns, initialRecords, initialTotalRecords) {
+    return new GridDataSource(initialFilter, initialPaging, initialColumns, initialRecords, initialTotalRecords);
 }
 

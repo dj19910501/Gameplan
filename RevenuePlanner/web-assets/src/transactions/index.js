@@ -20,8 +20,12 @@ function createPager($pager, dataSource) {
         currentPage: dataSource.pageNumber || 1,
         onPageClick: (pageNumber, ev) => {
             dataSource.gotoPage(pageNumber);
-            // do not let the click event update the URL hash
-            ev.preventDefault();
+
+            // ev is undefined if user used ellipses to type in a page number
+            if (ev) {
+                // do not let the click event update the URL hash
+                ev.preventDefault();
+            }
         }
     });
 

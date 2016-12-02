@@ -33,18 +33,11 @@ const DEFAULT_HEADER_MAPPINGS = [{
     "Hive9Header": "Department"
 }];
 
-function getRecordId(transactionRecord) {
-    return transactionRecord.TransactionId;
-}
-
-function getColumnValue(record, column) {
-    return record[column.property];
-}
-
 function createColumnFromHeaderMapping(mapping) {
     return {
-        label: mapping.ClientHeader,
-        property: mapping.Hive9Header,
+        id: mapping.Hive9Header,
+        value: mapping.ClientHeader,
+        type: "ro",
         width: COLUMN_DEFAULTS[mapping.Hive9Header].width || "150",
         align: COLUMN_DEFAULTS[mapping.Hive9Header].align || "left",
     };
@@ -63,7 +56,14 @@ function getGridData(filter, paging) {
     const requestUrl = `${GET_TRANSACTIONS_URI}?${params.join("&")}`;
 
     // request the data
-    return $.getJSON(requestUrl);
+    return $.getJSON(requestUrl).then(records => {
+        // DHTMLX requires every record have an "id" property
+        for (const record of records) {
+            record.id = record.TransactionId;
+        }
+
+        return records;
+    });
 }
 
 function getRecordCount(filter) {
@@ -96,7 +96,7 @@ export default function transactionGridDataSource() {
         take: 2, // TODO make user selectable and/or change default based on Browser speed
     };
 
-    const dataSource = gridDataSource(filter, paging, undefined, undefined, undefined, getRecordId, getColumnValue);
+    const dataSource = gridDataSource(filter, paging);
 
     // ask the server for our column definitions and give them to the dataSource once we know them
     function setColumns(headerMappings) {
@@ -104,7 +104,7 @@ export default function transactionGridDataSource() {
         dataSource.updateColumns(columns);
     }
 
-    $.getJSON(GET_HEADER_MAPPINGS_URI).then(setColumns, () => setColumns(DEFAULT_HEADER_MAPPINGS));
+    $.getJSON(GET_HEADER_MAPPINGS_URI).then(setColumns);
 
     // listen for filter/paging changes and request new data
     let currentGridDataRequest;
