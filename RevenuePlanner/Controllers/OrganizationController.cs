@@ -767,18 +767,20 @@ namespace RevenuePlanner.Controllers
             try
             {
                 string[] arrPermissionId = permissionIds.Split(',');
-                int UserId = userId;
                 int CurrentUserID = Sessions.User.ID;
 
                 //// Start - Added/Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
                 //// Save User Activity Permissions
-                if (UserId != 0)
+                if (userId != 0)
                 {
+                    //first, let's check if the user being managed belong to the same client as managing user for security reason -zz
+                    ValidateUser(userId);
+
                     List<string> activityPermissions = arrPermissionId.Where(permission => (permission.ToLower().Contains("yes") || permission.ToLower().Contains("no"))).ToList();
                     int activityPermissionsResult = 0;
                     if (activityPermissions.Count > 0)
                     {
-                        activityPermissionsResult = objBDSServiceClient.AddUserActivityPermissionsEx(UserId, CurrentUserID, activityPermissions, Sessions.ApplicationId);
+                        activityPermissionsResult = objBDSServiceClient.AddUserActivityPermissionsEx(userId, CurrentUserID, activityPermissions, Sessions.ApplicationId);
                     }
                     else
                     {
@@ -790,7 +792,7 @@ namespace RevenuePlanner.Controllers
                     int customRestrictionResult = 0;
                     if (customRestrictionPermissions.Count > 0)
                     {
-                        customRestrictionResult = AddUserCustomRestrictions(UserId, customRestrictionPermissions);
+                        customRestrictionResult = AddUserCustomRestrictions(userId, customRestrictionPermissions);
                     }
                     else
                     {
@@ -801,7 +803,7 @@ namespace RevenuePlanner.Controllers
                     int customDashResult = 0;
                     if (CustDashPermissions.Count > 0)
                     {
-                        customDashResult = AddUserCustomDashboard(UserId, CustDashPermissions);
+                        customDashResult = AddUserCustomDashboard(userId, CustDashPermissions);
                     }
                     else
                     {
@@ -831,6 +833,13 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { status = false }, JsonRequestBehavior.AllowGet);  //// Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
+
+        private void ValidateUser(int UserId)
+        {
+            User u = objBDSServiceClient.GetUserDetailsByIdEx(UserId);
+            if (u == null || u.CID != Sessions.User.CID) throw new Exception(string.Format("UserId: {1} not valid", UserId));
+        }
+
         #endregion
 
         #region "Other"
@@ -857,11 +866,12 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                int UserId = userId;
+                ValidateUser(userId);
+
                 int creatorId = Sessions.User.ID;
 
                 //// Reset Default Role settings.
-                int result = objBDSServiceClient.ResetToRoleDefaultEx(UserId, creatorId, Sessions.ApplicationId);
+                int result = objBDSServiceClient.ResetToRoleDefaultEx(userId, creatorId, Sessions.ApplicationId);
                 if (result >= 1)
                 {
                     TempData["SuccessMessage"] = Common.objCached.UserPermissionsResetToDefault;

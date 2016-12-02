@@ -1109,6 +1109,11 @@ namespace RevenuePlanner.Controllers
                 Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == id).FirstOrDefault();
                 if (objModel != null)
                 {
+                    if (objModel.ClientId != Sessions.User.CID)
+                    {
+                        throw new Exception(string.Format("Invalid model ID: {1}", id));
+                    }
+
                     var objPlan = objDbMrpEntities.Plans.Where(plan => plan.ModelId == id && plan.IsDeleted == false).ToList();
                     if (objPlan.Count == 0)
                     {
@@ -2368,7 +2373,7 @@ namespace RevenuePlanner.Controllers
 
                 foreach (var version in lstVersions)
                 {
-                    Model objModel = objDbMrpEntities.Models.FirstOrDefault(model => model.ModelId == version.ModelId);
+                    Model objModel = objDbMrpEntities.Models.FirstOrDefault(model => model.ModelId == version.ModelId && model.ClientId == Sessions.User.CID);
 
                     if (objModel.IntegrationInstanceId == integrationId)
                     {

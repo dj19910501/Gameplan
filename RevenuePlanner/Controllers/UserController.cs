@@ -1273,6 +1273,7 @@ namespace RevenuePlanner.Controllers
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult GetManagers(int id = 0, int UserId = 0)
         {
+            id = Sessions.User.CID; //For security reason, simply ignore client ID passed from UI!  zz 
             List<UserModel> managerList = new List<UserModel>();
             if (UserId != 0)
             {
