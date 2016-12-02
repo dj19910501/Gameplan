@@ -152,6 +152,9 @@
     var AddNewrow = true;
     var backBudgetid = '';
     var standardcolumns;
+    var colIdIndex;
+    var colIconIndex;
+    var ColTaskNameIndex;
     $(document).ready(function () {
         $('#proceed-button_DeleteItem').on("click", function () {
             DeleteBudget();
@@ -284,10 +287,10 @@
                 budgetgrid.init();
                 BudgetGridData = data.GridData;
                 budgetgrid.parse(BudgetGridData, "json");
-                var IdIndex = budgetgrid.getColIndexById('Id');
-                var TaskNameIndex = budgetgrid.getColIndexById('Name');
-
-                budgetgrid.setColumnHidden(IdIndex, true)
+                colIdIndex = budgetgrid.getColIndexById('Id');
+                ColTaskNameIndex = budgetgrid.getColIndexById('Name');
+                colIconIndex = budgetgrid.getColIndexById('Add Row');
+                budgetgrid.setColumnHidden(colIdIndex, true)
                 HideShowColumns();
 
 
@@ -305,10 +308,10 @@
                         return false;
                     }
 
-                    if (cInd == TaskNameIndex) {
+                    if (cInd == ColTaskNameIndex) {
                         var isTitleEdit = budgetgrid.getUserData(rId, "isTitleEdit");
                         if (isTitleEdit == "0") {
-                            budgetgrid.cells(rId, TaskNameIndex).setDisabled(true);
+                            budgetgrid.cells(rId, ColTaskNameIndex).setDisabled(true);
                             return false;
                         }
                     }
@@ -449,11 +452,11 @@
     }
     function ExportToExcel() {
         ShowHideSuccessDiv();
-        budgetgrid.setColumnHidden(0, false);
-        budgetgrid.setColumnHidden(2, true);
+        budgetgrid.setColumnHidden(colIdIndex, false);
+        budgetgrid.setColumnHidden(colIconIndex, true);
         budgetgrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
-        budgetgrid.setColumnHidden(0, true);
-        budgetgrid.setColumnHidden(2, false);
+        budgetgrid.setColumnHidden(colIdIndex, true);
+        budgetgrid.setColumnHidden(colIconIndex, false);
     }
 
     // #2804 File input popup function for import finance marketing budget
