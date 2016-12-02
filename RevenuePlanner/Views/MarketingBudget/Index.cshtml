@@ -152,14 +152,13 @@
     var AddNewrow = true;
     var backBudgetid = '';
     var standardcolumns;
+    //add variable for assigning index of grid column to use in export or anywhere else.
     var colIdIndex;
     var colIconIndex;
-    var ColTaskNameIndex;
+    var colTaskNameIndex;
+
     $(document).ready(function () {
-        $('#proceed-button_DeleteItem').on("click", function () {
-            DeleteBudget();
-            $('#divDeletePopup').modal("hide");
-        });
+       
         var Columnsetval = $("#ddlColumnSet").val();
         $("#sidebar").css("display", "none");
         $("#content_wraper").css("width", "100%");
@@ -195,6 +194,10 @@
         }).multiselectfilter({
         });
 
+    });
+    $('#proceed-button_DeleteItem').on("click", function () {
+        DeleteBudget();
+        $('#divDeletePopup').modal("hide");
     });
 
     $("#ddlMainGridTimeFrame").change(function () {
