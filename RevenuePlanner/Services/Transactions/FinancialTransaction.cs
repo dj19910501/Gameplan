@@ -312,7 +312,7 @@ namespace RevenuePlanner.Services.Transactions
         #region Internal Implementation 
         private static List<TransactionHeaderMapping> _defaultHeaderMapping = 
             new List<TransactionHeaderMapping>() {
-                new TransactionHeaderMapping() { ClientHeader = "Transaction ID", Hive9Header = "ClientTransactionId", HeaderFormat = HeaderMappingFormat.Number, precision = 0, ExpectedCharacterLength = 7 },
+                new TransactionHeaderMapping() { ClientHeader = "Transaction ID", Hive9Header = "ClientTransactionId", HeaderFormat = HeaderMappingFormat.Identifier, precision = 0, ExpectedCharacterLength = 7 },
                 new TransactionHeaderMapping() { ClientHeader = "Purchase Order", Hive9Header = "PurchaseOrder", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 10 },
                 new TransactionHeaderMapping() { ClientHeader = "Vendor", Hive9Header = "Vendor", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 20 },
                 new TransactionHeaderMapping() { ClientHeader = "Amount", Hive9Header = "Amount", HeaderFormat = HeaderMappingFormat.Currency, precision = 2, ExpectedCharacterLength = 10 },

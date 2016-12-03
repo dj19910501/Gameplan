@@ -126,7 +126,8 @@ namespace RevenuePlanner.Services.Transactions
         Date = 2,
         Currency = 3,
         Number = 4,
-        Percent = 5 
+        Percent = 5,
+        Identifier = 6
     }
 
     /// <summary>
