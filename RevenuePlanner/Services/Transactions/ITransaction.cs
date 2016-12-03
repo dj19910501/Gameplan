@@ -137,6 +137,8 @@ namespace RevenuePlanner.Services.Transactions
         public string ClientHeader { get; set; }
         public string Hive9Header { get; set; }
         public HeaderMappingFormat HeaderFormat { get; set; }
+        public int ExpectedCharacterLength { get; set; }
+        public int precision { get; set; }
     }
 
     /// <summary>

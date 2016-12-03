@@ -22,6 +22,7 @@ namespace RevenuePlanner.UnitTest.Service
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Test_Transaction_DeleteTransactionLineItemMapping()
         {
             List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
@@ -39,6 +40,7 @@ namespace RevenuePlanner.UnitTest.Service
 
 
             // delete non-existent line item mapping
+            
             _transaction.DeleteTransactionLineItemMapping(ClientId, 0);
         }
 
@@ -47,7 +49,10 @@ namespace RevenuePlanner.UnitTest.Service
         {
             List<TransactionHeaderMapping> mappings = _transaction.GetHeaderMappings(ClientId) ;
             Assert.IsTrue(mappings.Count > 0);
-            Assert.AreEqual(HeaderMappingFormat.Currency, mappings.Find(mapping => mapping.Hive9Header == "Amount").HeaderFormat);
+
+            TransactionHeaderMapping thm = mappings.Find(mapping => mapping.Hive9Header == "Amount");
+            Assert.AreEqual(HeaderMappingFormat.Currency, thm.HeaderFormat);
+            Assert.AreEqual(2, thm.precision);
 
             // TODOWCR: finish unit test, not sure what more there is to test though.
         }
@@ -57,7 +62,7 @@ namespace RevenuePlanner.UnitTest.Service
         {
             List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(ClientId, 30);
 
-            Assert.AreEqual(lineItems.Count, 4);
+            Assert.AreEqual(lineItems.Count, 5);
 
             LineItemsGroupedByTactic ligbt = lineItems[0];
             Assert.AreEqual(ligbt.TacticId, 4591);
