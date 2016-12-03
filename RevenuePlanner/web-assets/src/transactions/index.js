@@ -68,6 +68,33 @@ function bindViewBy($viewBy, dataSource) {
     });
 }
 
+function bindNoRecordsMessage(dataSource, $pager, $gridContainer) {
+    function updateDisplay(ev) {
+        if (!ev || ev.which.totalRecords) {
+            const totalRecords = dataSource.state.totalRecords;
+
+            // if totalRecords is undefined, that means a request is pending to get the count
+            // do nothing in this situation.
+            if (totalRecords !== undefined) {
+                const noRecords = (totalRecords === 0);
+                if (noRecords) {
+                    $pager.addClass(css.noRecords);
+                    $gridContainer.addClass(css.noRecords);
+                }
+                else {
+                    $pager.removeClass(css.noRecords);
+                    $gridContainer.removeClass(css.noRecords);
+                }
+            }
+        }
+    }
+
+    dataSource.on("change", updateDisplay);
+
+    // set the initial display
+    updateDisplay();
+}
+
 export default function main($rootElement) {
     const viewOptions = {
         css,
@@ -87,4 +114,5 @@ export default function main($rootElement) {
     bindViewBy($viewBy, dataSource);
     createPager($pager, dataSource);
     createGrid($gridContainer, dataSource);
+    bindNoRecordsMessage(dataSource, $pager, $gridContainer);
 }
