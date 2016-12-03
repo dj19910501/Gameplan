@@ -4,8 +4,10 @@ import gridDataSource from 'util/gridDataSource';
 import {GET_HEADER_MAPPINGS_URI, GET_TRANSACTIONS_URI, GET_TRANSACTION_COUNT_URI} from './apiUri';
 import SubRowCellType from 'gridCellTypes/sub_row_func';
 import mapHive9Column from 'util/mapHive9Column';
+import css from './transactions.scss';
 
 const LINKED_ITEM_RENDERER_PROPERTY = "linkedItemRenderer";
+const EDIT_LINKED_ITEMS = "editLinkedItems";
 
 function getGridColumns() {
     return $.getJSON(GET_HEADER_MAPPINGS_URI)
@@ -23,6 +25,17 @@ function getGridColumns() {
                 type: SubRowCellType,
                 width: 18,
                 align: "left",
+                noresize: true,
+                sort: "na",
+            });
+
+            // Add a column to let the user launch the popup
+            columns.splice(2, 0, {
+                id: EDIT_LINKED_ITEMS,
+                value: "&nbsp;",
+                type: "ro",
+                width: 32,
+                align: "center",
                 noresize: true,
                 sort: "na",
             });
@@ -71,6 +84,8 @@ function getGridData(filter, paging) {
 
                 return deferred;
             };
+
+            record[EDIT_LINKED_ITEMS] = `<i class='fa fa-plus-circle ${css.editLineItems}' title='Add/Remove Linked Items'></i>`;
         }
 
         return records;

@@ -22,6 +22,10 @@ $GRID_PADDING: 5px;
     height: 100%;
     border: none !important;
 
+    .editLineItems {
+      cursor: pointer;
+    }
+
     // override a rule from the "legacy" styles.  ugh
     //box-sizing: border-box !important;
 

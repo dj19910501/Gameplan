@@ -13,7 +13,22 @@ function createGrid($gridContainer, dataSource) {
     grid.enableAutoHeight(true);
     grid.enableAutoWidth(true);
     grid.enableAutoWidth(true);
+    grid.setDateFormat("%m/%d/%Y");
     dataSource.bindToGrid(grid);
+
+    // add click handler to grid editLineItems whenever the grid re-renders
+    grid.attachEvent("onXLE", () => {
+        console.log("render!");
+        $grid
+            .find(`.${css.editLineItems}`)
+            .off("click.transactionGrid")
+            .on("click.transactionGrid", function (ev) {
+                const row = $(this).closest("tr");
+                const transactionId = row[0].idd;
+                ev.stopPropagation();
+                alert(`launch popup for transaction id ${transactionId}`);
+            });
+    });
 }
 
 function createPager($pager, dataSource) {
