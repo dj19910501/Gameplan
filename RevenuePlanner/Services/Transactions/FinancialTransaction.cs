@@ -13,13 +13,18 @@ namespace RevenuePlanner.Services.Transactions
         private MRPEntities _database;
         public FinancialTransaction(MRPEntities database)
         {
+            if (database == null)
+            {
+                throw new ArgumentNullException("database", "MRPEntities database cannot be null.");
+            }
+
             _database = database;
         }
 
         /// <summary>
         /// Return a dictionary of any line item mappings that exist in the db
         /// </summary>
-        /// <param name="transactionLineItemMappings"></param>
+        /// <param name="transactionLineItemMappings">list of transaction to line item mappings</param>
         /// <returns></returns>
         private Dictionary<int, Models.TransactionLineItemMapping> GetExistingLineItemMappings(List<TransactionLineItemMapping> transactionLineItemMappings)
         {
@@ -35,6 +40,19 @@ namespace RevenuePlanner.Services.Transactions
 
         public void SaveTransactionToLineItemMapping(int clientId, List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId)
         {
+            if (clientId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("clientID", "A clientID less than or equal to zero is invalid, and likely indicates the clientID was not set properly");
+            }
+            if (transactionLineItemMappings == null)
+            {
+                throw new ArgumentNullException("transactionLineItemMappings", "transactionLineItemsMappings cannot be null");
+            }
+            if (modifyingUserId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("modifyingUserId", "A modifyingUserId less than or equal to zero is invalid, and likely indicates the modifyingUserId was not set properly");
+            }
+
             Dictionary<int, Models.TransactionLineItemMapping> existingMappings = GetExistingLineItemMappings(transactionLineItemMappings);    
 
             foreach (TransactionLineItemMapping tlim in transactionLineItemMappings)
@@ -64,6 +82,15 @@ namespace RevenuePlanner.Services.Transactions
 
         public void DeleteTransactionLineItemMapping(int clientId, int mappingId)
         {
+            if (clientId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            }
+            if (mappingId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("mappingId", "A mappingId less than or equal to zero is invalid, and likely indicates the mappingId was not set properly");
+            }
+
             Models.TransactionLineItemMapping modelTLIM = _database.TransactionLineItemMappings.Where(dbtlim => dbtlim.TransactionLineItemMappingId == mappingId).SingleOrDefault();
 
             if (modelTLIM != null)
@@ -74,24 +101,36 @@ namespace RevenuePlanner.Services.Transactions
         }
 
         /// <summary>
-        /// 
         ///NOTE: 
         ///this is simply a lookup table for customer preferred captions on transaction list.
         ///In addition, it also determines columns needed to on UI. For this reason, controller action 
         ///should consider using this API to trim down columns before shipping transactions out to UI
         ///since not all columns are needed by UI per client. 
-        ///
         /// </summary>
         /// <param name="clientId"></param>
         /// <returns></returns>
         public List<TransactionHeaderMapping> GetHeaderMappings(int clientId)
         {
+            if (clientId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            }
+
             //Use default for now until real customers are using transaction feature.
             return _defaultHeaderMapping;
         }
 
         public List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int clientId, int transactionId)
         {
+            if (clientId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            }
+            if (transactionId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("transactionId", "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
+            }
+
             // TODOWCR: Is there a better way to get multiple results from a stored procedure?
             DataSet dataset = new DataSet();
             SqlCommand command = new SqlCommand("GetLinkedLineItemsForTransaction", _database.Database.Connection as SqlConnection);
@@ -164,6 +203,11 @@ namespace RevenuePlanner.Services.Transactions
 
         public int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true)
         {
+            if (clientId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            }
+
             int count = _database.Transactions.Count(transaction => (transaction.ClientID == clientId) &&
                                                     ((unprocessdedOnly && transaction.LastProcessed == null) || !unprocessdedOnly) &&
                                                     transaction.DateCreated >= start &&
@@ -172,8 +216,20 @@ namespace RevenuePlanner.Services.Transactions
 
         }
 
-        public List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, List<ColumnFilter> columnFilters = null, int skip = 0, int take = 10000)
+        public List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, int skip = 0, int take = 10000)
         {
+            if (clientId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            }
+            if (skip < 0)
+            {
+                throw new ArgumentOutOfRangeException("skip", "skip must be a postive integer");
+            }
+            if (take < 0)
+            {
+                throw new ArgumentOutOfRangeException("take", "take must be a positive integer");
+            }
 
             // TODOWCR: For paging, what do we order by? Creation date?
             IQueryable<Transaction> sqlQuery =
@@ -211,6 +267,15 @@ namespace RevenuePlanner.Services.Transactions
 
         public List<Transaction> GetTransactionsForLineItem(int clientId, int lineItemId)
         {
+            if (clientId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            }
+            if (lineItemId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("lineItemId", "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
+            }
+
             IQueryable<Transaction> sqlQuery =
                 from tlim in _database.TransactionLineItemMappings
                 join transaction in _database.Transactions on tlim.TransactionId equals transaction.TransactionId
