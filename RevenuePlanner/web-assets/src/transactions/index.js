@@ -1,6 +1,7 @@
 import mainView from './views/main.ejs';
 import css from './transactions.scss';
 import Grid from 'dhtmlXGridObject';
+import uniqueId from 'lodash/uniqueId';
 import resolveAppUri from 'util/resolveAppUri';
 import transactionGridDataSource from './transactionGridDataSource';
 import "third-party/jquery.simplePagination";
@@ -18,7 +19,6 @@ function createGrid($gridContainer, dataSource) {
 
     // add click handler to grid editLineItems whenever the grid re-renders
     grid.attachEvent("onXLE", () => {
-        console.log("render!");
         $grid
             .find(`.${css.editLineItems}`)
             .off("click.transactionGrid")
@@ -56,15 +56,35 @@ function createPager($pager, dataSource) {
     });
 }
 
+function bindViewBy($viewBy, dataSource) {
+    $viewBy.on("change", function () {
+        const index = this.selectedIndex;
+        const option = this.options[index];
+        const value = option.value;
+        dataSource.updateFilter({
+            ...dataSource.state.filter,
+            includeProcessedTransactions: value !== "unlinked",
+        });
+    });
+}
+
 export default function main($rootElement) {
+    const viewOptions = {
+        css,
+        viewById: uniqueId("viewBy"),
+        viewByValue: "all",
+    };
+
     $rootElement
         .addClass("header-content-footer-layout")
-        .html(mainView({css}));
+        .html(mainView(viewOptions));
 
     const $pager = $rootElement.find(`.${css.pager}`);
     const $gridContainer = $rootElement.find(`.${css.gridContainer}`);
+    const $viewBy = $rootElement.find(`#${viewOptions.viewById}`);
 
     const dataSource = transactionGridDataSource();
+    bindViewBy($viewBy, dataSource);
     createPager($pager, dataSource);
     createGrid($gridContainer, dataSource);
 }

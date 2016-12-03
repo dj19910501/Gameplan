@@ -3,6 +3,12 @@ $GRID_PADDING: 5px;
 .header {
   padding-left: $GRID_PADDING;
   padding-right: $GRID_PADDING;
+
+  // Position the viewBy off on the right side
+  .viewByContainer {
+    margin-top: 10px;
+    float: right;
+  }
 }
 
 .gridContainer {
