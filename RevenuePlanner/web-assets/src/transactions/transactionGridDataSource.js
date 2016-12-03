@@ -5,6 +5,7 @@ import {GET_HEADER_MAPPINGS_URI, GET_TRANSACTIONS_URI, GET_TRANSACTION_COUNT_URI
 import SubRowCellType from 'gridCellTypes/sub_row_func';
 import mapHive9Column from 'util/mapHive9Column';
 import css from './transactions.scss';
+import createLinkedItemSubGrid from './createLinkedItemSubGrid';
 
 const LINKED_ITEM_RENDERER_PROPERTY = "linkedItemRenderer";
 const EDIT_LINKED_ITEMS = "editLinkedItems";
@@ -69,19 +70,9 @@ function getGridData(filter, paging) {
             record.id = record.TransactionId;
 
             // Add the function to load and render the linked items
-            record[LINKED_ITEM_RENDERER_PROPERTY] = (element, transactionId) => {
-                element.innerHTML = `Loading ${transactionId}...`;
+            record[LINKED_ITEM_RENDERER_PROPERTY] = createLinkedItemSubGrid;
 
-                const deferred = $.Deferred();
-
-                setTimeout(() => {
-                    element.innerHTML = `<h1>${transactionId} is now loaded</h1><div style="height: 150px; background-color: cyan;">Awesome!</div>`;
-                    deferred.resolve();
-                }, 1500);
-
-                return deferred;
-            };
-
+            // Add the button to open the popup editor
             record[EDIT_LINKED_ITEMS] = `<i class='fa fa-plus-circle ${css.editLineItems}' title='Add/Remove Linked Items'></i>`;
         }
 

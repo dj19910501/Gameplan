@@ -4,7 +4,7 @@
  *
  * The func will be invoked as:
  *
- * func(containerElement, rowID, gridInstance).
+ * func(containerElement, rowID, gridInstance, td).
  * If the function needs to work asynchronously, it should return a thenable (e.g. deferred or Promise) to indicate when it is finished rendering.
  * otherwise it should return nothing
  *
@@ -48,7 +48,7 @@ window.eXcell_sub_row_func.prototype = new eXcell_sub_row;
 
 window.dhtmlXGridObject.prototype._sub_row_render.func = function(that, element, td, func) {
     // func should populate element with goodies
-    const result = func(element, td.parentNode.idd, that);
+    const result = func(element, td.parentNode.idd, that, td);
 
     if (result) {
         result.then(() => {

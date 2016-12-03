@@ -5,6 +5,10 @@ const DEFAULT_PAGING = {
     take: 100,
 };
 
+function propstring(columns, prop, defValue) {
+    return columns.map(c => c[prop] == null ? defValue : c[prop]).join(",");
+}
+
 class GridDataSource {
     constructor(initialFilter, initialPaging, initialColumns, initialRecords, initialTotalRecords) {
         this.state = {
@@ -41,26 +45,34 @@ class GridDataSource {
                     return;
                 }
 
-                const json = { data: records };
-
                 if (firstTime) {
-                    json.head = this.state.columns;
+                    const columns = this.state.columns;
 
-                    // set column resizing
-                    grid.enableResizing(this.state.columns.map(c => !c.noresize).join(","));
+                    grid.setHeader(propstring(columns, "value"));
+                    grid.setColumnIds(propstring(columns, "id"));
+                    grid.setInitWidths(propstring(columns, "width"));
+                    grid.setColAlign(propstring(columns, "align"));
+                    grid.setColTypes(propstring(columns, "type"));
+                    grid.setColSorting(propstring(columns, "sort", "na"));
+                    grid.enableResizing(columns.map(c => !c.noresize).join(","));
 
-                    // set number format
-                    this.state.columns.forEach((column, icolumn) => {
+                    columns.forEach((column, icolumn) => {
                         if (column.numberFormat) {
                             grid.setNumberFormat(column.numberFormat, icolumn);
                         }
+
+                        if (column.hidden) {
+                            grid.setColumnHidden(icolumn, true);
+                        }
                     });
+
+                    grid.init();
                 }
                 else {
                     grid.clearAll(false);
                 }
 
-                grid.parse(json, "js");
+                grid.parse(records, "js");
 
                 firstTime = false;
             }

@@ -81,6 +81,21 @@ $GRID_PADDING: 5px;
       }
     }
   }
+
+  // Some styling of the subgrids
+  :global(.dhx_sub_row) {
+    background-color: white !important;
+    border: none !important;
+
+    td {
+      border-left: none !important;
+      border-right: none !important;
+    }
+
+    :global(.xhdr) td {
+      border-top: none !important;
+    }
+  }
 }
 
 .pager {
