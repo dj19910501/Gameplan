@@ -10,6 +10,8 @@ function createGrid($gridContainer, dataSource) {
     const $grid = $gridContainer.find(`.${css.grid}`);
     const grid = new Grid($grid.get(0));
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
+    grid.enableAutoHeight(true);
+    grid.enableAutoWidth(true);
     dataSource.bindToGrid(grid);
 }
 

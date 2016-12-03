@@ -16,6 +16,7 @@ function getGridColumns() {
                 type: "ro",
                 width: COLUMN_DEFAULTS[mapping.Hive9Header].width || "150",
                 align: COLUMN_DEFAULTS[mapping.Hive9Header].align || "left",
+                sort: "na",
             }));
 
             // Add a column to the front to toggle the subgrid of linked line items
@@ -26,6 +27,7 @@ function getGridColumns() {
                 width: 18,
                 align: "left",
                 noresize: true,
+                sort: "na",
             });
 
             return columns;
@@ -136,7 +138,7 @@ export default function transactionGridDataSource() {
     };
     const paging = {
         skip: 0,
-        take: 2, // TODO make user selectable and/or change default based on Browser speed
+        take: 10, // TODO make user selectable and/or change default based on Browser speed
     };
 
     const dataSource = gridDataSource(filter, paging);
