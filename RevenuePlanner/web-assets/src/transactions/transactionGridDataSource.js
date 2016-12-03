@@ -45,19 +45,16 @@ function getGridColumns() {
 }
 
 function getGridData(filter, paging) {
-    // construct the URL
-    const params = [
-        `start=${filter.startDate.format("YYYY-MM-DD")}`,
-        `end=${filter.endDate.format("YYYY-MM-DD")}`,
-        `unprocessedOnly=${!filter.includeProcessedTransactions}`,
-        `skip=${paging.skip}`,
-        `take=${paging.take}`,
-    ];
-
-    const requestUrl = `${GET_TRANSACTIONS_URI}?${params.join("&")}`;
+    const params = {
+        start: filter.startDate.format("YYYY-MM-DD"),
+        end: filter.endDate.format("YYYY-MM-DD"),
+        unprocessedOnly: !filter.includeProcessedTransactions,
+        skip: paging.skip,
+        take: paging.take,
+    };
 
     // request the data
-    return $.getJSON(requestUrl).then(records => {
+    return $.getJSON(GET_TRANSACTIONS_URI, params).then(records => {
         // doctor the records a bit
         for (const record of records) {
             // convert anything whose name ends in Date to a date
