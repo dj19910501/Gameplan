@@ -12,6 +12,7 @@ function createGrid($gridContainer, dataSource) {
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
     grid.enableAutoHeight(true);
     grid.enableAutoWidth(true);
+    grid.enableAutoWidth(true);
     dataSource.bindToGrid(grid);
 }
 

@@ -45,17 +45,22 @@ class GridDataSource {
 
                 if (firstTime) {
                     json.head = this.state.columns;
+
+                    // set column resizing
+                    grid.enableResizing(this.state.columns.map(c => !c.noresize).join(","));
+
+                    // set number format
+                    this.state.columns.forEach((column, icolumn) => {
+                        if (column.numberFormat) {
+                            grid.setNumberFormat(column.numberFormat, icolumn);
+                        }
+                    });
                 }
                 else {
                     grid.clearAll(false);
                 }
 
                 grid.parse(json, "js");
-
-                if (firstTime) {
-                    // set column resizing
-                    grid.enableResizing(this.state.columns.map(c => !c.noresize).join(","));
-                }
 
                 firstTime = false;
             }

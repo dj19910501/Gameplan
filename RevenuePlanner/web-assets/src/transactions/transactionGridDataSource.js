@@ -2,22 +2,19 @@ import moment from 'moment';
 import $ from 'jquery';
 import gridDataSource from 'util/gridDataSource';
 import {GET_HEADER_MAPPINGS_URI, GET_TRANSACTIONS_URI, GET_TRANSACTION_COUNT_URI} from './apiUri';
-import COLUMN_DEFAULTS from './transactionGridColumnDefaults';
 import SubRowCellType from 'gridCellTypes/sub_row_func';
+import mapHive9Column from 'util/mapHive9Column';
 
 const LINKED_ITEM_RENDERER_PROPERTY = "linkedItemRenderer";
 
 function getGridColumns() {
     return $.getJSON(GET_HEADER_MAPPINGS_URI)
         .then(headerMappings => {
-            const columns = headerMappings.map(mapping => ({
-                id: mapping.Hive9Header,
-                value: mapping.ClientHeader,
-                type: "ro",
-                width: COLUMN_DEFAULTS[mapping.Hive9Header].width || "150",
-                align: COLUMN_DEFAULTS[mapping.Hive9Header].align || "left",
-                sort: "na",
-            }));
+            const columns = headerMappings.map(mapping => {
+                const column = mapHive9Column(mapping, false);
+                column.sort = "na";
+                return column;
+            });
 
             // Add a column to the front to toggle the subgrid of linked line items
             columns.unshift({
@@ -50,6 +47,14 @@ function getGridData(filter, paging) {
     return $.getJSON(requestUrl).then(records => {
         // doctor the records a bit
         for (const record of records) {
+            // convert anything whose name ends in Date to a date
+            for (const propertyName in record) {
+                if (typeof record[propertyName] === "string" && /Date$/.test(propertyName)) {
+                    // note DHX needs to have the dates wrapped in an object like this otherwise it can't "see" them due to a bug
+                    record[propertyName] = { value: new Date(record[propertyName]) };
+                }
+            }
+
             // DHTMLX requires every record have an "id" property
             record.id = record.TransactionId;
 
