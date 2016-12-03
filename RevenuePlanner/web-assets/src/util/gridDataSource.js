@@ -50,9 +50,14 @@ class GridDataSource {
                     grid.clearAll(false);
                 }
 
-                firstTime = false;
-
                 grid.parse(json, "js");
+
+                if (firstTime) {
+                    // set column resizing
+                    grid.enableResizing(this.state.columns.map(c => !c.noresize).join(","));
+                }
+
+                firstTime = false;
             }
         };
 
@@ -110,6 +115,7 @@ class GridDataSource {
      * align {string} (optional) - the column alignment: left, center, right, justify https://docs.dhtmlx.com/api__dhtmlxgrid_setcolalign.html
      * sort {string} (optional) - the column sorting type https://docs.dhtmlx.com/api__dhtmlxgrid_setcolsorting.html
      * hidden {bool} (optional) - mark the column as hidden
+     * noresize {bool} (optional) - if true, then this column cannot be resized by the user
      */
     updateColumns(newColumns) {
         this.state.columns = newColumns;

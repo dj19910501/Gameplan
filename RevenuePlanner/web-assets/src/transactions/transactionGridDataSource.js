@@ -25,6 +25,7 @@ function getGridColumns() {
                 type: SubRowCellType,
                 width: 18,
                 align: "left",
+                noresize: true,
             });
 
             return columns;
