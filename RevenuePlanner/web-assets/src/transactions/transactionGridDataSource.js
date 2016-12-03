@@ -3,44 +3,32 @@ import $ from 'jquery';
 import gridDataSource from 'util/gridDataSource';
 import {GET_HEADER_MAPPINGS_URI, GET_TRANSACTIONS_URI, GET_TRANSACTION_COUNT_URI} from './apiUri';
 import COLUMN_DEFAULTS from './transactionGridColumnDefaults';
+import SubRowCellType from 'gridCellTypes/sub_row_func';
 
-/**
- * We will use this default mapping if we are unable to retrieve a mapping from the server
- */
-const DEFAULT_HEADER_MAPPINGS = [{
-    "ClientHeader": "Transaction ID",
-    "Hive9Header": "ClientTransactionId"
-}, {
-    "ClientHeader": "Purchase Order",
-    "Hive9Header": "PurchaseOrder"
-}, {
-    "ClientHeader": "Vendor",
-    "Hive9Header": "Vendor"
-}, {
-    "ClientHeader": "Amount",
-    "Hive9Header": "Amount"
-}, {
-    "ClientHeader": "Description",
-    "Hive9Header": "TransactionDescription"
-}, {
-    "ClientHeader": "Account",
-    "Hive9Header": "Account"
-}, {
-    "ClientHeader": "Date",
-    "Hive9Header": "TransactionDate"
-}, {
-    "ClientHeader": "Department",
-    "Hive9Header": "Department"
-}];
+const LINKED_ITEM_RENDERER_PROPERTY = "linkedItemRenderer";
 
-function createColumnFromHeaderMapping(mapping) {
-    return {
-        id: mapping.Hive9Header,
-        value: mapping.ClientHeader,
-        type: "ro",
-        width: COLUMN_DEFAULTS[mapping.Hive9Header].width || "150",
-        align: COLUMN_DEFAULTS[mapping.Hive9Header].align || "left",
-    };
+function getGridColumns() {
+    return $.getJSON(GET_HEADER_MAPPINGS_URI)
+        .then(headerMappings => {
+            const columns = headerMappings.map(mapping => ({
+                id: mapping.Hive9Header,
+                value: mapping.ClientHeader,
+                type: "ro",
+                width: COLUMN_DEFAULTS[mapping.Hive9Header].width || "150",
+                align: COLUMN_DEFAULTS[mapping.Hive9Header].align || "left",
+            }));
+
+            // Add a column to the front to toggle the subgrid of linked line items
+            columns.unshift({
+                id: LINKED_ITEM_RENDERER_PROPERTY,
+                value: "&nbsp;",
+                type: SubRowCellType,
+                width: 18,
+                align: "left",
+            });
+
+            return columns;
+        });
 }
 
 function getGridData(filter, paging) {
@@ -57,9 +45,24 @@ function getGridData(filter, paging) {
 
     // request the data
     return $.getJSON(requestUrl).then(records => {
-        // DHTMLX requires every record have an "id" property
+        // doctor the records a bit
         for (const record of records) {
+            // DHTMLX requires every record have an "id" property
             record.id = record.TransactionId;
+
+            // Add the function to load and render the linked items
+            record[LINKED_ITEM_RENDERER_PROPERTY] = (element, transactionId) => {
+                element.innerHTML = `Loading ${transactionId}...`;
+
+                const deferred = $.Deferred();
+
+                setTimeout(() => {
+                    element.innerHTML = `<h1>${transactionId} is now loaded</h1><div style="height: 150px; background-color: cyan;">Awesome!</div>`;
+                    deferred.resolve();
+                }, 1500);
+
+                return deferred;
+            };
         }
 
         return records;
@@ -80,33 +83,7 @@ function getRecordCount(filter) {
     return $.getJSON(requestUrl);
 }
 
-/**
- * Creates a GridDataSource that populates with Transactions
- */
-export default function transactionGridDataSource() {
-    const now = moment();
-    const filter = {
-        // Initial date range is the past year.  Should we use some other default?
-        endDate: now,
-        startDate: now.clone().subtract(1, 'year'),
-        includeProcessedTransactions: true,
-    };
-    const paging = {
-        skip: 0,
-        take: 2, // TODO make user selectable and/or change default based on Browser speed
-    };
-
-    const dataSource = gridDataSource(filter, paging);
-
-    // ask the server for our column definitions and give them to the dataSource once we know them
-    function setColumns(headerMappings) {
-        const columns = headerMappings.map(createColumnFromHeaderMapping);
-        dataSource.updateColumns(columns);
-    }
-
-    $.getJSON(GET_HEADER_MAPPINGS_URI).then(setColumns);
-
-    // listen for filter/paging changes and request new data
+function bindDataSourceToServer(dataSource) {
     let currentGridDataRequest;
     let currentCountRequest;
     function onChange(ev) {
@@ -138,8 +115,36 @@ export default function transactionGridDataSource() {
             });
         }
     }
+
     dataSource.on("change", onChange);
-    onChange(); // start the initial query
+
+    // start the initial query
+    onChange();
+}
+
+/**
+ * Creates a GridDataSource that populates with Transactions
+ */
+export default function transactionGridDataSource() {
+    const now = moment();
+    const filter = {
+        // Initial date range is the past year.  Should we use some other default?
+        endDate: now,
+        startDate: now.clone().subtract(1, 'year'),
+        includeProcessedTransactions: true,
+    };
+    const paging = {
+        skip: 0,
+        take: 2, // TODO make user selectable and/or change default based on Browser speed
+    };
+
+    const dataSource = gridDataSource(filter, paging);
+
+    // ask the server for our column definitions and give them to the dataSource once we know them
+    getGridColumns().then(columns => dataSource.updateColumns(columns));
+
+    // listen for filter/paging changes and request new data
+    bindDataSourceToServer(dataSource);
 
     // return the dataSource
     return dataSource;

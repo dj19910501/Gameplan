@@ -24,6 +24,11 @@ $GRID_PADDING: 5px;
 
     // override a rule from the "legacy" styles.  ugh
     //box-sizing: border-box !important;
+
+    // ensure the expand/collapse icon has pointer cursor so it looks clickable
+    > :global(.objbox) > table > tbody > tr > td:first-child > img {
+      cursor: pointer;
+    }
   }
 }
 
