@@ -282,7 +282,7 @@ namespace RevenuePlanner.Services.MarketingBudget
               .Where(row => row.Field<Nullable<Int32>>("ParentId") == parentId);
         }
 
-        public DataSet GetBudgetDefaultData(int budgetId, string timeframe, BudgetColumnFlag columnsRequested, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate)
+        private DataSet GetBudgetDefaultData(int budgetId, string timeframe, BudgetColumnFlag columnsRequested, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate)
         {
             DataSet EntityList = new DataSet();
             try

@@ -146,7 +146,9 @@
         <div id="successBlock" class="help-block alert alert-success hide message-position-small">Your Data Save Successfully</div>
     </div>
 </div>
-<script>
+
+<script src="~/Scripts/js/MarketingBudget/MarketingBudget.js"></script>
+<script type="text/javascript">
     var budgetgrid;
     var BudgetGridData;
     var AddNewrow = true;
@@ -156,20 +158,28 @@
     var colIdIndex;
     var colIconIndex;
     var colTaskNameIndex;
-
+    var urlContent = '@Url.Content("~/")';
+    var Yearly='@Enums.QuarterFinance.Yearly.ToString()';
+    var Id = "@Enums.DefaultGridColumn.Id";
+    var Name = "@Enums.DefaultGridColumn.Name";
+    var Lineitems = "@Enums.DefaultGridColumn.LineItems";
+    var CurrencySymbol='@CurrencySymbol';
     $(document).ready(function () {
-       
+
         var Columnsetval = $("#ddlColumnSet").val();
         $("#sidebar").css("display", "none");
+        $("#errorMsg").css("display", "none");
+        $("#SuccessMsg").css("display", "none");
         $("#content_wraper").css("width", "100%");
         UpdateFinanceHeaderValues(); // Update header values
-        BindColumnsfilter(Columnsetval);
-        GetGridData();
+        GetGridData();                      // Bind Budget Grid.
 
 
         var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');
         if (liParentFinanceMain != null && liParentFinanceMain != 'undefined' && liParentFinanceMain.length > 0) {
             nlformParentFinanceMain = new NLForm(document.getElementById('nl-formParentFinanceMain'));
+
+            // Bind the Grid data on Budget value change from dropdown list.
             $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
                 $('#nl-formParentFinanceMain .nl-field-toggle').text($(this).text());
                 var budgetIDMain = $(this).attr('value');
@@ -181,413 +191,26 @@
             });
         }
 
+        //Declare "ViewBy" dropdown to "single select".
         $("#ddlColumnSet").multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
             selectedList: 1
         });
 
-        $("#ddlRevenueTimeFrame,#ddlMainGridTimeFrame").multiselect({
+        var filtCols = @Html.Raw(Json.Encode(Model.FilterColumns));
+
+        standardcolumns = @Html.Raw(Json.Encode(Model.StandardCols));
+
+        // Append items to 'Filter Columns' to dropdown list & Check-Uncheck Filter columns.
+        BindFilterColumnsAndCheckUncheck(filtCols);
+
+        //Declare "Time Frame" dropdown to "single select".
+        $("#ddlMainGridTimeFrame").multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
             selectedList: 1
-        }).multiselectfilter({
         });
 
     });
-    $('#proceed-button_DeleteItem').on("click", function () {
-        DeleteBudget();
-        $('#divDeletePopup').modal("hide");
-    });
-
-    $("#ddlMainGridTimeFrame").change(function () {
-        ShowHideSuccessDiv();
-        GetGridData();
-    });
-    // function to show hide success message
-    function ShowHideSuccessDiv() {
-        var sucesstextmessagespan = $("#spanMsgSuccess");
-        var sucesstextmessagediv = $("#SuccessMsg");
-        if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
-            sucesstextmessagespan.text('')
-            if (sucesstextmessagediv != undefined && sucesstextmessagediv != null) {
-                sucesstextmessagediv.css('display', 'none');
-            }
-        }
-    }
-
-    function BindColumnsfilter(ColumnSetId) {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/MarketingBudget/GetColumns/")',
-            data: { ColumnSetId: ColumnSetId },
-            async: false,
-            dataType: "json",
-            success: function (result) {
-                $("#budget-select").html("");
-                var data = result.Columnlist;
-                standardcolumns = result.standardlist;
-                for (var i = 0; i < data.length; i++) {
-                    $('#budget-select').append("<option value=" + data[i].Value + " id='" + data[i].Text + "'>" + data[i].Text + "</option>");
-                }
-            }
-        });
-
-        $('#budget-select').multiselect({ multiple: true, title: 'Filter Columns', noneSelectedText: "Filter Columns", });
-        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
-        $.each(ColumnsCheckBox, function () {
-            if ($(this).attr('id').indexOf('Forecast') < 0) {
-                $(this).attr("aria-selected", "true");
-                $(this).attr("checked", "checked");
-            }
-            else {
-                $(this).attr("aria-selected", "false");
-            }
-
-        });
-
-        $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').click(function () {
-            HideShowColumns();
-        });
-
-        $("#selectAll_budget-select").click(function () {
-            $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input").prop('checked', 'checked');
-            HideShowColumns();
-        });
-        $("#deselectAll_budget-select").click(function () {
-            $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input").removeAttr('checked');
-            HideShowColumns();
-        });
-    }
-
-    function GetGridData(budgetId) {
-        var BudgetId = "";
-        if (budgetId != undefined && budgetId != "") {
-            var BudgetId = budgetId;
-        }
-        else {
-            BudgetId = $('#ddlParentFinanceMain').val();
-        }
-
-        var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
-        var CheckedColumns = "";
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Content("~/MarketingBudget/GetBudgetData/")',
-            data: {
-                BudgetId: BudgetId,
-                viewByType: mainTimeFrame,
-            },
-            success: function (data) {
-                budgetgrid = new dhtmlXGridObject('gridbox');
-                budgetgrid.setImagePath('@Url.Content("~/codebase/imgs/")');
-                budgetgrid.setImageSize(1, 1);
-                budgetgrid.enableAutoHeight(true);
-                budgetgrid.enableAutoWidth(false);
-                if (mainTimeFrame != "@Enums.QuarterFinance.Yearly.ToString()") {
-                    budgetgrid.attachHeader(data.AttacheHeader);
-                }
-                budgetgrid.init();
-                BudgetGridData = data.GridData;
-                budgetgrid.parse(BudgetGridData, "json");
-                colIdIndex = budgetgrid.getColIndexById('Id');
-                ColTaskNameIndex = budgetgrid.getColIndexById('Name');
-                colIconIndex = budgetgrid.getColIndexById('Add Row');
-                budgetgrid.setColumnHidden(colIdIndex, true)
-                HideShowColumns();
-
-
-                budgetgrid.expandAll();
-                budgetgrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
-                    var ColumnId = budgetgrid.getColumnId(cInd);
-                    var locked = budgetgrid.getUserData(rId, "lo");
-                    var Permission = budgetgrid.getUserData(rId, "per");
-                    if (locked == 1 && (Permission == "View" || Permission == "None")) {
-                        budgetgrid.cells(rId, cInd).setDisabled(true);
-                        return false;
-                    }
-                    else if (locked == 1 && (ColumnId.indexOf('Budget') >= 0 || ColumnId.indexOf('Forecast') >= 0)) {
-                        budgetgrid.cells(rId, cInd).setDisabled(true);
-                        return false;
-                    }
-
-                    if (cInd == ColTaskNameIndex) {
-                        var isTitleEdit = budgetgrid.getUserData(rId, "isTitleEdit");
-                        if (isTitleEdit == "0") {
-                            budgetgrid.cells(rId, ColTaskNameIndex).setDisabled(true);
-                            return false;
-                        }
-                    }
-
-
-
-                });
-            }
-        });
-
-    }
-
-    function DeleteBudgetIconClick(data) {
-        var LineItemCount = $(data).attr('licount');
-        //Check blank row if user clicks on new row delete icon then delete popup not display
-        if (AddNewrow == false) {
-            return false;
-        }
-        else {
-            if (LineItemCount != 0) {
-                $('#LiWarning').css('display', 'block');
-            }
-            else {
-                $('#LiWarning').css('display', 'none');
-            }
-            var BudgetRowId = $(data).attr('row-id').split('_')[1];
-            var Name = $(data).attr('name');
-            $("#lipname").html(Name);
-            $("#divDeletePopup").modal('show');
-            SelectedBudgetId = BudgetRowId;
-            $('#cancel-button_DeleteItem').on("click", function () {
-                SelectedBudgetId = "";
-                $('#divDeletePopup').modal("hide");
-
-            });
-        }
-    }
-
-    function DeleteBudget() {
-        var currentBudgetId = $("#ddlParentFinanceMain").val();
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Content("~/MarketingBudget/DeleteBudgetData/")',
-            dataType: 'json',
-            data: {
-                SelectedBudgetId: SelectedBudgetId,
-                BudgetId: currentBudgetId,
-            },
-            success: function (data) {
-                var BudgetId = data.budgetId;
-                UpdateFinanceHeaderValues(); // Update header values
-                GetGridData(BudgetId);
-                RefreshBudgetDropdown(false, BudgetId);
-                //TODO :  here we need to call Finance Header function to refresh the header after deleting budget data
-            }
-        });
-    }
-
-    function RefreshBudgetDropdown(IsAddNew, BudgetId) {
-        var _budgetId = "";
-        if (BudgetId != undefined && BudgetId != "") {
-            _budgetId = BudgetId.toString();
-        }
-        else {
-            _budgetId = $('#ddlParentFinanceMain').val();
-        }
-
-        var $Budgetdropdown = $("#ddlParentFinanceMain");
-        $Budgetdropdown.empty();
-        var $html = '';
-
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/MarketingBudget/RefreshBudgetList/")',
-            data: {},
-            async: false,
-            success: function (result) {
-                if (result.length > 0) {
-                    $.each(result, function (index, item) {
-
-                        $html += '<option value="' + item.Value + '">' + item.Text + '</option>';
-
-                    });
-                }
-            }
-        });
-        $Budgetdropdown.append($html);
-        var BudgetOptions = {
-            values: []
-        }
-
-        $.each($("#ddlParentFinanceMain").find("option"), function () {
-            BudgetOptions.values.push($(this).val())
-        });
-        var CheckBudgetIdExist = BudgetOptions.values.indexOf(_budgetId);
-        if (CheckBudgetIdExist >= 0) {
-            $("#ddlParentFinanceMain option[value='" + _budgetId + "']").attr("selected", "selected");
-        }
-        $Budgetdropdown.val(_budgetId);
-        $Budgetdropdown.find("input[type='search']").val(_budgetId);
-        nlformParentFinanceMain = new NLForm(document.getElementById('nl-formParentFinanceMain'));
-
-        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            $('#errorMsg').css('display', 'none');
-            $('#SuccessMsg').css('display', 'none');
-            $("#divGridView").show();
-            $("#dvNoData").hide();
-            var budgetId = $(this).attr('value');
-            if (budgetId != null && budgetId != 'undefined' && budgetId != '0') {
-                UpdateFinanceHeaderValues(); // Update header values
-                GetGridData(budgetId);
-                //TODO : Call Finance Header Function.
-                $("#dvExportToExcel").css("display", "block");
-            }
-            else {
-                $("#divGridView").hide();
-                $("#dvNoData").show();
-                $("#dvExportToExcel").css("display", "none");
-            }
-            $('#hdn_BudgetId').val(budgetId);
-            $('#nl-formParentFinanceMain .nl-field-toggle').text($(this).text());
-        });
-        var NlForms = $("#nl-formParentFinanceMain .nl-field.nl-dd");
-
-        for (var i = 0; i < NlForms.length - 1 ; i++) {
-            $(NlForms[i]).remove();
-        }
-
-        if ($('#nl-formParentFinanceMain .nl-field-toggle').text().length > 30) {
-            $('#nl-formParentFinanceMain .nl-field-toggle').text().substring(0, 30) + '...';
-        }
-    }
-    // Open modal popup for import file
-    function showModal() {
-        ShowHideSuccessDiv();
-        LoadInputModelBox();
-        $('#ImportModal').modal('show');
-    }
-    function ExportToExcel() {
-        ShowHideSuccessDiv();
-        budgetgrid.setColumnHidden(colIdIndex, false);
-        budgetgrid.setColumnHidden(colIconIndex, true);
-        budgetgrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
-        budgetgrid.setColumnHidden(colIdIndex, true);
-        budgetgrid.setColumnHidden(colIconIndex, false);
-    }
-
-    // #2804 File input popup function for import finance marketing budget
-    function LoadInputModelBox() {
-        var importurl = '@Url.Content("~/MarketingBudget/ExcelFileUpload")';
-        $('.fileinput-upload-button').hide();
-        $('#ImportModal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
-            $('#input-43').fileinput('clear');
-        });
-        $('#input-43').off('fileclear').on('fileclear', function (event) {
-            $('.fileinput-upload-button').hide();
-        });
-
-        $("#input-43").fileinput({
-            type: 'POST',
-            showPreview: false,
-            uploadUrl: importurl,
-            allowedFileExtensions: ["xls", "xlsx"],
-            msgInvalidFileExtension: 'Incorrect file format. Please export the file and use that file to upload your changes',
-            elErrorContainer: "#errorBlock"
-        });
-
-        $('#input-43').off('filepreupload').on('filepreupload', function (event, data, previewId, index) {
-            myApp.showPleaseWait();
-        });
-
-        $('#input-43').off('fileuploaded').on('fileuploaded', function (event, data, previewId, index) {
-            if (data.response.conflict == true) {
-                ShowMessage(false, data.response.message);
-            }
-
-            var sucesstextmessagespan = $("#spanMsgSuccess");
-            var sucesstextmessagediv = $("#SuccessMsg");
-            if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
-                sucesstextmessagespan.text('file imported successfully.')
-                if (sucesstextmessagediv != undefined && sucesstextmessagediv != null) {
-                    sucesstextmessagediv.css('display', 'block');
-                }
-            }
-            myApp.hidePleaseWait();
-            $('#ImportModal').modal('hide');
-            UpdateFinanceHeaderValues(); // Update header values
-            GetGridData();
-        });
-
-        $('#input-43').off('fileloaded').on('fileloaded', function (event, file, previewId, index, reader) {
-            $('.fileinput-upload-button').show();
-        });
-        $('#input-43').off('fileuploaderror').on('fileuploaderror', function (event, data, msg) {
-            $('.fileinput-upload-button').hide();
-        });
-    }
-
-
-    function HideShowColumns() {
-        var columnid = 0;
-        var Title = "";
-        var Hidecol = [];
-        var ColumnsCheckBox = $("#multipleselect_budget-select label[class^=ui-corner-all] input:not(:checked)");
-
-
-        for (var i = 0; i < budgetgrid.getColumnsNum() ; i++) {
-            columnid = budgetgrid.getColumnId(i);
-            if (columnid != "@Enums.DefaultGridColumn.Id" && columnid != "@Enums.DefaultGridColumn.Name"
-                         && columnid != "Add Row" && columnid != "@Enums.DefaultGridColumn.LineItems") {
-                $.each(ColumnsCheckBox, function () {
-                    Title = $(this).parent().find('span').attr('title');
-                    if (standardcolumns.indexOf(Title) >= 0) {
-                        if (columnid.indexOf(Title) >= 0) {
-                            Hidecol.push(i);
-                        }
-
-                    }
-                    else {
-                        if (columnid == Title) {
-                            Hidecol.push(i);
-                        }
-
-                    }
-                });
-                budgetgrid.setColumnHidden(i, false)
-            }
-
-        }
-
-        if (Hidecol != null && Hidecol != undefined && Hidecol.length > 0) {
-            $.each(Hidecol, function (index, val) {
-                budgetgrid.setColumnHidden(val, true)
-            });
-
-        }
-
-    }
-
-    // Function to update header values for finance
-    function UpdateFinanceHeaderValues() {
-        // Get selected budget id
-        var BudgetId = $('#ddlParentFinanceMain').val();
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Content("~/MarketingBudget/GetFinanceHeaderValues/")',
-            dataType: 'json',
-            data: { BudgetId: BudgetId },
-            success: function (data) {
-                
-                // update header values
-                $("#budgetID").text('@CurrencySymbol' + data.Budget);
-                $("#ForecastID").text('@CurrencySymbol' + data.Forecast);
-                $("#PlannedID").text('@CurrencySymbol' + data.Planned);
-                $("#ActualID").text('@CurrencySymbol' + data.Actual);
-
-                // format values and apply bootstrap tooltip
-                ApplyFormattingAndTooltip("#budgetID");
-                ApplyFormattingAndTooltip("#ForecastID");
-                ApplyFormattingAndTooltip("#PlannedID");
-                ApplyFormattingAndTooltip("#ActualID");
-            }
-        });
-    }
-
-    // Function to format values and apply bootstrap tooltip
-    function ApplyFormattingAndTooltip(idName) {
-        var originalValue = $(idName).html();
-        if (typeof (maxsize) === 'undefined') maxsize = 5;
-        $(idName).popover('destroy');
-        if (originalValue != undefined && originalValue != null && originalValue != '') {
-            $(idName).attr("data-original-title", originalValue);
-            setBootstrapTooltip(idName, originalValue, maxsize, true); // Apply tooltip
-        }
-    }
-</script>
+ </script>
