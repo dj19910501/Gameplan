@@ -29,6 +29,8 @@ namespace RevenuePlanner.Services.MarketingBudget
         public List<BindDropdownData> ListofBudgets { get; set; }
         public List<BindDropdownData> TimeFrame { get; set; }
         public List<BindDropdownData> Columnset { get; set; }
+        public List<BindDropdownData> FilterColumns { get; set; }
+        public List<string> StandardCols { get; set; }
     }
     public class BudgetItem
     {

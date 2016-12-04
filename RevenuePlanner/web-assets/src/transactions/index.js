@@ -10,7 +10,25 @@ function createGrid($gridContainer, dataSource) {
     const $grid = $gridContainer.find(`.${css.grid}`);
     const grid = new Grid($grid.get(0));
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
+    grid.enableAutoHeight(true);
+    grid.enableAutoWidth(true);
+    grid.enableAutoWidth(true);
+    grid.setDateFormat("%m/%d/%Y");
     dataSource.bindToGrid(grid);
+
+    // add click handler to grid editLineItems whenever the grid re-renders
+    grid.attachEvent("onXLE", () => {
+        console.log("render!");
+        $grid
+            .find(`.${css.editLineItems}`)
+            .off("click.transactionGrid")
+            .on("click.transactionGrid", function (ev) {
+                const row = $(this).closest("tr");
+                const transactionId = row[0].idd;
+                ev.stopPropagation();
+                alert(`launch popup for transaction id ${transactionId}`);
+            });
+    });
 }
 
 function createPager($pager, dataSource) {
@@ -20,8 +38,12 @@ function createPager($pager, dataSource) {
         currentPage: dataSource.pageNumber || 1,
         onPageClick: (pageNumber, ev) => {
             dataSource.gotoPage(pageNumber);
-            // do not let the click event update the URL hash
-            ev.preventDefault();
+
+            // ev is undefined if user used ellipses to type in a page number
+            if (ev) {
+                // do not let the click event update the URL hash
+                ev.preventDefault();
+            }
         }
     });
 

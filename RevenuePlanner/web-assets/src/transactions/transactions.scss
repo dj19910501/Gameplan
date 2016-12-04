@@ -22,8 +22,31 @@ $GRID_PADDING: 5px;
     height: 100%;
     border: none !important;
 
+    .editLineItems {
+      cursor: pointer;
+    }
+
     // override a rule from the "legacy" styles.  ugh
     //box-sizing: border-box !important;
+
+    // ensure the expand/collapse icon has pointer cursor so it looks clickable
+    // also do not show the right border on this toggle column
+    > :global(.objbox) > table > tbody > tr > td:first-child {
+      border-right: none;
+
+      > img {
+        cursor: pointer;
+      }
+    }
+
+    > :global(.xhdr) > table > tbody > tr {
+      > td:first-child {
+        border-right: none;
+      }
+      > td:nth-child(2) {
+        border-left: none;
+      }
+    }
   }
 }
 

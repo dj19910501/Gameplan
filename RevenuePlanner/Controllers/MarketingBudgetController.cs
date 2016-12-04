@@ -52,8 +52,24 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             #region Bind Column set dropdown
-            var ColumnSet = _MarketingBudget.GetColumnSet(Sessions.User.CID);// Column set  dropdown
+            List<BindDropdownData> ColumnSet = _MarketingBudget.GetColumnSet(Sessions.User.CID);// Column set  dropdown
             MarketingActivities.Columnset = ColumnSet;
+            #endregion
+
+            #region Bind Filter Columns dropdown
+            // Filter Columns dropdown
+            if (ColumnSet != null && ColumnSet.Count > 0)
+            {
+                string strColumnSetId = ColumnSet.FirstOrDefault().Value;
+                List<RevenuePlanner.Models.Budget_Columns> BudgetColumns = _MarketingBudget.GetColumns(Convert.ToInt32(strColumnSetId));// Columns  dropdown
+                MarketingActivities.FilterColumns = GetFilterColumnList(BudgetColumns); // Get Filter columns list
+
+                MarketingActivities.StandardCols = GetStandardColumnList(BudgetColumns); // Get standard columns list
+            }
+            else
+            {
+                MarketingActivities.FilterColumns = new List<BindDropdownData>();
+            }
             #endregion
 
             return View(MarketingActivities);
@@ -107,14 +123,47 @@ namespace RevenuePlanner.Controllers
         {
             List<RevenuePlanner.Models.Budget_Columns> BudgetColumns = _MarketingBudget.GetColumns(ColumnSetId);// Columns  dropdown
 
-            //All standard and custom columns
-            List<BindDropdownData> lstColumns = BudgetColumns.Select(a => new { a.CustomField.Name, a.CustomField.CustomFieldId }).ToList()
-               .Select(a => new BindDropdownData { Text = a.Name, Value = Convert.ToString(a.CustomFieldId) }).ToList();
+            List<BindDropdownData> lstColumns = GetFilterColumnList(BudgetColumns); //Get Filter Columns list data.
 
-            //standard columns list
-            List<string> StandardTimeFrameColumns = BudgetColumns.Where(a => a.IsTimeFrame == true).Select(a => a.CustomField.Name).ToList();
+            List<string> StandardTimeFrameColumns = GetStandardColumnList(BudgetColumns); //Get standard Columns list data.
 
             return Json(new { Columnlist = lstColumns, standardlist = StandardTimeFrameColumns }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Komal on 12/03/2016
+        /// Return FilterColumns List
+        /// </summary>
+        /// <param name="BudgetColumns"> list of standard and custom budget columns </param>
+        /// <returns> list of columns to bind Filter columns dropdown list</returns>
+        private List<BindDropdownData> GetFilterColumnList(List<RevenuePlanner.Models.Budget_Columns> BudgetColumns)
+        {
+            List<BindDropdownData> lstColumns = new List<BindDropdownData>();
+            
+            if (BudgetColumns != null && BudgetColumns.Count > 0)
+            {
+                //All standard and custom columns
+                lstColumns = BudgetColumns.Select(a => new BindDropdownData { Text = a.CustomField.Name, Value = Convert.ToString(a.CustomField.CustomFieldId) }).ToList();
+            }
+            return lstColumns;
+        }
+
+        /// <summary>
+        /// Added by Komal on 12/03/2016
+        /// Return FilterColumns List
+        /// </summary>
+        /// <param name="BudgetColumns"> list of standard and custom budget columns </param>
+        /// <returns> list of columns to bind Filter columns dropdown list</returns>
+        private List<string> GetStandardColumnList(List<RevenuePlanner.Models.Budget_Columns> BudgetColumns)
+        {
+            List<string> StandardTimeFrameColumns = new List<string>();
+
+            if (BudgetColumns != null && BudgetColumns.Count > 0)
+            {
+                //All standard columns
+                StandardTimeFrameColumns = BudgetColumns.Where(a => a.IsTimeFrame == true).Select(a => a.CustomField.Name).ToList();
+            }
+            return StandardTimeFrameColumns;
         }
 
         public BudgetSummary GetBudgetSummary(int budgetId)

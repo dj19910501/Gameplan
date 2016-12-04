@@ -329,6 +329,7 @@
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
     <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
+    <Content Include="Scripts\js\MarketingBudget\MarketingBudget.js" />
     <Content Include="Views\Finance\Transactions.cshtml" />
     <Content Include="Views\MeasureDashboard\_ViewAllReportGraph.cshtml" />
     <None Include="web-assets\build\check-npm-install.js" />
