@@ -23,22 +23,10 @@ namespace RevenuePlanner.Controllers
         private bool _IsBudgetCreate_Edit = true;
         private bool _IsForecastCreate_Edit = true;
         #endregion
+        [AuthorizeUser(Enums.ApplicationActivity.BudgetCreateEdit | Enums.ApplicationActivity.ForecastCreateEdit | Enums.ApplicationActivity.ForecastView)]
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
             MarketingActivities MarketingActivities = new MarketingActivities();
-
-            #region Check Permissions
-            bool IsBudgetCreateEdit, IsBudgetView, IsForecastCreateEdit, IsForecastView;
-            IsBudgetCreateEdit = _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
-            IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
-            IsForecastCreateEdit = _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
-            IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
-            if (IsBudgetCreateEdit == false && IsBudgetView == false && IsForecastCreateEdit == false && IsForecastView == false)
-            {
-
-                return RedirectToAction("Index", "NoAccess");
-            }
-            #endregion
 
             #region Bind Budget dropdown on grid
             List<BindDropdownData> lstMainBudget = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
