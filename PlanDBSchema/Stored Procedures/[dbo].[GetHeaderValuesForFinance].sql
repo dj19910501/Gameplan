@@ -35,14 +35,14 @@ BEGIN
 	WHERE BudgetId = @BudgetId AND IsDeleted = 0
 
 	-- Get Planned Cost for Header
-	SELECT @Planned = SUM((ISNULL(PCPTL.Cost,0) * CAST(Weightage AS FLOAT)/100)) * @CurrencyRate
+	SELECT @Planned = SUM(PCPTL.Cost * CAST(Weightage AS FLOAT)/100) * @CurrencyRate
 	FROM [dbo].[Budget_Detail] BD 
 	INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
 	INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
 	WHERE BD.IsDeleted = 0 AND BD.BudgetId = @BudgetId AND PCPTL.LineItemTypeId IS NOT NULL AND PCPTL.IsDeleted = 0
 
 	-- Get Actual for Header
-	SELECT @Actual = SUM((ISNULL(PCPTLA.Value,0) * CAST(Weightage AS FLOAT)/100)) * @CurrencyRate
+	SELECT @Actual = SUM(PCPTLA.Value * CAST(Weightage AS FLOAT)/100) * @CurrencyRate
 	FROM [dbo].[Budget_Detail] BD 
 	INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
 	INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 

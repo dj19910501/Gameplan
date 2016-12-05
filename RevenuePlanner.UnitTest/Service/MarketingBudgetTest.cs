@@ -20,7 +20,7 @@ namespace RevenuePlanner.UnitTest.Service
         private const int BudgetId = 80;
         private const int BudgetDetailId = 752;
         private const double ExchangeRate = 1.0; // Currency exchange rate
-	    private const string Importviewby="Yearly";//TimeFrame for import budget
+        private const string Importviewby = "Yearly";//TimeFrame for import budget
         private const string ImportXLSFileLocation = "\\ImportTest_Data\\grid_MarketingBudget.xls"; // xls file location for import marketing budget
         private const string ImportXLSX_FileLocation = "\\ImportTest_Data\\grid_MarketingBudgetXLSXFile.xlsx"; // xlsx file location for import marketing budget
         #endregion Test Data
@@ -50,15 +50,15 @@ namespace RevenuePlanner.UnitTest.Service
         public void Test_MarketingBudget_GetFinanceHeaderValues()
         {
             // Get header values 
-            DataTable headerValues = _marketingBudget.GetFinanceHeaderValues(BudgetId, ExchangeRate);
+            MarketingBudgetHeadsUp headerValues = _marketingBudget.GetFinanceHeaderValues(BudgetId, ExchangeRate);
 
-            Assert.IsTrue(headerValues.Rows.Count > 0);
-            Assert.IsTrue(headerValues.Columns.IndexOf("Budget") > -1);
-            Assert.IsTrue(headerValues.Columns.IndexOf("Forecast") > -1);
-            Assert.IsTrue(headerValues.Columns.IndexOf("Planned") > -1);
-            Assert.IsTrue(headerValues.Columns.IndexOf("Actual") > -1);
+            Assert.IsNotNull(headerValues);
+            Assert.IsNotNull(headerValues.Budget);
+            Assert.IsNotNull(headerValues.Forecast);
+            Assert.IsNotNull(headerValues.Planned);
+            Assert.IsNotNull(headerValues.Actual);
         }
-		    /// <summary>
+        /// <summary>
         /// Test case for import marketing budget with .XLS file.
         /// </summary>
         [TestMethod]
@@ -77,7 +77,7 @@ namespace RevenuePlanner.UnitTest.Service
             Command.Fill(ds);
             ExcelConnection.Close();
             //end
-            var res = _marketingBudget.GetXLSData(Importviewby, ds,ClientId, BudgetDetailId, 1);
+            var res = _marketingBudget.GetXLSData(Importviewby, ds, ClientId, BudgetDetailId, 1);
             Assert.IsTrue(res != null);
 
         }
@@ -89,13 +89,13 @@ namespace RevenuePlanner.UnitTest.Service
         {
             string FileLocation = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + ImportXLSX_FileLocation;
             var res = _marketingBudget.GetXLSXData(Importviewby, FileLocation, ClientId, BudgetDetailId, 1);
-            Assert.IsTrue(res!=null);
+            Assert.IsTrue(res != null);
 
         }
-      
+
 
     }
-    
+
 
     /// <summary>
     /// This extension makes code more readable!

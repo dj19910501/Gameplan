@@ -139,7 +139,7 @@ namespace RevenuePlanner.Controllers
         private List<BindDropdownData> GetFilterColumnList(List<RevenuePlanner.Models.Budget_Columns> BudgetColumns)
         {
             List<BindDropdownData> lstColumns = new List<BindDropdownData>();
-            
+
             if (BudgetColumns != null && BudgetColumns.Count > 0)
             {
                 //All standard and custom columns
@@ -277,7 +277,7 @@ namespace RevenuePlanner.Controllers
                                 ds = excelReader.AsDataSet();
                                 if (ds != null && ds.Tables.Count > 0)
                                 {
-                                    objImprtData = _MarketingBudget.GetXLSData(viewByType, ds,ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2003/(.xls) format file to xml
+                                    objImprtData = _MarketingBudget.GetXLSData(viewByType, ds, ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2003/(.xls) format file to xml
                                 }
                                 if (ds == null)
                                 {
@@ -286,7 +286,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                objImprtData = _MarketingBudget.GetXLSXData(viewByType, fileLocation,ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2007/(.xlsx) and above version format file to xml
+                                objImprtData = _MarketingBudget.GetXLSXData(viewByType, fileLocation, ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2007/(.xlsx) and above version format file to xml
                             }
                             dtColumns = objImprtData.MarketingBudgetColumns;
                             xmlData = objImprtData.XmlData;
@@ -306,7 +306,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                             }
-                            _MarketingBudget.ImportMarketingFinance(xmlData, dtColumns,UserID,ClientId, BudgetDetailId); // Import data to the database using store procedure
+                            _MarketingBudget.ImportMarketingFinance(xmlData, dtColumns, UserID, ClientId, BudgetDetailId); // Import data to the database using store procedure
                         }
                     }
                 }
@@ -335,19 +335,18 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetFinanceHeaderValues(int BudgetId)
         {
             // Call function to get header values 
-            DataTable dtHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate);
+            MarketingBudgetHeadsUp objHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate);
 
-            string Budget = string.Empty;
-            string Forecast = string.Empty;
-            string Planned = string.Empty;
-            string Actual = string.Empty;
-            if (dtHeader != null && dtHeader.Rows.Count > 0)
+            string Budget, Forecast, Planned, Actual;
+            Budget = Forecast = Planned = Actual = string.Empty;
+
+            if (objHeader != null)
             {
                 // Get values from datatable
-                Budget = Convert.ToString(dtHeader.Rows[0][Convert.ToString(Enums.FinanceHeader_Label.Budget)]);
-                Forecast = Convert.ToString(dtHeader.Rows[0][Convert.ToString(Enums.FinanceHeader_Label.Forecast)]);
-                Planned = Convert.ToString(dtHeader.Rows[0][Convert.ToString(Enums.FinanceHeader_Label.Planned)]);
-                Actual = Convert.ToString(dtHeader.Rows[0][Convert.ToString(Enums.FinanceHeader_Label.Actual)]);
+                Budget = objHeader.Budget.ToString();
+                Forecast = objHeader.Forecast.ToString();
+                Planned = objHeader.Planned.ToString();
+                Actual = objHeader.Actual.ToString();
             }
             return Json(new { Budget = Budget, Forecast = Forecast, Planned = Planned, Actual = Actual }, JsonRequestBehavior.AllowGet);
         }

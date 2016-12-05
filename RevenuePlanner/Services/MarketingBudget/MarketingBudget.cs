@@ -774,7 +774,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetDetailId"></param>
         /// <param name="PlanExchangeRate"></param>
         /// <returns></returns>
-        public BudgetImportData GetXLSData(string viewByType, DataSet ds,int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
+        public BudgetImportData GetXLSData(string viewByType, DataSet ds, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
             List<XmlColumns> listColumnIndex = new List<XmlColumns>();
             DataTable dtExcel = new DataTable();
@@ -1030,7 +1030,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetDetailId"></param>
         /// <param name="dtColumns"></param>
         /// <returns></returns>
-        public int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol,int UserID,int ClientID, int BudgetDetailId = 0)
+        public int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int UserID, int ClientID, int BudgetDetailId = 0)
         {
             // Check the file data is monthly or quarterly
             List<string> MonthList = new List<string>();
@@ -1089,32 +1089,24 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetId">Id of the Budget</param>
         /// <param name="ExchangeRate">Currency exchange rate</param>
         /// <returns>Returns datatable having 4 values(Budget,Forecast,Planned,Actual)</returns>
-        public DataTable GetFinanceHeaderValues(int BudgetId, double ExchangeRate)
+        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate)
         {
-            DataTable dtHeader = new DataTable();
+            #region "Declare Variables"
+            SqlParameter[] para = new SqlParameter[2];
+            MarketingBudgetHeadsUp calResultset = new MarketingBudgetHeadsUp();   // Return Marketing Budget Header Result Data Model
+            #endregion
 
-            try
-            {
-                ///If connection is closed then it will be open
-                var Connection = _database.Database.Connection as SqlConnection;
-                if (Connection.State == ConnectionState.Closed)
-                {
-                    Connection.Open();
-                }
-                SqlCommand command = new SqlCommand("GetHeaderValuesForFinance", Connection);
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@BudgetId", BudgetId);
-                command.Parameters.AddWithValue("@CurrencyRate", ExchangeRate);
+            #region "Set SP Parameters"
+            para[0] = new SqlParameter() { ParameterName = "BudgetId", Value = BudgetId };
+            para[1] = new SqlParameter() { ParameterName = "CurrencyRate", Value = ExchangeRate };
+            #endregion
 
-                SqlDataAdapter adp = new SqlDataAdapter(command);
-                adp.Fill(dtHeader);
-                if (Connection.State == ConnectionState.Open)
-                {
-                    Connection.Close();
-                }
-            }
-            catch { throw; }
-            return dtHeader; // Returns datatable having 4 values(Budget, Forecast, Planned, Actual)
+            #region "Get Data"
+            calResultset = _database.Database
+                .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinance @BudgetId,@CurrencyRate", para).FirstOrDefault();
+            #endregion
+
+            return calResultset; // Returns Model having 4 values(Budget, Forecast, Planned, Actual)
 
         }
     }

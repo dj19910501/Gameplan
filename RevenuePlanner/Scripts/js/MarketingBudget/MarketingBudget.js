@@ -501,11 +501,11 @@ function UpdateGridDataFromSavedOpenState(rows, name) {
             data: { BudgetId: BudgetId },
             success: function (data) {
                 
-                // update header values
-                $("#budgetID").text(CurrencySymbol + data.Budget);
-                $("#ForecastID").text(CurrencySymbol + data.Forecast);
-                $("#PlannedID").text(CurrencySymbol + data.Planned);
-                $("#ActualID").text(CurrencySymbol + data.Actual);
+                // update header values with currency symbol(decoded symbol)
+                $("#budgetID").text($('</div>').html(CurrencySymbol).text() + data.Budget);
+                $("#ForecastID").text($('</div>').html(CurrencySymbol).text() + data.Forecast);
+                $("#PlannedID").text($('</div>').html(CurrencySymbol).text() + data.Planned);
+                $("#ActualID").text($('</div>').html(CurrencySymbol).text() + data.Actual);
 
                 // format values and apply bootstrap tooltip
                 ApplyFormattingAndTooltip("#budgetID");

@@ -201,6 +201,16 @@ namespace RevenuePlanner.Services.MarketingBudget
         public XmlDocument XmlData { get; set; }
         public string ErrorMsg { get; set; }
     }
+
+    // This Model used for showing Marketing Budge Headers
+    public class MarketingBudgetHeadsUp
+    {
+        public double Budget { get; set; }
+        public double Forecast { get; set; }
+        public double Planned { get; set; }
+        public double Actual { get; set; }
+    }
+
     /// <summary>
     /// Operational interface for budget related data retrieval or manipulations 
     /// </summary>
@@ -223,7 +233,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol);
 
-        DataTable GetFinanceHeaderValues(int BudgetId, double ExchangeRate); // Header values
+        MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate); // Header values
 
         /// <summary>
         /// Update budget data only!
