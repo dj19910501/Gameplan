@@ -99,6 +99,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #region "Transactions"
+        [AuthorizeUser(Enums.ApplicationActivity.TransactionAttribution)]
         public ActionResult Transactions(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
             return View();

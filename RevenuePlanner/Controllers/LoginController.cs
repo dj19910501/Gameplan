@@ -347,6 +347,14 @@ namespace RevenuePlanner.Controllers
                             Sessions.AppMenus.Remove(item);
                         }
 
+                        if (!AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TransactionAttribution))
+                        {
+                            item = Sessions.AppMenus.Find(menuItem => menuItem.Code == "TRANSACTIONS");
+                            if (item != null)
+                            {
+                                Sessions.AppMenus.Remove(item);
+                            }
+                        }
                     }
                     // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
 

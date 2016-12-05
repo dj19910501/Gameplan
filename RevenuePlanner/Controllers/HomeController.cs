@@ -79,37 +79,46 @@ namespace RevenuePlanner.Controllers
                         Sessions.AppMenus.Remove(item);
                     }
 
-                isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit) ||
-                    AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit));
-                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Boost.ToString().ToUpper());
-                if (item != null && !isAuthorized)
-                {
-                    Sessions.AppMenus.Remove(item);
-                }
+                    isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit) ||
+                                    AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit));
+                    item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Boost.ToString().ToUpper());
+                    if (item != null && !isAuthorized)
+                    {
+                        Sessions.AppMenus.Remove(item);
+                    }
 
-                isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
-                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper());
-                if (item != null && !isAuthorized)
-                {
-                    Sessions.AppMenus.Remove(item);
-                }
+                    isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
+                    item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper());
+                    if (item != null && !isAuthorized)
+                    {
+                        Sessions.AppMenus.Remove(item);
+                    }
 
-                isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
-                      AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView) ||
-                      AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
-                      AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView));
+                    isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
+                                    AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView) ||
+                                    AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
+                                    AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView));
 
-                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.MarketingBudget.ToString().ToUpper());
-                if (item != null && !isAuthorized)
-                {
-                    Sessions.AppMenus.Remove(item);
-                }
+                    item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.MarketingBudget.ToString().ToUpper());
+                    if (item != null && !isAuthorized)
+                    {
+                        Sessions.AppMenus.Remove(item);
+                    }
 
                     isAuthorized = Sessions.AppMenus.Select(x => x.Code.ToLower()).Contains(Enums.ActiveMenu.Plan.ToString().ToLower());
                     item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
                     if (item != null && !isAuthorized)
                     {
                         Sessions.AppMenus.Remove(item);
+                    }
+
+                    if (!AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TransactionAttribution))
+                    {
+                        item = Sessions.AppMenus.Find(menuItem => menuItem.Code == "TRANSACTIONS");
+                        if (item != null)
+                        {
+                            Sessions.AppMenus.Remove(item);
+                        }
                     }
                 }
             }
