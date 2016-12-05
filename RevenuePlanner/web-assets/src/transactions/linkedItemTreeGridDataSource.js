@@ -25,7 +25,7 @@ const columns = [
         id: "ActualCost",
         value: "Total Actual Cost",
         width: 100,
-        type: "ron",
+        type: "ron[=sum]",
         align: "right",
         numberFormat: `${window.CurrencySybmol} 0,000.00`,
         sort: "na",
@@ -34,7 +34,7 @@ const columns = [
         id: "PlannedCost",
         value: "Planned Cost",
         width: 100,
-        type: "ron",
+        type: "ron[=sum]",
         align: "right",
         numberFormat: `${window.CurrencySybmol} 0,000.00`,
         sort: "na",
@@ -60,12 +60,21 @@ function getData(filter) {
     };
 
     return $.getJSON(GET_LINKED_LINE_ITEMS, params).then(result => {
+        // if there are no results, then we are done
+        if (!result.length) {
+            return result;
+        }
+
         // convert the data into a TreeGrid format
         for (const tactic of result) {
             tactic.id = tactic.TacticId;
 
             // needs to be called "rows", not LineItems
             renameProperty(tactic, "LineItems", "rows");
+
+            // remove PlannedCost, ActualCost because we want to sum the line items instead
+            tactic.PlannedCost = undefined;
+            tactic.ActualCost = undefined;
 
             // the "tree" column needs to be HTML-encoded "by hand"
             tactic.Tree = escape(tactic.Title);
@@ -81,12 +90,25 @@ function getData(filter) {
                 item.Plan = `${item.PlanTitle} > ${item.CampaignTitle} > ${item.ProgramTitle}`;
 
                 // convert to actual dates
-                item.DateModified = { value: new Date(item.LineItemMapping.DateModified) };
-                item.DateProcessed = { value: new Date(item.LineItemMapping.DateProcessed) };
+                item.DateModified = {value: new Date(item.LineItemMapping.DateModified)};
+                item.DateProcessed = {value: new Date(item.LineItemMapping.DateProcessed)};
             }
         }
 
-        return result;
+        // If there is only 1 tactic, go ahead and start with it expanded
+        if (result.length === 1) {
+            result[0].open = true;
+        }
+
+        // Create a top-level node which contains the "Sys_Gen_Balance" row
+        const container = [{
+            id: "Sys_Gen_Balance",
+            Tree: "Sys_Gen_Balance",
+            rows: result,
+            open: true,
+        }];
+
+        return container;
     });
 }
 
