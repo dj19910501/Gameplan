@@ -5,6 +5,7 @@ using System.Web;
 using RevenuePlanner.Models;
 using System.Data;
 using System.Data.SqlClient;
+using System.Collections;
 
 namespace RevenuePlanner.Services.Transactions
 {
@@ -42,7 +43,7 @@ namespace RevenuePlanner.Services.Transactions
         {
             if (clientId <= 0)
             {
-                throw new ArgumentOutOfRangeException("clientID", "A clientID less than or equal to zero is invalid, and likely indicates the clientID was not set properly");
+                throw new ArgumentOutOfRangeException("clientId", "A clientID less than or equal to zero is invalid, and likely indicates the clientID was not set properly");
             }
             if (transactionLineItemMappings == null)
             {
@@ -75,6 +76,7 @@ namespace RevenuePlanner.Services.Transactions
                 modelTlim.Amount = tlim.Amount;
                 modelTlim.DateModified = System.DateTime.Now;
                 modelTlim.ModifiedBy = modifyingUserId;
+
             }
 
             _database.SaveChanges();
@@ -131,7 +133,6 @@ namespace RevenuePlanner.Services.Transactions
                 throw new ArgumentOutOfRangeException("transactionId", "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
             }
 
-            // TODOWCR: Is there a better way to get multiple results from a stored procedure?
             DataSet dataset = new DataSet();
             SqlCommand command = new SqlCommand("GetLinkedLineItemsForTransaction", _database.Database.Connection as SqlConnection);
             command.CommandType = CommandType.StoredProcedure;
@@ -193,7 +194,7 @@ namespace RevenuePlanner.Services.Transactions
                     }
                     else
                     {
-                        // TODOWCR: Something is wrong with the query
+                        throw new InvalidOperationException("Inconsistent data state. It appears SP GetLinkedLineItemsForTransaction returned line items but did not include associated Tactics.");
                     }
                 }
             }
@@ -231,7 +232,6 @@ namespace RevenuePlanner.Services.Transactions
                 throw new ArgumentOutOfRangeException("take", "take must be a positive integer");
             }
 
-            // TODOWCR: For paging, what do we order by? Creation date?
             IQueryable<Transaction> sqlQuery =
                 from transaction in _database.Transactions
                 where transaction.ClientID == clientId && ((unprocessdedOnly && transaction.LastProcessed == null)  || !unprocessdedOnly && transaction.DateCreated >= start && transaction.DateCreated <= end)
@@ -312,7 +312,7 @@ namespace RevenuePlanner.Services.Transactions
         #region Internal Implementation 
         private static List<TransactionHeaderMapping> _defaultHeaderMapping = 
             new List<TransactionHeaderMapping>() {
-                new TransactionHeaderMapping() { ClientHeader = "Transaction ID", Hive9Header = "ClientTransactionId", HeaderFormat = HeaderMappingFormat.Identifier, precision = 0, ExpectedCharacterLength = 7 },
+                new TransactionHeaderMapping() { ClientHeader = "Transaction ID", Hive9Header = "ClientTransactionId", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 10 },
                 new TransactionHeaderMapping() { ClientHeader = "Purchase Order", Hive9Header = "PurchaseOrder", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 10 },
                 new TransactionHeaderMapping() { ClientHeader = "Vendor", Hive9Header = "Vendor", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 20 },
                 new TransactionHeaderMapping() { ClientHeader = "Amount", Hive9Header = "Amount", HeaderFormat = HeaderMappingFormat.Currency, precision = 2, ExpectedCharacterLength = 10 },

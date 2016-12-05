@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StructureMap;
 using RevenuePlanner.Services.Transactions;
 using System.Collections.Generic;
+using System.Data;
 
 namespace RevenuePlanner.UnitTest.Service
 {
@@ -10,143 +11,592 @@ namespace RevenuePlanner.UnitTest.Service
     public class TransactionTest 
     {
         private ITransaction _transaction;
+        private Models.MRPEntities _database;
+
         #region Test Data 
-        private const int ClientId = 30; //demo client
-        private const int ExpectedNumberOfUnprocessedTransaction = 0;
-        private const int ExpectedNumberOfAllTransaction = 22;
+        private const int testClientId = 30; //demo client
+        private const int testUserId = 297;
+        private List<Models.Transaction> unprocessedTransactions = null;
+        private const int numberOfUnprocessedTransactionsCreated = 5;
         #endregion
 
         public TransactionTest()
         {
             _transaction = ObjectFactory.GetInstance<ITransaction>();
+            _database = ObjectFactory.GetInstance<Models.MRPEntities>();
+        }
+
+        /// <summary>
+        /// Create some unprocessed transactions for testing purposes
+        /// </summary>
+        [TestInitialize]
+        public void InitializeData()
+        {
+            unprocessedTransactions = new List<Models.Transaction>();
+            for (int ndx = 0; ndx < numberOfUnprocessedTransactionsCreated; ndx++)
+            {
+                unprocessedTransactions.Add(_database.Transactions.Add(new Models.Transaction { ClientID = testClientId, ClientTransactionID = "TransactionTest" + ndx.ToString(), Amount = new decimal(100.1), AccountingDate = DateTime.Now, DateCreated = DateTime.Now }));
+            }
+            _database.SaveChanges();
+
+        }
+
+        /// <summary>
+        /// Delete those unprocessed transactions created in InitializeData
+        /// </summary>
+        [TestCleanup]
+        public void CleanupData()
+        {
+            foreach (Models.Transaction transaction in unprocessedTransactions)
+            {
+                _database.Entry(transaction).State = EntityState.Deleted;
+            }
+            _database.SaveChanges();
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Test_Transaction_DeleteTransactionLineItemMapping()
+        public void Test_Transaction_DeleteTransactionLineItemMapping_InvalidArguments()
         {
-            List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
-            // tacticId = 2079, lineitemId = 301
-            tlimList.Add(new TransactionLineItemMapping { TransactionId = 75, LineItemId = 301, Amount = 300.10 });
-            _transaction.SaveTransactionToLineItemMapping(ClientId, tlimList, 297);
 
-            List<LineItemsGroupedByTactic> groupedLineItems = _transaction.GetLinkedLineItemsForTransaction(ClientId, 75);
+            // Test lineItemId == 0
+            try
+            {
+                _transaction.DeleteTransactionLineItemMapping(testClientId, 0);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("mappingId", e.ParamName);
+            }
 
-            LineItemsGroupedByTactic ligbt = groupedLineItems.Find(item => item.TacticId == 2079);
-            Assert.IsNotNull(ligbt);
-            LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == 301);
-            Assert.IsNotNull(lineItem);
-            _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
+            // Test negative lineItemId
+            try
+            {
+                _transaction.DeleteTransactionLineItemMapping(testClientId, -100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("mappingId", e.ParamName);
+            }
 
+            // Test clientId == 0
+            try
+            {
+                _transaction.DeleteTransactionLineItemMapping(0, 200);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
 
-            // delete non-existent line item mapping
-            
-            _transaction.DeleteTransactionLineItemMapping(ClientId, 0);
+            // Test negative clientId 
+            try
+            {
+                _transaction.DeleteTransactionLineItemMapping(-100, 200);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
         }
 
+        [TestMethod]
+        public void Test_Transaction_DeleteTransactionLineItemMapping()
+        {
+            // From the test Data
+            const int testTacticId = 2079;
+            const int testLineItemId = 301;
+            const int testTransactionId = 75;
+            const double testAmount = 300.10;
+
+            // Create a Line Item Mapping
+            List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
+            tlimList.Add(new TransactionLineItemMapping { TransactionId = testTransactionId, LineItemId = testLineItemId, Amount = testAmount });
+            _transaction.SaveTransactionToLineItemMapping(testClientId, tlimList, testUserId);
+
+            // Verify its created
+            List<LineItemsGroupedByTactic> groupedLineItems = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);
+
+            LineItemsGroupedByTactic ligbt = groupedLineItems.Find(item => item.TacticId == testTacticId);
+            Assert.IsNotNull(ligbt);
+            LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == testLineItemId);
+            Assert.IsNotNull(lineItem);
+
+            // Test deleting line item mapping
+            _transaction.DeleteTransactionLineItemMapping(testClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
+
+            // Verify its deleted.
+            groupedLineItems = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);
+
+            ligbt = groupedLineItems.Find(item => item.TacticId == testTacticId);
+            // If there is no LineItemsGroupedByTactic entry, no mappings were found so the delete worked. However, if there is
+            // a LineItemGroupedByTactic, then we need to verify the specific line item is not mapped (others could be mapped).
+            if (ligbt != null)
+            {
+                lineItem = ligbt.LineItems.Find(item => item.LineItemId == testLineItemId);
+                Assert.IsNull(lineItem);
+            }
+
+            // TODOWCR: test with invalid clientId
+        }
+
+        [TestMethod]
+        public void Test_Transaction_GetHeaderMappings_InvalidArguments()
+        {
+            // Test clientId == 0
+            try
+            {
+                _transaction.GetHeaderMappings(0);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test negative clientId.
+            try
+            {
+                _transaction.GetHeaderMappings(-100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+        }
         [TestMethod]
         public void Test_Transaction_GetHeaderMappings()
         {
-            List<TransactionHeaderMapping> mappings = _transaction.GetHeaderMappings(ClientId) ;
+            const HeaderMappingFormat testAmountFormat = HeaderMappingFormat.Currency;
+            const int testAmountPrecision = 2;
+
+            // Test that we get mappings for valid clientId
+            List<TransactionHeaderMapping> mappings = _transaction.GetHeaderMappings(testClientId) ;
             Assert.IsTrue(mappings.Count > 0);
 
+            // Test that the Amount mapping has its headerformat and precision set to the expected values.
             TransactionHeaderMapping thm = mappings.Find(mapping => mapping.Hive9Header == "Amount");
-            Assert.AreEqual(HeaderMappingFormat.Currency, thm.HeaderFormat);
-            Assert.AreEqual(2, thm.precision);
+            Assert.AreEqual(testAmountFormat, thm.HeaderFormat);
+            Assert.AreEqual(testAmountPrecision, thm.precision);
+        }
 
-            // TODOWCR: finish unit test, not sure what more there is to test though.
+        [TestMethod]
+        public void Test_Transaction_GetLinkedLineItemsForTransaction_InvalidArguments()
+        {
+            // Test clientId == 0
+            try
+            {
+                _transaction.GetLinkedLineItemsForTransaction(0, 100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test negative clientId.
+            try
+            {
+                _transaction.GetLinkedLineItemsForTransaction(-100, 100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test transactionId == 0
+            try
+            {
+                _transaction.GetLinkedLineItemsForTransaction(testClientId, 0);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("transactionId", e.ParamName);
+            }
+
+            // Test negative transactionId.
+            try
+            {
+                _transaction.GetLinkedLineItemsForTransaction(testClientId, -100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("transactionId", e.ParamName);
+            }
         }
 
         [TestMethod]
         public void Test_Transaction_GetLinkedLineItemsForTransaction()
         {
-            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(ClientId, 30);
+            const int testTransactionId = 30;
+            const int expectedLineItemsGroupedByTactic = 5;
+            const int testTacticId = 4671;
+            const int expectedLineItemsForTactic = 4;
+               
+            // Test that we get line items by tactic
+            List<LineItemsGroupedByTactic> ligbtList = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);           
+            Assert.AreEqual(expectedLineItemsGroupedByTactic, ligbtList.Count);
 
-            Assert.AreEqual(lineItems.Count, 5);
+            // Test that for the given tactic, we have the expected number of line items
+            LineItemsGroupedByTactic ligbt = ligbtList.Find(item => item.TacticId == testTacticId);
+            Assert.AreEqual(expectedLineItemsForTactic, ligbt.LineItems.Count);
 
-            LineItemsGroupedByTactic ligbt = lineItems[0];
-            Assert.AreEqual(ligbt.TacticId, 4591);
+            // TODOWCR: test with invalid clientId
+        }
 
-            // TODOWCR: Finish unit test
+        [TestMethod]
+        public void Test_Transaction_GetTransactionCount_InvalidArguments()
+        {
+            // Test clientId == 0
+            try
+            {
+                _transaction.GetTransactionCount(0, DateTime.MinValue, DateTime.MaxValue);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test negative clientId.
+            try
+            {
+                _transaction.GetTransactionCount(-100, DateTime.MinValue, DateTime.MaxValue);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
         }
 
         [TestMethod]
         public void Test_Transaction_GetTransactionCount()
         {
-            int transactionCount = _transaction.GetTransactionCount(ClientId, DateTime.MinValue, DateTime.MaxValue, false);
-            Assert.AreEqual(ExpectedNumberOfAllTransaction, transactionCount);
+            const int expectedAllDatesUnprocessedCount = numberOfUnprocessedTransactionsCreated; 
+            const int expectedAllDatesAllItemsCount = 22 + expectedAllDatesUnprocessedCount;
+            DateTime testStartDate = new DateTime(2016, 01, 01);
+            DateTime testEndDate = new DateTime(2016, 07, 01);
+            const int expectedDateRangeCount = 14;
 
-            transactionCount = _transaction.GetTransactionCount(ClientId, DateTime.MinValue, DateTime.MaxValue, true);
-            Assert.AreEqual(ExpectedNumberOfUnprocessedTransaction, transactionCount);
+            // Get transaction count with default unprocessedOnly set
+            int transactionCount = _transaction.GetTransactionCount(testClientId, DateTime.MinValue, DateTime.MaxValue);
+            Assert.AreEqual(expectedAllDatesUnprocessedCount, transactionCount);
 
-            // TODOWCR: Finish unit test
+            // Get Transaction count with all dates, unprocessedOnly == false
+            transactionCount = _transaction.GetTransactionCount(testClientId, DateTime.MinValue, DateTime.MaxValue, false);
+            Assert.AreEqual(expectedAllDatesAllItemsCount, transactionCount);
+
+            // Get Transaction count with all dates, unprocessedOnly == true
+            transactionCount = _transaction.GetTransactionCount(testClientId, DateTime.MinValue, DateTime.MaxValue, true);
+            Assert.AreEqual(expectedAllDatesUnprocessedCount, transactionCount);
+
+            // Get transaction count with limited date range
+            transactionCount = _transaction.GetTransactionCount(testClientId, testStartDate, testEndDate, false);
+            Assert.AreEqual(expectedDateRangeCount, transactionCount);
+
+
+
+            // TODOWCR: test with invalid clientId
+
         }
 
+        [TestMethod]
+        public void Test_Transaction_GetTransactions_InvalidArguments()
+        {
+            // Test clientId == 0
+            try
+            {
+                _transaction.GetTransactions(0, DateTime.MinValue, DateTime.MaxValue);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test negative clientId 
+            try
+            {
+                _transaction.GetTransactions(-100, DateTime.MinValue, DateTime.MaxValue);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test with negative skip
+            try
+            {
+                _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, -100, 0);
+                Assert.Fail();
+            } catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("skip", e.ParamName);
+            }
+
+            // Test with negative take
+            try
+            {
+                _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, 0, -100);
+                Assert.Fail();
+            } catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("take", e.ParamName);
+            }
+
+        }
         [TestMethod]
         public void Test_Transaction_GetTransactions()
         {
-            // Get the whole list
-            List<Transaction> transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, 0, 100);
-            Assert.AreEqual(22, transactionList.Count);
+            const int expectedAllDatesUnprocessedCount = numberOfUnprocessedTransactionsCreated; 
+            const int expectedAllDatesAllItemsCount = 22 + expectedAllDatesUnprocessedCount;
+            DateTime testStartDate = new DateTime(2016, 01, 01);
+            DateTime testEndDate = new DateTime(2016, 07, 01);
+            const int expectedDateRangeCount = 14;
+            const int testTakeCount = 10;
+            const int testFirstPageSkip = 0;
+            const int testThirdPageSkip = 20;
+            const int testTenthPageSkip = 90;
+            const int paginationExpectedFirstPageCount = 10;
+            const int paginationExpectedThirdPageCount = 2 + expectedAllDatesUnprocessedCount;
+            const int paginationExpctedTenthPageCount = 0;
+            const string expectedFirstPageFirstItemClientTransactionId = "39899";
+            const string expectedThirdPageFirstItemClientTransactionId = "85316";
 
+            // Get transactions with default unprocessed set, default pagination
+            List<Transaction> transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue);
+            Assert.AreEqual(expectedAllDatesUnprocessedCount, transactionList.Count);
+
+            // Get transactions with all dates, unprocessedOnly == true, default pagination
+            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, true);
+            Assert.AreEqual(expectedAllDatesUnprocessedCount, transactionList.Count);
+            foreach (Transaction transaction in transactionList)
+            {
+                Assert.IsNull(transaction.LastProcessed);
+            }
+
+            // Get transactions with all dates, unprocessedOnly == false, default pagination
+            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false);
+            Assert.AreEqual(expectedAllDatesAllItemsCount, transactionList.Count);
+
+            // Get transactions with limited date range, unprocessedOnly == false, default pagination
+            transactionList = _transaction.GetTransactions(testClientId, testStartDate, testEndDate, false);
+            Assert.AreEqual(expectedDateRangeCount, transactionList.Count);
+            foreach (Transaction transaction in transactionList)
+            {
+                Assert.IsTrue(transaction.DateCreated >= testStartDate);
+                Assert.IsTrue(transaction.DateCreated <= testEndDate);
+            }
+
+            // Exercise pagination
             // Get Page 1
-            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, 0, 10);
-            Assert.AreEqual("39899", transactionList[0].ClientTransactionId);
-            Assert.AreEqual(10, transactionList.Count);
-            
+            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, testFirstPageSkip, testTakeCount);
+            Assert.AreEqual(expectedFirstPageFirstItemClientTransactionId, transactionList[0].ClientTransactionId);
+            Assert.AreEqual(paginationExpectedFirstPageCount, transactionList.Count);
+
             // Get Page 3
-            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, 20, 10);
-            Assert.AreEqual("85316", transactionList[0].ClientTransactionId);
-            Assert.AreEqual(2, transactionList.Count);
+            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, testThirdPageSkip, testTakeCount);
+            Assert.AreEqual(expectedThirdPageFirstItemClientTransactionId, transactionList[0].ClientTransactionId);
+            Assert.AreEqual(paginationExpectedThirdPageCount, transactionList.Count);
 
-            // Get Page 10 (only 22 items, should be zero but not throw exception
-            transactionList = _transaction.GetTransactions(ClientId, DateTime.MinValue, DateTime.MaxValue, false, 90, 10);
-            Assert.AreEqual(0, transactionList.Count);
+            // Get Page 10 (less than 90 items, should be zero but not throw exception or return null
+            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, testTenthPageSkip, testTakeCount);
+            Assert.AreEqual(paginationExpctedTenthPageCount, transactionList.Count);
 
-            // TODOWCR: Finish unit test
+
+            // TODOWCR: test with invalid clientId
         }
 
+        [TestMethod]
+        public void Test_Transaction_GetTransactionsForLineItems_InvalidArguments()
+        {
+            // Test clientId == 0
+            try
+            {
+                _transaction.GetTransactionsForLineItem(0, 100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test negative clientId 
+            try
+            {
+                _transaction.GetTransactionsForLineItem(-100, 100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test lineItemId == 0
+            try
+            {
+                _transaction.GetTransactionsForLineItem(testClientId, 0);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("lineItemId", e.ParamName);
+            }
+
+            // Test negative lineItemId
+            try
+            {
+                _transaction.GetTransactionsForLineItem(testClientId, -100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("lineItemId", e.ParamName);
+            }
+        }
         [TestMethod]
         public void Test_Transaction_GetTransactionsForLineItem()
         {
-            List<Transaction> transactions = _transaction.GetTransactionsForLineItem(ClientId, 297);
+            const int testTransactionId = 570;
+            const int testLineItemId = 8837;
+            const int expectedMappedTransactions = 1;
+
+            // Get transactions for a line item
+            List<Transaction> transactions = _transaction.GetTransactionsForLineItem(testClientId, testLineItemId);
+            Assert.AreEqual(expectedMappedTransactions, transactions.Count);
+            Assert.AreEqual(testTransactionId, transactions[0].TransactionId);
+
+
+            // TODOWCR: test with invalid clientId
         }
 
         [TestMethod]
+        public void Test_Transaction_SaveTransactionToLineItemMapping_InvalidArgument()
+        {
+            // Test clientId == 0
+            try
+            {
+                _transaction.SaveTransactionToLineItemMapping(0, new List<TransactionLineItemMapping>(), testUserId);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test negative clientId 
+            try
+            {
+                _transaction.SaveTransactionToLineItemMapping(-100, new List<TransactionLineItemMapping>(), testUserId);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("clientId", e.ParamName);
+            }
+
+            // Test null transactionLineItemMappings
+            try
+            {
+                _transaction.SaveTransactionToLineItemMapping(testClientId, null, testUserId);
+                Assert.Fail();
+            } catch (ArgumentNullException e)
+            {
+                Assert.AreEqual("transactionLineItemMappings", e.ParamName);
+            }
+
+            // Test userId == 0
+            try
+            {
+                _transaction.SaveTransactionToLineItemMapping(testClientId, new List<TransactionLineItemMapping>(), 0);
+            } catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("modifyingUserId", e.ParamName);
+            }
+
+            // Test negative userId
+            try
+            {
+                _transaction.SaveTransactionToLineItemMapping(testClientId, new List<TransactionLineItemMapping>(), -100);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.AreEqual("modifyingUserId", e.ParamName);
+            }
+        }
+        [TestMethod]
         public void Test_Transaction_SaveTransactionToLineItemMapping()
         {
+            const int testTransactionId = 120;
+            const int testTacticId = 2077;
+            int[] testLineItemIds = new int[] { 297, 298 };
+            double[] testMappingAmounts = new double[] { 300.10, 100.10 };
+            const int testModifiedLineItemId = 297;
+            const double testModifiedMappingAmount = 400.4;
+            const int testNewLineItemId = 296;
+            const double testNewMappingAmount = 500.5;
+
+            // Test Create line item
             List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
-            tlimList.Add(new TransactionLineItemMapping { TransactionId = 120, LineItemId = 297, Amount = 300.10 });
-            tlimList.Add(new TransactionLineItemMapping { TransactionId = 120, LineItemId = 298, Amount = 100.10 });
+            for (int ndx=0; ndx < testLineItemIds.Length; ndx++)
+            {
+                tlimList.Add(new TransactionLineItemMapping { TransactionId = testTransactionId, LineItemId = testLineItemIds[ndx], Amount = testMappingAmounts[ndx] });
+            }
 
-            _transaction.SaveTransactionToLineItemMapping(ClientId, tlimList, 297);
+            _transaction.SaveTransactionToLineItemMapping(testClientId, tlimList, testUserId);
 
-            List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(ClientId, 120);
+            // Verify they are added
+            List<LineItemsGroupedByTactic> ligbtList = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);
 
-            LineItemsGroupedByTactic ligbt = lineItems.Find(item => item.TacticId == 2077);
+            LineItemsGroupedByTactic ligbt = ligbtList.Find(item => item.TacticId == testTacticId);
             Assert.IsNotNull(ligbt);
 
-            LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == 297);
-            Assert.IsNotNull(lineItem);
-            Assert.AreEqual(300.1, lineItem.LineItemMapping.Amount);
-            _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
+            for (int ndx=0; ndx < testLineItemIds.Length; ndx++)
+            {
+                LinkedLineItem li = ligbt.LineItems.Find(item => item.LineItemId == testLineItemIds[ndx]);
+                Assert.IsNotNull(li);
+                Assert.AreEqual(testMappingAmounts[ndx], li.LineItemMapping.Amount);
+            }
 
-            // Edit items
+
+            // Test Update line item AND Test Create and Update in same list
             tlimList = new List<TransactionLineItemMapping>();
-            lineItem.LineItemMapping.Amount = 400.4;
+            // Update
+            LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == testModifiedLineItemId);
+            lineItem.LineItemMapping.Amount = testModifiedMappingAmount;
             tlimList.Add(lineItem.LineItemMapping);
-            _transaction.SaveTransactionToLineItemMapping(ClientId, tlimList, 297);
+            // New item
+            tlimList.Add(new TransactionLineItemMapping { TransactionId = testTransactionId, LineItemId = testNewLineItemId, Amount = testNewMappingAmount });
+            _transaction.SaveTransactionToLineItemMapping(testClientId, tlimList, testUserId);
 
-            _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
+            ligbtList = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);
+            ligbt = ligbtList.Find(item => item.TacticId == testTacticId);
+            lineItem = ligbt.LineItems.Find(item => item.LineItemId == testModifiedLineItemId);
+            Assert.AreEqual(testModifiedMappingAmount, lineItem.LineItemMapping.Amount);
+            lineItem = ligbt.LineItems.Find(item => item.LineItemId == testNewLineItemId);
+            Assert.AreEqual(testNewMappingAmount, lineItem.LineItemMapping.Amount);
 
+            // Clean up line item mappings
+            ligbtList = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);
+            ligbt = ligbtList.Find(item => item.TacticId == testTacticId);
+            List<int> lineItemIdsToDelete = new List<int>(testLineItemIds);
+            lineItemIdsToDelete.Add(testNewLineItemId);
+            foreach (int lineItemId in lineItemIdsToDelete)
+            {
+                LinkedLineItem li = ligbt.LineItems.Find(item => item.LineItemMapping.LineItemId == lineItemId);
+                _transaction.DeleteTransactionLineItemMapping(testClientId, li.LineItemMapping.TransactionLineItemMappingId);                   
+            }
 
-            lineItem = ligbt.LineItems.Find(item => item.LineItemId == 298);
-            Assert.IsNotNull(lineItem);
-            Assert.AreEqual(100.1, lineItem.LineItemMapping.Amount);
-            _transaction.DeleteTransactionLineItemMapping(ClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
-
-
-            // TODOWCR: Finish unit test
+            // TODOWCR: Test with invalid clientId
         }
 
     }
