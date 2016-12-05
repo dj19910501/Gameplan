@@ -4,6 +4,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Services.Transactions;
+using RevenuePlanner.Controllers.Filters;
 
 namespace RevenuePlanner.Controllers
 {
@@ -16,6 +17,7 @@ namespace RevenuePlanner.Controllers
     /// currency and take user inputs in perferred currency.
     /// </summary>
     [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
+    [ApiAuthorizeUser(Enums.ApplicationActivity.TransactionAttribution)]
     public class TransactionController : ApiController
     {
         private ITransaction _transaction;

@@ -18,7 +18,7 @@ namespace RevenuePlanner
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            config.Filters.Add(new Controllers.ApiExceptionFilter());
+            config.Filters.Add(new Controllers.Filters.ApiExceptionFilter());
         }
     }
 }

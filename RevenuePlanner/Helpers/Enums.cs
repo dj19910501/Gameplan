@@ -400,7 +400,8 @@ namespace RevenuePlanner.Helpers
             MultiCurrency = 1 << 25,
             MultiCurrencyNone = 1 << 26,
             MultiCurrencyViewOnly = 1 << 27,
-            MultiCurrencyEdit = 1 << 28
+            MultiCurrencyEdit = 1 << 28,
+            TransactionAttribution = 1 << 29
         }
 
 

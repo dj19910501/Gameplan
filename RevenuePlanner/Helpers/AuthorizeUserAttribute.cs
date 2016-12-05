@@ -95,5 +95,18 @@ namespace RevenuePlanner.Helpers
                             })
                         );
         }
+
+        public override void OnAuthorization(AuthorizationContext filterContext)
+        {
+            if ((Sessions.UserActivityPermission & Permissions) == Permissions)
+            {
+                return;
+            }
+            else
+            {
+                filterContext.Result = new RedirectResult("/NoAcess/Index");
+            }
+        }
+
     }
 }

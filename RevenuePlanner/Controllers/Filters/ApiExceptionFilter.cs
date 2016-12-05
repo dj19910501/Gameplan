@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http.Filters;
 
-namespace RevenuePlanner.Controllers
+namespace RevenuePlanner.Controllers.Filters
 {
     /// <summary>
     /// Exception filter for the API Controller, handles exceptions thrown during when entering through an API Controller
