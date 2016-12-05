@@ -185,6 +185,18 @@
                 var budgetIDMain = $(this).attr('value');
                 $("#ddlParentFinanceMain").val(budgetIDMain);
                 if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
+                    //--------------Added By Jaymin Modi at 02/Dec/2016.Ticket:-2806 .for Reset Cookie if Exist ------------------
+                    var cookie = document.cookie;
+                    if (cookie.indexOf("budgetgridState") > -1) {
+                        var cookies = cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            if (cookies[i].indexOf("budgetgridState") > -1) {
+                                cookies.splice(i, 1);
+                            }
+                        }
+                        createCookie("gridOpenbudgetgridState", "", -1);
+                    }
+                    //------------End-----------------
                     UpdateFinanceHeaderValues(); // Update header values
                     GetGridData();
                 }
@@ -213,4 +225,4 @@
         });
 
     });
- </script>
+</script>

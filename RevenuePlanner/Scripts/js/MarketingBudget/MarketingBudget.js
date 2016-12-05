@@ -1,4 +1,63 @@
-﻿
+﻿//Added By Jaymin Modi at 01/Dec/2016. For Maintain States of Row.Ticket:-2806
+function createCookie(name, value, days) {
+    debugger;
+    if (days) {
+
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name + "=" + value + expires + ";";
+}
+
+/** //Added By Jaymin Modi at 01/Dec/2016. For Maintain States of Row.Ticket:-2806
+* Checks if there is saved open state in a cookie.
+* If there isn't, then just returns the grid data unmodified (keeping whatever "open" settings it has)
+* If there is, then the grid data is modified so that is open settings match what was in the cookie
+* Call this when you have a bunch of grid data you are getting ready to load into the grid and want to
+* prep the openstates before initial render
+*/
+function UpdateGridDataFromSavedOpenState(rows, name) {
+    var cookie = dhtmlXGridObject.prototype.getCookie(name, "gridOpen");
+
+    if (cookie) {
+
+        // construct a dictionary of the IDS that are open
+        var isOpen = Object.create(null);
+
+        var parts = cookie.split("|");
+
+        var numParts = parts.length;
+        for (var i = 0; i < numParts; ++i) {
+            isOpen[parts[i]] = "1";
+        }
+
+        // Now walk the data and set the open property
+        function processRows(rows) {
+            var n = rows.length;
+            for (var i = 0; i < n; ++i) {
+                processItem(rows[i]);
+            }
+        }
+
+        function processItem(item) {
+            if (item) {
+                item.open = item.id && isOpen[item.id];
+                if (Array.isArray(item.rows)) {
+                    processRows(item.rows);
+                }
+            }
+        }
+
+        if (Array.isArray(rows)) {
+
+            processRows(rows);
+        }
+    }
+
+}
+
 // Delete budget items once user has click the proceed button from delete confirmation popup.
     $('#proceed-button_DeleteItem').on("click", function () {
         DeleteBudget();
@@ -154,6 +213,8 @@
                 }
                 budgetgrid.init();
                 BudgetGridData = data.GridData;
+                var rows = BudgetGridData.rows;
+                UpdateGridDataFromSavedOpenState(rows, "budgetgridState");//Added By Jaymin Modi at 01/Dec/2016. For Maintain States of Row.Ticket:-2806
                 budgetgrid.parse(BudgetGridData, "json");       // Load data to DHTMLXTreeGrid.
                 colIdIndex = budgetgrid.getColIndexById('Id');  // Get the index of "Id" hidden column to refer it else to access this column.
                 ColTaskNameIndex = budgetgrid.getColIndexById('Name');  // Get the index of "Name" column to refer it else to access this column.
@@ -161,9 +222,16 @@
                 budgetgrid.setColumnHidden(colIdIndex, true)            // Hide the "Id" column by enable the DHTMLXTreeGrid property "setColumnHidden".
                 HideShowColumns();  // Show/Hide the BudgetGrid columns to show default columns while load Grid 1st time.
 
-
-                budgetgrid.expandAll();     // Expand all the records in Budget Grid.
-
+                //Added By Jaymin Modi at 01/Dec/2016 For Saving Open and Close States.Ticket:-2806 
+                var cookieBudgetgridState = dhtmlXGridObject.prototype.getCookie("budgetgridState", "gridOpen");
+                if (cookieBudgetgridState == null) {
+                    budgetgrid.expandAll();
+                }
+                budgetgrid.attachEvent("onOpenEnd", function () {
+                    budgetgrid.saveOpenStates("budgetgridState");
+                    return true;
+                });
+                //-----------------End--------------------------
                 // Declare the "EditCell" event of DHTMLXTreeGrid.
                 budgetgrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
                     var ColumnId = budgetgrid.getColumnId(cInd);            // Get column index.
