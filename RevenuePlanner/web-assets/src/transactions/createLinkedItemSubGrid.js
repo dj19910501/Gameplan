@@ -2,7 +2,11 @@ import $ from 'jquery';
 import createDataSource from './linkedItemTreeGridDataSource';
 import Grid from 'dhtmlXGridObject';
 import resolveAppUri from 'util/resolveAppUri';
+import css from './transactions.scss';
+import loadingMessage from './views/loading.ejs';
+import noLinkedItemsMessage from './views/no-linked-items.ejs';
 
+// ================= START - code that belongs in a general purpose utility module =====================
 function doRecalc(grid, parentGrid, element, td, initialize) {
     parentGrid._detectHeight(element, td, grid.objBox.scrollHeight + grid.hdr.offsetHeight + (grid.ftr ? grid.ftr.offsetHeight : 0));
     if (!initialize) {
@@ -30,30 +34,39 @@ function subGridSetupThatShouldGoSomewhereElse(grid, parentGrid, element, td) {
     });
 }
 
+function createSubGrid(parentGrid, element, td, dataSource) {
+    const grid = new Grid(element);
+    subGridSetupThatShouldGoSomewhereElse(grid, parentGrid, element, td);
+
+    grid.setImagePath(resolveAppUri("codebase/imgs/"));
+    grid.setDateFormat("%m/%d/%Y");
+    grid.enableTreeCellEdit(false);
+    grid.enableAutoWidth(true);
+
+    dataSource.bindToGrid(grid);
+
+    doRecalc(grid, parentGrid, element, td, true, false);
+}
+// ================= END - code that belongs in a general purpose utility module =====================
+
 export default function createLinkedItemSubGrid(element, transactionId, parentGrid, td) {
-    element.innerHTML = "Loading...";
+    element.innerHTML = loadingMessage({css});
 
     const dataSource = createDataSource(transactionId);
 
     // do not create the grid until the data source has loaded
     const promise = $.Deferred();
 
-
     function onLoad(ev) {
         if (dataSource.state.records) {
             dataSource.off("change", onLoad);
 
-            const grid = new Grid(element);
-            subGridSetupThatShouldGoSomewhereElse(grid, parentGrid, element, td);
-
-            grid.setImagePath(resolveAppUri("codebase/imgs/"));
-            grid.setDateFormat("%m/%d/%Y");
-            grid.enableTreeCellEdit(false);
-            grid.enableAutoWidth(true);
-
-            dataSource.bindToGrid(grid);
-
-            doRecalc(grid, parentGrid, element, td, true, false);
+            if (dataSource.state.records.length) {
+                createSubGrid(parentGrid, element, td, dataSource);
+            }
+            else {
+                element.innerHTML = noLinkedItemsMessage({css});
+            }
 
             // Tell our caller that we have finished loading
             promise.resolve();
