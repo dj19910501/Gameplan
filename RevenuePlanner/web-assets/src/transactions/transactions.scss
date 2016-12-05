@@ -132,3 +132,21 @@ $GRID_PADDING: 5px;
     display: inline-block;
   }
 }
+
+// Override some modal style rules that have been messed up by legacy app
+:global {
+  .modal {
+    z-index: 3000;
+
+    .btn {
+      color: #fff;
+
+      &.btn-default {
+        color: #333;
+        &:hover {
+          color: #333;
+        }
+      }
+    }
+  }
+}

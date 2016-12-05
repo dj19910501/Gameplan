@@ -1,0 +1,72 @@
+.editor {
+  width: auto;
+  left: 10%;
+  right: 10%;
+  margin: 0;
+  height: 90%;
+  min-height: 700px;
+
+  &:global(.fade.in) {
+    top: 5%;
+  }
+
+  :global(.modal-dialog) {
+    margin: 0;
+    height: 100%;
+
+    :global(.modal-body) {
+      // undo a setting in the legacy styling
+      max-height: initial;
+
+      // Use flexbox to make the addNewLink always consume a fixed height and the existLinks stretch/shirnk to fill the rest of the height
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: stretch;
+
+      padding: 0;
+
+      .existingLinks {
+        order: 1;
+        flex: 1 1 auto;
+        align-self: auto;
+        height: auto;
+        min-height: 200px;
+        position: relative;
+
+        overflow-y: auto;
+        padding: 10px;
+        background-color: #ccc;
+
+        h4 {
+          border-bottom: solid 1px #333;
+          margin: 0;
+          padding-bottom: 10px;
+        }
+        .availableFunds {
+          float: right;
+        }
+
+        .availableFundsLabel {
+          float: right;
+          margin-right: 10px;
+        }
+
+        .transactionName, .totalLabel {
+          margin-right: 30px;
+        }
+      }
+    }
+
+    .addNewLink {
+      order: 2;
+      flex: 0 0 auto;
+      align-self: auto;
+
+      height: 300px;
+      padding: 0 10px 10px 10px;
+    }
+  }
+}

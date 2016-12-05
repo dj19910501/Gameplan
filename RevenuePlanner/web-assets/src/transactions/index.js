@@ -4,6 +4,8 @@ import Grid from 'dhtmlXGridObject';
 import uniqueId from 'lodash/uniqueId';
 import resolveAppUri from 'util/resolveAppUri';
 import transactionGridDataSource from './transactionGridDataSource';
+import linkedItemEditor from './linkedItemEditor';
+import find from 'lodash/find';
 import "third-party/jquery.simplePagination";
 import "third-party/jquery.simplePagination.scss";
 
@@ -25,7 +27,16 @@ function createGrid($gridContainer, dataSource) {
                 const row = $(this).closest("tr");
                 const transactionId = row[0].idd;
                 ev.stopPropagation();
-                alert(`launch popup for transaction id ${transactionId}`);
+
+                // Find the transaction object and launch the linked item editor
+                const transaction = find(dataSource.state.records, {id: transactionId});
+                if (!transaction) {
+                    console.error(`could not find transaction for ${transactionId}`);
+                }
+                else {
+                    linkedItemEditor(transaction);
+                }
+
             });
     });
 }
