@@ -80,7 +80,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             string CommaSeparatedUserIds = String.Join(",", lstUserId);
             List<string> CustomColumnNames = new List<string>();
             //Call Sp to get data.
-            DataSet BudgetGridData = GetBudgetDefaultData(budgetId, viewByType, columnsRequested, ClientID, UserID, CommaSeparatedUserIds, Exchangerate);
+            DataSet BudgetGridData = GetBudgetDefaultData(budgetId, viewByType,ClientID, UserID, CommaSeparatedUserIds, Exchangerate);
 
             if (BudgetGridData.Tables.Count > 1)
             {
@@ -100,17 +100,18 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             //Call recursive function to bind the hierarchy.
             List<BudgetGridRowModel> lstData = new List<BudgetGridRowModel>();
-            lstData = GetTopLevelRows(BudgetGridData, null)
+            lstData = GetTopLevelRows(StandardColumnTable, null)
                         .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol)).ToList();
 
             objBudgetGridDataModel.head = objBudgetGridModel.GridDataStyleList;
             objBudgetGridDataModel.rows = lstData;
             objBudgetGridModel.objGridDataModel = objBudgetGridDataModel;
+
             return objBudgetGridModel;
         }
-        IEnumerable<DataRow> GetTopLevelRows(DataSet DataSet, int? minParentId)
+        IEnumerable<DataRow> GetTopLevelRows(DataTable StandardColumnTable, int? minParentId)
         {
-            return DataSet.Tables[0]
+            return StandardColumnTable
               .Rows
               .Cast<DataRow>()
               .Where(row => row.Field<Nullable<Int32>>("ParentId") == minParentId);
@@ -282,7 +283,7 @@ namespace RevenuePlanner.Services.MarketingBudget
               .Where(row => row.Field<Nullable<Int32>>("ParentId") == parentId);
         }
 
-        private DataSet GetBudgetDefaultData(int budgetId, string timeframe, BudgetColumnFlag columnsRequested, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate)
+        public DataSet GetBudgetDefaultData(int budgetId, string timeframe, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate)
         {
             DataSet EntityList = new DataSet();
             try
@@ -1108,6 +1109,97 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             return calResultset; // Returns Model having 4 values(Budget, Forecast, Planned, Actual)
 
+        }	
+
+  #region "Save new Budget related methods"
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method to save new budget
+        /// </summary>
+        ///  /// <param name="budgetName">Name of the Budget</param>
+        /// <returns>Returns budget id in json format</returns>
+        public int SaveNewBudget(string BudgetName, int ClientId, int UserId)
+        {
+            int budgetId = 0;
+            if (!string.IsNullOrEmpty(BudgetName))
+            {
+                //save budget data and get budget id 
+                RevenuePlanner.Models.Budget objBudget = new RevenuePlanner.Models.Budget();
+                objBudget.ClientId = ClientId;
+                objBudget.Name = BudgetName;
+                objBudget.Desc = string.Empty;
+                objBudget.CreatedBy = UserId;
+                objBudget.CreatedDate = DateTime.Now;
+                objBudget.IsDeleted = false;
+                _database.Entry(objBudget).State = EntityState.Added;
+                _database.SaveChanges();
+                budgetId = objBudget.Id;
+
+                //save data in budget detail table to display row wise data
+                Budget_Detail objBudgetDetail = new Budget_Detail();
+                objBudgetDetail.BudgetId = budgetId;
+                objBudgetDetail.Name = BudgetName;
+                objBudgetDetail.IsDeleted = false;
+                objBudgetDetail.CreatedBy = UserId;
+                objBudgetDetail.CreatedDate = DateTime.Now;
+                _database.Entry(objBudgetDetail).State = EntityState.Added;
+                _database.SaveChanges();
+                int _budgetid = objBudgetDetail.Id;
+
+                //save permission for newly created budget.
+                SaveUserBudgetpermission(_budgetid, UserId);
+            }
+            return budgetId;
         }
+
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method to save new item /child item
+        /// </summary>
+        /// <param name="BudgetId">Id of the Budget</param>
+        /// <param name="BudgetDetailName">Name of the item</param>
+        /// <param name="ParentId">ParentId of the Budget item</param>
+        /// <param name="mainTimeFrame">Selected time frame value </param>
+        public void SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId, int ClientId, int UserId, string mainTimeFrame = "Yearly")
+        {
+
+                if (BudgetId != 0)
+                {
+                        //Save budget detail data for newly added item to database
+                        Budget_Detail objBudgetDetail = new Budget_Detail();
+                        objBudgetDetail.BudgetId = BudgetId;
+                        objBudgetDetail.Name = BudgetDetailName;
+                        objBudgetDetail.ParentId = ParentId;
+                        objBudgetDetail.CreatedBy = UserId;
+                        objBudgetDetail.CreatedDate = DateTime.Now;
+                        objBudgetDetail.IsDeleted = false;
+                        _database.Entry(objBudgetDetail).State = EntityState.Added;
+                        _database.SaveChanges();
+                        int _budgetid = objBudgetDetail.Id;
+                        SaveUserBudgetpermission(_budgetid,UserId);
+
+                        #region Update LineItem with child item
+                        int? BudgetDetailParentid = objBudgetDetail.ParentId;
+                        IQueryable<LineItem_Budget> objLineItem = _database.LineItem_Budget
+                        .Where(x => x.BudgetDetailId == BudgetDetailParentid);
+                        foreach (LineItem_Budget LineItem in objLineItem)
+                          {
+                                LineItem.BudgetDetailId = _budgetid;
+                          }
+                       _database.SaveChanges();
+                        #endregion
+                }
+
+            }
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method Execute sp to get users of all parent ids and assign to current budget item.
+        public void SaveUserBudgetpermission(int budgetId,int UserId)
+        {
+            _database.SaveuserBudgetPermission(budgetId, 0, UserId); //Sp to get users of all parent ids and assign to current budget item.
+
+        }
+
+        #endregion
     }
 }

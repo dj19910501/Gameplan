@@ -150,6 +150,10 @@
     </div>
 </div>
 
+<div class="market-activity-main">
+    <div class="btn-dropdwn" style="" id="popupType">
+    </div>
+</div>
 <script src="~/Scripts/js/MarketingBudget/MarketingBudget.js"></script>
 <script type="text/javascript">
     var budgetgrid;
@@ -162,6 +166,10 @@
     var colIdIndex;
     var colIconIndex;
     var colTaskNameIndex;
+    var _isNewRowAdd = false;
+    var _newrowid = '';
+    var _newParentId = '';
+    var _row_parentId = '';
     var urlContent = '@Url.Content("~/")';
     var Yearly='@Enums.QuarterFinance.Yearly.ToString()';
     var Id = "@Enums.DefaultGridColumn.Id";

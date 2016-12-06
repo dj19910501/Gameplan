@@ -1,0 +1,89 @@
+﻿
+<div id="gridbox" style="width:100%; height:100%;background-color:white;"></div>
+
+<script type="text/javascript">
+
+    var newTreeGrid; // object to bind new tree grid
+    var ValidParentId = 0; // variable to get parent id 
+    var IsValid = true; // variable to check if the name entered is valid or not
+    var BudgetOptions = {
+        values: []
+    }
+    var gridWidth = $("#divGridView").width();
+    $(document).ready(function () {
+        $('#ddlMainTimeFrameSelectBox').css('display', 'none');
+        $('#ddlColumnSetFrameBox').css('display', 'none');
+        $('#ddlColumnsFrameBox').css('display', 'none');
+        $('#dvExportToExcel').css('display', 'none');
+        
+        //Push All budget Names to array to check if budget with same name already exists
+        $.each($("#ddlParentFinanceMain").find("option"), function () {
+            BudgetOptions.values.push($(this).text().toLowerCase().trim())
+        });
+        //End
+
+        // Desc :: handle for same name or empty string
+        dhtmlxValidation.isCustomNameValid = function (data) {
+            var childitems = newTreeGrid.getSubItems(ValidParentId).split(',');
+            var isrepeat = true;
+            if (data.trim() == '' || data.trim() == null) {
+                isrepeat = false;
+                IsValid = false;
+            } else {
+                var BudgetIndex = BudgetOptions.values.indexOf(data.toLowerCase().trim());
+                if (BudgetIndex >= 0) {
+
+                    isrepeat = false;
+                    IsValid = false;
+                    ShowMessage(true,'@RevenuePlanner.Helpers.Common.objCached.BudgetTitleExist', 1200);
+                }
+            }
+            return isrepeat;
+        };
+
+        newTreeGrid = new dhtmlXGridObject('gridbox');
+        newTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+        newTreeGrid.setImageSize(1, 1);
+
+        //set properties for the new budget screen.
+        //There will be 6 columns
+        newTreeGrid.setHeader("Task Name,Budget,Forecast,Planned,Actual,Line Items", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
+        newTreeGrid.setInitWidths("100,100,100,100,100,100");
+        newTreeGrid.setColAlign("left,center,center,center,center,center");
+        newTreeGrid.setColTypes("tree,ron,ron,ron,ron,ro");
+        newTreeGrid.enableValidation(true);
+        newTreeGrid.setColValidators("CustomNameValid,,,,,,");
+        newTreeGrid.setColumnIds("title,action,budget,forecast,planned,actual,lineitems");
+        newTreeGrid.attachEvent("onEditCell", OnEditCell);
+
+        newTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
+            IsValid = false;
+            return true;
+        });
+        newTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
+            IsValid = true;
+        });
+        newTreeGrid.init();
+
+        var newBudget = "newBudget";
+        newTreeGrid.addRow("newBudget", ["New Budget", "0", "0", "0", "0", "0"], 0); // default data of the new budget row
+
+        newTreeGrid.selectRowById(newBudget);
+        var rowindex = newTreeGrid.getRowIndex(newBudget);
+        window.setTimeout(function () {
+            newTreeGrid.selectCell(rowindex, 0, false, false, true, true);
+            newTreeGrid.editCell();
+        }, 1);
+        newTreeGrid.forEachRow(function (rowid) {
+            var titleIndex = newTreeGrid.getColIndexById('title');
+            newTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4;");
+
+        });
+        $("#gridbox").find('table').css('width', gridWidth);
+
+        //Enable single click to trigger edit .
+        newTreeGrid.enableEditEvents(true, false, true);
+
+        return true;
+    });
+</script> 

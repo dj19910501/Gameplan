@@ -231,6 +231,9 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         List<Budget_Columns> GetColumns(int ColumnSetId);// Column set dropdown
 
+        int SaveNewBudget(string BudgetName, int ClientId, int UserId);
+        void  SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId ,int ClientId, int UserId, string mainTimeFrame = "Yearly");
+        DataSet GetBudgetDefaultData(int budgetId, string timeframe, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate);
         BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol);
 
         MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate); // Header values

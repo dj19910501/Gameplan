@@ -333,6 +333,7 @@
     <Content Include="Scripts\js\MarketingBudget\MarketingBudget.js" />
     <Content Include="Views\Finance\Transactions.cshtml" />
     <Content Include="Views\MeasureDashboard\_ViewAllReportGraph.cshtml" />
+    <Content Include="Views\MarketingBudget\_newBudget.cshtml" />
     <None Include="web-assets\build\check-npm-install.js" />
     <None Include="web-assets\build\check-npm-version.js" />
     <Content Include="web-assets\build\include-css.htm" />

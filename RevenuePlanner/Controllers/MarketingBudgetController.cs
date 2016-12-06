@@ -24,19 +24,16 @@ namespace RevenuePlanner.Controllers
         private bool _IsForecastCreate_Edit = true;
         #endregion
         [AuthorizeUser(Enums.ApplicationActivity.BudgetCreateEdit | Enums.ApplicationActivity.ForecastCreateEdit | Enums.ApplicationActivity.ForecastView)]
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
+        public ActionResult Index()
         {
             MarketingActivities MarketingActivities = new MarketingActivities();
 
             #region Bind Budget dropdown on grid
-            List<BindDropdownData> lstMainBudget = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
-            MarketingActivities.ListofBudgets = lstMainBudget;
+            MarketingActivities.ListofBudgets = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
             #endregion
 
             #region "Bind TimeFrame Dropdown"
-            List<BindDropdownData> lstMainAllocated = new List<BindDropdownData>();
-            lstMainAllocated = Enums.QuartersFinance.Select(timeframe => new BindDropdownData { Text = timeframe.Key, Value = timeframe.Value }).ToList();
-            MarketingActivities.TimeFrame = lstMainAllocated;
+            MarketingActivities.TimeFrame = Enums.QuartersFinance.Select(timeframe => new BindDropdownData { Text = timeframe.Key, Value = timeframe.Value }).ToList();
             #endregion
 
             #region Bind Column set dropdown
@@ -94,14 +91,14 @@ namespace RevenuePlanner.Controllers
         //    throw new NotImplementedException();
         //}
 
-        public JsonResult GetBudgetData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested = 0) // need to pass columns requested
+        public JsonResult GetBudgetData(int budgetId, string TimeFrame, BudgetColumnFlag columnsRequested = 0) // need to pass columns requested
         {
             // set budgetId  and timeframe in session for import
-            Sessions.ImportTimeFrame = viewByType;
+            Sessions.ImportTimeFrame = TimeFrame;
             Sessions.BudgetDetailId = budgetId;
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             //Get all budget grid data.
-            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, viewByType, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol);
+            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, TimeFrame, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol);
             var jsonResult = Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader }, JsonRequestBehavior.AllowGet);
             return jsonResult;
         }
@@ -339,5 +336,61 @@ namespace RevenuePlanner.Controllers
             return Json(new { Budget = Budget, Forecast = Forecast, Planned = Planned, Actual = Actual }, JsonRequestBehavior.AllowGet);
         }
         #endregion
+
+
+        #region "Create new Budget related methods"
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// returns add new budget partial view
+        /// </summary>
+        public ActionResult LoadnewBudget()
+        {
+            return PartialView("_newBudget");
+        }
+
+
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method to save new budget
+        /// </summary>
+        ///  /// <param name="budgetName">Name of the Budget</param>
+        /// <returns>Returns budget id in json format</returns>
+        public JsonResult SaveNewBudget(string budgetName)
+        {
+            int budgetId = 0;
+            try
+            {
+                 budgetId = _MarketingBudget.SaveNewBudget(budgetName,Sessions.User.CID,Sessions.User.ID);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { budgetId = budgetId }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method to save new item /child item
+        /// </summary>
+        /// <param name="BudgetId">Id of the Budget</param>
+        /// <param name="BudgetDetailName">Name of the item</param>
+        /// <param name="ParentId">ParentId of the Budget item</param>
+        /// <param name="mainTimeFrame">Selected time frame value </param>
+        public void SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId, string mainTimeFrame = "Yearly")
+        {
+            try
+            {
+                _MarketingBudget.SaveNewBudgetDetail(BudgetId, BudgetDetailName, ParentId, Sessions.User.CID, Sessions.User.ID, mainTimeFrame);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+        }
+
+
+        #endregion
+
     }
 }

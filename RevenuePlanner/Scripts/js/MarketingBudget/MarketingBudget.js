@@ -60,7 +60,6 @@ function UpdateGridDataFromSavedOpenState(rows, name) {
 
 // Delete budget items once user has click the proceed button from delete confirmation popup.
 $('#proceed-button_DeleteItem').on("click", function () {
-
     DeleteBudget();
     $('#divDeletePopup').modal("hide");
 });
@@ -168,8 +167,14 @@ function BindFilterColumnsAndCheckUncheck(data) {
 // Created by Komal
 // Desc: Get Budget Grid data from server and bind it based on below parameters.
 // BudgetId: Get budget data based on user has selected from Budget dropdown list.
-// viewByType: Render Budget Grid columns by timeframe value(i.e. Monthly, Quearterly, This Year etc. )
+   // TimeFrame: Render Budget Grid columns by timeframe value(i.e. Monthly, Quearterly, This Year etc. )
 function GetGridData(budgetId) {
+
+        $('#ddlMainTimeFrameSelectBox').css('display', 'block');
+        $('#ddlColumnSetFrameBox').css('display', 'block');
+        $('#ddlColumnsFrameBox').css('display', 'block');
+        $('#dvExportToExcel').css('display', 'block');
+
     var BudgetId = "";
 
     // Check that "budgetId" is null or not.
@@ -197,7 +202,7 @@ function GetGridData(budgetId) {
         url: urlContent + "MarketingBudget/GetBudgetData/",
         data: {
             BudgetId: BudgetId,
-            viewByType: mainTimeFrame,
+                TimeFrame: mainTimeFrame,
         },
         success: function (data) {
 
@@ -214,10 +219,8 @@ function GetGridData(budgetId) {
             }
             budgetgrid.init();
             BudgetGridData = data.GridData;
-            
             var rows = BudgetGridData.rows;
             UpdateGridDataFromSavedOpenState(rows, "budgetgridState");//Added By Jaymin Modi at 01/Dec/2016. For Maintain States of Row.Ticket:-2806
-           
             budgetgrid.parse(BudgetGridData, "json");       // Load data to DHTMLXTreeGrid.
             colIdIndex = budgetgrid.getColIndexById('Id');  // Get the index of "Id" hidden column to refer it else to access this column.
             ColTaskNameIndex = budgetgrid.getColIndexById('Name');  // Get the index of "Name" column to refer it else to access this column.
@@ -248,7 +251,14 @@ function GetGridData(budgetId) {
             }
             //-----------------End--------------------------
             // Declare the "EditCell" event of DHTMLXTreeGrid.
-            budgetgrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
+                budgetgrid.attachEvent("onEditCell", OnEditMainGridCell);
+            }
+        });
+
+    }
+
+    //Function to manage dit event on main grid
+    function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
                 var ColumnId = budgetgrid.getColumnId(cInd);            // Get column index.
                 var locked = budgetgrid.getUserData(rId, "lo");         // Get "lo"(i.e. row locked or not) property to identify that row is locked or not.
                 var Permission = budgetgrid.getUserData(rId, "per");    // Get user permission "per" property.
@@ -272,7 +282,51 @@ function GetGridData(budgetId) {
                         return false;
                     }
                 }
+        if (nValue != oValue && stage.toString() == '2')
+        {
+
+            var rowId = '', parentId = '';
+            var itemIndex = -1;
+            if (_row_parentId != null && _row_parentId.length > 0) {
+                splitRowParentIds = _row_parentId.split(',');
+                $.each(splitRowParentIds, function (key, val) {
+                    rowId = val.split('~')[0]; //get row id from the global id "_row_parentid"
+                    parentId = val.split('~')[1]; //get parent id from the global id "_row_parentid"
+                    itemIndex = key;
+                    if (rowId == rId) {
+                        return false;
+                    }
             });
+            }
+
+            if (nValue == null || nValue == '' || nValue.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oValue) {
+                return false;
+            }
+            else {
+                if (rowId == rId) {
+                    var _budgetIdVal = $("#ddlParentFinanceMain").val();
+                    SaveNewBudgetDetail(_budgetIdVal, nValue, parentId); // save data when we add new item/child item
+                    _isNewRowAdd = false;
+                }
+            }
+        }
+    }
+
+    //Added by - Komal rawal
+    //To save budget detail when we add any new item/child item
+    function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId) {
+        var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+        $.ajax({
+            url: urlContent + "MarketingBudget/SaveNewBudgetDetail/",
+            dataType: 'json',
+            data: {
+                BudgetId: budgetId,
+                BudgetDetailName:budgetDetailName,
+                ParentId: parentId,
+                mainTimeFrame: mainTimeFrame,
+            },
+            success: function (data) {
+                GetGridData(budgetId); //refresh grid once we add any new item
         }
     });
 
@@ -325,13 +379,12 @@ function DeleteBudget() {
             var BudgetId = data.budgetId;
             UpdateFinanceHeaderValues(); // Update header values
             GetGridData(BudgetId);
-            RefreshBudgetDropdown(false, BudgetId);
-            //TODO :  here we need to call Finance Header function to refresh the header after deleting budget data
+                RefreshBudgetDropdown(BudgetId);
         }
     });
 }
 
-function RefreshBudgetDropdown(IsAddNew, BudgetId) {
+    function RefreshBudgetDropdown(BudgetId) {
     var _budgetId = "";
     if (BudgetId != undefined && BudgetId != "") {
         _budgetId = BudgetId.toString();
@@ -548,3 +601,243 @@ function ApplyFormattingAndTooltip(idName) {
         setBootstrapTooltip(idName, originalValue, maxsize, true); // Apply tooltip
     }
 }
+
+
+
+    function AddRow(cntrl) {
+        var attrRowId = $(cntrl).attr('row-id');
+        var rowIndex = budgetgrid.getRowIndex(attrRowId);
+        DisplayPopUpMenu(cntrl, rowIndex);
+    }
+
+    function DisplayPopUpMenu(addControl, rowIndex) {
+        //Add 2 options in the poup menu i.e new item , new child item
+        var ul, newItemList = '';
+        if (rowIndex > 0) { // if parent item then there will be just one option i.2 new child item
+            newItemList = "<li class='new-finance new-prog' id='newFinanceItem' itemType='parallelitem'>New Item</li>";
+        }
+        ul = "<ul style='margin: 0;'>  " + newItemList + " <li class='new-finance new-prog' id='newFinacneChildItem' itemType='childitem'>New Child Item</li>  </ul>";
+
+
+        $('#popupType').css('display', 'block');
+        $('#popupType').html(ul);
+
+        //Set position of the popup
+        var left = $(addControl).position().left + 45;//e.pageX;
+        var targetOffset = $(addControl).offset().top;
+        var scrollPosition = $(window).scrollTop();
+
+        if ($('#popupType').css('display') != 'none') {
+            if (scrollPosition <= targetOffset) {
+                $('#popupType').css({
+                    'top': targetOffset,
+                    'left': left,
+                });
+            }
+            else {
+                var targetHeight = target.height();
+                var contentHeight = $('#popupType').outerHeight();
+                var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+                $('#popupType').css({
+                    'top': targetBottomOffset,
+                    'left': left,
+                });
+            }
+        }
+        //end
+
+        $('.new-finance').click(function () {
+            var itemtype = $(this).attr('itemType');
+            AddNewRowbyType(itemtype, addControl); //adds new item at required position
+            $('#popupType').css('display', 'none');
+        });
+
+    }
+
+    $(document).click(function () {
+        $('#popupType').css('display', 'none');
+    });
+
+    $(document).mouseup(function (e) {
+        $('#popupType').css("display", "none");
+    });
+
+
+
+    function AddNewRowbyType(itemType, cntrl) {
+
+        if (_isNewRowAdd == false) { // checks if an new item is already added then dont add another.
+            var row_id = $(cntrl).attr('row-id');
+            var childrencount = budgetgrid.hasChildren(row_id); // Get Current Row Children count.
+            var insertrowindex = childrencount + 1; // get the index at which the new item is to be placed
+            /*Start: Get ParentId and BudgetDetailId from RowId */
+            var budgetDetailId = 0;
+            var isRootMostParent = IsRootMostParentId(row_id);
+            if (row_id !== null && row_id !== 'undefined' && row_id !== '') {
+
+                if (itemType.toLowerCase() == 'parallelitem' && !isRootMostParent) {
+                    var curntRowParentId = budgetgrid.getParentId(row_id);
+                    var arr = curntRowParentId.split('_'); // split thecurrent row id and get the parent id for the new record to be inserted
+                    if (arr !== null && arr !== 'undefined' && arr.length > 0) {
+                        if (arr[1] != null && arr[1] != 'undefined') {
+                            _newParentId = budgetDetailId = arr[1];
+                        }
+                    }
+                }
+                else if (itemType.toLowerCase() == 'childitem') {
+                    var arr = row_id.split('_'); // split thecurrent row id and get the parent id for the new record to be inserted
+                    if (arr !== null && arr !== 'undefined' && arr.length > 0) {
+                        if (arr[1] != null && arr[1] != 'undefined') {
+                            _newParentId = budgetDetailId = arr[1];
+                        }
+                    }
+                }
+                else {
+                    _newParentId = budgetDetailId = 0;
+                }
+            }
+            // Create RowId for newRecord.
+            _newrowid = "new" + insertrowindex.toString() + "_0_" + _newParentId;  // RowId format: NameofItem_BudgetDetailId_ParentId.
+            _row_parentId = _row_parentId + "," + _newrowid + "~" + _newParentId + "~" + row_id; // Store NewRowId & ParentRowId in global variable This variable use to save data in OnEditCell event.
+            _isNewRowAdd = true;
+
+            var TotalColumn = budgetgrid.getColumnCount();
+            var AddRowString = [];
+
+            //set properties for the newly created item i.e only task name will be editable rest all will be read only
+            var AddRowColTypes = "ro,tree,ro";
+            var ColumnsVisibility = "";
+            AddRowString.push("");
+            AddRowString.push("New item");
+            AddRowString.push("");
+            for (var k = 0; k < TotalColumn; k++) {
+                ColumnsVisibility += budgetgrid.isColumnHidden(k) + ",";
+                if (k > 2 && k < (TotalColumn - 3)) {
+                    AddRowString.push("0");
+                    AddRowColTypes += ",ro";
+                }
+            }
+            AddRowString.push("0 | Edit");
+            AddRowString.push("0");
+            AddRowString.push("User");
+            AddRowColTypes += ",ro,ro,ro";
+            ColumnsVisibility = ColumnsVisibility.slice(0, -1);
+            budgetgrid.setColTypes(AddRowColTypes);
+            budgetgrid.setColumnsVisibility(ColumnsVisibility); // set column visiblity
+            //end 
+
+            if (itemType.toLowerCase() == 'childitem') {
+                budgetgrid.addRow(_newrowid, AddRowString, -1, row_id);
+            }
+            else if (isRootMostParent) {
+                budgetgrid.addRow(_newrowid, AddRowString);
+            }
+            else {
+                // Insert record at Parallel Level.
+                var curntRowParentId = budgetgrid.getParentId(row_id);
+                budgetgrid.addRow(_newrowid, AddRowString, -1, curntRowParentId);
+            }
+
+            var titleIndex = budgetgrid.getColIndexById('title');
+            budgetgrid.setCellTextStyle(_newrowid, titleIndex, "border-right:0px solid #d4d4d4;");
+            budgetgrid.openItem(row_id);
+            var _newRowIndex = budgetgrid.getRowIndex(_newrowid.toString());
+            window.setTimeout(function () {
+                budgetgrid.selectCell(_newRowIndex, 0, false, false, true, true);
+                budgetgrid.editCell();
+            }, 1);
+        }
+    }
+
+    function IsRootMostParentId(curntRowid) {
+        var parentid = budgetgrid.getParentId(curntRowid);
+        var result = false;
+        if (parentid == null || parentid == 'undefined' || parentid <= 0) {
+            result = true;
+        }
+        return result;
+    }
+
+
+    $("#btnAddNewBudget").click(function () {
+        $('#errorMsg').css('display', 'none');
+        $('#SuccessMsg').css('display', 'none');
+        $("#divGridView").show();
+    
+       
+        //Append please slect to the budget dropdown list
+        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("li[class='nl-dd-checked']").removeClass('nl-dd-checked');
+        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("a[class='nl-field-toggle']").html('Please Select');
+        $('#ddlParentFinanceMain').prepend('<option value="0" selected="selected">Please Select</option>');
+        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('ul').prepend("<li class='nl-dd-checked' value='0' originalvalue='Please Select' textvalue='0'>Please Select</li>");
+        //end
+
+        UpdateFinanceHeaderValues(); //update header values
+
+        var url = urlContent + "MarketingBudget/LoadnewBudget/"; //Load add new budget screen
+        $('#divGridView').load(url);
+    });
+
+    function OnEditCell(stage, id, index, newVal, oldVal) {
+        ValidParentId = newTreeGrid.getParentId(id);
+        var ColumnName = budgetgrid.getColLabel(index, 0);
+
+        if (stage == 1) {
+
+            if (ColumnName == "Task Name") {
+                $(".dhx_combo_edit").off("keydown");
+                $(".dhx_combo_edit").on('keydown', (
+                newTreeGrid.editor.obj.onkeypress = function (event) {
+
+                    var text = this.value;
+                    if (event.keyCode == 8 || event.keyCode == 46
+                     || event.keyCode == 37 || event.keyCode == 39) {
+
+                        return true;
+                    }
+                    else if (text.length > 250) { //max length of the text
+                        return false;
+                    }
+                    else { return true; }
+
+                }));
+            }
+        }
+
+        if (stage.toString() == '0' || stage.toString() == '1') {
+            return true;
+        }
+        if (IsValid) { // checks if the name is valid then saves the data
+            if (stage.toString() == '2') {
+                if (newVal == null || newVal == '') {
+                    return false;
+                }
+                else {
+                    SaveNewBudget(htmlDecode(newVal));//method to save the data
+                    return true;
+                }
+            }
+        }
+    }
+
+
+    //Added by : Komal Rawal
+    // to save the details of new budget .
+    //Budget name : name of the new budget created
+    function SaveNewBudget(budgetName) {
+
+        $('#btnAddNewBudget').prop('disabled', false);
+
+        $.ajax({
+            url: urlContent + "MarketingBudget/SaveNewBudget/",
+            dataType: 'json',
+            data: {
+                budgetName: budgetName,
+            },
+            success: function (data) {
+                var BudgetId = data.budgetId;
+                RefreshBudgetDropdown(BudgetId);
+                GetGridData(BudgetId);
+            }
+        });
+    }
