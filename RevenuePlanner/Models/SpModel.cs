@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace RevenuePlanner.Models
 {
@@ -213,6 +214,8 @@ namespace RevenuePlanner.Models
         public int Height { get; set; }
         public decimal Width { get; set; }
         public string DisplayName { get; set; }
+        public string CustomQuery { get; set; }
+        public string ChartType { get; set; }
     }
 
     public class ReportParameters
@@ -229,8 +232,14 @@ namespace RevenuePlanner.Models
         public string UserName { get; set; }
         public string Password { get; set; }
         public string[] CurrencyRate { get; set; }
-        //Following parameter is added on 30/11/2016 for ticket no #2818 by kausha to display Graph name in drilldown popup.
+        public int DashboardContentId { get; set; }
+        public int HelpTextId { get; set; }
+        public int DashboardId { get; set; }
+        public string ChartType { get; set; }
+        public bool IsSortByValue { get; set; }
+        public string SortOrder { get; set; }
         public string DisplayName { get; set; }
+        public string CustomQuery { get; set; }
     }
     public class ReportTableParameters
     {
@@ -251,5 +260,57 @@ namespace RevenuePlanner.Models
         public string RoleId { get; set; }
         //Following parameter is added on 28/11/2016 for ticket no #2819 by kausha to display ReportTable name in drilldown popup.
         public string DisplayName { get; set; }
+    }
+    public class DrillDownDetails
+    {
+        public int ChartId { get; set; }
+        public bool IsGraph { get; set; }
+        public string DisplayName { get; set; }
+        public string DimensionValueName { get; set; }
+        public string DimensionValueCount { get; set; }
+        public string DimensionActualValueCount { get; set; }
+        public int DashboardContentId { get; set; }
+        public int DashboardId { get; set; }
+        public string HeaderDimensionValue { get; set; }
+        public string MeasureName { get; set; }
+        public string CustomQuery { get; set; }
+        [AllowHtml]
+        public string ReportDashboardID { get; set; }
+        public string PageSize { get; set; }
+        public string DisplayBy { get; set; }
+        public string SortBy { get; set; }
+        public string SortDirection { get; set; }
+        public string PageIndex { get; set; }
+        public string childchartid { get; set; }
+        public int HelpTextId { get; set; }
+        public bool IsSortByValue { get; set; }
+        public string SortOrder { get; set; }
+        public string ChartType { get; set; }
+    }
+    public class DrillDownParameters
+    {
+        public int ChartId { get; set; }
+        public string DimensionValueName { get; set; }
+        public string MeasureName { get; set; }
+        public string CustomQuery { get; set; }
+        public int PageSize { get; set; }
+        public string DisplayBy { get; set; }
+        public string SortBy { get; set; }
+        public string SortDirection { get; set; }
+        public int PageIndex { get; set; }
+        public string childchartid { get; set; }
+        public string[] DimensionValues { get; set; }
+        public string mTotalRecords { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public string ConnectionString { get; set; }
+        public int DashboardId { get; set; }
+        public int DashboardPageId { get; set; }
+        public string HeaderDimensionValue { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+        public string DimensionTable { get; set; }
+        public string ViewByValue { get; set; }
+        public string[] SelectedDimension { get; set; }
     }
 }

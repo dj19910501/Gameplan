@@ -129,7 +129,7 @@
                     <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); float:left; ">
                         <div class="tab-head">
                             @ReportGraph.DisplayName
-                            <span class="IconResize" id='@ReportGraph.ReportTableID' title="View All" clickon="ViewAll" reporttableid='@ReportGraph.ReportTableID' reportgraphid='@ReportGraph.ReportID' displayName="@ReportGraph.DisplayName" onclick="ViewAllContent(this);" dashboardcontentid='@ReportGraph.DashboardContentId'>
+                            <span class="IconResize" id='@ReportGraph.ReportTableID' title="View All" clickon="ViewAll" reporttableid='@ReportGraph.ReportTableID' reportgraphid='@ReportGraph.ReportID' displayname="@ReportGraph.DisplayName" onclick="ViewAllContent(this);" dashboardcontentid='@ReportGraph.DashboardContentId' customquery='@ReportGraph.CustomQuery' charttype='@ReportGraph.ChartType'>
                                 <i class="fa fa-info-circle"></i>
                             </span>
                         </div>
@@ -506,6 +506,8 @@
             var SelectedDimensionValue = GetSelectedValues();      
             var DisplayName = $(sender).attr('displayName');
             var DashboardContentId = $(sender).attr('dashboardcontentid');
+            var Customquery = $(sender).attr('customquery');
+            var Charttype = $(sender).attr('charttype');
             var StartDate = '';
             var EndDate = '';
             var ViewBy = $("#ddlViewBy").val();
@@ -531,7 +533,9 @@
             params.DashboardId = '@DashId';
             params.DashboardPageid = '@DashPageID';
             params.DashboardContentId = DashboardContentId;
-            params.DisplayName= DisplayName;
+            params.DisplayName = DisplayName;
+            params.Customquery = Customquery;
+            params.Charttype = Charttype;
             $.ajax({
                 url: url,
                 async: true,

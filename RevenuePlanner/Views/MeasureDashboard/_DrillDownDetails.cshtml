@@ -1,0 +1,549 @@
+﻿@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
+@model RevenuePlanner.Models.DrillDownDetails
+@{
+    string formId = "Export_DrillData_" + Model.DashboardContentId;
+    string exportPermission = string.Empty;
+}
+
+<div class="container-fluid all-height" id="DivShareTacticPopupMain">
+    <div class="row-fluid calc-height">
+        <div class="span12">
+            <div id="DivDrillDownPopup" class="form-ViewAllReportPopUp fade in " role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
+                <div class="login-wrapper">
+                    @using (Html.BeginForm("ExportAllData", null, FormMethod.Post, new { id = @formId, @class = "ViewAllReportPopUp" }))
+                    {
+                        @Html.HiddenFor(x => x.DisplayName, new { @Value = Model.DisplayName })
+                        @Html.HiddenFor(x => x.ChartId, new { @Value = Model.ChartId })
+                        @Html.HiddenFor(x => x.DashboardContentId, new { @Value = Model.DashboardContentId })
+                        @Html.HiddenFor(x => x.DimensionValueName, new { @Value = Model.DimensionValueName })
+                        @Html.HiddenFor(x => x.DimensionValueCount, new { @Value = Model.DimensionValueCount })
+                        @Html.HiddenFor(x => x.HeaderDimensionValue, new { @Value = Model.HeaderDimensionValue })
+                        @Html.HiddenFor(x => x.ReportDashboardID, new { @Value = Model.ReportDashboardID })
+                        @Html.HiddenFor(x => x.childchartid, new { @Value = Model.childchartid })
+                        @Html.HiddenFor(x => x.MeasureName, new { @Value = Model.MeasureName })
+                        @Html.HiddenFor(x => x.PageSize, new { @Value = "10" })
+                        @Html.HiddenFor(x => x.PageIndex, new { @Value = "0" })
+                        @Html.HiddenFor(x => x.DisplayBy, new { @Value = "" })
+                        @Html.HiddenFor(x => x.SortBy, new { @Value = "" })
+                        @Html.HiddenFor(x => x.SortDirection, new { @Value = "" })
+                        @Html.HiddenFor(x => x.CustomQuery, new { @Value = Model.CustomQuery })
+
+                        <form class="ViewAllReportPopUp">
+                            <div id="DrillDownDataModule" class="clearfix">
+                                <div class="tab-head" style="font-family: 'Source Sans Pro','Arial'; font-weight: 400;">@WebUtility.HtmlDecode(@Model.DisplayName)<a class="close-popup-btn">Close</a></div>
+
+                                <div class="tab-content tab-content-scroll drilldown_popup clearfix" style="height: calc(90%-37px); border: none;">
+                                    <div id="divAggregationMessage" class="error-box source-sans-probold">
+                                        <p>The data in the application is currently being update, it is possible that data in drill down areas of the application may be out of sync with the charts shown.</p>
+                                        <span class="graph_poup_close"><i class="fa fa-times aggregationmsg" style="cursor: pointer"></i></span>
+                                    </div>
+                                    <div style="border-bottom: 1px solid #ccc" class="home-chart-header  col-xs-12 clearfix">
+                                        <div class="date-value-wrapper clearfix">
+                                            <div class="col-xs-3">
+                                                <button type="button" onclick="ViewDataContentDrillDown(this);" class="btn btn-blue" customquery='@Model.CustomQuery' charttype='@Model.ChartType' dimensionname='@ViewBag.DimensionName' reportdashboardid="@Model.DashboardId" hdncontentid="@Model.DashboardContentId" reportgraphid="@Model.ChartId" displayname="@Model.DisplayName" helptextid='@Convert.ToString(Model.HelpTextId)' title="Back to Overview" id="BackTableRowsViewAll_@Model.DashboardContentId">< Back to Overview</button>
+                                            </div>
+                                            <div class="col-xs-9">
+                                                <div style="width: 100%">Date Range</div>
+                                                <span class="lblheader">From: </span><span class="lblvalue">@Sessions.StartDate </span>
+                                                <span class="lblheader margin-left20">To: </span><span class="lblvalue">@Sessions.EndDate</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col2 clearfix">
+                                        <div class="box">
+                                            <p style="" class="dimenetion-value" title='@Model.DimensionValueName'>@WebUtility.HtmlDecode(Model.DimensionValueName) </p>
+                                            <p id="keyvalue" class="col keydatabox-value">@Model.DimensionActualValueCount</p>
+                                        </div>
+                                        @if (Model.CustomQuery == "0")
+                                        {
+                                            <div class="viewByWidth">
+                                                <p class="ViewByFont">Display by:</p>
+                                                <div class="selectBox1 ViewByVal" id="divDisplayBy">
+                                                    @Html.DropDownList("ddlDisplayBy", new SelectList((System.Collections.IEnumerable)ViewData["DisplayBy"], "Value", "Text"))
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div id="divNoConfigFound" class='noreportsfound NoConfiguration' style="display: none;">
+                                        <p>No report configuration data found for this dashboard.</p>
+                                    </div>
+                                    <div class="table1-responsive" style="float: left; width: 100%; border: none; min-height: 380px; margin-top: -8px;">
+                                        <div id="divTotalRecords" class="TotalRecords" style="display: none; padding-top: 10px; padding-right: 19px">
+                                            <span>Total records : </span><span id="pTotalRecords"></span>
+                                        </div>
+                                        <div class="col2" id="drillDownTable" style="min-height: 300px; max-height: 500px; overflow-y: auto; padding-bottom: 10px;">
+                                        </div>
+                                        <div class="dataTables_paginate paging_full_numbers clearfix" id="drillDownTable_paginate" style="display: none;">
+                                            <span id="pagingDetails"></span>
+                                            <nav>
+                                                <ul class="pagination" style="margin-bottom: 5px!important;"></ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .objbox tr .totalRow {
+        display: none;
+    }
+
+    div.gridbox .objbox {
+        overflow: hidden !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        width: inherit;
+    }
+
+    div.gridbox .xhdr {
+        overflow: hidden !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        width: inherit;
+    }
+</style>
+<div id="DivBackgroundDrillDown" class="modal-backdrop fade in" style="z-index: 2001"></div>
+
+<script type="text/javascript">
+
+    var displayByValue = '';
+    var DatableSortSettigs = '';
+    var pageSize = 10;
+    var pageIndex = 0;
+    var TotalRecords = 0;
+    var sortBy = '';
+    var sortByIndex = 0;
+    var sortDirection = '';
+    var lastPageIndex = 1;
+    var isExpandClick = true;
+    var isBackPaging = false;
+    var colID = 0;
+    var dire = "dsc";
+
+    $(document).ready(function () {
+        //GetDrillAggrtegationStatus();
+        $('#DivBackgroundSupportContact').css("display", "none");
+        $('#DivContactSupportPopup').css("display", "none");
+        $('#DivBackgroundSupportContact').remove();
+        $('#DivContactSupportPopup').remove();
+        document.body.style.overflow = "hidden";
+        $("#divDisplayBy select").selectbox();
+        $("#divDisplayBy select").attr('autocomplete', 'off');
+        displayByValue = $('#ddlDisplayBy').val();
+        UpdateDrillDownTableData('');
+        var newremain = '';
+        var budgetValue = $('#keyvalue').text();
+        $('#keyvalue').addClass('north');
+        $('#keyvalue').attr('title', budgetValue);
+        $(".north").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+    });
+
+    function close_popup() {
+        if (document.body.style.overflow == "hidden") {
+            document.body.style.overflow = "visible";
+        }
+        $('#DivBackgroundDrillDown').css("display", "none");
+        $('#DivDrillDownPopup').css("display", "none");
+        $('#DivBackgroundDrillDown').remove();
+        $('#DivDrillDownPopup').remove();
+    }
+
+    function UpdateDrillDownTableData(DatableSortSettigs) {
+        var id = '@Model.ChartId';
+        var DisplayName = '@Model.DisplayName';
+        var headerDimensionValue = '@Model.HeaderDimensionValue';
+        var dimensionValueName = '@Model.DimensionValueName';
+        var dimensionValueCount = '@Model.DimensionValueCount';
+        var chartType = '@Model.ChartType';
+        var childchartid = '@Model.childchartid';
+        var measureName = '@Model.MeasureName';
+        var customquery = '@Model.CustomQuery';
+        var dashid = '@Model.DashboardId';
+        if (DatableSortSettigs != 'undefined' && typeof DatableSortSettigs != undefined && DatableSortSettigs != '') {
+            var sort = DatableSortSettigs.toString().split(',');
+            sortBy = sort[0];
+            sortDirection = sort[1];
+        }
+
+        var ulListing = [];
+        var SOD = [];
+        var SDV = [];
+        $('ul[id^=ulListing]').each(function () {
+            var DimensionID = $(this).attr('id').replace("ulListing", "");
+            var ulListingID = $(this).attr('id');
+            if ($.inArray(ulListingID, ulListing) == -1)  // the ulListingID is not in the ulListing array
+            {
+                ulListing.push(ulListingID); // Added by Dashrath Prajapati for Ticket #728
+                var IsDimensionSelected = false;
+                $(this).find('li').each(function () {
+                    if ($(this).hasClass('close-list') == true) {
+                        if ($(this).find("input[type='checkbox']").is(':enabled')) {
+                            SDV.push(DimensionID + ":" + $(this).attr('id').replace("liAllListing", ""));
+                        }
+                        IsDimensionSelected = true;
+                    }
+                });
+
+                if (IsDimensionSelected) {
+                    SOD.push(DimensionID);
+                }
+            }
+        });
+
+        displayByValue = $("#ddlDisplayBy").val();
+        var params = {};
+        params.SelectedOthersDimension = SOD;
+        params.SelectedDimensionValue = SDV;
+        params.DbName = '@Enums.ApplicationCode.RPC.ToString()';
+        params.ChartId = parseInt(id);
+        params.DimensionValueName = dimensionValueName;
+        params.HeaderDimensionValue = headerDimensionValue;
+        params.DisplayBy = displayByValue;
+        params.SortBy = sortBy;
+        params.SortDirection = sortDirection;
+        params.PageIndex = pageIndex;
+        params.PageSize = pageSize;
+        params.mTotalRecords = TotalRecords;
+        params.MeasureName = measureName;
+        params.childchartid = childchartid;
+        params.CustomQuery = customquery;
+        params.ReportDashboardID = dashid;
+        $("#drillDownTable").empty();
+        $.ajax({
+            url: '@Url.Content("~/MeasureDashboard/GetDrillDownReportTable")',
+            type: 'post',
+            async: false,
+            dataType: 'json',
+            data: $.param(params, true),
+            success: function (data) {
+                if (data.isSuccess != 'undefined' && typeof data.isSuccess != undefined && data.isSuccess == true) {
+                    ShowHideLabels(data);
+                    if (typeof data.TotalRecords != undefined && data.TotalRecords != 'undefined' && data.DrillDownConfigExists != false) {
+                        $('#divTotalRecords').css('display', 'block');
+                        $('#pTotalRecords').html(number_format(data.TotalRecords, 0, '', ','));
+                        TotalRecords = data.TotalRecords;
+
+                        if (data.TotalRecords > 0) {
+                            $('#drillDownTable_paginate').css('display', 'block');
+                            CreateReportTable(data.NoOfPrimaryCols);
+                        }
+                        else {
+                            $('#drillDownTable_paginate').css('display', 'none');
+                        }
+
+                        if (data.TotalRecords > 0 && pageSize > 0) {
+                            lastPageIndex = Math.floor((data.TotalRecords / pageSize).toString());
+                            if (data.TotalRecords % pageSize == 0)
+                                lastPageIndex = lastPageIndex - 1;
+                        }
+                        else {
+                            lastPageIndex = 1;
+                        }
+                        $('#pagingDetails').html('Showing ' + (pageIndex + 1) + ' of ' + (lastPageIndex + 1) + ' pages');
+                        setPager((pageIndex + 1), (lastPageIndex + 1));
+                    }
+                    else {
+                        $('#divTotalRecords').css('display', 'none');
+                        $('#drillDownTable_paginate').css('display', 'none');
+                    }
+                    $('#pageButton_last').attr('data-dt-idx', lastPageIndex);
+                }
+                else {
+                    $("#drillDownTable").append(data.HtmlTable);
+                    $('#divTotalRecords').css('display', 'none');
+                    $('#drillDownTable_paginate').css('display', 'none');
+                }
+                var tblScroll = $('.dataTables_scroll');
+                if (tblScroll != null || tblScroll != 'undefined') {
+                    tblScroll.removeClass('dataTables_scroll');
+                }
+                tblScroll = $('#' + '@Model.ChartId');
+                if (tblScroll != null || tblScroll != 'undefined') {
+                    tblScroll.width('100%');
+                }
+                $('#close_popup').click(function () {
+                    close_popup();
+                });
+
+                $('.close-popup-btn').click(function () {
+                    close_popup();
+                });
+
+                $("#ddlDisplayBy").change(function () {
+                    var sbValue = $("#ddlDisplayBy").attr('sb');
+                    $("#ddlDisplayBy").val($('#sbSelector_' + sbValue).text());
+                    if (displayByValue != $("#ddlDisplayBy").val()) {
+                        DatableSortSettigs = '';
+                        sortBy = '';
+                        pageIndex = 0;
+                        UpdateDrillDownTableData('');
+                    }
+                });
+            }
+        });
+
+        $("#DrillDownDataModule .table-responsive .tab-content").css('border', 'none');
+    }
+
+    function ShowHideLabels(data) {
+        if (data.DrillDownConfigExists != 'undefined' && typeof data.DrillDownConfigExists != undefined && data.DrillDownConfigExists == false) {
+            $('#divNoConfigFound').css('display', 'block');
+            $('#divTotalRecords').css('display', 'none');
+            $('#drillDownTable_paginate').css('display', 'none');
+        }
+        else {
+            $('#divNoConfigFound').css('display', 'none');
+        }
+
+        if (data.HtmlTable != 'undefined' && typeof data.HtmlTable != undefined) {
+            $("#drillDownTable").append(data.HtmlTable);
+        }
+        else {
+            $('#divTotalRecords').css('display', 'none');
+        }
+    }
+    var SortOrder = (function () {
+        var Order; // Private Variable
+        var pub = {};// public object - returned at end of module
+        pub.changeState = function (newstate) {
+            Order = newstate;
+        };
+        pub.getState = function () {
+            return Order;
+        }
+        return pub; // expose externally
+    }());
+
+    function CreateReportTable(NoOfPrimaryCols) {
+        var val;
+        var mygrid = dhtmlXGridFromTable('@Model.ChartId' + '_DeepDrillDown');
+        var divId = '@Model.ChartId' + '_DeepDrillDown';
+        mygrid.attachEvent("onMouseOver", function () { return false; });
+        mygrid.setEditable(false);
+        mygrid.enableAutoWidth(true);
+        mygrid.enableAutoHeight(true);
+        var count = mygrid.getColumnsNum();
+
+        var count = mygrid.getColumnsNum();
+
+        for (var j = 0; j < count; j++) {
+            mygrid.adjustColumnSize(j);
+        }
+        var widthx = (parseInt($('#' + divId).parent().width()) * 75) / 100;
+
+        if (widthx > 640) {
+            @*$('#' + '@reportTableId' + '_wrapper').css('margin-left', '5%');*@
+        }
+        else {
+            $('#' + divId + '_wrapper').css('margin-left', '0%');
+        }
+
+        $('#' + divId).css('margin', '0 auto');
+        $('#' + divId).css('width', '100%');
+        $('#' + divId).find('.xhdr').css('width', '100%');
+        $('#' + divId).find('.hdr').css('width', '100%');
+
+        var widthArray = [];
+        $('#' + divId).find('.xhdr table' + ' tr:first').find('th').each(function (key, data) {
+            $('#' + divId).find('.objbox table' + ' tr:first').find('th').each(function (key1, data1) {
+                if (key == key1) {
+                    var totalWt = $(data).width();
+                    widthArray.push(totalWt);
+                }
+            });
+        });
+        $('#' + divId).find('.objbox table' + ' tr:first').find('th').each(function (j, data1) {
+            for (var i = 0; i < widthArray.length; i++) {
+                if (j == i) {
+                    mygrid.setColWidth(j, widthArray[i]);
+                }
+            }
+        });
+
+        mygrid.setSizes();
+        $('#drillDownTable').find('.tab-content').css('border', 'none');
+        $('#drillDownTable').find('.tab-content').css('overflow-x', 'auto');
+        mygrid.attachEvent("onHeaderClick", function (ind, obj) {
+            $('.objbox table' + ' tr').each(function (i, row) {
+                $(row).find('td').each(function (j, cell) {
+                    var data = $(cell).attr('data-original-title');
+                    if (data != null) {
+                        $(this).text(data.replace(',', ''));
+                    }
+
+                });
+            });
+
+            var cellObj = mygrid.cellByIndex(0, ind);
+            var val = isNaN(cellObj.cell.innerHTML);
+            var sort = SortOrder.getState();
+            if (sort == '') {
+                SortOrder.changeState(dire);
+            }
+            else {
+                if (sort == "asc") {
+                    SortOrder.changeState("dsc");
+                }
+                else {
+                    SortOrder.changeState("asc");
+                }
+            }
+            if (sort != undefined) {
+                dire = sort;
+            }
+            var colname = mygrid.getColLabel(ind);
+            colID = ind;
+            DatableSortSettigs = "";
+            DatableSortSettigs += dire == "dsc" ? colname + "," + "des" : colname + "," + dire;
+            UpdateDrillDownTableData(DatableSortSettigs);
+        });
+
+        if (dire == "asc") {
+            mygrid.setSortImgState(true, colID, "asc");
+        }
+        else {
+            mygrid.setSortImgState(true, colID, "dsc");
+        }
+        mygrid.attachEvent("onAfterSorting", function (index, type, direction) {
+            $(mygrid.obj).find('tbody').find('.totalRow').remove();
+            $(mygrid.obj).find('tbody').find('.goalRow').remove();
+            if (direction == 'dsc') {
+                dire = 'asc';
+            }
+            else {
+                dire = 'dsc';
+            }
+        });
+    }
+
+    function ViewDataContentDrillDown(sender) {
+        close_popup();
+        var reportgraphid = $(sender).attr('reportgraphid');
+        var reportdashboardid = $(sender).attr('reportdashboardid');
+        var dashboardcontentid = $(sender).attr('hdncontentid');
+        var displayname = $(sender).attr('displayname');
+        var helptextid = $(sender).attr('helptextid');
+        var customquery = $(sender).attr('customquery');
+        var IsSortByValue = '@Model.IsSortByValue';
+        var SortOrder = '@Model.SortOrder';
+        var SelectedDimensionValue = GetSelectedValues();
+        var charttype = $(sender).attr('charttype');
+        var dimensionname = $('#TableRowsViewAll_@Model.DashboardContentId').attr('dimensionname');
+        var ismultipleaxis = $('#TableRowsViewAll_@Model.DashboardContentId').attr('ismultipleaxis');
+        var url = '@Url.Content("~/MeasureDashboard/LoadChartTablePartial/")';
+
+        var SelectedDimensionValue = GetSelectedValues();
+        var StartDate = '';
+        var EndDate = '';
+        var ViewBy = $("#ddlViewBy").val();
+        $('div[id=reportrange]').each(function () {
+            StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
+            EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
+        });
+
+        var params = {};
+        params.Id = reportgraphid;
+        params.Container = "divChart" + dashboardcontentid;
+        params.SDV = SelectedDimensionValue;
+        params.ViewBy = ViewBy;
+        params.StartDate = StartDate;
+        params.EndDate = EndDate;
+        params.DashboardId = reportdashboardid;
+        params.DashboardPageid = 0;
+        params.DashboardContentId = dashboardcontentid;
+        params.DisplayName = displayname;
+        params.Customquery = customquery;
+        params.Charttype = charttype;
+
+        $("#div_ViewAllReport").empty();
+        $.ajax({
+            url: url,
+            async: true,
+            data: $.param(params, true),
+            success: function (data) {
+                $("#div_ViewAllReport").html(data);
+            },
+            error: function (err) {
+                $("divChart" + DashboardContentId).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
+            }
+        });
+    }
+
+    $("#@Model.ChartId thead tr:eq(0)").on("click", "th", function (event) {
+        fGetSortInfo();
+    });
+
+    function fGetSortInfo() {
+        var sortInfo = $("#@Model.ChartId").dataTable().fnSettings().aaSorting;
+        DatableSortSettigs = sortInfo;
+    }
+    function setPager(currentPage, totalPages) {
+        $('.pagination').html(getPager(currentPage, totalPages, 10));
+        $("li a[index=" + currentPage + "]").parent().addClass('active');
+    };
+    function pagerClick(sender) {
+        var currentPage = $(sender).attr('index');
+        setPager(currentPage, lastPageIndex + 1)
+        pageIndex = parseInt(currentPage) - 1;
+        UpdateDrillDownTableData('');
+    }
+    function getPager(currentPage, totalPages, pageSize) {
+        var retString = '';
+        if (parseInt(totalPages) <= 7) {
+            retString = '';
+            for (var i = 1; i <= parseInt(totalPages) ; i++) {
+                retString = retString + '<li><a href="#" index=' + i + ' type="button" class="btn btn-default pagination" onclick="pagerClick(this);">' + i + '</a></li>';
+            }
+        }
+        else {
+            var startPage = parseInt(currentPage);
+            if (startPage == 1)
+                startPage = startPage + 1;
+            var endPage = parseInt(startPage) + 4;
+            if (endPage >= totalPages) {
+                endPage = totalPages - 1;
+            }
+            //emptied the div content
+            retString = '';
+
+            //always put 1 for first
+            retString = retString + '<li><a href="#" index=1 type="button" class="btn btn-default pagination" onclick="pagerClick(this);">1</a></li>'
+
+            //decide to put previous
+            if (startPage > 2) {
+                retString = retString + '<li><a href="#" index=' + (parseInt(startPage) - 1) + ' type="button" class="btn btn-default pagination" onclick="pagerClick(this);">...</a></li>'
+            }
+            //loop for 5 elements
+            for (var i = startPage; i <= endPage; i++) {
+                retString = retString + '<li><a href="#" index=' + i + '  type="button" class="btn btn-default pagination" onclick="pagerClick(this);">' + i + '</a></li>';
+            }
+
+            //decide to put next
+            if (parseInt((parseInt(totalPages) - parseInt(currentPage))) >= 6) {
+                retString = retString + '<li><a href="#" index=' + i + ' type="button" class="btn btn-default pagination" onclick="pagerClick(this);">...</a></li>'
+            }
+
+            //always put total for last page
+            retString = retString + '<li><a href="#" index=' + totalPages + ' type="button" class="btn btn-default pagination" onclick="pagerClick(this);">' + totalPages + '</a></li>';
+        }
+        return retString;
+    }
+
+    $('#@formId').submit(function () {
+        $('#DisplayBy').val($("#ddlDisplayBy").val());
+    });
+
+</script>
+
+

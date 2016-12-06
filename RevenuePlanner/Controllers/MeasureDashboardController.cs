@@ -88,7 +88,7 @@ namespace RevenuePlanner.Controllers
                     li.Add(new SelectListItem { Text = "Quarters", Value = "Q" });
                     li.Add(new SelectListItem { Text = "Months", Value = "M" });
                     li.Add(new SelectListItem { Text = "Weeks", Value = "W" });
-                    //Insertation start #2416 mark Selected=true if Sessions.ViewByValue is not null
+                    //Insertion start #2416 mark Selected=true if Sessions.ViewByValue is not null
                     if (!string.IsNullOrEmpty(Sessions.ViewByValue))
                     {
                         var selectedViewBy = li.Where(x => x.Value == Sessions.ViewByValue).First();
@@ -99,7 +99,7 @@ namespace RevenuePlanner.Controllers
                         var selectedViewBy = li.Where(x => x.Value == Convert.ToString(Enums.viewByOption.Q)).First();
                         selectedViewBy.Selected = true;
                     }
-                    //Insertation end #2416 mark Selected=true if Sessions.ViewByValue is not null
+                    //Insertion end #2416 mark Selected=true if Sessions.ViewByValue is not null
                     ViewData["ViewBy"] = li;
                     ViewBag.ViewBy = li;
                     ViewBag.DashboardID = DashId;
@@ -439,7 +439,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Date:30/11/2016 #2818 Following method is created to load _ViewAllReportGraph partial view(pop-up) for chart
         /// </summary>
-        public async Task<PartialViewResult> LoadChartTablePartial(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", string DisplayName = "")
+        public async Task<PartialViewResult> LoadChartTablePartial(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", string DisplayName = "", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0, string Customquery = "", string Charttype = "")
         {
             ReportParameters objReportTable = new ReportParameters();
             objReportTable.Id = Id;
@@ -451,9 +451,284 @@ namespace RevenuePlanner.Controllers
             objReportTable.ViewBy = ViewBy;
             objReportTable.StartDate = StartDate;
             objReportTable.EndDate = EndDate;
+
+            objReportTable.DashboardContentId = DashboardContentId;
+            objReportTable.HelpTextId = 0;
+            objReportTable.DashboardId = DashboardId;
+            objReportTable.IsSortByValue = false;
+            objReportTable.SortOrder = "asc";
+            objReportTable.DisplayName = DisplayName;
+            objReportTable.CustomQuery = Customquery;
+            objReportTable.ChartType = Charttype;
             await Task.Delay(1);
             return PartialView("_ViewAllReportGraph", objReportTable);
 
         }
+
+        /// <summary>
+        /// Action method to load DrillDownDetail partial view
+        /// </summary>
+        /// //Start- By Nandish Shah For Ticket #2820
+        public async Task<PartialViewResult> LoadDrillDownData(string DbName, int Id, string DisplayName, string DimensionValueName, string DimensionValueCount, string DimensionActualValueCount, string HeaderDimensionValue, string DashboardContentId, string DashboardId, string MeasureName, string childchartid, string CustomQuery, int HelpTextId = 0, bool IsSortByValue = false, string SortOrder = "desc", string ChartType = "")
+        {
+            DrillDownDetails objDrillDownDetails = new DrillDownDetails();
+            objDrillDownDetails.ChartId = Id;
+            objDrillDownDetails.DisplayName = DisplayName;
+            objDrillDownDetails.DimensionValueName = DimensionValueName;
+            objDrillDownDetails.DimensionValueCount = DimensionValueCount;
+            objDrillDownDetails.DimensionActualValueCount = DimensionActualValueCount;
+            objDrillDownDetails.HeaderDimensionValue = HeaderDimensionValue;
+            objDrillDownDetails.childchartid = childchartid;
+            int _dashboardContentId;
+            int.TryParse(DashboardContentId, out _dashboardContentId);
+            objDrillDownDetails.DashboardContentId = _dashboardContentId;
+            int _dashboardId;
+            int.TryParse(DashboardId, out _dashboardId);
+            objDrillDownDetails.DashboardId = _dashboardId;
+            objDrillDownDetails.MeasureName = MeasureName;
+            if (string.IsNullOrEmpty(CustomQuery))
+            {
+                CustomQuery = "0";
+            }
+            objDrillDownDetails.CustomQuery = CustomQuery;
+            objDrillDownDetails.HelpTextId = HelpTextId;
+            objDrillDownDetails.IsSortByValue = IsSortByValue;
+            objDrillDownDetails.SortOrder = SortOrder;
+            objDrillDownDetails.ChartType = ChartType;
+
+            string AuthorizedReportAPIUserName = string.Empty;
+            string AuthorizedReportAPIPassword = string.Empty;
+            string ApiUrl = string.Empty;
+            string ConnectionString = string.Empty;
+            if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
+            {
+                // Get Measure Connection String
+                ConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
+            }
+
+            if (ConfigurationManager.AppSettings.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                {
+                    AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                }
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                {
+                    AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                }
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                {
+                    ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                    if (!string.IsNullOrEmpty(ApiUrl) && !ApiUrl.EndsWith("/"))
+                    {
+                        ApiUrl += "/";
+                    }
+                }
+                try
+                {
+                    HttpClient client = new HttpClient();
+
+                    int CommonWebAPITimeout = 0;
+                    string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
+                    if (!string.IsNullOrEmpty(strwebAPITimeout))
+                        CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
+
+                    client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
+                    client.Timeout = TimeSpan.FromHours(3);  //set timeout for Common Integration API call
+
+                    Uri baseAddress = new Uri(ApiUrl);
+                    client.BaseAddress = baseAddress;
+
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                    ConnectionString = ConnectionString + " multipleactiveresultsets=True;";
+                    ReportTableParameters objParams = new ReportTableParameters();
+                    objParams.DashboardId = Convert.ToInt32(DashboardId);
+                    objParams.DashboardContentId = objDrillDownDetails.DashboardContentId;
+                    objParams.UserName = AuthorizedReportAPIUserName;
+                    objParams.Password = AuthorizedReportAPIPassword;
+                    objParams.ConnectionString = ConnectionString;
+
+
+                    HttpResponseMessage response = await client.PostAsJsonAsync("api/Report/LoadDrillDownData ", objParams);
+
+                    if (response != null && response.Content.ReadAsStringAsync().Result != null)
+                    {
+                        List<SelectListItem> lstDispBy = JsonConvert.DeserializeObject<List<SelectListItem>>(response.Content.ReadAsStringAsync().Result);
+                        ViewData["DisplayBy"] = lstDispBy;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(ex);
+                }
+            }
+
+            return PartialView("_DrillDownDetails", objDrillDownDetails);
+        }
+
+        /// <summary>
+        /// Action method to load drill deeper data
+        /// <returns></returns>
+        public async Task<ActionResult> GetDrillDownReportTable(string[] SelectedOthersDimension, string[] SelectedDimensionValue, string DbName, int ChartId, string DimensionValueName, string HeaderDimensionValue, string DisplayBy, string SortBy, string SortDirection, int PageIndex, int PageSize, string mTotalRecords, string MeasureName, int ReportDashboardID = 0, string childchartid = "0", string CustomQuery = "")
+        {
+            try
+            {
+                string _DrillDownConfigExists = string.Empty;
+                string[] DimensionValues = new string[] { System.Net.WebUtility.HtmlDecode(System.Net.WebUtility.HtmlDecode(DimensionValueName)), HeaderDimensionValue };
+                int _TotalReocrds = 0;
+                int _NoOfPrimaryCols = 0;
+                string htmlTable = string.Empty;
+                string AuthorizedReportAPIUserName = string.Empty;
+                string AuthorizedReportAPIPassword = string.Empty;
+                string ApiUrl = string.Empty;
+                string ConnectionString = string.Empty;
+                if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
+                {
+                    // Get Measure Connection String
+                    ConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
+                }
+
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                    {
+                        AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                    }
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                    {
+                        AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                    }
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                    {
+                        ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                        if (!string.IsNullOrEmpty(ApiUrl) && !ApiUrl.EndsWith("/"))
+                        {
+                            ApiUrl += "/";
+                        }
+                    }
+                    try
+                    {
+                        HttpClient client = new HttpClient();
+
+                        int CommonWebAPITimeout = 0;
+                        string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
+                        if (!string.IsNullOrEmpty(strwebAPITimeout))
+                            CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
+
+                        client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
+                        client.Timeout = TimeSpan.FromHours(3);  //set timeout for Common Integration API call
+
+                        Uri baseAddress = new Uri(ApiUrl);
+                        client.BaseAddress = baseAddress;
+
+                        ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                        ConnectionString = ConnectionString + " multipleactiveresultsets=True;";
+
+                        string DimensionTable = string.Empty;
+                        List<string> sDimensionTable = new List<string>();
+                        if (SelectedDimensionValue != null && SelectedDimensionValue.Length > 0)
+                        {
+                            foreach (string s in SelectedDimensionValue)
+                            {
+                                if (!string.IsNullOrEmpty(s))
+                                {
+                                    if (!sDimensionTable.Contains(s))
+                                    {
+                                        sDimensionTable.Add(s);
+                                    }
+                                }
+                            }
+                        }
+                        string[] sSelectedOthersDimension = new string[] { };
+                        if (SelectedOthersDimension != null && SelectedOthersDimension.Length > 0)
+                        {
+                            sSelectedOthersDimension = SelectedOthersDimension.ToArray();
+                        }
+                        
+                        if (sSelectedOthersDimension != null)
+                        {
+                            if (sSelectedOthersDimension.Length >= 1)
+                            {
+                                Array.Sort(sSelectedOthersDimension);
+
+                                foreach (var item in sSelectedOthersDimension)
+                                {
+                                    if (!string.IsNullOrEmpty(item))
+                                        DimensionTable += "D" + item;
+                                }
+                            }
+                        }
+
+                        string SubDashboardOtherDimensionTable = string.Empty;
+                        string[] SelectedDimension = new string []{ };
+                        if (DimensionValues != null)
+                        {
+                            if (!string.IsNullOrEmpty(DimensionTable))
+                            {
+                                SubDashboardOtherDimensionTable = DimensionTable.Replace("D", "");
+                            }
+                            if (sDimensionTable != null && sDimensionTable.Count > 0)
+                            {
+                                SelectedDimension = sDimensionTable.ToArray();
+                            }                            
+                        }
+                        else if (SelectedOthersDimension.Count() == 1)
+                        {
+                            if (SelectedOthersDimension != null && SelectedOthersDimension.Length > 0)
+                            {
+                                SubDashboardOtherDimensionTable = SelectedOthersDimension[0].ToString().Replace("D", "");
+                            }
+                            SelectedDimension = null;
+                        }
+
+                        string ViewBy = Sessions.ViewByValue;
+
+                        DrillDownParameters objParams = new DrillDownParameters();
+                        objParams.ChartId = ChartId;
+                        objParams.DimensionValues = DimensionValues;
+                        objParams.DimensionValueName = DimensionValueName;
+                        objParams.HeaderDimensionValue = HeaderDimensionValue;
+                        objParams.DisplayBy = DisplayBy;
+                        objParams.ViewByValue = ViewBy;
+                        objParams.SortBy = SortBy;
+                        objParams.SortDirection = SortDirection;
+                        objParams.PageIndex = PageIndex;
+                        objParams.PageSize = PageSize;
+                        objParams.mTotalRecords = mTotalRecords;
+                        objParams.MeasureName = MeasureName;
+                        objParams.childchartid = childchartid;
+                        objParams.CustomQuery = CustomQuery;
+                        objParams.DimensionTable = DimensionTable;
+                        objParams.SelectedDimension = SelectedDimension;
+                        objParams.StartDate = Sessions.StartDate;
+                        objParams.EndDate = Sessions.EndDate;
+                        objParams.DashboardId = ReportDashboardID;
+                        objParams.DashboardPageId = 0;
+                        objParams.UserName = AuthorizedReportAPIUserName;
+                        objParams.Password = AuthorizedReportAPIPassword;
+                        objParams.ConnectionString = ConnectionString;
+
+                        HttpResponseMessage response = await client.PostAsJsonAsync("api/Report/GetDrillDownReportTable ", objParams);
+                        List<string> lstDrillData = JsonConvert.DeserializeObject<List<string>>(response.Content.ReadAsStringAsync().Result);
+                        htmlTable = lstDrillData[0];
+                        _DrillDownConfigExists = lstDrillData[1];
+                        _NoOfPrimaryCols = Convert.ToInt32(lstDrillData[2]);
+                        _TotalReocrds = Convert.ToInt32(lstDrillData[3]);
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorSignal.FromCurrentContext().Raise(ex);
+                    }
+                }
+                return Json(new { isSuccess = true, HtmlTable = htmlTable, TotalRecords = _TotalReocrds, DrillDownConfigExists = _DrillDownConfigExists, NoOfPrimaryCols = _NoOfPrimaryCols }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                return Json(new { isSuccess = false, HtmlTable = "Error" }, JsonRequestBehavior.AllowGet);
+
+            }
+        }
+
     }
 }

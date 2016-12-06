@@ -334,6 +334,7 @@
     <Content Include="Views\Finance\Transactions.cshtml" />
     <Content Include="Views\MeasureDashboard\_ViewAllReportGraph.cshtml" />
     <Content Include="Views\MarketingBudget\_newBudget.cshtml" />
+    <Content Include="Views\MeasureDashboard\_DrillDownDetails.cshtml" />
     <None Include="web-assets\build\check-npm-install.js" />
     <None Include="web-assets\build\check-npm-version.js" />
     <Content Include="web-assets\build\include-css.htm" />
@@ -442,7 +443,7 @@
     <Content Include="Content\css\styleIndexPage_min_06.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Aug_2.css" />
-    <Content Include="Content\css\style_min_Dec_6.css" />
+    <Content Include="Content\css\style_min_Dec_7.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -1191,11 +1192,11 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>53444</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:51115/</IISUrl>
+          <IISUrl>http://localhost:53444/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
