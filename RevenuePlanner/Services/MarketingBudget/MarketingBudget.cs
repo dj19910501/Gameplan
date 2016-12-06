@@ -151,7 +151,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
                 }
-                else if (ColumnName == Enums.DefaultGridColumn.User.ToString())
+                else if (ColumnName == Enums.DefaultGridColumn.Users.ToString())
                 {
                     if (Permission == "View" || Permission == "None")
                     {
@@ -378,7 +378,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     ListHead.Add(headObj);
 
                 }
-                else if (columns == Enums.DefaultGridColumn.User.ToString() ||
+                else if (columns == Enums.DefaultGridColumn.Users.ToString() ||
                        columns == Enums.DefaultGridColumn.Owner.ToString())
                 {
                     headObj = new GridDataStyle();

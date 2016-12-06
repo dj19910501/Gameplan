@@ -488,7 +488,7 @@ namespace RevenuePlanner.Controllers
                 setColumnIds.Append("action,lineitems,owner");
                 setColumnsVisibility.Append("false,false,false");
                 HeaderStyle.Append("text-align:center;,text-align:center;,text-align:center;");
-
+                
                 string trimSetheader = setHeader.ToString().TrimEnd(',');
                 string trimSetColSorting = setColSorting.ToString().TrimEnd(',');
                 string trimAttachheader = attachHeader.ToString().TrimEnd(',');
@@ -704,7 +704,7 @@ namespace RevenuePlanner.Controllers
                         Datarow[Enums.DefaultGridColumn.Action.ToString()] = "";
                         Datarow[Enums.DefaultGridColumn.Permission.ToString()] = isEdit;
 
-                        Datarow[Enums.DefaultGridColumn.User.ToString()] = strUserAction;
+                        Datarow[Enums.DefaultGridColumn.Users.ToString()] = strUserAction;
                         foreach (var col in objColumns)
                         {
                             string colname = col.CustomField.Name;
@@ -858,7 +858,7 @@ namespace RevenuePlanner.Controllers
             var IsForcast = variables.Where(a => a.Key == Enums.DefaultGridColumn.IsForcast.ToString()).Select(a => a.Value.ToString()).FirstOrDefault();
             List<int> lstLineItemIds = row.Field<List<int>>("lstLineItemIds");
             var Owner = Convert.ToString(variables.Where(a => a.Key == Enums.DefaultGridColumn.Owner.ToString()).Select(a => a.Value.ToString()).FirstOrDefault());
-            var User = Convert.ToString(variables.Where(a => a.Key == Enums.DefaultGridColumn.User.ToString()).Select(a => a.Value.ToString()).FirstOrDefault());
+            string User = Convert.ToString(variables.Where(a => a.Key == Enums.DefaultGridColumn.Users.ToString()).Select(a => a.Value.ToString()).FirstOrDefault());
             var Permission = Convert.ToString(variables.Where(a => a.Key == Enums.DefaultGridColumn.Permission.ToString()).Select(a => a.Value.ToString()).FirstOrDefault());
             List<DhtmlxGridRowDataModel> children = new List<DhtmlxGridRowDataModel>();
             IEnumerable<DataRow> lstChildren = null;
