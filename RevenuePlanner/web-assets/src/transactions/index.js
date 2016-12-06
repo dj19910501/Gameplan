@@ -34,9 +34,17 @@ function createGrid($gridContainer, dataSource) {
                     console.error(`could not find transaction for ${transactionId}`);
                 }
                 else {
-                    linkedItemEditor(transaction);
-                }
+                    const popup = linkedItemEditor(transaction);
 
+                    // if the linked items subgrid is open, then register an event so we can update it
+                    // with any changes the user makes
+                    const subGridDataSource = row.data("linkedItemsDataSource");
+                    if (subGridDataSource) {
+                        popup.on("linkedItemsChanged", ev => {
+                            subGridDataSource.assignRawData(ev.records);
+                        });
+                    }
+                }
             });
     });
 }

@@ -1,3 +1,7 @@
+$MODIFIED_COLOR: #00c806;
+$VALIDATION_ERROR_COLOR: red;
+$INDICATOR_WIDTH: 4px;
+
 .editor {
   width: auto;
   left: 10%;
@@ -44,18 +48,65 @@
           border-bottom: solid 1px #333;
           margin: 0;
           padding-bottom: 10px;
-        }
-        .availableFunds {
-          float: right;
+
+          .availableFunds {
+            float: right;
+          }
+
+          .availableFundsLabel {
+            float: right;
+            margin-right: 10px;
+          }
+
+          .transactionName, .totalLabel {
+            margin-right: 30px;
+          }
         }
 
-        .availableFundsLabel {
-          float: right;
-          margin-right: 10px;
-        }
+        .links {
+          // chop off some width so grid is OK if scrollbar appears
+          width: calc(100% - 30px);
 
-        .transactionName, .totalLabel {
-          margin-right: 30px;
+          &.loading {
+            text-align: center;
+            padding-top: 30px;
+          }
+
+          // Restyle the grid
+          :global {
+            div.gridbox {
+              .objbox {
+                background-color: transparent;
+                td {
+                  padding-right: 5px;
+                }
+                td:last-child {
+                  background-color: white;
+                }
+              }
+
+              table tr {
+                border: none;
+              }
+              table td {
+                border: none;
+                color: inherit;
+
+                &:local(.modified) {
+                  background-image: linear-gradient(to top, $MODIFIED_COLOR 0%, $MODIFIED_COLOR $INDICATOR_WIDTH, transparent $INDICATOR_WIDTH + 1);
+                }
+
+                &.dhtmlx_validation_error {
+                  border: none;
+                  background-image: linear-gradient(to top, $VALIDATION_ERROR_COLOR 0%, $VALIDATION_ERROR_COLOR $INDICATOR_WIDTH, transparent $INDICATOR_WIDTH + 1);
+                }
+
+                > div.hdrcell {
+                  color: inherit;
+                }
+              }
+            }
+          }
         }
       }
     }

@@ -9,6 +9,10 @@ function propstring(columns, prop, defValue) {
     return columns.map(c => c[prop] == null ? defValue : c[prop]).join(",");
 }
 
+function headerAlign(columns) {
+    return columns.map(c => `text-align:${c.align}`);
+}
+
 class GridDataSource {
     constructor(initialFilter, initialPaging, initialColumns, initialRecords, initialTotalRecords) {
         this.state = {
@@ -48,13 +52,14 @@ class GridDataSource {
                 if (firstTime) {
                     const columns = this.state.columns;
 
-                    grid.setHeader(propstring(columns, "value"));
+                    grid.setHeader(propstring(columns, "value"), null, headerAlign(columns));
                     grid.setColumnIds(propstring(columns, "id"));
                     grid.setInitWidths(propstring(columns, "width"));
                     grid.setColAlign(propstring(columns, "align"));
                     grid.setColTypes(propstring(columns, "type"));
                     grid.setColSorting(propstring(columns, "sort", "na"));
                     grid.enableResizing(columns.map(c => !c.noresize).join(","));
+                    grid.setColValidators(propstring(columns, "validator", ""));
 
                     columns.forEach((column, icolumn) => {
                         if (column.numberFormat) {
@@ -133,6 +138,7 @@ class GridDataSource {
      * sort {string} (optional) - the column sorting type https://docs.dhtmlx.com/api__dhtmlxgrid_setcolsorting.html
      * hidden {bool} (optional) - mark the column as hidden
      * noresize {bool} (optional) - if true, then this column cannot be resized by the user
+     * validator {string} (optional) - supply a validator for this column https://docs.dhtmlx.com/grid__validation.html
      */
     updateColumns(newColumns) {
         this.state.columns = newColumns;

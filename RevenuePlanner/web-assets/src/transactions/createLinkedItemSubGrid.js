@@ -54,6 +54,8 @@ export default function createLinkedItemSubGrid(element, transactionId, parentGr
 
     const dataSource = createDataSource(transactionId);
 
+    $(td.parentNode).data("linkedItemsDataSource", dataSource);
+
     // do not create the grid until the data source has loaded
     const promise = $.Deferred();
 
