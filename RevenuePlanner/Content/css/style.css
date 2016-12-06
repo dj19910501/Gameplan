@@ -13920,7 +13920,9 @@ table.dataTable thead .sorting_desc {
 .MarketingBudget-tbl  tr td .treegrid_cell {
     text-align: left;
 }
-
+.MarketingBudget-tbl div.gridbox table.obj tr:nth-child(even) {
+    background-color: #f0f0f0;
+}
 /************************************************ Responsive css start here **********************************************************/
 
 @media (max-width: 1600px) {

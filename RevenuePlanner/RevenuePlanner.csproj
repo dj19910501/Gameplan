@@ -438,10 +438,10 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\styleIndexPage.css" />
     <Content Include="Content\css\style.css" />
-    <Content Include="Content\css\styleIndexPage_min_03.css" />
+    <Content Include="Content\css\styleIndexPage_min_06.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Aug_2.css" />
-    <Content Include="Content\css\style_min_Dec_2.css" />
+    <Content Include="Content\css\style_min_Dec_6.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
