@@ -2183,6 +2183,11 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[MV].[PreCalculatedMarketingBudget]') AND type in (N'U'))
+BEGIN
+	DROP TABLE [MV].[PreCalculatedMarketingBudget]
+END
+GO
 -- Add new table
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[MV].[PreCalculatedMarketingBudget]') AND type in (N'U'))
 BEGIN
@@ -2237,10 +2242,293 @@ BEGIN
 		[Y9_Actual] [float] NULL,
 		[Y10_Actual] [float] NULL,
 		[Y11_Actual] [float] NULL,
-		[Y12_Actual] [float] NULL
+		[Y12_Actual] [float] NULL,
+		[Users] [INT] DEFAULT 0,
+		[LineItems] [INT] DEFAULT 0
 	) ON [PRIMARY]
 END
 GO
+
+--===========================================================================
+-- Start - Added by Arpita Soni on 12/06/2016
+-- Script which dump existing marketing budget data into pre calcualted table
+-- Budget, Forecast, Planned, Actual, Users count, LineItems count
+--===========================================================================
+
+BEGIN
+	-- Update Budget values into [MV].[PreCalculatedMarketingBudget] table
+	UPDATE PreCal SET Y1_Budget = [Y1],Y2_Budget = [Y2],
+					  Y3_Budget = [Y3],Y4_Budget = [Y4],
+					  Y5_Budget = [Y5],Y6_Budget = [Y6],
+					  Y7_Budget = [Y7],Y8_Budget = [Y8],
+					  Y9_Budget = [Y9],Y10_Budget = [Y10],
+					  Y11_Budget = [Y11],Y12_Budget = [Y12]
+	FROM [MV].PreCalculatedMarketingBudget PreCal
+	INNER JOIN 
+	(
+		-- Get monthly budget amount with pivoting
+		SELECT * FROM 
+		(
+			SELECT B.Id AS BudgetDetailId, Period, Budget 
+			FROM Budget A
+			INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+			INNER JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+			WHERE A.IsDeleted = 0
+		) P
+		PIVOT
+		(
+			MIN(BUDGET)
+			FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+		) AS Pvt
+	) ExistingFinanceData ON PreCal.BudgetDetailId = ExistingFinanceData.BudgetDetailId
+END
+GO
+
+BEGIN
+	-- Insert Budget records into [MV].[PreCalculatedMarketingBudget] table
+	INSERT INTO [MV].PreCalculatedMarketingBudget (BudgetDetailId, [Year], Y1_Budget, Y2_Budget, Y3_Budget, Y4_Budget, Y5_Budget, 
+													Y6_Budget, Y7_Budget,Y8_Budget, Y9_Budget, Y10_Budget, Y11_Budget, Y12_Budget)
+	SELECT Pvt.BudgetDetailId,Pvt.[Year],[Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12] FROM 
+	(
+		-- Get monthly budget amount with pivoting
+		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget 
+		FROM Budget A
+		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+		WHERE A.IsDeleted = 0
+	) P
+	PIVOT
+	(
+		MIN(BUDGET)
+		FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+	) AS Pvt
+	LEFT JOIN [MV].PreCalculatedMarketingBudget PreCal ON PreCal.BudgetDetailId = Pvt.BudgetDetailId
+	WHERE PreCal.Id IS NULL
+END
+GO
+
+BEGIN
+	-- Update Forecast values into [MV].[PreCalculatedMarketingBudget] table
+	UPDATE PreCal SET Y1_Forecast = [Y1],Y2_Forecast = [Y2],
+					  Y3_Forecast = [Y3],Y4_Forecast = [Y4],
+					  Y5_Forecast = [Y5],Y6_Forecast = [Y6],
+					  Y7_Forecast = [Y7],Y8_Forecast = [Y8],
+					  Y9_Forecast = [Y9],Y10_Forecast = [Y10],
+					  Y11_Forecast = [Y11],Y12_Forecast = [Y12]
+	FROM [MV].PreCalculatedMarketingBudget PreCal
+	INNER JOIN 
+	(
+		-- Get monthly forecast amount with pivoting
+		SELECT * FROM 
+		(
+			SELECT B.Id AS BudgetDetailId, Period, Forecast FROM Budget A
+			INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+			INNER JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+			WHERE A.IsDeleted = 0
+		) P
+		PIVOT
+		(
+			MIN(Forecast)
+			FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+		) AS Pvt
+	) ExistingFinanceData ON PreCal.BudgetDetailId = ExistingFinanceData.BudgetDetailId
+END
+GO
+
+BEGIN
+	-- Insert Forecast records into [MV].[PreCalculatedMarketingBudget] table
+	INSERT INTO [MV].PreCalculatedMarketingBudget (BudgetDetailId, [Year], Y1_Forecast, Y2_Forecast, Y3_Forecast, Y4_Forecast, Y5_Forecast, 
+													Y6_Forecast, Y7_Forecast,Y8_Forecast, Y9_Forecast, Y10_Forecast, Y11_Forecast, Y12_Forecast)
+	SELECT Pvt.BudgetDetailId,Pvt.[Year],[Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12] FROM 
+	(
+		-- Get monthly forecast amount with pivoting
+		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget FROM Budget A
+		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+		WHERE A.IsDeleted = 0
+	) P
+	PIVOT
+	(
+		MIN(BUDGET)
+		FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+	) AS Pvt
+	LEFT JOIN [MV].PreCalculatedMarketingBudget PreCal ON PreCal.BudgetDetailId = Pvt.BudgetDetailId
+	WHERE PreCal.Id IS NULL
+END
+GO
+
+BEGIN
+	-- Update Planned values into [MV].[PreCalculatedMarketingBudget] table
+	UPDATE PreCal SET Y1_Planned = [Y1],Y2_Planned = [Y2],
+					  Y3_Planned = [Y3],Y4_Planned = [Y4],
+					  Y5_Planned = [Y5],Y6_Planned = [Y6],
+					  Y7_Planned = [Y7],Y8_Planned = [Y8],
+					  Y9_Planned = [Y9],Y10_Planned = [Y10],
+					  Y11_Planned = [Y11],Y12_Planned = [Y12]
+	FROM 
+	[MV].PreCalculatedMarketingBudget PreCal 
+	INNER JOIN 
+	(
+		-- Get monthly planned cost amount with pivoting
+		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, TotalPlanned
+		FROM Budget A
+		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN 
+		(
+			SELECT BD.Id AS BudgetDetailId,PCPTLC.Period, SUM((ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100)) AS TotalPlanned FROM 
+			[dbo].[Budget_Detail] BD 
+			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PCPTLC ON PCPTL.PlanLineItemId = PCPTLC.PlanLineItemId
+			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
+			GROUP BY BD.Id, PCPTLC.Period
+		) LineItems ON B.Id = LineItems.BudgetDetailId
+		WHERE A.IsDeleted = 0
+	) P
+	PIVOT
+	(
+		MIN(TotalPlanned)
+		FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+	) AS Pvt
+	ON PreCal.BudgetDetailId = Pvt.BudgetDetailId
+END
+GO
+
+BEGIN
+	-- Insert Planned records into [MV].[PreCalculatedMarketingBudget] table
+	INSERT INTO [MV].PreCalculatedMarketingBudget (BudgetDetailId, [Year], Y1_Planned, Y2_Planned, Y3_Planned, Y4_Planned, Y5_Planned, 
+													Y6_Planned, Y7_Planned,Y8_Planned, Y9_Planned, Y10_Planned, Y11_Planned, Y12_Planned)
+	SELECT Pvt.BudgetDetailId,Pvt.[Year],[Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12] FROM 
+	(
+		-- Get monthly planned cost amount with pivoting
+		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, TotalPlanned
+		FROM Budget A
+		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN 
+		(
+			-- Apply weightage on planned cost and sum up costs for all line items associated to the single budget 
+			SELECT BD.Id AS BudgetDetailId,PCPTLC.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalPlanned FROM 
+			[dbo].[Budget_Detail] BD 
+			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PCPTLC ON PCPTL.PlanLineItemId = PCPTLC.PlanLineItemId
+			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
+			GROUP BY BD.Id, PCPTLC.Period
+		) LineItems ON B.Id = LineItems.BudgetDetailId
+		WHERE A.IsDeleted = 0
+	) P
+	PIVOT
+	(
+		MIN(TotalPlanned)
+		FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+	) AS Pvt
+	LEFT JOIN [MV].PreCalculatedMarketingBudget PreCal ON PreCal.BudgetDetailId = Pvt.BudgetDetailId
+	WHERE PreCal.Id IS NULL
+END
+GO
+
+BEGIN
+	-- Update Actual values into [MV].[PreCalculatedMarketingBudget] table
+	UPDATE PreCal SET Y1_Actual = [Y1],Y2_Actual = [Y2],
+					  Y3_Actual = [Y3],Y4_Actual = [Y4],
+					  Y5_Actual = [Y5],Y6_Actual = [Y6],
+					  Y7_Actual = [Y7],Y8_Actual = [Y8],
+					  Y9_Actual = [Y9],Y10_Actual = [Y10],
+					  Y11_Actual = [Y11],Y12_Actual = [Y12]
+	FROM [MV].PreCalculatedMarketingBudget PreCal 
+	INNER JOIN 
+	(
+		-- Get monthly actuals amount with pivoting
+		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, TotalActual
+		FROM Budget A
+		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN 
+		(
+			-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
+			SELECT BD.Id AS BudgetDetailId,PCPTLA.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalActual FROM 
+			[dbo].[Budget_Detail] BD 
+			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
+			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
+			GROUP BY BD.Id, PCPTLA.Period
+		) LineItems ON B.Id = LineItems.BudgetDetailId
+		WHERE A.IsDeleted = 0
+	) P
+	PIVOT
+	(
+		MIN(TotalActual)
+		FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+	) AS Pvt
+	ON PreCal.BudgetDetailId = Pvt.BudgetDetailId
+END
+GO
+
+BEGIN
+	-- Insert Actual records into [MV].[PreCalculatedMarketingBudget] table
+	INSERT INTO [MV].PreCalculatedMarketingBudget (BudgetDetailId, [Year], Y1_Actual, Y2_Actual, Y3_Actual, Y4_Actual, Y5_Actual, 
+													Y6_Actual, Y7_Actual,Y8_Actual, Y9_Actual, Y10_Actual, Y11_Actual, Y12_Actual)
+	SELECT Pvt.BudgetDetailId,Pvt.[Year],[Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12] FROM 
+	(
+		-- Get monthly actuals amount with pivoting
+		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, TotalActual
+		FROM Budget A
+		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN 
+		(
+			-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
+			SELECT BD.Id AS BudgetDetailId,PCPTLA.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalActual FROM 
+			[dbo].[Budget_Detail] BD 
+			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
+			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
+			GROUP BY BD.Id, PCPTLA.Period
+		) LineItems ON B.Id = LineItems.BudgetDetailId
+		WHERE A.IsDeleted = 0
+	) P
+	PIVOT
+	(
+		MIN(TotalActual)
+		FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+	) AS Pvt
+	LEFT JOIN [MV].PreCalculatedMarketingBudget PreCal ON PreCal.BudgetDetailId = Pvt.BudgetDetailId
+	WHERE PreCal.Id IS NULL
+END
+GO
+
+BEGIN
+	-- Update user counts into pre calculated table
+	UPDATE PreCal SET Users= ISNULL(UsersCount,0)
+	FROM [MV].[PreCalculatedMarketingBudget] PreCal
+	LEFT JOIN 
+	(
+		-- Get permitted user count for each budget detail
+		SELECT  BD.Id as BudgetDetailId, COUNT(BP.UserId) as UsersCount
+		FROM [dbo].[Budget_Detail] BD
+		INNER JOIN [dbo].[Budget_Permission] BP ON BD.Id = BP.BudgetDetailId 
+		WHERE BD.IsDeleted = 0
+		GROUP BY BD.Id
+	) AS UserCount ON PreCal.BudgetDetailId = UserCount.BudgetDetailId
+END
+GO
+
+BEGIN
+	-- Update line items into pre calculated table
+	UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
+	FROM [MV].[PreCalculatedMarketingBudget] PreCal
+	LEFT JOIN 
+	(
+		-- Get associated line items count for each budget detail 
+		SELECT LB.BudgetDetailId, COUNT(LB.PlanLineItemId) AS LineItemCount 
+		FROM LineItem_Budget LB 
+		INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
+		GROUP BY LB.BudgetDetailId
+	) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
+END
+GO
+
+-- End - Added by Arpita Soni on 12/06/2016
 
 -- DROP AND CREATE STORED PROCEDURE [MV].[PreCalPlannedActualForFinanceGrid]
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[MV].[PreCalPlannedActualForFinanceGrid]') AND type IN ( N'P', N'PC' ) ) 
@@ -2359,52 +2647,6 @@ GO
 IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[GetLineItemIdsByBudgetDetailId]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
   DROP FUNCTION [dbo].[GetLineItemIdsByBudgetDetailId]
 GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		Viral
--- Create date: 22/11/2016
--- Description:	Returns Commaseparated LineItems group by BudgetDetailId
--- =============================================
-CREATE FUNCTION [dbo].[GetLineItemIdsByBudgetDetailId]
-(
-	-- Add the parameters for the function here
-	@BudgetId int 
-)
-RETURNS 
-@tblLineItem TABLE 
-(
-	-- Add the column definitions for the TABLE variable here
-	BudgetDetailId int,
-	LineItemCount int,
-	PlanLineItemIds varchar(max)
-)
-AS
-BEGIN
-		-- SELECT * FROM GetLineItemIdsByBudgetDetailId(2807)
-	
-		-- For child records, Get comma separated LineItemIds by BudgetDetailId 
-		;WITH MyData AS
-		(
-			SELECT L.BudgetDetailId,L.PlanLineItemId 
-			FROM LineItem_Budget L
-			INNER JOIN Budget_Detail B ON B.Id = L.BudgetDetailId AND B.BudgetId = @BudgetId
-			WHERE B.IsDeleted = 0
-		)
-		
-		INSERT INTO @tblLineItem(BudgetDetailId,LineItemCount,PlanLineItemIds)
-		SELECT BudgetDetailId,COUNT(*)as LineItemCount, PlanLineItemId = STUFF((
-		    SELECT ', ' + CAST(PlanLineItemId AS VARCHAR) FROM MyData
-		    WHERE BudgetDetailId = x.BudgetDetailId
-		    FOR XML PATH(''), TYPE).value('.[1]', 'nvarchar(max)'), 1, 2, '')
-		FROM MyData x
-		GROUP BY BudgetDetailId;
-
-	RETURN 
-END
-GO
 
 -- DROP AND CREATE FUNCTION
 IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'GetFinanceBasicData') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
@@ -2417,10 +2659,8 @@ GO
 CREATE FUNCTION [dbo].[GetFinanceBasicData]
 (
 	@BudgetId		INT,
-	@ClientId		INT,
 	@lstUserIds		NVARCHAR(MAX),
-	@UserId			INT,
-	@CurrencyRate	FLOAT
+	@UserId			INT
 )
 RETURNS 
 @ResultFinanceData TABLE 
@@ -2432,15 +2672,13 @@ RETURNS
 	[Owner]			INT,
 	TotalBudget		FLOAT,
 	TotalForecast	FLOAT,
-	TotalPlanned	FLOAT,
-	LineItems		INT,
-	[User]			INT
+	TotalPlanned	FLOAT
 )
 AS
 
 BEGIN
 	
-	-- SELECT * FROM [dbo].GetFinanceBasicData(2807,24,'470,308,104',470)
+	-- SELECT * FROM [dbo].[GetFinanceBasicData](1,'2,4,6,12,13,17,22,24,27,30,32,37,38,42,43,49,53,58,59,641,62,66,71,77,79,80,82,643,85,86,87,88,89,92,96,97,101,106,107,617,646,110,113,114,624,120,125,129,131,133,619,134,136,137,139,647,142,144,146,150,155,157,158,160,163,165,166,645,169,174,175,176,179,186,623,188,190,191,192,194,195,208,210,211,213,214,219,220,221,223,224,621,243,245,250,626,254,256,258,259,260,625,261,262,269,270,272,273,275,276,277,281,288,289,291,292,293,295,298,299,301,303,304,313,314,315,318,320,322,324,327,330,339,341,342,344,349,355,359,361,362,365,366,370,374,378,382,387,389,393,394,398,399,403,406,407,408,412,415,419,426,427,428,431,434,435,440,446,447,449,450,451,454,457,459,462,465,466,467,468,470,471,472,475,481,485,486,487,488,492,493,495,497,503,504,505,512,514,516,517,518,519,520,521,526,527,533,536,537,542,544,545,546,549,551,555,556,561,566,573,574,578,584,585,586,588,590,649,593,595,602,608',549)
 	
 	DECLARE @tblUserIds TABLE (UserId INT)
 
@@ -2475,71 +2713,12 @@ BEGIN
 		FROM [dbo].Budget_Detail BD 
 		INNER JOIN @tblUserIds U ON BD.CreatedBy = U.UserId 
 		LEFT JOIN [dbo].[Budget_Permission] BP ON BD.Id = BP.BudgetDetailId AND BP.UserId = @UserId
-		WHERE BD.IsDeleted='0' AND BD.BudgetId = @BudgetId
+		WHERE BD.IsDeleted='0' AND BD.BudgetId = @BudgetId 
 	END
-
-	DECLARE @tblLineItemIds TABLE
-	(
-		BudgetDetailId	INT,
-		LineItems		VARCHAR(MAX)
-	)
-
-	-- Get Parent & Children comma separated LineItemIds by BudgetDetailIds
-	;With TblLineItem as(
-		
-		-- Get Children records
-		SELECT R.BudgetDetailId,R.ParentId,L.PlanLineItemIds FROM @tblResult R
-		JOIN [dbo].[GetLineItemIdsByBudgetDetailId](@BudgetId) L ON R.BudgetDetailId = L.BudgetDetailId
-		WHERE R.BudgetDetailId NOT IN (SELECT ISNULL(ParentId,0) FROM @tblResult)
-
-		UNION ALL 
-		
-		-- Get parent records
-		SELECT P.BudgetDetailId,P.ParentId,c.PlanLineItemIds
-		FROM @tblResult p
-		JOIN TblLineItem c ON c.ParentId = p.BudgetDetailId
-	)
-
-	-- Insert Parent,child distinct lineItem count by comma separated lineItemsIds.
-	INSERT INTO @tblLineItemIds(BudgetDetailId,LineItems)
-	SELECT	BudgetDetailId
-			,SUM(LEN(PlanLineItemIds) - LEN(REPLACE(PlanLineItemIds, ',', '')) +1) AS LineItems	-- Get distinct comma separated lineItemIds count.
-	FROM
-	(
-		SELECT BudgetDetailId
-				-- Get Distinct comma separated lineItemIds for each parent-child level record
-				,REPLACE(
-						CAST(
-							CAST('<d>'+ REPLACE(PlanLineItemIds, ', ','</d><d>')+'</d>'  AS XML)
-							.query('distinct-values(/d)') AS VARCHAR(MAX)
-							), ' ', ', ')AS [PlanLineItemIds]
-		
-		FROM (
-				SELECT BudgetDetailId,PlanLineItemIds = STUFF((
-				    SELECT ', ' + CAST(PlanLineItemIds AS VARCHAR(MAX)) FROM TblLineItem
-				    WHERE BudgetDetailId = x.BudgetDetailId
-				    FOR XML PATH(''), TYPE).value('.[1]', 'nvarchar(max)'), 1, 2, '')
-				FROM TblLineItem x
-				GROUP BY BudgetDetailId
-			) AS planlineIds
-	) AS linecnts
-	GROUP BY BudgetDetailId
-
-	INSERT INTO @ResultFinanceData(Permission,BudgetDetailId,ParentId,Name,[Owner],TotalBudget,TotalForecast,TotalPlanned,LineItems,[User])
-	SELECT DISTINCT R.Permission,R.BudgetDetailId,R.ParentId,R.Name,R.[Owner],R.TotalBudget,R.TotalForecast,LineItem.TotalPlanned,
-	ISNULL(L.LineItems,0) AS LineItems,ISNULL(usrcnt.[User],0) AS [User]
+	
+	INSERT INTO @ResultFinanceData(Permission,BudgetDetailId,ParentId,Name,[Owner],TotalBudget,TotalForecast,TotalPlanned)
+	SELECT DISTINCT R.Permission,R.BudgetDetailId,R.ParentId,R.Name,R.[Owner],R.TotalBudget,R.TotalForecast,LineItem.TotalPlanned
 	FROM @tblResult R
-	LEFT JOIN @tblLineItemIds L on R.BudgetDetailId = L.BudgetDetailId
-	LEFT JOIN 
-	(
-		-- Get User Count
-		SELECT  BD.Id as BudgetDetailId,COUNT(BP.UserId) as [User]
-		FROM [dbo].[Budget_Detail] BD
-		JOIN @tblUserIds U ON BD.CreatedBy = U.UserId 
-		JOIN [dbo].[Budget_Permission] BP ON BD.Id = BP.BudgetDetailId 
-		WHERE BD.IsDeleted='0' AND BD.BudgetId = @BudgetId
-		GROUP BY BD.Id
-	) AS usrcnt ON R.BudgetDetailId = usrcnt.BudgetDetailId
 	LEFT JOIN 
 	(	
 		-- Get Planned Cost values
@@ -2549,12 +2728,12 @@ BEGIN
 		INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
 		WHERE BD.IsDeleted=0 AND BD.BudgetId = @BudgetId AND PCPTL.LineItemTypeId IS NOT NULL and PCPTL.IsDeleted = 0
 		GROUP BY BD.Id
-	) LineItem ON L.BudgetDetailId = LineItem.BudgetDetailId
+	) LineItem ON R.BudgetDetailId = LineItem.BudgetDetailId
 
 	RETURN 
 END
-GO
 
+GO
 
 
 
@@ -2934,10 +3113,10 @@ BEGIN
 				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
 				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
 				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate  as Actual
-			,F.[User]
-			,F.LineItems
+			,P.Users
+			,P.LineItems
 			,F.[Owner]
-		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
 	END
 	IF(@timeframe = @ThisQuarters)	-- This Year (Quarterly)
@@ -2980,12 +3159,11 @@ BEGIN
 				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
 				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
 				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
-
-				,F.[User]
-				,F.LineItems
+				,P.Users
+				,P.LineItems
 				,F.[Owner]
-
-		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+				
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
 	END
 	ELSE IF(@timeframe = @ThisMonthly)	-- This Year (Monthly)
@@ -3032,11 +3210,11 @@ BEGIN
 				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
 				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
 
-				,F.[User]
-				,F.LineItems
+				,P.[Users]
+				,P.LineItems
 				,F.[Owner]
 
-		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
 	END
 	ELSE IF(@timeframe = @Quarter1)	-- Quarter1
@@ -3062,10 +3240,10 @@ BEGIN
 				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
 				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
 				
-				,F.[User]
-				,F.LineItems
+				,P.[Users]
+				,P.LineItems
 				,F.[Owner]
-		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
 	END
 	ELSE IF(@timeframe = @Quarter2)	-- Quarter2
@@ -3090,11 +3268,12 @@ BEGIN
 				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
 				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
 				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
-				,F.[User]
-				,F.LineItems
+				,P.[Users]
+				,P.LineItems
 				,F.[Owner]
-		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
+		
 	END
 	ELSE IF(@timeframe = @Quarter3)	-- Quarter3
 	BEGIN
@@ -3116,10 +3295,10 @@ BEGIN
 				  ISNULL(Y4_Actual,0)+ISNULL(Y5_Actual,0)+ISNULL(Y6_Actual,0) +
 				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
 				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
-				,F.[User]
-				,F.LineItems
+				,P.[Users]
+				,P.LineItems
 				,F.[Owner]
-		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
 	END
 	ELSE IF(@timeframe = @Quarter4)	-- Quarter 4
@@ -3143,16 +3322,15 @@ BEGIN
 				  ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
 				  ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate as 'Total_Actual'
 				
-				,F.[User]
-				,F.LineItems
+				,P.[Users]
+				,P.LineItems
 				,F.[Owner]
-		FROM [dbo].GetFinanceBasicData(@BudgetId,@ClientId,@lstUserIds,@UserId,@CurrencyRate) F
+		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
 	END
 
 	-- Get custom columns data
 	 EXEC [dbo].[GetFinanceCustomfieldColumnsData] @BudgetId, @ClientId
-
 
 END
 GO
@@ -4454,6 +4632,104 @@ BEGIN
 	AND REPLACE(Period,'Y','') < 13
 
 	SELECT ISNULL(@Budget,0) AS Budget, ISNULL(@Forecast,0) AS Forecast, ISNULL(@Planned,0) AS Planned, ISNULL(@Actual,0) AS Actual
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalLineItemsMarketingBudget]'))
+BEGIN
+	DROP TRIGGER [dbo].[TrgPreCalLineItemsMarketingBudget]
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 12/06/2016
+-- Description:	Update line items count into pre calculation table 
+-- =============================================
+CREATE TRIGGER [dbo].[TrgPreCalLineItemsMarketingBudget]
+   ON  [dbo].[LineItem_Budget]
+   AFTER INSERT,UPDATE,DELETE
+AS 
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+		
+	IF((SELECT COUNT(*) FROM INSERTED) > 0)
+	BEGIN
+		-- Update line items count into pre calculated table in case of INSERT/UPDATE 
+		UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
+		FROM [MV].[PreCalculatedMarketingBudget] PreCal
+		INNER JOIN INSERTED I ON PreCal.BudgetDetailId = I.BudgetDetailId
+		LEFT JOIN
+		(
+			-- Get count of associated all line items to the budget with IsDeleted flag
+			SELECT LB.BudgetDetailId,COUNT(LB.PlanLineItemId) AS LineItemCount 
+			FROM LineItem_Budget LB 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
+			GROUP BY LB.BudgetDetailId
+		) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
+	END
+	ELSE
+	BEGIN
+		-- Update line items count into pre calculated table in case of DELETE
+		UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
+		FROM [MV].[PreCalculatedMarketingBudget] PreCal
+		INNER JOIN DELETED D ON PreCal.BudgetDetailId = D.BudgetDetailId
+		LEFT JOIN
+		(
+			-- Get count of associated all line items to the budget with IsDeleted flag
+			SELECT LB.BudgetDetailId,COUNT(LB.PlanLineItemId) AS LineItemCount 
+			FROM LineItem_Budget LB 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
+			GROUP BY LB.BudgetDetailId
+		) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
+	END
+
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalUserCountMarketingBudget]'))
+BEGIN
+	DROP TRIGGER [dbo].[TrgPreCalUserCountMarketingBudget]
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Jaymin Modi
+-- Create date: 02/Dec/2016
+-- Description:	Trigger which Update user count into pre-calculate table for Marketing Budget
+-- =============================================
+CREATE TRIGGER [dbo].[TrgPreCalUserCountMarketingBudget]
+       ON [dbo].[Budget_Permission]
+   AFTER INSERT, UPDATE, DELETE
+AS 
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	DECLARE @BudgetDetailId INT,
+			@Year INT,
+			@Users INT = 0
+
+	--Get BudgetDetailId and User Count
+	SELECT @BudgetDetailId = BP.BudgetDetailId, @Users = ISNULL(COUNT(BP.UserId),0)
+	FROM Budget_Permission BP
+	INNER JOIN INSERTED I ON BP.BudgetDetailId = I.BudgetDetailId
+	GROUP BY BP.BudgetDetailId 
+
+	--Update User Count By BudgetDetailId
+	UPDATE [MV].[PreCalculatedMarketingBudget] SET Users = @Users WHERE BudgetDetailId = @BudgetDetailId
+
+	
 END
 GO
 
