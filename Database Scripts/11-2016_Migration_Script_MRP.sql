@@ -1,3 +1,87 @@
+--Create ClientId column on User_Notification table 
+IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'User_Notification' AND COLUMN_NAME = 'ClientId') 
+BEGIN 
+	ALTER TABLE dbo.User_Notification
+	ADD ClientId INT NULL 
+END 
+
+IF NOT EXISTS(SELECT 1 FROM dbo.Notification WHERE Title = 'When new transactions arrive that I need to pay attention to')
+INSERT INTO dbo.Notification
+        ( Title ,
+          Description ,
+          NotificationType ,
+          EmailContent ,
+          IsDeleted ,
+          CreatedDate ,
+          ModifiedDate ,
+          NotificationInternalUseOnly ,
+          Subject ,
+          CreatedBy 
+        )
+VALUES  ( N'When new transactions arrive that I need to pay attention to' , -- Title - nvarchar(255)
+          NULL , -- Description - nvarchar(4000)
+          'AM' , -- NotificationType - char(2)
+          N'Dear [NameToBeReplaced],<br/><br/> There are new transactions that need your attentions for attribution. <br/><br/>Thank You,<br/>Hive9 Plan Admin' , -- EmailContent - nvarchar(4000)
+          0 , -- IsDeleted - bit
+          GETDATE() , -- CreatedDate - datetime
+          NULL, -- ModifiedDate - datetime
+          'NewTransactionsArrived' , -- NotificationInternalUseOnly - varchar(255)
+          'Plan: New Transactions To Attribute' , -- Subject - varchar(255)
+          0  -- CreatedBy - int
+        )
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[dbo].[TransactionNotification]'))
+	DROP PROCEDURE [dbo].[TransactionNotification]
+GO
+
+CREATE PROCEDURE [dbo].[TransactionNotification] (@ClientID INT, @UserId INT, @LastDate DATETIME, @NewTransactionCount INT, @UpdatedTrasactionCount INT)
+AS
+BEGIN
+
+	DECLARE @Message NVARCHAR (1000)
+	SET @Message = ''
+	IF (@NewTransactionCount > 0)
+		SET @Message = @Message + STR(@NewTransactionCount) + ' new transactions imported into plan. '
+	IF (@UpdatedTrasactionCount > 0) 
+		SET @Message = @Message + STR(@UpdatedTrasactionCount) + ' transactions updated'
+
+	IF (LEN(@Message) > 0)
+	INSERT INTO dbo.User_Notification_Messages
+			( ComponentName ,
+			  ComponentId ,
+			  EntityId ,
+			  Description ,
+			  ActionName ,
+			  IsRead ,
+			  ReadDate ,
+			  CreatedDate ,
+			  UserId ,
+			  RecipientId ,
+			  ClientID
+			)
+	SELECT  N'Plan' , -- ComponentName - nvarchar(50)
+			  0 , -- ComponentId - int
+			  0 , -- EntityId - int
+			  @Message, -- Description - nvarchar(250)
+			  N'FinancialIntegration' , -- ActionName - nvarchar(50)
+			  0 , -- IsRead - bit
+			  GETDATE() , -- ReadDate - datetime
+			  GETDATE() , -- CreatedDate - datetime
+			  @UserId , -- UserId - int
+			  UN.UserId , -- RecipientId - int
+			  @ClientID
+	FROM dbo.User_Notification UN JOIN dbo.Notification N ON N.NotificationId = UN.NotificationId
+	WHERE UN.ClientId = @ClientID AND N.IsDeleted = 0 AND N.NotificationInternalUseOnly = 'NewTransactionsArrived'
+
+END
+GO
+
 -- START #2802: Added by Viral on 11/30/2016
 -- Desc: Adde User & Owner columns for Marketing Budget screen
 
@@ -183,6 +267,8 @@ BEGIN
 
 		--direct line item attribution 
 		EXEC [INT].[TransactionLineItemDirectAttribution] ' + STR(@ClientID) +', '+STR(@UserId)+', @LastDate
+
+		IF (@Inserted+@Updated > 0) EXEC [TransactionNotification] '+STR(@ClientID)+', '+STR(@UserID)+', @LastDate, @Inserted, @Updated
 
 		INSERT INTO [dbo].[IntegrationInstanceLog] ( 
 			   [IntegrationInstanceID]

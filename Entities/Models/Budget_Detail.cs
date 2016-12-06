@@ -29,6 +29,8 @@ namespace RevenuePlanner.Models
         public bool IsDeleted { get; set; }
         public bool IsForecast { get; set; }
         public int CreatedBy { get; set; }
+        public Nullable<double> TotalBudget { get; set; }
+        public Nullable<double> TotalForecast { get; set; }
     
         public virtual Budget Budget { get; set; }
         public virtual ICollection<Budget_Permission> Budget_Permission { get; set; }
