@@ -335,6 +335,7 @@
     <Content Include="Views\MeasureDashboard\_ViewAllReportGraph.cshtml" />
     <Content Include="Views\MarketingBudget\_newBudget.cshtml" />
     <Content Include="Views\MeasureDashboard\_DrillDownDetails.cshtml" />
+    <Content Include="Views\Inspect\_InspectPopupPlan.cshtml" />
     <None Include="web-assets\build\check-npm-install.js" />
     <None Include="web-assets\build\check-npm-version.js" />
     <Content Include="web-assets\build\include-css.htm" />
