@@ -494,8 +494,7 @@ namespace RevenuePlanner.Controllers
             List<Plan> lstPlan = tblPlan.Where(plan => allPlanIds.Contains(plan.PlanId)).ToList(); // Modify BY Nishant Sheth #1821
             if (lstPlan.Count == 0)
             {
-                TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
-                return RedirectToAction("PlanSelector", "Plan");
+                return RedirectToAction("Index", "Home");
             }
 
             ViewBag.SelectedYear = selectedYear;//@N set selected year for report year list

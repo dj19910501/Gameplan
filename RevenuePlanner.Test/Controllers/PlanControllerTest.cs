@@ -505,61 +505,6 @@ namespace RevenuePlanner.Test.Controllers
 
 
 
-        #region Create Plan
-        /// <summary>
-        /// To check to create plan with passing all parameters
-        /// <author>Rahul Shah</author>
-        /// <createddate>29June2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void Create_Plan_With_All_Params()
-        {
-            Console.WriteLine("To check to create plan with passing all parameters\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
-            int PlanId = 0;
-            bool isPlanSelector = false;
-            bool isGridview = false;
-            bool isPlanChange = false;
-            var result = objPlanController.CreatePlan(PlanId, isPlanSelector, isGridview, isPlanChange) as ActionResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-
-
-        }
-
-        /// <summary>
-        /// To check to create plan with passing only plan id
-        /// <author>Rahul Shah</author>
-        /// <createddate>29June2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void Create_Plan_With_Only_PlanId()
-        {
-            Console.WriteLine("To check to create plan with passing only plan id\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
-
-
-            int PlanId = 0;
-            var result = objPlanController.CreatePlan(PlanId) as ActionResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-
-
-
-
-        }
-
-        #endregion
-
         #region NoModel
         /// <summary>
         /// To check to No Model Method.

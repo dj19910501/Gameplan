@@ -967,7 +967,6 @@
     <Content Include="Views\Shared\_preferences.cshtml" />
     <Content Include="Views\Model\_DuplicateModel.cshtml" />
     <Content Include="Views\Plan\_NoModel.cshtml" />
-    <Content Include="Views\Plan\Budgeting.cshtml" />
     <Content Include="Views\Plan\_AllocatedBudget.cshtml" />
     <Content Include="Views\Plan\_Budget.cshtml" />
     <Content Include="Views\Plan\_BudgetingPlanList.cshtml" />
@@ -1004,7 +1003,6 @@
     <Content Include="Views\Inspect\_InspectPopupCampaign.cshtml" />
     <Content Include="Views\Inspect\_InspectPopupImprovementTactic.cshtml" />
     <Content Include="Views\Inspect\_InspectPopupLineitem.cshtml" />
-    <Content Include="Views\Inspect\_InspectPopupPlan.cshtml" />
     <Content Include="Views\Inspect\_InspectPopupProgram.cshtml" />
     <Content Include="Views\Inspect\_ReviewCampaign.cshtml" />
     <Content Include="Views\Inspect\_ReviewImprovementTactic.cshtml" />
@@ -1012,7 +1010,6 @@
     <Content Include="Views\Inspect\_SetupCampaign.cshtml" />
     <Content Include="Views\Inspect\_SetupImprovementTactic.cshtml" />
     <Content Include="Views\Inspect\_SetupLineitem.cshtml" />
-    <Content Include="Views\Inspect\_SetupPlan.cshtml" />
     <Content Include="Views\Inspect\_SetupProgram.cshtml" />
     <Content Include="Views\Inspect\_ShareCampaign.cshtml" />
     <Content Include="Views\Inspect\_ShareProgram.cshtml" />
@@ -1031,7 +1028,6 @@
     <Content Include="Views\Report\_ReportConversion.cshtml" />
     <Content Include="Views\Report\_ConversionCardSection.cshtml" />
     <Content Include="Views\Plan\AddActual.cshtml" />
-    <Content Include="Views\Plan\CreatePlan.cshtml" />
     <Content Include="Views\Report\_ReportCardSection.cshtml" />
     <Content Include="Views\Report\_ConversionToPlan.cshtml" />
     <Content Include="Views\Plan\_GridImprovement.cshtml" />
