@@ -762,8 +762,8 @@ function ME_GetSymbolforValues(value, symbolType) {
     return value;
 }
 //Added Following function to load graph,table and view data.
-function LoadReport(obj, applicationCode, errorMsg, apiUrlNotConfigured, ApiUrl,dashId,dashPageId) {
-  
+function LoadReport(obj, applicationCode, errorMsg, apiUrlNotConfigured, ApiUrl, dashId, dashPageId, msgNoDataAvailable, msgGraphNotConfigure,isViewData) {
+   
     var IsGraph = true;
     var id = $(obj).attr('ReportGraphId');
     var DashboardContentId = $(obj).attr('dashboardcontentid');
@@ -784,6 +784,8 @@ function LoadReport(obj, applicationCode, errorMsg, apiUrlNotConfigured, ApiUrl,
     var URL;
     if (ApiUrl == '') {
         $(obj).html(apiUrlNotConfigured);
+        //Following method is used to Show/Hide viewAll icon.
+        ManageViewAllIcon(obj, apiUrlNotConfigured);
     }
     else {
         var params = {};
@@ -795,6 +797,8 @@ function LoadReport(obj, applicationCode, errorMsg, apiUrlNotConfigured, ApiUrl,
         params.ViewBy = ViewBy;
         params.StartDate = StartDate;
         params.EndDate = EndDate;
+        //Using Following Parameter we can check method is called from viewdata or not 
+        params.IsViewData = isViewData;
         if (IsGraph) {
             URL = urlContent+"MeasureDashboard/GetChart/";
         }
@@ -812,19 +816,39 @@ function LoadReport(obj, applicationCode, errorMsg, apiUrlNotConfigured, ApiUrl,
             data: $.param(params, true),
             dataType: "json",
             success: function (data) {
-            
+
                 if (IsGraph) {
                     eval(JSON.parse(data.data));
                 }
                 else {
                     LoadReportTable(DashboardContentId, "divChart", data, "ReportTable", "_wrapper", true);
                 }
+                //Following method is used to Show/Hide viewAll icon.
+                ManageViewAllIcon(obj, msgNoDataAvailable, msgGraphNotConfigure);
             },
             error: function (err) {
-             
-                $(obj).html(errorMsg);
+                //Following method is used to Show/Hide viewAll icon.
+                ManageViewAllIcon(obj,err);
+                $(obj).html(err);
             }
         });
+    }
+}
+//Following method is used to manage(Show/Hide) viewAll icon.(Ex: if nessage will be "No Data Availble" or "Chart Type is not supported then" then ViewAll icon will not be appear)
+function ManageViewAllIcon(obj,msgNoDataAvailable, msgGraphNotConfigure) {
+  
+    var id = $(obj).attr('ReportGraphId');
+
+    if (Number(id) == 0) {
+        id = $(obj).attr('ReportTableId');
+    }
+    if (obj != null || obj!= 'undefined') {
+        if ($(obj).html().indexOf(msgNoDataAvailable) > 0 || $(obj).text().indexOf(msgGraphNotConfigure) > 0) {
+
+            $("#" + id).hide();
+        }
+        else
+            $("#" + id).show();
     }
 }
 function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperName, isReportTable) {
@@ -834,7 +858,7 @@ function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperNa
     var defaultSortColumn = $('#hdn_' + reportTableId).attr('defaultSortColumn');
     var defaultSortOrder = $('#hdn_' + reportTableId).attr('defaultSortOrder');
     if (defaultSortOrder != 'asc')
-        defaultSortOrder = 'des'; 
+        defaultSortOrder = 'des';
     var ShowFooterRow = $('#hdn_' + reportTableId).attr('ShowFooterRow');
 
     $('#' + reportTableId + wrapperName).css('overflow-x', 'auto');
@@ -862,8 +886,9 @@ function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperNa
                 if (j > columnCheckCount) {
                     try {
                         var originalValue = $(cell).text();
-                        $(cell).text(ME_number_format(originalValue, 2, '.', ','));
-                        $(cell).attr('title', originalValue);
+                     
+                        $(cell).text(ME_number_format(originalValue,2, '.', ','));
+                        $(cell).attr('title', (ME_number_format(originalValue,2, '.', ',')));
                         $(cell).addClass('north');
                         $(cell).attr('title', $(cell).attr('data-original-title'));
                         $(".north").tooltip({
@@ -872,7 +897,7 @@ function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperNa
                         });
                     } catch (e) {
                     }
-                    
+
                 }
             });
         });

@@ -3142,6 +3142,31 @@ namespace RevenuePlanner.Helpers
             }
         }
         //end
+        //Added by kausha for #2709 on 12/06/2016  for measure report messages.
+        private string _RptNoDataAvailable;
+        public string RptNoDataAvailable
+        {
+            get
+            {
+                return _RptNoDataAvailable;
+            }
+            set
+            {
+                _RptNoDataAvailable = value;
+            }
+        }
+        private string _RptGraphNotSupported;
+        public string RptGraphNotSupported
+        {
+            get
+            {
+                return _RptGraphNotSupported;
+            }
+            set
+            {
+                _RptGraphNotSupported = value;
+            }
+        }
         #endregion
 
         #region  Functions
@@ -4135,7 +4160,12 @@ namespace RevenuePlanner.Helpers
                                         case "UserAssignRestrictionMessage":
                                             _UserAssignRestrictionMessage = strMsgValue;
                                             break;
-
+                                        case "RptNoDataAvailable":
+                                            _RptNoDataAvailable = strMsgValue;
+                                            break;
+                                        case "RptGraphNotSupported":
+                                            _RptGraphNotSupported = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;

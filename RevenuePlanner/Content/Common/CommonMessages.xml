@@ -1246,5 +1246,13 @@
     <Name>UserPermissionRestrictionMessage</Name>
     <value>You don't have permission to view/modify permission of this user.</value>
   </Field>
+  <Field>
+    <Name>RptNoDataAvailable</Name>
+    <value>No data available to view</value>
+  </Field>
+<Field>
+    <Name>RptGraphNotSupported</Name>
+    <value>Currently we are not supporting graph type</value>
+  </Field>
 	<!--//end for #2469 alert message.-->
 </Messages>

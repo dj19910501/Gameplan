@@ -1,0 +1,23 @@
+﻿/*Following Css datalist added form measure report table*/  
+div.gridbox .objbox {
+        overflow: hidden !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        width: inherit;
+    }
+    div.gridbox .xhdr {
+        overflow: hidden !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        width: inherit;
+    }
+    div.gridbox table.obj td {
+        border-bottom: 1px solid #ededed !important;
+        border-left: 1px solid #ededed !important;
+    }
+    .tooltip{z-index:2222 !important;}
+    .tableheightclass {
+        overflow: auto;
+        max-height: 210px;
+        height: auto;
+    }
