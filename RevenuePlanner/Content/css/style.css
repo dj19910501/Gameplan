@@ -13,7 +13,10 @@
 	-moz-box-sizing: border-box !important;
 	box-sizing: border-box !important;
 }
-.hierarchy_wrapper *, .hierarchy_wrapper *::after, .hierarchy_wrapper *::before, .hierarchy_wrapper, .create-plan-form #accordion2 *, .create-plan-form #accordion2 *::after, .create-plan-form #accordion2 *::before, #modal-container-186470 .partial_wrapper *, #modal-container-186470 .partial_wrapper *::after, #modal-container-186470 .partial_wrapper *::before, .gridbox.gridbox_dhx_skyblue, .gridbox.gridbox_dhx_skyblue *, .gridbox.gridbox_dhx_skyblue *:before, .gridbox.gridbox_dhx_skyblue *:after {
+.hierarchy_wrapper *, .hierarchy_wrapper *::after, .hierarchy_wrapper *::before, .hierarchy_wrapper, 
+.create-plan-form #accordion2 *, .create-plan-form #accordion2 *::after, .create-plan-form #accordion2 *::before, 
+#modal-container-186470 .partial_wrapper *, #modal-container-186470 .partial_wrapper *::after, #modal-container-186470 .partial_wrapper *::before, 
+.gridbox.gridbox_dhx_skyblue, .gridbox.gridbox_dhx_skyblue *, .gridbox.gridbox_dhx_skyblue *:before, .gridbox.gridbox_dhx_skyblue *:after {
 	box-sizing: content-box !important;
 	-moz-box-sizing: content-box !important;
 	box-sizing: content-box !important;
@@ -3553,7 +3556,7 @@ a.link-gray {
     color: #c1272d;
 }
 .finance_grid_add:hover:before{
-    color:#89CEDE;
+    color:#7F7F7F;
 }
 /*.grid_Delete {
 	background-image: url(../images/Remove-icon-blue.png);
@@ -14014,6 +14017,49 @@ table.dataTable thead .sorting_desc {
 .pagination .btn{box-shadow:none}
 /* =========================== Measure Report CSS End =========================== */
 
+/* ===================== Dhtmlxtreegrid Table Commin CSS ===================== */
+
+div.gridbox table.obj tr.rowselected td,
+div.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
+    background-color: #ABD7E1;
+     border-bottom:1px solid #d4d4d4;
+     border-top:1px solid #d4d4d4;
+     border-right:1px solid #d4d4d4;
+}
+
+div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, 
+div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td{
+        background-color: #89CEDE;
+        border-top: 1px solid #d4d4d4;
+        /*border-bottom: 1px solid #f0f0f0;*/
+        border-right: 1px solid #d4d4d4;
+ }
+
+/* Common Css for all Grid */
+div.gridbox table td, div.gridbox table td .hdrcell{
+    font-family: "source_sans_proregular",Arial,sans-serif ;
+    font-size: 14px;
+}
+/*div.gridbox table td, div.gridbox table td .hdrcell{text-align:center}*/
+div.gridbox table.hdr td{
+    border-top:0;
+}
+
+div.gridbox_dhx_skyblue.gridbox table.hdr td {
+    border: 1px 1px 1px 1px;
+    border-color: #d4d4d4;
+}
+div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+    width: 100% !important;
+}
+
+div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+    width: 100% !important;
+}
+/* ===================== Dhtmlxtreegrid Table Commin CSS ===================== */
+.MarketingBudget-tbl div.gridbox_dhx_skyblue.gridbox table.hdr {
+    border-bottom: 1px solid #d4d4d4;
+}
 .MarketingBudget-tbl div.gridbox .pipeLine{border-left:1px solid #000;height:20px; margin:0 5px}
 .MarketingBudget-tbl span.marketing-tbl-link{text-decoration:underline}
 .MarketingBudget-tbl  tr td .treegrid_cell {
@@ -14022,6 +14068,10 @@ table.dataTable thead .sorting_desc {
 .MarketingBudget-tbl div.gridbox table.obj tr:nth-child(even) {
     background-color: #f0f0f0;
 }
+.MarketingBudget-tbl div.gridbox table td, div.gridbox table td .hdrcell{text-align:center}
+
+
+
 /************************************************ Responsive css start here **********************************************************/
 
 @media (max-width: 1600px) {

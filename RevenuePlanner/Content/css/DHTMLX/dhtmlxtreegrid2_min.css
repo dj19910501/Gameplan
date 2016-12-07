@@ -2508,41 +2508,7 @@ div.dhx_modal_cover {
     color: inherit;
 }
 /* #2370 Media code*/
-.task-tbl  table.obj tr.rowselected td,
+/*.task-tbl  table.obj tr.rowselected td,
 .task-tbl  table.obj tr.odd_dhx_skyblue.rowselected td {
     background-color: #ABD7E1; border-bottom:1px solid #d4d4d4;border-top:1px solid #d4d4d4;border-right:1px solid #d4d4d4;
-}
-div.gridbox table.obj tr.rowselected td,
-div.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
-    background-color: #ABD7E1; border-bottom:1px solid #d4d4d4;border-top:1px solid #d4d4d4;border-right:1px solid #d4d4d4;
-}
-
-div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, 
-div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td{
-        background-color: #89CEDE;
-        border-top: 1px solid #f0f0f0;
-        /*border-bottom: 1px solid #f0f0f0;*/
-        border-right: 1px solid #d4d4d4;
- }
-
-/* Common Css for all Grid */
-div.gridbox table td, div.gridbox table td .hdrcell{
-    font-family: "source_sans_proregular",Arial,sans-serif ;
-    font-size: 14px;
-}
-div.gridbox table td, div.gridbox table td .hdrcell{text-align:center}
-div.gridbox table.hdr td{
-    border-top:0;
-}
-
-div.gridbox_dhx_skyblue.gridbox table.hdr td {
-    border-width: 1px 1px 1px 1px;
-    border-color: #d4d4d4;
-}
-div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
-    width: 100% !important;
-}
-
-div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
-    width: 100% !important;
-}
+}*/
