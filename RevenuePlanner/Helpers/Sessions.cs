@@ -744,6 +744,26 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["ImportTimeFrame"] = value;
             }
         }
+        /// <summary>
+        /// Added by Arpita Soni 
+        /// List of users for the specific client
+        /// </summary>
+        public static List<BDSService.User> ClientUsers
+        {
+            get
+            {
+                List<BDSService.User> lstUsers = new List<BDSService.User>();
+                if (HttpContext.Current.Session["ClientUsers"] != null)
+                {
+                    lstUsers = (List<BDSService.User>)(HttpContext.Current.Session["ClientUsers"]);
+                }
+                return lstUsers;
+            }
+            set
+            {
+                HttpContext.Current.Session["ClientUsers"] = value;
+            }
+        }
 
     }
 }

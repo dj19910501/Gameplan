@@ -74,9 +74,8 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// Method to get marketing budget grid data for perticular budget
         /// </summary>
         
-        public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol)
+        public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol,List<BDSService.User> lstUser)
         {
-            List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(ClientID).ToList();
 
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             BudgetGridDataModel objBudgetGridDataModel = new BudgetGridDataModel();
@@ -112,6 +111,17 @@ namespace RevenuePlanner.Services.MarketingBudget
             objBudgetGridModel.objGridDataModel = objBudgetGridDataModel;
 
             return objBudgetGridModel;
+        }
+
+        /// <summary>
+        /// Get list of users for specific client
+        /// </summary>
+        /// <param name="ClientID">Client Id</param>
+        /// <returns>Returns list of users for the client</returns>
+        public List<BDSService.User> GetUserListByClientId(int ClientID)
+        {
+            List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(ClientID).ToList();
+            return lstUser;
         }
         IEnumerable<DataRow> GetTopLevelRows(DataTable StandardColumnTable, int? minParentId)
         {
@@ -1074,21 +1084,24 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetId">Id of the Budget</param>
         /// <param name="ExchangeRate">Currency exchange rate</param>
         /// <returns>Returns datatable having 4 values(Budget,Forecast,Planned,Actual)</returns>
-        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate)
+        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate,List<BDSService.User> lstUser)
         {
             #region "Declare Variables"
-            SqlParameter[] para = new SqlParameter[2];
+            SqlParameter[] para = new SqlParameter[3];
             MarketingBudgetHeadsUp calResultset = new MarketingBudgetHeadsUp();   // Return Marketing Budget Header Result Data Model
+            List<int> lstUserId = lstUser.Select(a => a.ID).ToList();
+            string CommaSeparatedUserIds = String.Join(",", lstUserId);
             #endregion
 
             #region "Set SP Parameters"
             para[0] = new SqlParameter() { ParameterName = "BudgetId", Value = BudgetId };
-            para[1] = new SqlParameter() { ParameterName = "CurrencyRate", Value = ExchangeRate };
+            para[1] = new SqlParameter() { ParameterName = "lstUserIds", Value = CommaSeparatedUserIds };
+            para[2] = new SqlParameter() { ParameterName = "CurrencyRate", Value = ExchangeRate };
             #endregion
 
             #region "Get Data"
             calResultset = _database.Database
-                .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinance @BudgetId,@CurrencyRate", para).FirstOrDefault();
+                .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinance_arpita @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
             #endregion
 
             return calResultset; // Returns Model having 4 values(Budget, Forecast, Planned, Actual)

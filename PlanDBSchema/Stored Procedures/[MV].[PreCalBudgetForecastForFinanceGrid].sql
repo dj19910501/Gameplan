@@ -14,13 +14,13 @@ GO
 -- Create date: 11/18/2016
 -- Description:	SP to insert/update precalculated data for marketing budget grid
 -- =============================================
--- [MV].[PreCalBudgetForecastForFinanceGrid] 12538,2,0,2016,'Y1',5555
+-- [MV].[PreCalBudgetForecastForFinanceGrid] 755,2016,'Y1',5000,0
 CREATE PROCEDURE [MV].[PreCalBudgetForecastForFinanceGrid]
 	@BudgetDetailId INT,		-- Id of the Budget_Detail table
 	@Year INT,					-- Year 
 	@Period VARCHAR(5),			-- Period in case of editing Monthly/Quarterly allocation
-	@BudgetValue FLOAT,			-- New value for Budget/Forecast/Custom column
-	@ForecastValue FLOAT
+	@BudgetValue FLOAT=0,		-- New value for Budget
+	@ForecastValue FLOAT= 0		-- New value for Forecast
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -40,20 +40,17 @@ BEGIN
 						 (
 							SELECT ' + CAST(@BudgetDetailId AS VARCHAR(30))+ ' AS BudgetDetailId, 
 							' + CAST(@Year AS VARCHAR(30))+ ' AS [Year], 
-							'+CAST(@BudgetValue AS VARCHAR(30))+' AS '+@BudgetColumnName+',
-							'+CAST(@ForecastValue AS VARCHAR(30))+' AS '+@ForecastColumnName+'
+							'+CAST(@BudgetValue AS VARCHAR(30))+' AS NewBudgetValue,
+							'+CAST(@ForecastValue AS VARCHAR(30))+' AS NewForecastValue
 						 ) AS T2
 						 ON (T2.BudgetDetailId = T1.BudgetDetailId AND T2.Year = T1.Year)
 						 WHEN MATCHED THEN
-						 UPDATE SET ' + @BudgetColumnName + ' = T2.'+CAST(@BudgetValue AS VARCHAR(30))+',
-									' + @ForecastColumnName + ' = T2.'+CAST(@ForecastValue AS VARCHAR(30))+'
+						 UPDATE SET T1.' + @BudgetColumnName + ' = T2.NewBudgetValue,
+									T1.' + @ForecastColumnName + ' = T2.NewForecastValue
 						 WHEN NOT MATCHED THEN  
 						 INSERT (BudgetDetailId, [Year], ' + @BudgetColumnName + ',' + @ForecastColumnName + ')
-						 VALUES (BudgetDetailId, [Year], ' + @BudgetColumnName + ',' + @ForecastColumnName + ');'
+						 VALUES (BudgetDetailId, [Year], T2.NewBudgetValue,T2.NewForecastValue);'
 	
 	EXEC (@InsertQuery)
-	SELECT * FROM [MV].[PreCalculatedMarketingBudget]
 END
 GO
-
-

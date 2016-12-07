@@ -28,6 +28,11 @@ namespace RevenuePlanner.Controllers
         {
             MarketingActivities MarketingActivities = new MarketingActivities();
 
+            #region Set session for current client users
+            // Set list of users for the current client into session
+            Sessions.ClientUsers = _MarketingBudget.GetUserListByClientId(Sessions.User.CID);
+            #endregion
+
             #region Bind Budget dropdown on grid
             MarketingActivities.ListofBudgets = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
             #endregion
@@ -105,7 +110,7 @@ namespace RevenuePlanner.Controllers
             Sessions.BudgetDetailId = budgetId;
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             //Get all budget grid data.
-            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, TimeFrame, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol);
+            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, TimeFrame, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol, Sessions.ClientUsers);
             var jsonResult = Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader }, JsonRequestBehavior.AllowGet);
             return jsonResult;
         }
@@ -342,7 +347,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetFinanceHeaderValues(int BudgetId)
         {
             // Call function to get header values 
-            MarketingBudgetHeadsUp objHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate);
+            MarketingBudgetHeadsUp objHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate,Sessions.ClientUsers);
 
             string Budget, Forecast, Planned, Actual;
             Budget = Forecast = Planned = Actual = string.Empty;

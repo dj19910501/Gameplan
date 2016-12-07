@@ -50,8 +50,11 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_MarketingBudget_GetFinanceHeaderValues()
         {
+            // Get users list for current client
+            List<BDSService.User> lstUsers = _marketingBudget.GetUserListByClientId(ClientId);
+
             // Get header values 
-            MarketingBudgetHeadsUp headerValues = _marketingBudget.GetFinanceHeaderValues(BudgetId, ExchangeRate);
+            MarketingBudgetHeadsUp headerValues = _marketingBudget.GetFinanceHeaderValues(BudgetId, ExchangeRate, lstUsers);
 
             Assert.IsNotNull(headerValues);
             Assert.IsNotNull(headerValues.Budget);
@@ -81,9 +84,9 @@ namespace RevenuePlanner.UnitTest.Service
             //end
             var res = _marketingBudget.GetXLSData(Importviewby, ds, ClientId, BudgetDetailId, 1);
             Assert.IsTrue(res != null);
-            if(string.IsNullOrEmpty(res.ErrorMsg))
+            if (string.IsNullOrEmpty(res.ErrorMsg))
             {
-                Assert.IsTrue(res.MarketingBudgetColumns!=null && res.MarketingBudgetColumns.Columns.Count > 0);
+                Assert.IsTrue(res.MarketingBudgetColumns != null && res.MarketingBudgetColumns.Columns.Count > 0);
                 Assert.IsTrue(res.XmlData != null);
 
             }
