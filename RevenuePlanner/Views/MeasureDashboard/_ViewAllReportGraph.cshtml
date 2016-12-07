@@ -67,7 +67,7 @@
         }
         $(document).ready(function () {
 
-            
+
             var model = @Html.Raw(Json.Encode(Model.SDV));
             var URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
             //Prepare list of parameter to get report table.
@@ -132,6 +132,7 @@
                 $("#div_ViewAllReport").empty();
                 var url = '@Url.Content("~/MeasureDashboard/LoadDrillDownData/")';
                 $("#div_ViewAllReport").load(url, {
+                    @*@Enums.ApplicationCode.RPC.ToString() - is used because if we want to use this method for any other application then we can use it directly *@
                     DbName: '@Enums.ApplicationCode.RPC.ToString()', Id: id, DisplayName: displayName, DimensionValueName: dimensionValueName, DimensionValueCount: dimensionValueCount,
                     DimensionActualValueCount: dimensionActualValueCount, HeaderDimensionValue: headerDimensionValue,
                     DashboardContentId: dashboardContentId, DashboardId: dashboardId, MeasureName: measureName,

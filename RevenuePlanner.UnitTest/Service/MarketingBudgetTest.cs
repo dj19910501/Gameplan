@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Data.OleDb;
+using System;
 
 namespace RevenuePlanner.UnitTest.Service
 {
@@ -64,6 +65,7 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_MarketingBudget_Import()
         {
+            Console.WriteLine("To Import Marketing budget with .XLS file.\n");
             //read excel file from path for import and return dataset
             OleDbConnection ExcelConnection; DataSet ds; OleDbDataAdapter Command;
             var ExcelPath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + ImportXLSFileLocation;
@@ -79,6 +81,12 @@ namespace RevenuePlanner.UnitTest.Service
             //end
             var res = _marketingBudget.GetXLSData(Importviewby, ds, ClientId, BudgetDetailId, 1);
             Assert.IsTrue(res != null);
+            if(string.IsNullOrEmpty(res.ErrorMsg))
+            {
+                Assert.IsTrue(res.MarketingBudgetColumns!=null && res.MarketingBudgetColumns.Columns.Count > 0);
+                Assert.IsTrue(res.XmlData != null);
+
+            }
 
         }
         /// <summary>
@@ -87,10 +95,16 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_MarketingBudget_Import_XLSXFile()
         {
+            Console.WriteLine("To Import Marketing budget with .XLSX file.\n");
             string FileLocation = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + ImportXLSX_FileLocation;
             var res = _marketingBudget.GetXLSXData(Importviewby, FileLocation, ClientId, BudgetDetailId, 1);
             Assert.IsTrue(res != null);
+            if (string.IsNullOrEmpty(res.ErrorMsg))
+            {
+                Assert.IsTrue(res.MarketingBudgetColumns != null && res.MarketingBudgetColumns.Columns.Count > 0);
+                Assert.IsTrue(res.XmlData != null);
 
+            }
         }
 
 

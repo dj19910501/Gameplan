@@ -26,7 +26,7 @@ RETURN
 	(
 	SELECT Budget_Detail.id,parentid from Budget_Detail
 	INNER JOIN Budget on Budget_Detail.BudgetId=Budget.Id
-	WHERE Budget.ClientId=@ClientId and 
+	WHERE Budget.ClientId=@ClientId and Budget_Detail.IsDeleted=0 and
 	 Budget_Detail.Id=@BudgetId and ParentID is null
 
     UNION ALL
@@ -34,7 +34,7 @@ RETURN
     SELECT BD.id,BD.ParentID  FROM Budget_Detail BD 
 	INNER JOIN Budget on BD.BudgetId=Budget.Id
 	INNER JOIN ForeCastBudgetDetail FBD	  ON FBD.Id = BD.ParentID
-	WHERE Budget.ClientId=@ClientId
+	WHERE Budget.ClientId=@ClientId and BD.IsDeleted=0 
 	)
 	SELECT convert(nvarchar(20),a.id) as Id From ForeCastBudgetDetail a
 	WHERE   NOT EXISTS ( SELECT *   FROM   ForeCastBudgetDetail b  WHERE  b.parentid = a.Id )

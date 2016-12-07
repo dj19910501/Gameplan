@@ -261,6 +261,11 @@ namespace RevenuePlanner.Models
         //Following parameter is added on 28/11/2016 for ticket no #2819 by kausha to display ReportTable name in drilldown popup.
         public string DisplayName { get; set; }
     }
+
+    /// <summary>
+    /// Add By Nandish Shah
+    /// Drill Down Details Parameter Model
+    /// </summary>
     public class DrillDownDetails
     {
         public int ChartId { get; set; }
@@ -287,6 +292,11 @@ namespace RevenuePlanner.Models
         public string SortOrder { get; set; }
         public string ChartType { get; set; }
     }
+
+    /// <summary>
+    /// Add By Nandish Shah
+    /// Drill Down Parameter Model
+    /// </summary>
     public class DrillDownParameters
     {
         public int ChartId { get; set; }

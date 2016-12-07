@@ -24,6 +24,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         string TripleDash = "---";
         private const string formatThousand = "#,#0.##";
         private IBDSService _ServiceDatabase;
+        private ICurrency _ObjCurrency= new Currency();
         public MarketingBudget(MRPEntities database, IBDSService ServiceDatabase)
         {
             _database = database;
@@ -69,10 +70,13 @@ namespace RevenuePlanner.Services.MarketingBudget
         }
 
 
-
+        /// <summary>
+        /// Method to get marketing budget grid data for perticular budget
+        /// </summary>
+        
         public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol)
         {
-            List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(Sessions.User.CID).ToList();
+            List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(ClientID).ToList();
 
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             BudgetGridDataModel objBudgetGridDataModel = new BudgetGridDataModel();
@@ -594,9 +598,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <summary>
         /// Read Data from excel 2007/(.xlsx) and above version format file to xml
         /// </summary>
-        /// <param name="fileLocation"></param>
-        /// <param name="BudgetDetailId"></param>
-        /// <param name="PlanExchangeRate"></param>
+        /// <param name="fileLocation">Location of file to read the uploaded data</param>
+        /// <param name="BudgetDetailId">For which budget user want to import data</param>
+        /// <param name="PlanExchangeRate">exchange rate for client</param>
         /// <returns></returns>
         public BudgetImportData GetXLSXData(string viewByType, string fileLocation, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
@@ -662,7 +666,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                                 if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
                                 {
-                                    colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                    colValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                 }
                                 else if (ListCustomCols != null)
                                 {
@@ -674,7 +678,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                                     {
                                         if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
                                         {
-                                            colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                            colValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                         }
                                     }
                                 }
@@ -758,7 +762,11 @@ namespace RevenuePlanner.Services.MarketingBudget
             if (viewByType == Convert.ToString(Enums.QuarterFinance.Yearly))
             {
                 if (monthcolumn.Count() == 1 && string.IsNullOrEmpty(monthcolumn.FirstOrDefault()))
-                    objImportData.ErrorMsg = "Data getting uploaded does not relate to specific view.";
+                    objImportData.ErrorMsg = "Data getting uploaded does not related to specific view.";
+            }
+            else if (!string.IsNullOrEmpty(monthcolumn[0].ToString()) || monthcolumn[0].ToLower() == "id")
+            {
+                objImportData.ErrorMsg = "Data getting uploaded does not related to specific view.";
             }
             //end
             objImportData.MarketingBudgetColumns = dtColumns;
@@ -768,13 +776,17 @@ namespace RevenuePlanner.Services.MarketingBudget
         }
 
 
-        /// <summary>
-        /// Read Data from excel 2003/(.xls) format file to xml
-        /// </summary>
-        /// <param name="fileLocation"></param>
-        /// <param name="BudgetDetailId"></param>
-        /// <param name="PlanExchangeRate"></param>
-        /// <returns></returns>
+       
+       /// <summary>
+       /// Method to read XLS file which user import
+       /// </summary>
+       /// <param name="viewByType">selected Time frame type </param>
+       /// <param name="ds"> dataset of data which get import</param>
+       /// <param name="ClientId">client id detail</param>
+       /// <param name="BudgetDetailId">Budget id for which user wants to import data</param>
+       /// <param name="PlanExchangeRate">Exchange rate of client</param>
+       /// <param name="CurrencySymbol">prefred currency</param>
+       /// <returns></returns>
         public BudgetImportData GetXLSData(string viewByType, DataSet ds, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
             List<XmlColumns> listColumnIndex = new List<XmlColumns>();
@@ -892,7 +904,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                                     if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
                                     {
-                                        colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                        colValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                     }
                                     else if (ListCustomCols != null)
                                     {
@@ -904,7 +916,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                                         {
                                             if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
                                             {
-                                                colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                                colValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                             }
                                         }
                                     }
@@ -950,7 +962,11 @@ namespace RevenuePlanner.Services.MarketingBudget
             if (viewByType == Convert.ToString(Enums.QuarterFinance.Yearly))
             {
                 if (monthcolumn.Count() == 1 && string.IsNullOrEmpty(monthcolumn.FirstOrDefault()))
-                    objImportData.ErrorMsg = "Data getting uploaded does not relate to specific view.";
+                    objImportData.ErrorMsg = "Data getting uploaded does not related to specific view.";
+            }
+            else if (!string.IsNullOrEmpty(monthcolumn[0].ToString()) || monthcolumn[0].ToLower() == "id")
+            {
+                objImportData.ErrorMsg = "Data getting uploaded does not related to specific view.";
             }
             //end
             objImportData.MarketingBudgetColumns = dtColumns;
@@ -959,17 +975,10 @@ namespace RevenuePlanner.Services.MarketingBudget
             return objImportData;
         }
 
-        /// <summary>
         /// Get the value of cell from excel sheet.
-        /// </summary>
-        /// <param name="doc"></param>
-        /// <param name="cell"></param>
-        /// <returns></returns>
         private string GetCellValue(SpreadsheetDocument doc, Cell cell)
         {
             string value = string.Empty;
-            try
-            {
                 if (cell.CellValue != null)
                 {
                     value = cell.CellValue.InnerText;
@@ -978,11 +987,6 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     return doc.WorkbookPart.SharedStringTablePart.SharedStringTable.ChildElements.GetItem(int.Parse(value)).InnerText;
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
             return value;
         }
 
@@ -1007,30 +1011,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                                                   }).ToList();
             return lstColumns;
         }
+     
         /// <summary>
-        /// Convert Value From other currency to USD Dollar
+        /// Desc:: Import Marketing finance Data from excel and save to database.
         /// </summary>
-        /// <param name="DataValue"></param>
-        /// <param name="ExchangeRate"></param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private double SetValueByExchangeRate(double DataValue = 0, double ExchangeRate = 1)
-        {
-            double ConvertedValue = DataValue;
-            if (ExchangeRate != 0)
-            {
-                ConvertedValue = DataValue / ExchangeRate;
-            }
-            return ConvertedValue;
-        }
-        /// <summary>
-        /// Desc:: Import Marketing finance Data from excel 
-        /// </summary>
-        /// <param name="XMLData"></param>
-        /// <param name="ImportBudgetCol"></param>
-        /// <param name="BudgetDetailId"></param>
-        /// <param name="dtColumns"></param>
-        /// <returns></returns>
         public int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int UserID, int ClientID, int BudgetDetailId = 0)
         {
             // Check the file data is monthly or quarterly
@@ -1057,13 +1041,13 @@ namespace RevenuePlanner.Services.MarketingBudget
             int ExecuteCommand = 0;
             string spname = string.Empty;
 
-            if (!IsMonthly)
+            if (IsMonthly)
             {
-                spname = "ImportMarketingBudgetQuarter";
+                spname = "ImportMarketingBudgetMonthly";
             }
             else
             {
-                spname = "ImportMarketingBudgetMonthly";
+                spname = "ImportMarketingBudgetQuarter";
             }
             using (command = new SqlCommand(spname, Connection))
             {
