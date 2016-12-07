@@ -35,12 +35,13 @@ namespace RevenuePlanner.Test.QA
         RevenueToPlanModel objRevenueToPlanModel; RevenueSubDataTableModel subModelList; Projected_Goal objProjected_Goal;
 
         static string[] MonthList = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
-        static int[] num = { 3, 6, 9, 12 };
+        static string[] QuarterList = { "Q1", "Q2", "Q3", "Q4" };
+        static int[] num = { 2, 5, 8, 11 };
         #endregion
 
         [TestMethod()]
-        [Priority(1)]
-        public void MonthlyRevenueReport()
+        [Priority(2)]
+        public void AAMonthlyRevenueReport()
         {
             try
             {
@@ -73,8 +74,8 @@ namespace RevenuePlanner.Test.QA
         }
 
         [TestMethod()]
-        [Priority(2)]
-        public void QuaterlyRevenueReport()
+        [Priority(1)]
+        public void ABQuarterlyRevenueReport()
         {
             try
             {
@@ -87,13 +88,13 @@ namespace RevenuePlanner.Test.QA
                     SetValuesForReport(currentyear, "Quarterly");
                     if (objRevenueToPlanModel != null)
                     {
-                        VerifyQuaterly_Actual(ActualList, QuaterlyActualList);
-                        VerifyQuaterly_ActualCost(ActualCostList, QuaterlyActualCostList);
-                        VerifyQuaterly_Goal(GoalList, QuaterlyGoalList);
-                        VerifyQuaterly_ProjectedRevenue(ProjectedList, QuaterlyProjectedList);
-                        //  VerifyQuaterly_Performance(PerformanceList, QuaterlyPerformanceList);
-                        //  VerifyQuaterly_ROI(ROIList, QuaterlyROIList);
-                        VerifyQuaterly_TotalRevenue(TotalRevenueList, QuaterlyTotalRevenueList);
+                        VerifyQuarterly_Actual(ActualList, QuaterlyActualList);
+                        VerifyQuarterly_ActualCost(ActualCostList, QuaterlyActualCostList);
+                        VerifyQuarterly_Goal(GoalList, QuaterlyGoalList);
+                        VerifyQuarterly_ProjectedRevenue(ProjectedList, QuaterlyProjectedList);
+                        VerifyQuarterly_Performance(QuaterlyActualList, QuaterlyGoalList, QuaterlyPerformanceList);
+                        VerifyQuarterly_ROI(QuaterlyActualList,QuaterlyActualCostList, QuaterlyROIList);
+                        VerifyQuarterly_TotalRevenue(TotalRevenueList, QuaterlyTotalRevenueList);
 
                     }
                 }
@@ -207,12 +208,12 @@ namespace RevenuePlanner.Test.QA
                 if (i >= NewStartDate.Month && i <= NewEndDate.Month)
                 {
                     Assert.AreEqual(Convert.ToDouble(GoalList[i - 1].ToString()), Math.Round(Convert.ToDouble(GoalAmount)));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of goal is " + GoalList[i - 1].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of goal in " + MonthList[i - 1] + " is " + GoalList[i - 1].ToString() + ".");
                 }
                 else
                 {
                     Assert.AreEqual(GoalList[i - 1].ToString(), "0");
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of goal is " + GoalList[i - 1].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of goal in " + MonthList[i - 1] + " is " + GoalList[i - 1].ToString() + ".");
                 }
             }
 
@@ -232,7 +233,7 @@ namespace RevenuePlanner.Test.QA
                         {
                             double proCal = (GoalList[i - 1] / MonthDiff) * currentMonthNo;
                             Assert.AreEqual(Convert.ToDouble(ProjectedList[i - 1].ToString()), Convert.ToDouble(proCal));
-                            Console.WriteLine("ReportController - GetRevenueData \n The assert value of projected is " + ProjectedList[i - 1].ToString() + ".");
+                            Console.WriteLine("ReportController - GetRevenueData \n The assert value of projected in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                         }
                         else if (DateTime.Now.Month < i)
                         {
@@ -246,12 +247,12 @@ namespace RevenuePlanner.Test.QA
                             var final = proCal / DateTime.Now.Month;
                             var profinal = cal + final;
                             Assert.AreEqual(Math.Round(Convert.ToDouble(ProjectedList[i - 1].ToString()), 2), Math.Round(Convert.ToDouble(profinal), 2));
-                            Console.WriteLine("ReportController - GetRevenueData \n The assert value of projected is " + ProjectedList[i - 1].ToString() + ".");
+                            Console.WriteLine("ReportController - GetRevenueData \n The assert value of projected in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                         }
                         else
                         {
                             Assert.AreEqual(Convert.ToDouble(ProjectedList[i - 1].ToString()), 0);
-                            Console.WriteLine("ReportController - GetRevenueData \n The assert value of projected is " + ProjectedList[i - 1].ToString() + ".");
+                            Console.WriteLine("ReportController - GetRevenueData \n The assert value of projected in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                         }
                     }
                 }
@@ -271,7 +272,7 @@ namespace RevenuePlanner.Test.QA
                 else
                 {
                     Assert.AreEqual(Convert.ToDouble(PerformanceList[i - 1].ToString()), 0);
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of performance is " + PerformanceList[i - 1].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of performance in " + MonthList[i - 1] + " is " + PerformanceList[i - 1].ToString() + ".");
                 }
             }
         }
@@ -284,12 +285,12 @@ namespace RevenuePlanner.Test.QA
                 {
                     decimal calculatePer = ((Convert.ToDecimal(ActualList[i - 1].ToString()) - Convert.ToDecimal(ActualCostList[i - 1].ToString())) / (Convert.ToDecimal(ActualCostList[i - 1].ToString()))) * 100;
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(ROIList[i - 1].ToString()), 2), Math.Round(calculatePer, 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of ROI is " + ROIList[i - 1].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of ROI in " + MonthList[i - 1] + " is " + ROIList[i - 1].ToString() + ".");
                 }
                 else
                 {
                     Assert.AreEqual(ROIList[i - 1].ToString(), "0");
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of ROI is " + ROIList[i - 1].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of ROI in " + MonthList[i - 1] + " is " + ROIList[i - 1].ToString() + ".");
                 }
             }
         }
@@ -303,12 +304,12 @@ namespace RevenuePlanner.Test.QA
                 {
                     Total = Total + Convert.ToDecimal(ActualList[i - 1].ToString());
                     Assert.AreEqual(TotalRevenueList[i - 1].ToString(), Math.Round(Total, 2).ToString());
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of total revenue is " + TotalRevenueList[i - 1].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of total revenue in " + MonthList[i - 1] + " is " + TotalRevenueList[i - 1].ToString() + ".");
                 }
                 else
                 {
                     Assert.AreEqual(TotalRevenueList[i - 1].ToString(), "0");
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of total revenue is " + TotalRevenueList[i - 1].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of total revenue in " + MonthList[i - 1] + " is " + TotalRevenueList[i - 1].ToString() + ".");
                 }
             }
         }
@@ -415,115 +416,112 @@ namespace RevenuePlanner.Test.QA
 
         #endregion
 
-        #region Quaterly Report Calculation
+        #region Quarterly Report Calculation
 
-        public void VerifyQuaterly_Actual(List<double> ActualList, List<double> QuaterlyActualList)
+        public void VerifyQuarterly_Actual(List<double> ActualList, List<double> QuaterlyActualList)
         {
             decimal QuaActual = 0;
             int j = 0;
-            for (int i = 1; i < ActualList.Count(); i++)
+            for (int i = 0; i < ActualList.Count(); i++)
             {
-                QuaActual = QuaActual + Convert.ToDecimal(ActualList[i - 1].ToString());
+                QuaActual = QuaActual + Convert.ToDecimal(ActualList[i].ToString());
                 if (num.Contains(i))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyActualList[j].ToString()), 2), Math.Round(QuaActual, 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quaterly actual is " + QuaterlyActualList[j].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly actual in " + QuarterList[j]  + " is " + QuaterlyActualList[j].ToString() + ".");
                     QuaActual = 0;
                     j++;
                 }
             }
         }
-        public void VerifyQuaterly_ActualCost(List<string> ActualCostList, List<string> QuaterlyActualCostList)
+        public void VerifyQuarterly_ActualCost(List<string> ActualCostList, List<string> QuaterlyActualCostList)
         {
             decimal QuaActualCost = 0;
             int j = 0;
-            for (int i = 1; i < ActualCostList.Count(); i++)
+            for (int i = 0; i < ActualCostList.Count(); i++)
             {
-                QuaActualCost = QuaActualCost + Convert.ToDecimal(ActualCostList[i - 1].ToString());
+                QuaActualCost = QuaActualCost + Convert.ToDecimal(ActualCostList[i].ToString());
                 if (num.Contains(i))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyActualCostList[j].ToString()), 2), Math.Round(QuaActualCost, 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quaterly actual cost is " + QuaterlyActualCostList[j].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly actual cost in " + QuarterList[j] + " is " + QuaterlyActualCostList[j].ToString() + ".");
                     QuaActualCost = 0;
                     j++;
                 }
             }
         }
-        public void VerifyQuaterly_Goal(List<double> GoalList, List<double> QuaterlyGoalList)
+        public void VerifyQuarterly_Goal(List<double> GoalList, List<double> QuaterlyGoalList)
         {
             decimal QuaGoal = 0; int j = 0;
-            for (int i = 1; i < GoalList.Count(); i++)
+            for (int i = 0; i < GoalList.Count(); i++)
             {
-                QuaGoal = QuaGoal + Convert.ToDecimal(GoalList[i - 1].ToString());
+                QuaGoal = QuaGoal + Convert.ToDecimal(GoalList[i].ToString());
                 if (num.Contains(i))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyGoalList[j].ToString()), 2), Math.Round(QuaGoal, 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quaterly goal is " + QuaterlyGoalList[j].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly goal in " + QuarterList[j] + " is " + QuaterlyGoalList[j].ToString() + ".");
                     QuaGoal = 0;
                     j++;
                 }
             }
         }
-        public void VerifyQuaterly_ProjectedRevenue(List<double> ProjectedList, List<double> QuaterlyProjectedList)
+        public void VerifyQuarterly_ProjectedRevenue(List<double> ProjectedList, List<double> QuaterlyProjectedList)
         {
             decimal QuaProjected = 0; int j = 0;
-            for (int i = 1; i < ProjectedList.Count(); i++)
+            for (int i = 0; i < ProjectedList.Count(); i++)
             {
-                QuaProjected = QuaProjected + Convert.ToDecimal(ProjectedList[i - 1].ToString());
+                QuaProjected = QuaProjected + Convert.ToDecimal(ProjectedList[i].ToString());
                 if (num.Contains(i))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyProjectedList[j].ToString()), 2), Math.Round(QuaProjected, 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quaterly projected revenue is " + QuaterlyProjectedList[j].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly projected revenue in " + QuarterList[j] + " is " + QuaterlyProjectedList[j].ToString() + ".");
                     QuaProjected = 0;
                     j++;
                 }
             }
         }
-        public void VerifyQuaterly_Performance(List<string> PerformanceList, List<string> QuaterlyPerformanceList)
+        public void VerifyQuarterly_Performance(List<double> QuaterlyActualList, List<double> QuaterlyGoalList, List<string> QuaterlyPerformanceList)
         {
-            decimal QuaPerformance = 0; int j = 0;
-            for (int i = 1; i < PerformanceList.Count(); i++)
+            decimal QuaPerformance = 0; //int j = 0;
+            for (int i = 0; i < QuaterlyGoalList.Count(); i++)
             {
-                QuaPerformance = QuaPerformance + Convert.ToDecimal(PerformanceList[i - 1].ToString());
-                if (num.Contains(i))
+                if (Convert.ToInt32(QuaterlyGoalList[i]) != 0)
                 {
-                    Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyPerformanceList[j].ToString()), 2), Math.Round(QuaPerformance, 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quaterly performance is " + QuaterlyPerformanceList[j].ToString() + ".");
-                    QuaPerformance = 0; j++;
-                }
+                    QuaPerformance = Convert.ToDecimal((QuaterlyActualList[i] - QuaterlyGoalList[i]) / QuaterlyGoalList[i]) * 100;
+                }           
+                Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyPerformanceList[i].ToString()), 2), Math.Round(QuaPerformance, 2));
+                Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly performance in " + QuarterList[i] + " is " + QuaterlyPerformanceList[i].ToString() + ".");
+              
             }
         }
-        public void VerifyQuaterly_ROI(List<string> ROIList, List<string> QuaterlyROIList)
+        public void VerifyQuarterly_ROI(List<double> QuaterlyActualList, List<string> QuaterlyActualCostList, List<string> QuaterlyROIList)
         {
-            decimal QuaROI = 0; int j = 0;
-            for (int i = 1; i < ROIList.Count(); i++)
+            decimal QuaROI = 0;
+            for (int i = 0; i < QuaterlyActualCostList.Count(); i++)
             {
-                QuaROI = QuaROI + Convert.ToDecimal(ROIList[i - 1].ToString());
-                if (num.Contains(i))
+                if (Convert.ToInt32(QuaterlyActualCostList[i]) != 0)
                 {
-                    Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyROIList[j].ToString()), 2), Math.Round(QuaROI, 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quaterly ROI " + QuaterlyROIList[j].ToString() + ".");
-                    QuaROI = 0;
-                    j++;
-                }
+                    QuaROI = ((Convert.ToDecimal(QuaterlyActualList[i]) - Convert.ToDecimal(QuaterlyActualCostList[i])) / Convert.ToDecimal(QuaterlyActualCostList[i])) * 100;
+                } 
+                    Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyROIList[i].ToString()), 2), Math.Round(QuaROI, 2));
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly ROI in " + QuarterList[i] + " is " + QuaterlyROIList[i].ToString() + ".");            
             }
         }
-        public void VerifyQuaterly_TotalRevenue(List<string> TotalRevenueList, List<string> QuaterlyTotalRevenueList)
+        public void VerifyQuarterly_TotalRevenue(List<string> TotalRevenueList, List<string> QuaterlyTotalRevenueList)
         {
             int j = 0;
-            for (int i = 1; i < TotalRevenueList.Count(); i++)
+            for (int i = 0; i < TotalRevenueList.Count(); i++)
             {
                 if (num.Contains(i))
                 {
-                    Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyTotalRevenueList[j].ToString()), 2), Math.Round(Convert.ToDecimal(TotalRevenueList[i - 1]), 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quaterly total revenue " + QuaterlyTotalRevenueList[j].ToString() + ".");
+                    Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyTotalRevenueList[j].ToString()), 2), Math.Round(Convert.ToDecimal(TotalRevenueList[i]), 2));
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly total revenue in " + QuarterList[j] + " is " + QuaterlyTotalRevenueList[j].ToString() + ".");
                     j++;
                 }
             }
         }
+       
         #endregion
-
-
     }
 }
 

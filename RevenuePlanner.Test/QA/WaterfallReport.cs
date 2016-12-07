@@ -41,12 +41,15 @@ namespace RevenuePlanner.Test.QA
 
         static decimal TotalProjected = 0;
 
+        static string[] MonthList = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+        static string[] QuarterList = { "Q1", "Q2", "Q3", "Q4" };
+        static int[] num = { 2, 5, 8, 11 };
         #endregion
 
         #region CW Report Calculation
 
         [TestMethod()]
-        public void CWWaterfallReportTestCase()
+        public void CWWaterfallReport()
         {
             try
             {
@@ -68,6 +71,7 @@ namespace RevenuePlanner.Test.QA
 
         public void MonthlyCWWaterfallReportTest()
         {
+            Console.WriteLine("-------------- Monthly Report -------------- \n \n");
             SetValuesForCWReport(currentYear, "Monthly", "CW");
             DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Actual Data$]").Tables[0];
             if (dt != null && dt.Rows.Count > 0)
@@ -84,15 +88,16 @@ namespace RevenuePlanner.Test.QA
 
         public void QuaterlyCWWaterfallReportTest()
         {
-            SetValuesForCWReport(currentYear, "Quaterly", "CW");
+            Console.WriteLine("\n \n-------------- Quarterly Report -------------- \n \n");
+            SetValuesForCWReport(currentYear, "Quarterly", "CW");
             DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Actual Data$]").Tables[0];
             if (dt != null && dt.Rows.Count > 0)
             {
-                VerifyWaterfall_CWActual(dt, ActualList, "Quaterly", QuaterlyActualList);
-                VerifyWaterfall_CWGoal(GoalList, "Quaterly", QuaterlyGoalList);
-                VerifyWaterfall_CWPerformance(ActualList, PerformanceList, "Quaterly", QuaterlyPerformanceList);
-                VerifyWaterfall_CWProjected(ProjectedList, GoalList, ActualList, "Quaterly", QuaterlyProjectedList);
-                VerifyWaterfall_CWTotal(ActualList, TotalActualList, "Quaterly", QuaterlyTotalActualList);
+                VerifyWaterfall_CWActual(dt, ActualList, "Quarterly", QuaterlyActualList);
+                VerifyWaterfall_CWGoal(GoalList, "Quarterly", QuaterlyGoalList);
+                VerifyWaterfall_CWPerformance(QuaterlyActualList, PerformanceList, "Quarterly", QuaterlyPerformanceList, QuaterlyGoalList);
+                VerifyWaterfall_CWProjected(ProjectedList, GoalList, ActualList, "Quarterly", QuaterlyProjectedList);
+                VerifyWaterfall_CWTotal(ActualList, TotalActualList, "Quarterly", QuaterlyTotalActualList);
             }
         }
 
@@ -111,21 +116,21 @@ namespace RevenuePlanner.Test.QA
                             dt.Rows[2][i] = 0;
                         }
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(ActualList[i - 1]), 2), (Math.Round(Convert.ToDecimal(dt.Rows[2].ItemArray[i].ToString()))));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of actual CW is " + ActualList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of actual CW in " + MonthList[i - 1] + " is " + ActualList[i - 1].ToString() + ".");
                     }
                 }
-                else
+            }
+            else
+            {
+                decimal QuaActual = 0; int j = 0;
+                for (int i = 0; i < ActualList.Count(); i++)
                 {
-                    decimal QuaActual = 0;
-                    for (int i = 0; i < ActualList.Count(); i++)
+                    QuaActual = QuaActual + Convert.ToDecimal(ActualList[i].ToString());
+                    if (num.Contains(i))
                     {
-                        QuaActual = QuaActual + Convert.ToDecimal(ActualList[i].ToString());
-                        if (i % 4 < 0)
-                        {
-                            Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyActualList[i % 4].ToString()), 2), Math.Round(QuaActual, 2));
-                            Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of actual CW is " + QuaterlyActualList[i % 4].ToString() + ".");
-                            QuaActual = 0;
-                        }
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyActualList[j].ToString()), 2), Math.Round(QuaActual, 2));
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of actual CW in " + QuarterList[j] + " is " + QuaterlyActualList[j].ToString() + ".");
+                        QuaActual = 0; j++;
                     }
                 }
             }
@@ -159,27 +164,27 @@ namespace RevenuePlanner.Test.QA
                     if (i >= NewStartDate.Month && i <= NewEndDate.Month)
                     {
                         Assert.AreEqual(Convert.ToDouble(GoalList[i - 1].ToString()), Math.Round(Convert.ToDouble(GoalAmount)), 2);
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of CW goal is " + GoalList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of CW goal in " + MonthList[i - 1] + " is " + GoalList[i - 1].ToString() + ".");
                     }
                 }
             }
             else
             {
-                decimal QuaGoal = 0;
+                decimal QuaGoal = 0; int j = 0;
                 for (int i = 0; i < GoalList.Count(); i++)
                 {
                     QuaGoal = QuaGoal + Convert.ToDecimal(GoalList[i].ToString());
-                    if (i % 4 < 0)
+                    if (num.Contains(i))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyGoalList[i % 4].ToString()), 2), Math.Round(QuaGoal, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of CW goal is " + QuaterlyGoalList[i % 4].ToString() + ".");
-                        QuaGoal = 0;
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyGoalList[j].ToString()), 2), Math.Round(QuaGoal, 2));
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of CW goal in " + QuarterList[j] + " is " + QuaterlyGoalList[j].ToString() + ".");
+                        QuaGoal = 0; j++;
                     }
                 }
             }
         }
 
-        public void VerifyWaterfall_CWPerformance(List<double> ActualList, List<string> PerformanceList, string IsQuaterly, List<string> QuaterlyPerformanceList = null)
+        public void VerifyWaterfall_CWPerformance(List<double> ActualList, List<string> PerformanceList, string IsQuaterly, List<string> QuaterlyPerformanceList = null, List<double> GoalList = null)
         {
             if (IsQuaterly == "Monthly")
             {
@@ -194,27 +199,25 @@ namespace RevenuePlanner.Test.QA
                     {
                         decimal calculatePer = ((Convert.ToDecimal(ActualList[i - 1].ToString()) - GoalAmount) / GoalAmount) * 100;
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(PerformanceList[i - 1].ToString()), 2), Math.Round(calculatePer, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of CW performance is " + PerformanceList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of CW performance in " + MonthList[i - 1] + " is " + PerformanceList[i - 1].ToString() + ".");
                     }
                     else
                     {
                         Assert.AreEqual(Convert.ToDouble(PerformanceList[i - 1].ToString()), 0);
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of CW performance is " + PerformanceList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of CW performance in " + MonthList[i - 1] + " is " + PerformanceList[i - 1].ToString() + ".");
                     }
                 }
             }
             else
             {
                 decimal QuaPerformance = 0;
-                for (int i = 0; i < PerformanceList.Count(); i++)
+                for (int i = 0; i < ActualList.Count(); i++)
                 {
-                    QuaPerformance = QuaPerformance + Convert.ToDecimal(PerformanceList[i].ToString());
-                    if (i % 4 < 0)
-                    {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyPerformanceList[i % 4].ToString()), 2), Math.Round(QuaPerformance, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of CW performance is " + QuaterlyPerformanceList[i % 4].ToString() + ".");
-                        QuaPerformance = 0;
-                    }
+                    if (Convert.ToDecimal(GoalList[i]) != 0)
+                        QuaPerformance = Convert.ToDecimal((ActualList[i] - GoalList[i]) / GoalList[i]) * 100;
+
+                    Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyPerformanceList[i].ToString()), 2), Math.Round(QuaPerformance, 2));
+                    Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of CW performance in " + QuarterList[i] + " is " + QuaterlyPerformanceList[i].ToString() + ".");
                 }
             }
         }
@@ -235,7 +238,7 @@ namespace RevenuePlanner.Test.QA
                             {
                                 double proCal = (GoalList[i - 1] / MonthDiff) * currentMonthNo;
                                 Assert.AreEqual(Convert.ToDouble(ProjectedList[i - 1].ToString()), Convert.ToDouble(proCal));
-                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of projected CW is " + ProjectedList[i - 1].ToString() + ".");
+                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of projected CW in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                             }
                             else if (DateTime.Now.Month < i)
                             {
@@ -249,12 +252,12 @@ namespace RevenuePlanner.Test.QA
                                 var final = proCal / DateTime.Now.Month;
                                 var profinal = cal + final;
                                 Assert.AreEqual(Convert.ToDouble(ProjectedList[i - 1].ToString()), Math.Round(Convert.ToDouble(ProjectedList[i - 1].ToString()), 2), Convert.ToDouble(profinal));
-                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of projected CW is " + ProjectedList[i - 1].ToString() + ".");
+                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of projected CW in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                             }
                             else
                             {
                                 Assert.AreEqual(Convert.ToDouble(ProjectedList[i - 1].ToString()), 0);
-                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of projected CW is " + ProjectedList[i - 1].ToString() + ".");
+                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of projected CW in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                             }
                         }
                     }
@@ -262,15 +265,15 @@ namespace RevenuePlanner.Test.QA
             }
             else
             {
-                decimal QuaProjected = 0;
+                decimal QuaProjected = 0; int j = 0;
                 for (int i = 0; i < ProjectedList.Count(); i++)
                 {
                     QuaProjected = QuaProjected + Convert.ToDecimal(ProjectedList[i].ToString());
-                    if (i % 4 < 0)
+                    if (num.Contains(i))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyProjectedList[i % 4].ToString()), 2), Math.Round(QuaProjected, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of projected  " + QuaterlyProjectedList[i % 4].ToString() + " .");
-                        QuaProjected = 0;
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyProjectedList[j].ToString()), 2), Math.Round(QuaProjected, 2));
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of projected in " + QuarterList[j] + " is " + QuaterlyProjectedList[j].ToString() + " .");
+                        QuaProjected = 0; j++;
                     }
                 }
             }
@@ -288,30 +291,28 @@ namespace RevenuePlanner.Test.QA
                     {
                         Total = Total + Convert.ToDecimal(ActualList[i - 1].ToString());
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(TotalActualList[i - 1].ToString()), 2), Math.Round(Total, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of total CW  " + TotalActualList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of total CW in " + MonthList[i - 1] + " is " + TotalActualList[i - 1].ToString() + ".");
                     }
                     else
                     {
                         Assert.AreEqual(TotalActualList[i - 1].ToString(), "0");
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter  \n Report - Monthly CW Waterfall Report \n The assert value of total CW is " + TotalActualList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly CW Waterfall Report \n The assert value of total CW in " + MonthList[i - 1] + " is " + TotalActualList[i - 1].ToString() + ".");
                     }
                 }
             }
             else
             {
-                decimal QuaTotal = 0;
-                for (int i = 0; i < QuaterlyTotalActualList.Count(); i++)
+                int j = 2; int k = 0;
+                for (int i = 0; i < TotalActualList.Count(); i++)
                 {
-                    QuaTotal = QuaTotal + Convert.ToDecimal(TotalActualList[i].ToString());
-                    if (i % 4 < 0)
+                    if (i == j)
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyTotalActualList[i % 4].ToString()), 2), Math.Round(QuaTotal, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of total CW is " + QuaterlyTotalActualList[i % 4].ToString() + ".");
-                        QuaTotal = 0;
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyTotalActualList[k].ToString()), 2), Math.Round(Convert.ToDecimal(TotalActualList[i].ToString()), 2));
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly CW Waterfall Report \n The assert value of total CW in " + QuarterList[k] + " is " + QuaterlyTotalActualList[k].ToString() + ".");
+                        j = j + 3; k++;
                     }
                 }
             }
-
         }
 
         public void VerifyWaterfall_CWCardSection(List<double> ActualList)
@@ -322,14 +323,14 @@ namespace RevenuePlanner.Test.QA
                 cardActual = cardActual + Convert.ToDecimal(actual);
             }
             Assert.AreEqual(Math.Round(cardActual, 2), Math.Round(CardCWActual, 2));
-            Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - CW Waterfall Report Card Section \n The assert value of CW actual  " + Math.Round(CardCWActual, 2).ToString() + " .");
+            Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - CW Waterfall Report Card Section \n The assert value of CW actual is " + Math.Round(CardCWActual, 2).ToString() + " .");
 
             Assert.AreEqual(Math.Round(TacticCW, 1), Math.Round(CardCWGoal, 1));
-            Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - CW Waterfall Report Card Section \n The assert value of CW actual goal " + Math.Round(CardCWGoal, 2).ToString() + " .");
+            Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - CW Waterfall Report Card Section \n The assert value of CW actual goal is " + Math.Round(CardCWGoal, 2).ToString() + " .");
 
             decimal cardPercentage = ((cardActual - Math.Round(TacticCW, 1)) / Math.Round(TacticCW, 1)) * 100;
             Assert.AreEqual(Math.Round(cardPercentage, 2), Math.Round(CardCWPercentage, 2));
-            Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - CW Waterfall Report Card Section  \n The assert value of CW actual percentage " + Math.Round(CardINQActual, 2).ToString() + " .");
+            Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - CW Waterfall Report Card Section  \n The assert value of CW actual percentage is " + Math.Round(CardINQActual, 2).ToString() + " .");
 
 
         }
@@ -425,7 +426,7 @@ namespace RevenuePlanner.Test.QA
         #region  INQ Report Calculation
 
         [TestMethod()]
-        public void INQWaterfallReportTestCase()
+        public void INQWaterfallReport()
         {
             try
             {
@@ -448,6 +449,7 @@ namespace RevenuePlanner.Test.QA
 
         public void MonthlyINQWaterfallReportTest()
         {
+            Console.WriteLine("-------------- Monthly Report -------------- \n \n");
             SetValuesForINQReport(currentYear, "Monthly", "ProjectedStageValue");
             DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Actual Data$]").Tables[0];
             if (dt != null && dt.Rows.Count > 0)
@@ -472,15 +474,16 @@ namespace RevenuePlanner.Test.QA
                 {
                     Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
                     Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
-                    SetValuesForINQReport(currentYear.ToString(), "Quaterly", "ProjectedStageValue");
+                    SetValuesForINQReport(currentYear.ToString(), "Quarterly", "ProjectedStageValue");
                     DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Actual Data$]").Tables[0];
+                    Console.WriteLine("\n \n-------------- Quarterly Report -------------- \n \n");
                     if (dt != null && dt.Rows.Count > 0)
                     {
-                        VerifyWaterfall_INQActual(dt, ActualList, "Quaterly", QuaterlyActualList);
-                        VerifyWaterfall_INQGoal(GoalList, "Quaterly", QuaterlyGoalList);
-                        VerifyWaterfall_INQPerformance(ActualList, PerformanceList, "Quaterly", QuaterlyPerformanceList);
-                        VerifyWaterfall_INQProjected(ProjectedList, GoalList, ActualList, "Quaterly", QuaterlyProjectedList);
-                        VerifyWaterfall_INQTotal(ActualList, TotalActualList, "Quaterly", QuaterlyTotalActualList);
+                        VerifyWaterfall_INQActual(dt, ActualList, "Quarterly", QuaterlyActualList);
+                        VerifyWaterfall_INQGoal(GoalList, "Quarterly", QuaterlyGoalList);
+                        VerifyWaterfall_INQPerformance(QuaterlyActualList, PerformanceList, "Quarterly", QuaterlyPerformanceList, QuaterlyGoalList);
+                        VerifyWaterfall_INQProjected(ProjectedList, GoalList, ActualList, "Quarterly", QuaterlyProjectedList);
+                        VerifyWaterfall_INQTotal(ActualList, TotalActualList, "Quarterly", QuaterlyTotalActualList);
                     }
                 }
             }
@@ -505,22 +508,21 @@ namespace RevenuePlanner.Test.QA
                             dt.Rows[0][i] = 0;
                         }
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(ActualList[i - 1]), 2), Math.Round(Convert.ToDecimal(dt.Rows[0].ItemArray[i].ToString()), 2));
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of actual inquiry is" + ActualList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of actual inquiry in " + MonthList[i - 1] + " is" + ActualList[i - 1].ToString() + ".");
                     }
                 }
-                else
+            }
+            else
+            {
+                decimal QuaActual = 0; int j = 0;
+                for (int i = 0; i < ActualList.Count(); i++)
                 {
-                    decimal QuaActual = 0;
-                    for (int i = 0; i < ActualList.Count(); i++)
+                    QuaActual = QuaActual + Convert.ToDecimal(ActualList[i].ToString());
+                    if (num.Contains(i))
                     {
-
-                        QuaActual = QuaActual + Convert.ToDecimal(ActualList[i].ToString());
-                        if (i % 4 < 0)
-                        {
-                            Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyActualList[i % 4].ToString()), 2), Math.Round(QuaActual, 2));
-                            Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report \n The assert value of actual inquiry is" + QuaterlyActualList[i % 4].ToString().ToString() + ".");
-                            QuaActual = 0;
-                        }
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyActualList[j].ToString()), 2), Math.Round(QuaActual, 2));
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report \n The assert value of actual inquiry in " + QuarterList[j] + " is" + QuaterlyActualList[j].ToString().ToString() + ".");
+                        QuaActual = 0; j++;
                     }
                 }
             }
@@ -553,32 +555,32 @@ namespace RevenuePlanner.Test.QA
                     if (i >= TacticStartDate.Month && i <= TacticEndDate.Month)
                     {
                         Assert.AreEqual(Math.Round(Convert.ToDouble(GoalList[i - 1].ToString()), 2), Math.Round(Convert.ToDouble(GoalAmount)), 2);
-                        Console.WriteLine("ReportController - GetRevenueData  \n Report - Monthly Inquiry Waterfall Report \n The assert value of inquiry goal is " + GoalList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetRevenueData  \n Report - Monthly Inquiry Waterfall Report \n The assert value of inquiry goal in " + MonthList[i - 1] + " is " + GoalList[i - 1].ToString() + ".");
                     }
                     else
                     {
                         Assert.AreEqual(GoalList[i - 1].ToString(), "0");
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of inquiry goal is " + GoalList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of inquiry goal in " + MonthList[i - 1] + " is " + GoalList[i - 1].ToString() + ".");
                     }
                 }
             }
             else
             {
-                decimal QuaGoal = 0;
+                decimal QuaGoal = 0; int j = 0;
                 for (int i = 0; i < GoalList.Count(); i++)
                 {
                     QuaGoal = QuaGoal + Convert.ToDecimal(GoalList[i].ToString());
-                    if (i % 4 < 0)
+                    if (num.Contains(i))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(GoalList[i % 4].ToString()), 2), Math.Round(QuaGoal, 2));
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report \n The assert value of inquiry goal is " + GoalList[i % 4].ToString() + ".");
-                        QuaGoal = 0;
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyGoalList[j].ToString()), 2), Math.Round(QuaGoal, 2));
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report \n The assert value of inquiry goal in " + QuarterList[j] + " is " + QuaterlyGoalList[j].ToString() + ".");
+                        QuaGoal = 0; j++;
                     }
                 }
             }
         }
 
-        public void VerifyWaterfall_INQPerformance(List<double> ActualList, List<string> PerformanceList, string IsQuaterly, List<string> QuaterlyPerformanceList = null)
+        public void VerifyWaterfall_INQPerformance(List<double> ActualList, List<string> PerformanceList, string IsQuaterly, List<string> QuaterlyPerformanceList = null, List<double> GoalList = null)
         {
             if (IsQuaterly == "Monthly")
             {
@@ -588,27 +590,25 @@ namespace RevenuePlanner.Test.QA
                     {
                         decimal calculatePer = ((Convert.ToDecimal(ActualList[i - 1].ToString()) - GoalAmount) / GoalAmount) * 100;
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(PerformanceList[i - 1].ToString()), 2), Math.Round(calculatePer, 2));
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of inquiry performance is " + PerformanceList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of inquiry performance in " + MonthList[i - 1] + " is " + PerformanceList[i - 1].ToString() + ".");
                     }
                     else
                     {
                         Assert.AreEqual(PerformanceList[i - 1].ToString(), "0");
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of inquiry performance is " + PerformanceList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of inquiry performance in " + MonthList[i - 1] + " is " + PerformanceList[i - 1].ToString() + ".");
                     }
                 }
             }
             else
             {
                 decimal QuaPerformance = 0;
-                for (int i = 0; i < PerformanceList.Count(); i++)
+                for (int i = 0; i < ActualList.Count(); i++)
                 {
-                    QuaPerformance = QuaPerformance + Convert.ToDecimal(PerformanceList[i].ToString());
-                    if (i % 4 < 0)
-                    {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyPerformanceList[i % 4].ToString()), 2), Math.Round(QuaPerformance, 2));
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report \n The assert value of inquiry performance is" + QuaterlyPerformanceList[i % 4].ToString() + ".");
-                        QuaPerformance = 0;
-                    }
+                    if (Convert.ToDecimal(GoalList[i]) != 0)
+                        QuaPerformance = Convert.ToDecimal((ActualList[i] - GoalList[i]) / GoalList[i]) * 100;
+
+                    Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyPerformanceList[i].ToString()), 2), Math.Round(QuaPerformance, 2));
+                    Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report \n The assert value of inquiry performance in " + QuarterList[i] + " is " + QuaterlyPerformanceList[i].ToString() + ".");
                 }
             }
         }
@@ -629,7 +629,7 @@ namespace RevenuePlanner.Test.QA
                             {
                                 double TotalProjected = (GoalList[i - 1] / MonthDiff) * currentMonthNo;
                                 Assert.AreEqual(Math.Round(Convert.ToDecimal(ProjectedList[i - 1].ToString()), 2), Math.Round(Convert.ToDecimal(TotalProjected), 2));
-                                Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report  \n The assert value of projected inquiry is " + ProjectedList[i - 1].ToString() + ".");
+                                Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report  \n The assert value of projected inquiry in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                             }
                             else if (DateTime.Now.Month < i)
                             {
@@ -643,12 +643,12 @@ namespace RevenuePlanner.Test.QA
                                 decimal final = proCal / DateTime.Now.Month;
                                 TotalProjected = Convert.ToDecimal(cal) + final;
                                 Assert.AreEqual(Math.Round(Convert.ToDouble(ProjectedList[i - 1].ToString()), 2), Math.Round(TotalProjected, 2));
-                                Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of projected inquiry is " + ProjectedList[i - 1].ToString() + ".");
+                                Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of projected inquiry in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                             }
                             else
                             {
                                 Assert.AreEqual(ProjectedList[i - 1].ToString(), "0");
-                                Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of projected inquiry is " + ProjectedList[i - 1].ToString() + ".");
+                                Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report \n The assert value of projected inquiry in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                             }
                         }
                     }
@@ -656,15 +656,15 @@ namespace RevenuePlanner.Test.QA
             }
             else
             {
-                decimal QuaProjected = 0;
+                decimal QuaProjected = 0; int j = 0;
                 for (int i = 0; i < ProjectedList.Count(); i++)
                 {
                     QuaProjected = QuaProjected + Convert.ToDecimal(ProjectedList[i].ToString());
-                    if (i % 4 < 0)
+                    if (num.Contains(i))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyProjectedList[i % 4].ToString()), 2), Math.Round(QuaProjected, 2));
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report  \n The assert value of projected inquiry is " + QuaterlyProjectedList[i % 4].ToString() + ".");
-                        QuaProjected = 0;
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyProjectedList[j].ToString()), 2), Math.Round(QuaProjected, 2));
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report  \n The assert value of projected inquiry in " + QuarterList[j] + " is " + QuaterlyProjectedList[j].ToString() + ".");
+                        QuaProjected = 0; j++;
                     }
                 }
             }
@@ -682,28 +682,28 @@ namespace RevenuePlanner.Test.QA
                     {
                         Total = Total + Convert.ToDecimal(ActualList[i - 1].ToString());
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(TotalActualList[i - 1].ToString()), 2), Math.Round(Total, 2));
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report  \n The assert value of inquiry total is " + TotalActualList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report  \n The assert value of inquiry total in " + MonthList[i - 1] + " is " + TotalActualList[i - 1].ToString() + ".");
                     }
                     else
                     {
                         Assert.AreEqual(TotalActualList[i - 1].ToString(), "0");
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report  \n The assert value of inquiry total is " + TotalActualList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Monthly Inquiry Waterfall Report  \n The assert value of inquiry total in " + MonthList[i - 1] + " is " + TotalActualList[i - 1].ToString() + ".");
                     }
                 }
             }
             else
             {
-                decimal QuaTotal = 0;
-                for (int i = 0; i < QuaterlyTotalActualList.Count(); i++)
+                int j = 2; int k = 0;
+                for (int i = 0; i < TotalActualList.Count(); i++)
                 {
-                    QuaTotal = QuaTotal + Convert.ToDecimal(TotalActualList[i].ToString());
-                    if (i % 4 < 0)
+                    if (i == j)
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyTotalActualList[i % 4].ToString()), 2), Math.Round(QuaTotal, 2));
-                        Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report  \n The assert value of inquiry total is " + QuaterlyTotalActualList[i % 4].ToString() + ".");
-                        QuaTotal = 0;
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyTotalActualList[k].ToString()), 2), Math.Round(Convert.ToDecimal(TotalActualList[i].ToString()), 2));
+                        Console.WriteLine("ReportController - GetRevenueData \n Report - Quaterly Inquiry Waterfall Report  \n The assert value of inquiry total in " + QuarterList[k] + " is " + QuaterlyTotalActualList[k].ToString() + ".");
+                        j = j + 3; k++;
                     }
                 }
+
             }
 
         }
@@ -801,7 +801,7 @@ namespace RevenuePlanner.Test.QA
         #region  MQL Report Calculation
 
         [TestMethod()]
-        public void MQLWaterfallReportTestCase()
+        public void MQLWaterfallReport()
         {
             try
             {
@@ -825,7 +825,7 @@ namespace RevenuePlanner.Test.QA
 
         public void MonthlyMQLWaterfallReportTest()
         {
-
+            Console.WriteLine("-------------- Monthly Report -------------- \n \n");
             SetValuesForMQLReport(currentYear, "Monthly", "MQL");
             DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Actual Data$]").Tables[0];
             if (dt != null && dt.Rows.Count > 0)
@@ -844,15 +844,16 @@ namespace RevenuePlanner.Test.QA
 
         public void QuaterlyMQLWaterfallReportTest()
         {
-            SetValuesForMQLReport(currentYear, "Quaterly", "MQL");
+            Console.WriteLine("\n \n-------------- Quarterly Report -------------- \n \n");
+            SetValuesForMQLReport(currentYear, "Quarterly", "MQL");
             DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Actual Data$]").Tables[0];
             if (dt != null && dt.Rows.Count > 0)
             {
-                VerifyWaterfall_MQLActual(dt, ActualList, "Quaterly", QuaterlyActualList);
-                VerifyWaterfall_MQLGoal(GoalList, "Quaterly", QuaterlyGoalList);
-                VerifyWaterfall_MQLPerformance(ActualList, PerformanceList, "Quaterly", QuaterlyPerformanceList);
-                VerifyWaterfall_MQLProjected(ProjectedList, GoalList, ActualList, "Quaterly", QuaterlyProjectedList);
-                VerifyWaterfall_MQLTotal(ActualList, TotalActualList, "Quaterly", QuaterlyTotalActualList);
+                VerifyWaterfall_MQLActual(dt, ActualList, "Quarterly", QuaterlyActualList);
+                VerifyWaterfall_MQLGoal(GoalList, "Quarterly", QuaterlyGoalList);
+                VerifyWaterfall_MQLPerformance(QuaterlyActualList, PerformanceList, "Quarterly", QuaterlyPerformanceList, QuaterlyGoalList);
+                VerifyWaterfall_MQLProjected(ProjectedList, QuaterlyGoalList, QuaterlyActualList, "Quarterly", QuaterlyProjectedList);
+                VerifyWaterfall_MQLTotal(ActualList, TotalActualList, "Quarterly", QuaterlyTotalActualList);
             }
 
         }
@@ -872,21 +873,21 @@ namespace RevenuePlanner.Test.QA
                             dt.Rows[1][i] = 0;
                         }
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(ActualList[i - 1]), 2), (Math.Round(Convert.ToDecimal(dt.Rows[1].ItemArray[i].ToString()), 2)));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of actual MQL is " + ActualList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of actual TQL in " + MonthList[i - 1] + " is " + ActualList[i - 1].ToString() + ".");
                     }
                 }
-                else
+            }
+            else
+            {
+                decimal QuaActual = 0; int j = 0;
+                for (int i = 0; i < ActualList.Count(); i++)
                 {
-                    decimal QuaActual = 0;
-                    for (int i = 0; i < ActualList.Count(); i++)
+                    QuaActual = QuaActual + Convert.ToDecimal(ActualList[i].ToString());
+                    if (num.Contains(i))
                     {
-                        QuaActual = QuaActual + Convert.ToDecimal(ActualList[i].ToString());
-                        if (i % 4 < 0)
-                        {
-                            Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyActualList[i % 4].ToString()), 2), Math.Round(QuaActual, 2));
-                            Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report \n The assert value of actual TQL is " + QuaterlyActualList[i % 4].ToString() + ".");
-                            QuaActual = 0;
-                        }
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyActualList[j].ToString()), 2), Math.Round(QuaActual, 2));
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report \n The assert value of actual TQL in " + QuarterList[j] + " is " + QuaterlyActualList[j].ToString() + ".");
+                        QuaActual = 0; j++;
                     }
                 }
             }
@@ -919,27 +920,27 @@ namespace RevenuePlanner.Test.QA
                     if (i >= NewStartDate.Month && i + 1 <= NewEndDate.Month)
                     {
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(GoalList[i - 1].ToString()), 2), Math.Round(Convert.ToDecimal(GoalAmount), 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of TQL goal is" + GoalList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of TQL goal in " + MonthList[i - 1] + " is " + GoalList[i - 1].ToString() + ".");
                     }
                 }
             }
             else
             {
-                decimal QuaGoal = 0;
+                decimal QuaGoal = 0; int j = 0;
                 for (int i = 0; i < GoalList.Count(); i++)
                 {
                     QuaGoal = QuaGoal + Convert.ToDecimal(GoalList[i].ToString());
-                    if (i % 4 < 0)
+                    if (num.Contains(i))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyGoalList[i % 4].ToString()), 2), Math.Round(QuaGoal, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report  \n The assert value of TQL goal is" + QuaterlyGoalList[i % 4].ToString() + ".");
-                        QuaGoal = 0;
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyGoalList[j].ToString()), 2), Math.Round(QuaGoal, 2));
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report  \n The assert value of TQL goal in " + QuarterList[j] + " is " + QuaterlyGoalList[j].ToString() + ".");
+                        QuaGoal = 0; j++;
                     }
                 }
             }
         }
 
-        public void VerifyWaterfall_MQLPerformance(List<double> ActualList, List<string> PerformanceList, string IsQuaterly, List<string> QuaterlyPerformanceList = null)
+        public void VerifyWaterfall_MQLPerformance(List<double> ActualList, List<string> PerformanceList, string IsQuaterly, List<string> QuaterlyPerformanceList = null, List<double> GoalList = null)
         {
             if (IsQuaterly == "Monthly")
             {
@@ -954,27 +955,25 @@ namespace RevenuePlanner.Test.QA
                     {
                         decimal calculatePer = ((Convert.ToDecimal(ActualList[i - 1].ToString()) - GoalAmount) / GoalAmount) * 100;
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(PerformanceList[i - 1].ToString()), 2), Math.Round(calculatePer, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of TQL performance is " + PerformanceList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of TQL performance in " + MonthList[i - 1] + " is " + PerformanceList[i - 1].ToString() + ".");
                     }
                     else
                     {
                         Assert.AreEqual(Convert.ToDouble(PerformanceList[i - 1].ToString()), 0);
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of TQL performance is " + PerformanceList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of TQL performance in " + MonthList[i - 1] + " is " + PerformanceList[i - 1].ToString() + ".");
                     }
                 }
             }
             else
             {
                 decimal QuaPerformance = 0;
-                for (int i = 0; i < PerformanceList.Count(); i++)
+                for (int i = 0; i < ActualList.Count(); i++)
                 {
-                    QuaPerformance = QuaPerformance + Convert.ToDecimal(PerformanceList[i].ToString());
-                    if (i % 4 < 0)
-                    {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyPerformanceList[i % 4].ToString()), 2), Math.Round(QuaPerformance, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report \n The assert value of TQL performance is " + QuaterlyPerformanceList[i % 4].ToString() + ".");
-                        QuaPerformance = 0;
-                    }
+                    if (Convert.ToDecimal(GoalList[i]) != 0)
+                        QuaPerformance = Convert.ToDecimal((ActualList[i] - GoalList[i]) / GoalList[i]) * 100;
+
+                    Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyPerformanceList[i].ToString()), 2), Math.Round(QuaPerformance, 2));
+                    Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report \n The assert value of TQL performance in " + QuarterList[i] + " is " + QuaterlyPerformanceList[i].ToString() + ".");
                 }
             }
         }
@@ -995,7 +994,7 @@ namespace RevenuePlanner.Test.QA
                             {
                                 double proCal = (GoalList[i - 1] / MonthDiff) * currentMonthNo;
                                 Assert.AreEqual(Convert.ToDouble(ProjectedList[i - 1].ToString()), Convert.ToDouble(proCal));
-                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of projected TQL is " + ProjectedList[i - 1].ToString() + ".");
+                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of projected TQL in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                             }
                             else if (DateTime.Now.Month < i)
                             {
@@ -1009,12 +1008,12 @@ namespace RevenuePlanner.Test.QA
                                 var final = proCal / DateTime.Now.Month;
                                 var profinal = cal + final;
                                 Assert.AreEqual(Convert.ToDouble(ProjectedList[i - 1].ToString()), Convert.ToDouble(profinal));
-                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of projected TQL is " + ProjectedList[i - 1].ToString() + ".");
+                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of projected TQL in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                             }
                             else
                             {
                                 Assert.AreEqual(Convert.ToDouble(ProjectedList[i - 1].ToString()), 0);
-                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of projected TQL is " + ProjectedList[i - 1].ToString() + ".");
+                                Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of projected TQL in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                             }
                         }
                     }
@@ -1022,15 +1021,15 @@ namespace RevenuePlanner.Test.QA
             }
             else
             {
-                decimal QuaProjected = 0;
+                decimal QuaProjected = 0; int j = 0;
                 for (int i = 0; i < ProjectedList.Count(); i++)
                 {
                     QuaProjected = QuaProjected + Convert.ToDecimal(ProjectedList[i].ToString());
-                    if (i % 4 < 0)
+                    if (num.Contains(i))
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyProjectedList[i % 4].ToString()), 2), Math.Round(QuaProjected, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report \n The assert value of projected TQL is " + QuaterlyProjectedList[i % 4].ToString() + ".");
-                        QuaProjected = 0;
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyProjectedList[j].ToString()), 2), Math.Round(QuaProjected, 2));
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report \n The assert value of projected TQL in " + QuarterList[j] + " is " + QuaterlyProjectedList[j].ToString() + ".");
+                        QuaProjected = 0; j++;
                     }
                 }
             }
@@ -1048,26 +1047,25 @@ namespace RevenuePlanner.Test.QA
                     {
                         Total = Total + Convert.ToDecimal(ActualList[i - 1].ToString());
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(TotalActualList[i - 1].ToString()), 2), Math.Round(Total, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of total TQL is " + TotalActualList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of total TQL in " + MonthList[i - 1] + " is " + TotalActualList[i - 1].ToString() + ".");
                     }
                     else
                     {
                         Assert.AreEqual(TotalActualList[i - 1].ToString(), "0");
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of total TQL is " + TotalActualList[i - 1].ToString() + ".");
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Monthly TQL Waterfall Report \n The assert value of total TQL in " + MonthList[i - 1] + " is " + TotalActualList[i - 1].ToString() + ".");
                     }
                 }
             }
             else
             {
-                decimal QuaTotal = 0;
-                for (int i = 0; i < QuaterlyTotalActualList.Count(); i++)
+                int j = 2; int k = 0;
+                for (int i = 0; i < TotalActualList.Count(); i++)
                 {
-                    QuaTotal = QuaTotal + Convert.ToDecimal(TotalActualList[i].ToString());
-                    if (i % 4 < 0)
+                    if (i == j)
                     {
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyTotalActualList[i % 4].ToString()), 2), Math.Round(QuaTotal, 2));
-                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report \n The assert value of total TQL is " + QuaterlyTotalActualList[i % 4].ToString() + ".");
-                        QuaTotal = 0;
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyTotalActualList[k].ToString()), 2), Math.Round(Convert.ToDecimal(TotalActualList[i].ToString()), 2));
+                        Console.WriteLine("ReportController - GetTopConversionToPlanByCustomFilter \n Report - Quaterly TQL Waterfall Report \n The assert value of total TQL in " + QuarterList[k] + " is " + QuaterlyTotalActualList[k].ToString() + ".");
+                        j = j + 3; k++;
                     }
                 }
             }
