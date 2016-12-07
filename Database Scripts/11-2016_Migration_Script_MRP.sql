@@ -4,7 +4,7 @@ BEGIN
 	ALTER TABLE dbo.User_Notification
 	ADD ClientId INT NULL 
 END 
-
+GO
 IF NOT EXISTS(SELECT 1 FROM dbo.Notification WHERE Title = 'When new transactions arrive that I need to pay attention to')
 INSERT INTO dbo.Notification
         ( Title ,
