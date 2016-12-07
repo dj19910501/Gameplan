@@ -69,7 +69,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("mappingId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("mappingId"));
             }
 
             // Test negative lineItemId
@@ -80,7 +80,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("mappingId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("mappingId"));
             }
 
             // Test clientId == 0
@@ -91,7 +91,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test negative clientId 
@@ -102,7 +102,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
         }
 
@@ -166,7 +166,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test negative clientId.
@@ -177,7 +177,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
         }
         [TestMethod]
@@ -207,7 +207,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test negative clientId.
@@ -218,7 +218,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test transactionId == 0
@@ -229,7 +229,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("transactionId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("transactionId"));
             }
 
             // Test negative transactionId.
@@ -240,7 +240,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("transactionId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("transactionId"));
             }
         }
 
@@ -276,7 +276,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test negative clientId.
@@ -287,7 +287,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
         }
 
@@ -329,7 +329,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test negative clientId 
@@ -340,7 +340,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test with negative skip
@@ -350,7 +350,7 @@ namespace RevenuePlanner.UnitTest.Service
                 Assert.Fail();
             } catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("skip", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("skip"));
             }
 
             // Test with negative take
@@ -360,7 +360,7 @@ namespace RevenuePlanner.UnitTest.Service
                 Assert.Fail();
             } catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("take", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("take"));
             }
 
         }
@@ -435,7 +435,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test negative clientId 
@@ -446,7 +446,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test lineItemId == 0
@@ -457,7 +457,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("lineItemId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("lineItemId"));
             }
 
             // Test negative lineItemId
@@ -468,7 +468,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("lineItemId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("lineItemId"));
             }
         }
 
@@ -500,7 +500,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test negative clientId 
@@ -511,7 +511,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("clientId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
             // Test null transactionLineItemMappings
@@ -521,7 +521,7 @@ namespace RevenuePlanner.UnitTest.Service
                 Assert.Fail();
             } catch (ArgumentNullException e)
             {
-                Assert.AreEqual("transactionLineItemMappings", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("transactionLineItemMappings"));
             }
 
             // Test userId == 0
@@ -530,7 +530,7 @@ namespace RevenuePlanner.UnitTest.Service
                 _transaction.SaveTransactionToLineItemMapping(testClientId, new List<TransactionLineItemMapping>(), 0);
             } catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("modifyingUserId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("modifyingUserId"));
             }
 
             // Test negative userId
@@ -540,7 +540,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Assert.AreEqual("modifyingUserId", e.ParamName);
+                Assert.IsTrue(e.Message.Contains("modifyingUserId"));
             }
         }
         [TestMethod]

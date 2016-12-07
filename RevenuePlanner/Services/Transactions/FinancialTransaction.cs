@@ -15,13 +15,11 @@ namespace RevenuePlanner.Services.Transactions
         private MRPEntities _database;
         public FinancialTransaction(MRPEntities database)
         {
-            if (database == null)
-            {
-                throw new ArgumentNullException("database", "MRPEntities database cannot be null.");
-            }
+            Contract.Requires<ArgumentNullException>(database != null, "MRPEntities database cannot be null.");
 
             _database = database;
         }
+
 
         /// <summary>
         /// Return a dictionary of any line item mappings that exist in the db
@@ -76,10 +74,10 @@ namespace RevenuePlanner.Services.Transactions
             else
             {
                 sqlQuery = string.Format(@"insert into TransactionLineItemMapping (TransactionId, LineItemId, Amount, DateModified, ModifiedBy)
-	                                        select T.transactionId, L.PlanLineItemId, @Amount, @DateModified, @ModifiedBy 
-	                                        from Transactions T
-	                                        join LineItemDetail L on L.ClientId = T.clientid  
-	                                        where T.TransactionId = @TransactionId and 
+                                            select T.transactionId, L.PlanLineItemId, @Amount, @DateModified, @ModifiedBy 
+                                            from Transactions T
+                                            join LineItemDetail L on L.ClientId = T.clientid  
+                                            where T.TransactionId = @TransactionId and 
                                                 L.PlanLineItemId = @LineItemId and 
                                                 T.ClientID = @ClientId");
             }
@@ -89,18 +87,10 @@ namespace RevenuePlanner.Services.Transactions
         }
         public void SaveTransactionToLineItemMapping(int clientId, List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId)
         {
-            if (clientId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("clientId", "A clientID less than or equal to zero is invalid, and likely indicates the clientID was not set properly");
-            }
-            if (transactionLineItemMappings == null)
-            {
-                throw new ArgumentNullException("transactionLineItemMappings", "transactionLineItemsMappings cannot be null");
-            }
-            if (modifyingUserId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("modifyingUserId", "A modifyingUserId less than or equal to zero is invalid, and likely indicates the modifyingUserId was not set properly");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            Contract.Requires<ArgumentNullException>(transactionLineItemMappings != null, "transactionLineItemsMappings cannot be null");
+            Contract.Requires<ArgumentOutOfRangeException>(modifyingUserId > 0, "A modifyingUserId less than or equal to zero is invalid, and likely indicates the modifyingUserId was not set properly");
+
 
             Dictionary<int, Models.TransactionLineItemMapping> existingMappings = GetExistingLineItemMappings(transactionLineItemMappings);
 
@@ -130,14 +120,9 @@ namespace RevenuePlanner.Services.Transactions
 
         public void DeleteTransactionLineItemMapping(int clientId, int mappingId)
         {
-            if (clientId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
-            }
-            if (mappingId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("mappingId", "A mappingId less than or equal to zero is invalid, and likely indicates the mappingId was not set properly");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            Contract.Requires<ArgumentOutOfRangeException>(mappingId > 0, "A mappingId less than or equal to zero is invalid, and likely indicates the mappingId was not set properly");
+
 
             IQueryable<Models.TransactionLineItemMapping> sqlQuery = from tlim in _database.TransactionLineItemMappings
                                                                      join transaction in _database.Transactions on tlim.TransactionId equals transaction.TransactionId
@@ -164,10 +149,8 @@ namespace RevenuePlanner.Services.Transactions
         /// <returns></returns>
         public List<TransactionHeaderMapping> GetHeaderMappings(int clientId)
         {
-            if (clientId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            
 
             //Use default for now until real customers are using transaction feature.
             return _defaultHeaderMapping;
@@ -175,14 +158,9 @@ namespace RevenuePlanner.Services.Transactions
 
         public List<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int clientId, int transactionId)
         {
-            if (clientId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
-            }
-            if (transactionId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("transactionId", "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            Contract.Requires<ArgumentOutOfRangeException>(transactionId > 0, "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
+
 
             DataSet dataset = new DataSet();
             SqlCommand command = new SqlCommand("GetLinkedLineItemsForTransaction", _database.Database.Connection as SqlConnection);
@@ -256,10 +234,8 @@ namespace RevenuePlanner.Services.Transactions
 
         public int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true)
         {
-            if (clientId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+
 
             int count = _database.Transactions.Count(transaction => (transaction.ClientID == clientId) &&
                                                     ((unprocessdedOnly && transaction.LastProcessed == null) || !unprocessdedOnly) &&
@@ -271,18 +247,10 @@ namespace RevenuePlanner.Services.Transactions
 
         public List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, int skip = 0, int take = 10000)
         {
-            if (clientId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
-            }
-            if (skip < 0)
-            {
-                throw new ArgumentOutOfRangeException("skip", "skip must be a postive integer");
-            }
-            if (take < 0)
-            {
-                throw new ArgumentOutOfRangeException("take", "take must be a positive integer");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            Contract.Requires<ArgumentOutOfRangeException>(skip >= 0, "skip must be a postive integer");
+            Contract.Requires<ArgumentOutOfRangeException>(take >= 0, "take must be a positive integer");
+
 
             IQueryable<Transaction> sqlQuery =
                 from transaction in _database.Transactions
@@ -320,14 +288,9 @@ namespace RevenuePlanner.Services.Transactions
 
         public List<Transaction> GetTransactionsForLineItem(int clientId, int lineItemId)
         {
-            if (clientId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
-            }
-            if (lineItemId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("lineItemId", "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            Contract.Requires<ArgumentOutOfRangeException>(lineItemId > 0, "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
+
 
             IQueryable<Transaction> sqlQuery =
                 from tlim in _database.TransactionLineItemMappings

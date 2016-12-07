@@ -6,6 +6,7 @@ using RevenuePlanner.Helpers;
 using RevenuePlanner.Services.Transactions;
 using RevenuePlanner.Controllers.Filters;
 using System.Linq;
+using System.Diagnostics.Contracts;
 
 namespace RevenuePlanner.Controllers
 {
@@ -25,10 +26,7 @@ namespace RevenuePlanner.Controllers
 
         public TransactionController(ITransaction transaction)
         {
-            if (transaction == null)
-            {
-                throw new ArgumentNullException("Transaction", "Argument Transaction cannot be null");
-            }
+            Contract.Requires<ArgumentNullException>(transaction != null, "Argument Transaction cannot be null");
 
             _transaction = transaction; //DI will take care of populating this!
         }
@@ -42,10 +40,7 @@ namespace RevenuePlanner.Controllers
         [System.Web.Http.HttpPost]
         public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings)
         {
-            if (transactionLineItemMappings == null)
-            {
-                throw new ArgumentNullException("transactionLineItemMappings", "transactionLineItemMappings cannot be null.");
-            }
+            Contract.Requires<ArgumentNullException>(transactionLineItemMappings != null, "transactionLineItemsMappings cannot be null");
 
             _transaction.SaveTransactionToLineItemMapping(Sessions.User.CID, transactionLineItemMappings, Sessions.User.ID);
         }
@@ -59,10 +54,7 @@ namespace RevenuePlanner.Controllers
         [System.Web.Http.HttpPost]
         public void DeleteTransactionLineItemMapping(int mappingId)
         {
-            if (mappingId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("mappingId", "A mappingId less than or equal to zero is invalid, and likely indicates the mappingId was not set properly");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(mappingId > 0, "A mappingId less than or equal to zero is invalid, and likely indicates the mappingId was not set properly");
 
             _transaction.DeleteTransactionLineItemMapping(Sessions.User.CID, mappingId);
         }
@@ -90,10 +82,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>A Lit of line items associated with the transaction id</returns>
         public IEnumerable<LineItemsGroupedByTactic> GetLinkedLineItemsForTransaction(int transactionId)
         {
-            if (transactionId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("transactionId", "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(transactionId > 0, "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
 
             return _transaction.GetLinkedLineItemsForTransaction(Sessions.User.CID, transactionId);
         }
@@ -124,14 +113,8 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns at most <param name="take" /> transactions after skipping the first <param name="skip" /></returns>
         public IEnumerable<LeanTransaction> GetTransactions(DateTime start, DateTime end, bool unprocessedOnly = true, int skip = 0, int take = 10000)
         {
-            if (skip < 0)
-            {
-                throw new ArgumentOutOfRangeException("skip", "skip must be a postive integer");
-            }
-            if (take < 0)
-            {
-                throw new ArgumentOutOfRangeException("take", "take must be a positive integer");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(skip >= 0, "skip must be a postive integer");
+            Contract.Requires<ArgumentOutOfRangeException>(take >= 0, "take must be a positive integer");
 
             return Trim(_transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take));
             //return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take);
@@ -144,10 +127,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>The list of transactions mapped to the specified line item</returns>
         public IEnumerable<LeanTransaction> GetTransactionsForLineItem(int lineItemId)
         {
-            if (lineItemId <= 0)
-            {
-                throw new ArgumentOutOfRangeException("lineItemId", "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
-            }
+            Contract.Requires<ArgumentOutOfRangeException>(lineItemId > 0, "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
 
             return Trim(_transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId));
             //return _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
