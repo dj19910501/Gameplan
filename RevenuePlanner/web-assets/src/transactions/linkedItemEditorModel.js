@@ -11,6 +11,7 @@ const columns = [
     { id: "lineItemCost", value: "Planned Cost", width: 100, type: "ron", align: "right", sort: "na", numberFormat: `${window.CurrencySybmol} 0,000.00` },
     { id: "lineItemActual", value: "Total Actual Costs", width: 100, type: "ron", align: "right", sort: "na", numberFormat: `${window.CurrencySybmol} 0,000.00` },
     { id: "mappedAmount", value: "Linked to Account", width: 100, type: "edn", align: "right", sort: "na", numberFormat: `${window.CurrencySybmol} 0,000.00`, validator: "ValidNumeric" },
+    { id: "trash", value: "&nbsp;", width: 32, type: "ro", align: "center", sort: "na" },
 ];
 
 function mapLinkedItems(result) {
@@ -22,6 +23,7 @@ function mapLinkedItems(result) {
         lineItemCost: lineItem.Cost,
         lineItemActual: lineItem.Actual,
         title: lineItem.Title,
+        trash: `<i class="fa fa-trash-o fa-fw"></i>`,
     })));
 }
 
@@ -88,6 +90,8 @@ export default function createModel(transaction) {
                     if (--state.modifiedCount === 0) {
                         $(this).trigger("modified");
                     }
+
+                    $(this).trigger("availableFunds");
                 }
                 return false;
             }
@@ -96,17 +100,46 @@ export default function createModel(transaction) {
 
             let modifiedRecord = state.modifiedItems[id];
             if (!modifiedRecord) {
-                modifiedRecord = state.modifiedItems[id] = {...record};
+                modifiedRecord = state.modifiedItems[id] = {...record, mappedAmount: value};
                 if (++state.modifiedCount === 1) {
                     $(this).trigger("modified");
                 }
             }
-
-            modifiedRecord.mappedAmount = value;
+            else {
+                modifiedRecord.mappedAmount = value;
+            }
 
             $(this).trigger("availableFunds");
 
             return true;
+        },
+
+        toggleDelete(id) {
+            let modified = state.modifiedItems[id];
+            if (!modified) {
+                // this record has not been modified
+                const record = state.itemLookup[id];
+                modified = state.modifiedItems[id] = {...record, isDeleted: true};
+                if (++state.modifiedCount === 1) {
+                    $(this).trigger("modified");
+                }
+
+                $(this).trigger("availableFunds");
+
+                return true;
+            }
+            else {
+                modified.isDeleted = !modified.isDeleted;
+                if (modified.isDeleted) {
+                    $(this).trigger("availableFunds");
+                    return true;
+                }
+
+                // call modify() which will detect if there are any other changes
+                // and remove the record if there aren't
+                this.modify(id, modified.mappedAmount);
+                return false;
+            }
         },
 
         get isModified() {

@@ -6,6 +6,7 @@ import css from './linkedItemEditor.scss';
 import dhx4 from 'dhx4';
 import {isValidNumeric} from 'dhtmlxValidation';
 import createModel from './linkedItemEditorModel';
+import allowGridClickEvents from 'util/allowGridClickEvents';
 
 // define a currency formatter
 const currencyFormat = dhx4.template._parseFmt(`${window.CurrencySybmol} 0,000.00`);
@@ -17,6 +18,8 @@ function createGrid(dataSource, $container) {
     $container.empty();
     const $div = $("<div>").appendTo($container);
     const grid = new Grid($div[0]);
+    allowGridClickEvents(grid);
+
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
     grid.enableAutoHeight(true);
     //grid.enableAutoWidth(true);
@@ -51,6 +54,34 @@ function bindGrid(model, $container) {
                     else {
                         model.setIsValid(id, false);
                         cell.setCValue(newValue);
+                    }
+                }
+
+                return true;
+            });
+
+            $container.on("click", ".objbox td:last-child", ev => ev.preventDefault());
+            $container.on("click", ev => {
+                console.log("booyah");
+            });
+
+            // Listen for clicks on the trash icon
+            grid.attachEvent("onBeforeSelect", (newID, oldID, cellIndex) => {
+                switch (grid.getColumnId(cellIndex)) {
+                    case "trassssh": {
+                        // toggle the delete status of the item
+                        const isDeleted = model.toggleDelete(newID);
+
+                        // change the icon based on the delete status
+                        const icon = isDeleted ? "fa-undo" : "fa-trash-o";
+                        const cell = grid.cellById(newID, cellIndex);
+                        cell.setValue(`<i class="fa ${icon} fa-fw"></i>`);
+
+                        // toggle the deleted css on the row
+                        $(cell.cell.parentNode).toggleClass(css.deleted, isDeleted);
+
+                        return false;
+                        break;
                     }
                 }
 
