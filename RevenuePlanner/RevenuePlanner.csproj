@@ -330,9 +330,13 @@
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
     <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
+    <Content Include="Content\css\style_min_Dec_8.css" />
     <Content Include="Scripts\js\MarketingBudget\MarketingBudget.js" />
     <Content Include="Views\Finance\Transactions.cshtml" />
     <Content Include="Views\MeasureDashboard\_ViewAllReportGraph.cshtml" />
+    <Content Include="Views\MarketingBudget\_newBudget.cshtml" />
+    <Content Include="Views\MeasureDashboard\_DrillDownDetails.cshtml" />
+    <Content Include="Views\Inspect\_InspectPopupPlan.cshtml" />
     <None Include="web-assets\build\check-npm-install.js" />
     <None Include="web-assets\build\check-npm-version.js" />
     <Content Include="web-assets\build\include-css.htm" />
@@ -438,10 +442,10 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\styleIndexPage.css" />
     <Content Include="Content\css\style.css" />
-    <Content Include="Content\css\styleIndexPage_min_03.css" />
+    <Content Include="Content\css\styleIndexPage_min_06.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Aug_2.css" />
-    <Content Include="Content\css\style_min_Dec_2.css" />
+    <Content Include="Content\css\style_min_Dec_7.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -967,7 +971,6 @@
     <Content Include="Views\Shared\_preferences.cshtml" />
     <Content Include="Views\Model\_DuplicateModel.cshtml" />
     <Content Include="Views\Plan\_NoModel.cshtml" />
-    <Content Include="Views\Plan\Budgeting.cshtml" />
     <Content Include="Views\Plan\_AllocatedBudget.cshtml" />
     <Content Include="Views\Plan\_Budget.cshtml" />
     <Content Include="Views\Plan\_BudgetingPlanList.cshtml" />
@@ -1004,7 +1007,6 @@
     <Content Include="Views\Inspect\_InspectPopupCampaign.cshtml" />
     <Content Include="Views\Inspect\_InspectPopupImprovementTactic.cshtml" />
     <Content Include="Views\Inspect\_InspectPopupLineitem.cshtml" />
-    <Content Include="Views\Inspect\_InspectPopupPlan.cshtml" />
     <Content Include="Views\Inspect\_InspectPopupProgram.cshtml" />
     <Content Include="Views\Inspect\_ReviewCampaign.cshtml" />
     <Content Include="Views\Inspect\_ReviewImprovementTactic.cshtml" />
@@ -1012,7 +1014,6 @@
     <Content Include="Views\Inspect\_SetupCampaign.cshtml" />
     <Content Include="Views\Inspect\_SetupImprovementTactic.cshtml" />
     <Content Include="Views\Inspect\_SetupLineitem.cshtml" />
-    <Content Include="Views\Inspect\_SetupPlan.cshtml" />
     <Content Include="Views\Inspect\_SetupProgram.cshtml" />
     <Content Include="Views\Inspect\_ShareCampaign.cshtml" />
     <Content Include="Views\Inspect\_ShareProgram.cshtml" />
@@ -1031,7 +1032,6 @@
     <Content Include="Views\Report\_ReportConversion.cshtml" />
     <Content Include="Views\Report\_ConversionCardSection.cshtml" />
     <Content Include="Views\Plan\AddActual.cshtml" />
-    <Content Include="Views\Plan\CreatePlan.cshtml" />
     <Content Include="Views\Report\_ReportCardSection.cshtml" />
     <Content Include="Views\Report\_ConversionToPlan.cshtml" />
     <Content Include="Views\Plan\_GridImprovement.cshtml" />
@@ -1194,11 +1194,11 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>53444</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:51115/</IISUrl>
+          <IISUrl>http://localhost:53444/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

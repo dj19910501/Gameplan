@@ -22,10 +22,8 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class MeasureDashboardControllerTest
     {
-        //  public TestContext TestContext { get; set; }
         MeasureDashboardController objMeasureDashboiardController = new MeasureDashboardController();
         [TestInitialize]
-
         public void LoadCacheMessage()
         {
             HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
@@ -119,6 +117,89 @@ dashBoardId, 0, dashBoardContentID) as string;
                 Console.WriteLine("MeasureDashboardController - LoadReportTablePartial" + " \n The Assert Value is :  " + e.Message);
             }
 
+        }
+
+        
+        /// <summary>
+        /// To Get Drill Down Data
+        /// <author>Nandish Shah</author>
+        [TestMethod]
+        public void LoadDrillDownData_With_Empty_Parameter()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Drill Down Data.\n");
+            MRPEntities db = new MRPEntities();
+            objMeasureDashboiardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objMeasureDashboiardController.Url = new UrlHelper(
+            new RequestContext(
+            objMeasureDashboiardController.HttpContext, new RouteData()
+            ),
+            routes
+            );
+            var result = objMeasureDashboiardController.LoadDrillDownData("", 0, "", "", "", "", "", "", "", "", "", "", 0, false, "", "") as Task<PartialViewResult>;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
+        }
+
+        /// <summary>
+        /// To Get Drill Down Data
+        /// <author>Nandish Shah</author>
+        [TestMethod]
+        public void LoadDrillDownData_With_Parameter()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Drill Down Data.\n");
+            MRPEntities db = new MRPEntities();
+            objMeasureDashboiardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objMeasureDashboiardController.Url = new UrlHelper(
+            new RequestContext(
+            objMeasureDashboiardController.HttpContext, new RouteData()
+            ),
+            routes
+            );
+            var result = objMeasureDashboiardController.LoadDrillDownData("Test",1,"Inquiries Generated","Q3-2014","12,261.00","12261","Enterprise","1","1", "", "0", "0", 0, false, "desc", "") as Task<PartialViewResult>;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
+        }
+
+        /// <summary>
+        /// To Load Drill Down Table
+        /// <author>Nandish Shah</author>
+        [TestMethod]
+        public void GetDrillDownReportTable_With_Empty_Parameter()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Drill Down Data.\n");
+            MRPEntities db = new MRPEntities();
+            objMeasureDashboiardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objMeasureDashboiardController.Url = new UrlHelper(
+            new RequestContext(
+            objMeasureDashboiardController.HttpContext, new RouteData()
+            ),
+            routes
+            );
+            var result = objMeasureDashboiardController.GetDrillDownReportTable(null, null, "", 0, "", "", "", "", "", 0, 0, "", "", 0, "0", "") as Task<ActionResult>;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
+        }
+
+        /// <summary>
+        /// To Load Drill Down Table
+        /// <author>Nandish Shah</author>
+        [TestMethod]
+        public void GetDrillDownReportTable_With_Parameter()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Drill Down Data.\n");
+            MRPEntities db = new MRPEntities();
+            objMeasureDashboiardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objMeasureDashboiardController.Url = new UrlHelper(
+            new RequestContext(
+            objMeasureDashboiardController.HttpContext, new RouteData()
+            ),
+            routes
+            );
+            string[] SelectedOthersDimension = new string[] {"59","46"};
+            string[] SelectedDimensionValue = new string[] { "59:612", "46:9" };
+            var result = objMeasureDashboiardController.GetDrillDownReportTable(SelectedOthersDimension, SelectedDimensionValue, "Test",19,"Q3-2014","Enterprise","Campaign","","",0,10,"0","",13,"0","0") as Task<ActionResult>;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
         }
     }
 }

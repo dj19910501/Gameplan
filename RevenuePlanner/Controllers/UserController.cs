@@ -1106,6 +1106,7 @@ namespace RevenuePlanner.Controllers
                         objUser_Notification.NotificationId = notificationId;
                         objUser_Notification.CreatedBy = Sessions.User.ID;
                         objUser_Notification.CreatedDate = DateTime.Now;
+                        objUser_Notification.ClientId = Sessions.User.CID;
                         db.Entry(objUser_Notification).State = EntityState.Added;
                         db.User_Notification.Add(objUser_Notification);
 

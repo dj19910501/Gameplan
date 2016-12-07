@@ -20,7 +20,7 @@
           <Property Name="QueryText" Type="nvarchar(max)" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9PlanSep2016.dbo.AggregationQueries' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9Plan.dbo.AggregationQueries' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AggregationQueries">
           <Key>
             <PropertyRef Name="id" />
@@ -30,7 +30,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.AggregationQueries' does not 
           <Property Name="QueryToRun" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9PlanSep2016.dbo.AggregationStatus' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9Plan.dbo.AggregationStatus' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AggregationStatus">
           <Key>
             <PropertyRef Name="StatusCode" />
@@ -38,7 +38,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.AggregationStatus' does not h
           <Property Name="StatusCode" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9PlanSep2016.dbo.AggregationSteps' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9Plan.dbo.AggregationSteps' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AggregationSteps">
           <Key>
             <PropertyRef Name="id" />
@@ -106,7 +106,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.AggregationSteps' does not ha
           <Property Name="ActualGoal" Type="float" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9PlanSep2016.dbo.AttrPositionConfig' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9Plan.dbo.AttrPositionConfig' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AttrPositionConfig">
           <Key>
             <PropertyRef Name="XValue" />
@@ -186,6 +186,8 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.AttrPositionConfig' does not 
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="IsForecast" Type="bit" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="TotalBudget" Type="float" />
+          <Property Name="TotalForecast" Type="float" />
         </EntityType>
         <EntityType Name="Budget_DetailAmount">
           <Key>
@@ -513,7 +515,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.AttrPositionConfig' does not 
           <Property Name="DashboardContentId" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9PlanSep2016.dbo.DynamicDimension' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9Plan.dbo.DynamicDimension' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="DynamicDimension">
           <Key>
             <PropertyRef Name="id" />
@@ -1033,7 +1035,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.DynamicDimension' does not ha
           <Property Name="CreatedBy" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9PlanSep2016.dbo.Logging' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Logging">
           <Key>
             <PropertyRef Name="id" />
@@ -1087,6 +1089,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.Logging' does not have a prim
           <Property Name="DrillDownWhereClause" Type="nvarchar" MaxLength="1000" />
           <Property Name="UseRowCountFromFormula" Type="bit" />
           <Property Name="IsCurrency" Type="bit" />
+          <Property Name="BaseCurrencyCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="MeasureOutputValue">
           <Key>
@@ -1879,6 +1882,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.Logging' does not have a prim
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="ClientId" Type="int" />
         </EntityType>
         <EntityType Name="User_Notification_Messages">
           <Key>
@@ -1930,7 +1934,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.Logging' does not have a prim
           <Property Name="UserId" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9PlanSep2016.dbo.Versioning' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9Plan.dbo.Versioning' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Versioning">
           <Key>
             <PropertyRef Name="Id" />
@@ -1942,7 +1946,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.Versioning' does not have a p
           <Property Name="Version" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9PlanSep2016.dbo.vClientWise_EntityList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_EntityList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vClientWise_EntityList">
           <Key>
             <PropertyRef Name="EntityId" />
@@ -1963,7 +1967,7 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.vClientWise_EntityList' does 
           <Property Name="EntityOrder" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9PlanSep2016.dbo.vClientWise_Tactic' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vClientWise_Tactic">
           <Key>
             <PropertyRef Name="PlanTacticId" />
@@ -1999,7 +2003,19 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.vClientWise_Tactic' does not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Improveme__Impro__0AFD888E">
+        <Association Name="FK__Improveme__Impro__3F7150CD">
+          <End Role="ImprovementTacticType" Type="Self.ImprovementTacticType" Multiplicity="1" />
+          <End Role="ImprovementTacticType_Metric" Type="Self.ImprovementTacticType_Metric" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ImprovementTacticType">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Principal>
+            <Dependent Role="ImprovementTacticType_Metric">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Improveme__Impro__7DA38D70">
           <End Role="ImprovementTacticType" Type="Self.ImprovementTacticType" Multiplicity="1" />
           <End Role="ImprovementTacticType_Metric" Type="Self.ImprovementTacticType_Metric" Multiplicity="*" />
           <ReferentialConstraint>
@@ -2059,7 +2075,19 @@ warning 6002: The table/view 'Hive9PlanSep2016.dbo.vClientWise_Tactic' does not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TacticTyp__Stage__0A096455">
+        <Association Name="FK__TacticTyp__Stage__3E7D2C94">
+          <End Role="Stage" Type="Self.Stage" Multiplicity="0..1" />
+          <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
+            </Principal>
+            <Dependent Role="TacticType">
+              <PropertyRef Name="StageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TacticTyp__Stage__7CAF6937">
           <End Role="Stage" Type="Self.Stage" Multiplicity="0..1" />
           <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
           <ReferentialConstraint>
@@ -4955,7 +4983,11 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Budget_Detail" EntitySet="Budget_Detail" />
             <End Role="Budget_Permission" EntitySet="Budget_Permission" />
           </AssociationSet>
-          <AssociationSet Name="FK__Improveme__Impro__0AFD888E" Association="Self.FK__Improveme__Impro__0AFD888E">
+          <AssociationSet Name="FK__Improveme__Impro__3F7150CD" Association="Self.FK__Improveme__Impro__3F7150CD">
+            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
+            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Improveme__Impro__7DA38D70" Association="Self.FK__Improveme__Impro__7DA38D70">
             <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
             <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
           </AssociationSet>
@@ -4975,7 +5007,11 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="FK__TacticTyp__Stage__0A096455" Association="Self.FK__TacticTyp__Stage__0A096455">
+          <AssociationSet Name="FK__TacticTyp__Stage__3E7D2C94" Association="Self.FK__TacticTyp__Stage__3E7D2C94">
+            <End Role="Stage" EntitySet="Stage" />
+            <End Role="TacticType" EntitySet="TacticType" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TacticTyp__Stage__7CAF6937" Association="Self.FK__TacticTyp__Stage__7CAF6937">
             <End Role="Stage" EntitySet="Stage" />
             <End Role="TacticType" EntitySet="TacticType" />
           </AssociationSet>
@@ -7338,6 +7374,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="Budget_Permission" Relationship="MRPModel.BudgetID_FK" FromRole="Budget_Detail" ToRole="Budget_Permission" />
           <NavigationProperty Name="Budget_DetailAmount" Relationship="MRPModel.FK_Budget_DetailAmount_Budget_Detail" FromRole="Budget_Detail" ToRole="Budget_DetailAmount" />
           <NavigationProperty Name="LineItem_Budget" Relationship="MRPModel.FK_LineItem_Budget_Budget_Detail" FromRole="Budget_Detail" ToRole="LineItem_Budget" />
+          <Property Name="TotalBudget" Type="Double" />
+          <Property Name="TotalForecast" Type="Double" />
         </EntityType>
         <EntityType Name="Budget_DetailAmount">
           <Key>
@@ -8347,6 +8385,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="ReportGraphColumns3" Relationship="MRPModel.FK_ReportGraphColumn_WeekMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
           <NavigationProperty Name="ReportGraphColumns4" Relationship="MRPModel.FK_ReportGraphColumn_YearMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
           <NavigationProperty Name="ReportTableColumns" Relationship="MRPModel.FK_ReportTableColumn_Measure" FromRole="Measure" ToRole="ReportTableColumn" />
+          <Property Name="BaseCurrencyCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="MeasureOutputValue">
           <Key>
@@ -9200,6 +9239,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="CreatedBy" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Notification" Relationship="MRPModel.FK_User_Notification_Notification" FromRole="User_Notification" ToRole="Notification" />
+          <Property Name="ClientId" Type="Int32" />
         </EntityType>
         <EntityType Name="User_Notification_Messages">
           <Key>
@@ -11927,6 +11967,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="Budget_Detail">
             <EntityTypeMapping TypeName="MRPModel.Budget_Detail">
               <MappingFragment StoreEntitySet="Budget_Detail">
+                <ScalarProperty Name="TotalForecast" ColumnName="TotalForecast" />
+                <ScalarProperty Name="TotalBudget" ColumnName="TotalBudget" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="IsForecast" ColumnName="IsForecast" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
@@ -12830,6 +12872,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="Measures">
             <EntityTypeMapping TypeName="MRPModel.Measure">
               <MappingFragment StoreEntitySet="Measure">
+                <ScalarProperty Name="BaseCurrencyCode" ColumnName="BaseCurrencyCode" />
                 <ScalarProperty Name="IsCurrency" ColumnName="IsCurrency" />
                 <ScalarProperty Name="UseRowCountFromFormula" ColumnName="UseRowCountFromFormula" />
                 <ScalarProperty Name="DrillDownWhereClause" ColumnName="DrillDownWhereClause" />
@@ -13623,6 +13666,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="User_Notification">
             <EntityTypeMapping TypeName="MRPModel.User_Notification">
               <MappingFragment StoreEntitySet="User_Notification">
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />

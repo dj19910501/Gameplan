@@ -1560,8 +1560,8 @@ color: #89CEDE;
 .task-tbl table.obj.row20px tr td .treegrid_cell a{color:#000}
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
     color: #808080;
-    font-family: Tahoma,Helvetica;
-    font-size: 12px;
+    /*font-family: "source_sans_proregular",Arial,sans-serif ;
+    font-size: 14px;*/
     font-weight: bold;
     padding: 0 3px;
     width: auto;

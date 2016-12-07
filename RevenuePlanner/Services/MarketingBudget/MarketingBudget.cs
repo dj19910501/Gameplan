@@ -24,6 +24,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         string TripleDash = "---";
         private const string formatThousand = "#,#0.##";
         private IBDSService _ServiceDatabase;
+        private ICurrency _ObjCurrency= new Currency();
         public MarketingBudget(MRPEntities database, IBDSService ServiceDatabase)
         {
             _database = database;
@@ -69,10 +70,12 @@ namespace RevenuePlanner.Services.MarketingBudget
         }
 
 
-
-        public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol)
+        /// <summary>
+        /// Method to get marketing budget grid data for perticular budget
+        /// </summary>
+        
+        public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol,List<BDSService.User> lstUser)
         {
-            List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(Sessions.User.CID).ToList();
 
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             BudgetGridDataModel objBudgetGridDataModel = new BudgetGridDataModel();
@@ -80,7 +83,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             string CommaSeparatedUserIds = String.Join(",", lstUserId);
             List<string> CustomColumnNames = new List<string>();
             //Call Sp to get data.
-            DataSet BudgetGridData = GetBudgetDefaultData(budgetId, viewByType, columnsRequested, ClientID, UserID, CommaSeparatedUserIds, Exchangerate);
+            DataSet BudgetGridData = GetBudgetDefaultData(budgetId, viewByType,ClientID, UserID, CommaSeparatedUserIds, Exchangerate);
 
             if (BudgetGridData.Tables.Count > 1)
             {
@@ -100,17 +103,29 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             //Call recursive function to bind the hierarchy.
             List<BudgetGridRowModel> lstData = new List<BudgetGridRowModel>();
-            lstData = GetTopLevelRows(BudgetGridData, null)
+            lstData = GetTopLevelRows(StandardColumnTable, null)
                         .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol)).ToList();
 
             objBudgetGridDataModel.head = objBudgetGridModel.GridDataStyleList;
             objBudgetGridDataModel.rows = lstData;
             objBudgetGridModel.objGridDataModel = objBudgetGridDataModel;
+
             return objBudgetGridModel;
         }
-        IEnumerable<DataRow> GetTopLevelRows(DataSet DataSet, int? minParentId)
+
+        /// <summary>
+        /// Get list of users for specific client
+        /// </summary>
+        /// <param name="ClientID">Client Id</param>
+        /// <returns>Returns list of users for the client</returns>
+        public List<BDSService.User> GetUserListByClientId(int ClientID)
         {
-            return DataSet.Tables[0]
+            List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(ClientID).ToList();
+            return lstUser;
+        }
+        IEnumerable<DataRow> GetTopLevelRows(DataTable StandardColumnTable, int? minParentId)
+        {
+            return StandardColumnTable
               .Rows
               .Cast<DataRow>()
               .Where(row => row.Field<Nullable<Int32>>("ParentId") == minParentId);
@@ -150,7 +165,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
                 }
-                else if (ColumnName == Enums.DefaultGridColumn.User.ToString())
+                else if (ColumnName == Enums.DefaultGridColumn.Users.ToString())
                 {
                     if (Permission == "View" || Permission == "None")
                     {
@@ -282,7 +297,7 @@ namespace RevenuePlanner.Services.MarketingBudget
               .Where(row => row.Field<Nullable<Int32>>("ParentId") == parentId);
         }
 
-        private DataSet GetBudgetDefaultData(int budgetId, string timeframe, BudgetColumnFlag columnsRequested, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate)
+        public DataSet GetBudgetDefaultData(int budgetId, string timeframe, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate)
         {
             DataSet EntityList = new DataSet();
             try
@@ -377,7 +392,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     ListHead.Add(headObj);
 
                 }
-                else if (columns == Enums.DefaultGridColumn.User.ToString() ||
+                else if (columns == Enums.DefaultGridColumn.Users.ToString() ||
                        columns == Enums.DefaultGridColumn.Owner.ToString())
                 {
                     headObj = new GridDataStyle();
@@ -593,9 +608,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <summary>
         /// Read Data from excel 2007/(.xlsx) and above version format file to xml
         /// </summary>
-        /// <param name="fileLocation"></param>
-        /// <param name="BudgetDetailId"></param>
-        /// <param name="PlanExchangeRate"></param>
+        /// <param name="fileLocation">Location of file to read the uploaded data</param>
+        /// <param name="BudgetDetailId">For which budget user want to import data</param>
+        /// <param name="PlanExchangeRate">exchange rate for client</param>
         /// <returns></returns>
         public BudgetImportData GetXLSXData(string viewByType, string fileLocation, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
@@ -661,7 +676,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                                 if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
                                 {
-                                    colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                    colValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                 }
                                 else if (ListCustomCols != null)
                                 {
@@ -673,7 +688,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                                     {
                                         if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
                                         {
-                                            colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                            colValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                         }
                                     }
                                 }
@@ -757,7 +772,11 @@ namespace RevenuePlanner.Services.MarketingBudget
             if (viewByType == Convert.ToString(Enums.QuarterFinance.Yearly))
             {
                 if (monthcolumn.Count() == 1 && string.IsNullOrEmpty(monthcolumn.FirstOrDefault()))
-                    objImportData.ErrorMsg = "Data getting uploaded does not relate to specific view.";
+                    objImportData.ErrorMsg = "Data getting uploaded does not related to specific view.";
+            }
+            else if (!string.IsNullOrEmpty(monthcolumn[0].ToString()) || monthcolumn[0].ToLower() == "id")
+            {
+                objImportData.ErrorMsg = "Data getting uploaded does not related to specific view.";
             }
             //end
             objImportData.MarketingBudgetColumns = dtColumns;
@@ -767,13 +786,17 @@ namespace RevenuePlanner.Services.MarketingBudget
         }
 
 
-        /// <summary>
-        /// Read Data from excel 2003/(.xls) format file to xml
-        /// </summary>
-        /// <param name="fileLocation"></param>
-        /// <param name="BudgetDetailId"></param>
-        /// <param name="PlanExchangeRate"></param>
-        /// <returns></returns>
+       
+       /// <summary>
+       /// Method to read XLS file which user import
+       /// </summary>
+       /// <param name="viewByType">selected Time frame type </param>
+       /// <param name="ds"> dataset of data which get import</param>
+       /// <param name="ClientId">client id detail</param>
+       /// <param name="BudgetDetailId">Budget id for which user wants to import data</param>
+       /// <param name="PlanExchangeRate">Exchange rate of client</param>
+       /// <param name="CurrencySymbol">prefred currency</param>
+       /// <returns></returns>
         public BudgetImportData GetXLSData(string viewByType, DataSet ds, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
             List<XmlColumns> listColumnIndex = new List<XmlColumns>();
@@ -891,7 +914,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                                     if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
                                     {
-                                        colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                        colValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                     }
                                     else if (ListCustomCols != null)
                                     {
@@ -903,7 +926,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                                         {
                                             if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
                                             {
-                                                colValue = Convert.ToString(SetValueByExchangeRate(coldata, PlanExchangeRate));
+                                                colValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                             }
                                         }
                                     }
@@ -949,7 +972,11 @@ namespace RevenuePlanner.Services.MarketingBudget
             if (viewByType == Convert.ToString(Enums.QuarterFinance.Yearly))
             {
                 if (monthcolumn.Count() == 1 && string.IsNullOrEmpty(monthcolumn.FirstOrDefault()))
-                    objImportData.ErrorMsg = "Data getting uploaded does not relate to specific view.";
+                    objImportData.ErrorMsg = "Data getting uploaded does not related to specific view.";
+            }
+            else if (!string.IsNullOrEmpty(monthcolumn[0].ToString()) || monthcolumn[0].ToLower() == "id")
+            {
+                objImportData.ErrorMsg = "Data getting uploaded does not related to specific view.";
             }
             //end
             objImportData.MarketingBudgetColumns = dtColumns;
@@ -958,17 +985,10 @@ namespace RevenuePlanner.Services.MarketingBudget
             return objImportData;
         }
 
-        /// <summary>
         /// Get the value of cell from excel sheet.
-        /// </summary>
-        /// <param name="doc"></param>
-        /// <param name="cell"></param>
-        /// <returns></returns>
         private string GetCellValue(SpreadsheetDocument doc, Cell cell)
         {
             string value = string.Empty;
-            try
-            {
                 if (cell.CellValue != null)
                 {
                     value = cell.CellValue.InnerText;
@@ -977,11 +997,6 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     return doc.WorkbookPart.SharedStringTablePart.SharedStringTable.ChildElements.GetItem(int.Parse(value)).InnerText;
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
             return value;
         }
 
@@ -1006,30 +1021,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                                                   }).ToList();
             return lstColumns;
         }
+     
         /// <summary>
-        /// Convert Value From other currency to USD Dollar
+        /// Desc:: Import Marketing finance Data from excel and save to database.
         /// </summary>
-        /// <param name="DataValue"></param>
-        /// <param name="ExchangeRate"></param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private double SetValueByExchangeRate(double DataValue = 0, double ExchangeRate = 1)
-        {
-            double ConvertedValue = DataValue;
-            if (ExchangeRate != 0)
-            {
-                ConvertedValue = DataValue / ExchangeRate;
-            }
-            return ConvertedValue;
-        }
-        /// <summary>
-        /// Desc:: Import Marketing finance Data from excel 
-        /// </summary>
-        /// <param name="XMLData"></param>
-        /// <param name="ImportBudgetCol"></param>
-        /// <param name="BudgetDetailId"></param>
-        /// <param name="dtColumns"></param>
-        /// <returns></returns>
         public int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int UserID, int ClientID, int BudgetDetailId = 0)
         {
             // Check the file data is monthly or quarterly
@@ -1056,13 +1051,13 @@ namespace RevenuePlanner.Services.MarketingBudget
             int ExecuteCommand = 0;
             string spname = string.Empty;
 
-            if (!IsMonthly)
+            if (IsMonthly)
             {
-                spname = "ImportMarketingBudgetQuarter";
+                spname = "ImportMarketingBudgetMonthly";
             }
             else
             {
-                spname = "ImportMarketingBudgetMonthly";
+                spname = "ImportMarketingBudgetQuarter";
             }
             using (command = new SqlCommand(spname, Connection))
             {
@@ -1089,25 +1084,119 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetId">Id of the Budget</param>
         /// <param name="ExchangeRate">Currency exchange rate</param>
         /// <returns>Returns datatable having 4 values(Budget,Forecast,Planned,Actual)</returns>
-        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate)
+        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate,List<BDSService.User> lstUser)
         {
             #region "Declare Variables"
-            SqlParameter[] para = new SqlParameter[2];
+            SqlParameter[] para = new SqlParameter[3];
             MarketingBudgetHeadsUp calResultset = new MarketingBudgetHeadsUp();   // Return Marketing Budget Header Result Data Model
+            List<int> lstUserId = lstUser.Select(a => a.ID).ToList();
+            string CommaSeparatedUserIds = String.Join(",", lstUserId);
             #endregion
 
             #region "Set SP Parameters"
             para[0] = new SqlParameter() { ParameterName = "BudgetId", Value = BudgetId };
-            para[1] = new SqlParameter() { ParameterName = "CurrencyRate", Value = ExchangeRate };
+            para[1] = new SqlParameter() { ParameterName = "lstUserIds", Value = CommaSeparatedUserIds };
+            para[2] = new SqlParameter() { ParameterName = "CurrencyRate", Value = ExchangeRate };
             #endregion
 
             #region "Get Data"
             calResultset = _database.Database
-                .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinance @BudgetId,@CurrencyRate", para).FirstOrDefault();
+                .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinance_arpita @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
             #endregion
 
             return calResultset; // Returns Model having 4 values(Budget, Forecast, Planned, Actual)
 
+        }	
+
+  #region "Save new Budget related methods"
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method to save new budget
+        /// </summary>
+        ///  /// <param name="budgetName">Name of the Budget</param>
+        /// <returns>Returns budget id in json format</returns>
+        public int SaveNewBudget(string BudgetName, int ClientId, int UserId)
+        {
+            int budgetId = 0;
+            if (!string.IsNullOrEmpty(BudgetName))
+            {
+                //save budget data and get budget id 
+                RevenuePlanner.Models.Budget objBudget = new RevenuePlanner.Models.Budget();
+                objBudget.ClientId = ClientId;
+                objBudget.Name = BudgetName;
+                objBudget.Desc = string.Empty;
+                objBudget.CreatedBy = UserId;
+                objBudget.CreatedDate = DateTime.Now;
+                objBudget.IsDeleted = false;
+                _database.Entry(objBudget).State = EntityState.Added;
+                _database.SaveChanges();
+                budgetId = objBudget.Id;
+
+                //save data in budget detail table to display row wise data
+                Budget_Detail objBudgetDetail = new Budget_Detail();
+                objBudgetDetail.BudgetId = budgetId;
+                objBudgetDetail.Name = BudgetName;
+                objBudgetDetail.IsDeleted = false;
+                objBudgetDetail.CreatedBy = UserId;
+                objBudgetDetail.CreatedDate = DateTime.Now;
+                _database.Entry(objBudgetDetail).State = EntityState.Added;
+                _database.SaveChanges();
+                int _budgetid = objBudgetDetail.Id;
+
+                //save permission for newly created budget.
+                SaveUserBudgetpermission(_budgetid, UserId);
+            }
+            return budgetId;
         }
+
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method to save new item /child item
+        /// </summary>
+        /// <param name="BudgetId">Id of the Budget</param>
+        /// <param name="BudgetDetailName">Name of the item</param>
+        /// <param name="ParentId">ParentId of the Budget item</param>
+        /// <param name="mainTimeFrame">Selected time frame value </param>
+        public void SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId, int ClientId, int UserId, string mainTimeFrame = "Yearly")
+        {
+
+                if (BudgetId != 0)
+                {
+                        //Save budget detail data for newly added item to database
+                        Budget_Detail objBudgetDetail = new Budget_Detail();
+                        objBudgetDetail.BudgetId = BudgetId;
+                        objBudgetDetail.Name = BudgetDetailName;
+                        objBudgetDetail.ParentId = ParentId;
+                        objBudgetDetail.CreatedBy = UserId;
+                        objBudgetDetail.CreatedDate = DateTime.Now;
+                        objBudgetDetail.IsDeleted = false;
+                        _database.Entry(objBudgetDetail).State = EntityState.Added;
+                        _database.SaveChanges();
+                        int _budgetid = objBudgetDetail.Id;
+                        SaveUserBudgetpermission(_budgetid,UserId);
+
+                        #region Update LineItem with child item
+                        int? BudgetDetailParentid = objBudgetDetail.ParentId;
+                        IQueryable<LineItem_Budget> objLineItem = _database.LineItem_Budget
+                        .Where(x => x.BudgetDetailId == BudgetDetailParentid);
+                        foreach (LineItem_Budget LineItem in objLineItem)
+                          {
+                                LineItem.BudgetDetailId = _budgetid;
+                          }
+                       _database.SaveChanges();
+                        #endregion
+                }
+
+            }
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method Execute sp to get users of all parent ids and assign to current budget item.
+        public void SaveUserBudgetpermission(int budgetId,int UserId)
+        {
+            _database.SaveuserBudgetPermission(budgetId, 0, UserId); //Sp to get users of all parent ids and assign to current budget item.
+
+        }
+
+        #endregion
     }
 }

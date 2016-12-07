@@ -25,11 +25,11 @@ namespace RevenuePlanner
                      "~/Content/css/jquery.multiselect.css",
                      "~/Content/css/daterangepicker-bs3.css",
                      //"~/Content/css/bootstrap-responsive.css",
-                     "~/Content/css/font-awesome.css"
+                     "~/Content/css/font-awesome.css",
                      //"~/content/css/style_min_Oct_18.css",
                      //"~/Content/css/style_extended_min_Aug_2.css"
                      //"~/Content/css/bootstrap2-toggle.css"
-                     //"~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css"
+                     "~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css"
                     ));
             bundles.Add(new StyleBundle("~/Content/css/IndexCSS").Include(
                     //"~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css",

@@ -42,6 +42,7 @@ namespace RevenuePlanner.Models
         public string DrillDownWhereClause { get; set; }
         public Nullable<bool> UseRowCountFromFormula { get; set; }
         public Nullable<bool> IsCurrency { get; set; }
+        public string BaseCurrencyCode { get; set; }
     
         public virtual ICollection<Goal> Goals { get; set; }
         public virtual ICollection<GoalDistribution> GoalDistributions { get; set; }

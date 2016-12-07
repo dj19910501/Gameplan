@@ -67,7 +67,7 @@
         }
         $(document).ready(function () {
 
-            
+
             var model = @Html.Raw(Json.Encode(Model.SDV));
             var URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
             //Prepare list of parameter to get report table.
@@ -90,13 +90,55 @@
                 data: $.param(params, true),
                 dataType: "json",
                 success: function (data) {
-                    debugger;
                     LoadReportTable(params.Id, "divViewChartTable_", data.data,"ReportTable","_wrapper");
+
+                    $("#ReportTable" + '@Model.Id' + " .border-r").click(function() {
+                        var dimensionValueName = $(this).parent().find('.border-r:first').not('.border-r.tdGraphData').html();
+                        var dimensionActualValueCount = $(this).attr('data-original-title');
+                        var dimensionValueCount = $(this).clone().children().remove().end().text();
+                        var dashboardContentId = '@Model.DashboardContentId';
+                        var id = '@Model.Id';
+                        var displayName = '@Model.DisplayName';
+                        var HelpTextId = 0;
+                        var dashboardId = '@Model.DashboardId';
+                        var measureIndex = $(this).index();
+                        var IsSortByValue = '@Model.IsSortByValue'
+                        var SortOrder = '@Model.SortOrder';
+                        var ChartType = '@Model.ChartType';
+                        var measureName = '';
+                        var childchartid = 0;
+                        measureName = $(this).parent().parent().find('.border-r:nth-child(' + measureIndex + ')').html();
+                        var cellid = $(this).attr('cellids');
+                        var headerDimensionValue = $('#ReportTable' + '@Model.Id').find('.xhdr').find('table').find('tr:eq(1)').find("td:eq(" + $(this).index() + ")").find('.hdrcell').html();
+                        if ($(this).index() != 0) {
+                            if (dimensionValueCount != 0) {
+                                ViewAllDrilDownData(id, displayName, dimensionValueName, dimensionValueCount, dimensionActualValueCount, headerDimensionValue, dashboardContentId, dashboardId, measureName, childchartid, '@Model.CustomQuery', HelpTextId,IsSortByValue,SortOrder, ChartType);
+                            }
+                            else {
+                                $(this).css('cursor', 'default');
+                            }
+                        }
+                        if ($(this).attr('class', 'cellselected')) {
+                            $(this).css('cursor', 'default');
+                        }
+                    });
                 },
                 error: function (err) {
                     $("#divChart" + '@Model.Id').html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
                 }
             });
+            function ViewAllDrilDownData(id, displayName, dimensionValueName, dimensionValueCount, dimensionActualValueCount, headerDimensionValue, dashboardContentId, dashboardId, measureName, childchartid, CustomQuery, HelpTextId,IsSortByValue, SortOrder, ChartType) {
+                measureName = '';
+                $("#div_ViewAllReport").empty();
+                var url = '@Url.Content("~/MeasureDashboard/LoadDrillDownData/")';
+                $("#div_ViewAllReport").load(url, {
+                    @*@Enums.ApplicationCode.RPC.ToString() - is used because if we want to use this method for any other application then we can use it directly *@
+                    DbName: '@Enums.ApplicationCode.RPC.ToString()', Id: id, DisplayName: displayName, DimensionValueName: dimensionValueName, DimensionValueCount: dimensionValueCount,
+                    DimensionActualValueCount: dimensionActualValueCount, HeaderDimensionValue: headerDimensionValue,
+                    DashboardContentId: dashboardContentId, DashboardId: dashboardId, MeasureName: measureName,
+                    childchartid: childchartid, CustomQuery: CustomQuery, HelpTextId: HelpTextId, IsSortByValue: IsSortByValue, SortOrder: SortOrder, ChartType: ChartType
+                });
+            }
 
         });
     });

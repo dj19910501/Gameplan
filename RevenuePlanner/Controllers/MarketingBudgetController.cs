@@ -24,19 +24,21 @@ namespace RevenuePlanner.Controllers
         private bool _IsForecastCreate_Edit = true;
         #endregion
         [AuthorizeUser(Enums.ApplicationActivity.BudgetCreateEdit | Enums.ApplicationActivity.ForecastCreateEdit | Enums.ApplicationActivity.ForecastView)]
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
+        public ActionResult Index()
         {
             MarketingActivities MarketingActivities = new MarketingActivities();
 
+            #region Set session for current client users
+            // Set list of users for the current client into session
+            Sessions.ClientUsers = _MarketingBudget.GetUserListByClientId(Sessions.User.CID);
+            #endregion
+
             #region Bind Budget dropdown on grid
-            List<BindDropdownData> lstMainBudget = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
-            MarketingActivities.ListofBudgets = lstMainBudget;
+            MarketingActivities.ListofBudgets = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
             #endregion
 
             #region "Bind TimeFrame Dropdown"
-            List<BindDropdownData> lstMainAllocated = new List<BindDropdownData>();
-            lstMainAllocated = Enums.QuartersFinance.Select(timeframe => new BindDropdownData { Text = timeframe.Key, Value = timeframe.Value }).ToList();
-            MarketingActivities.TimeFrame = lstMainAllocated;
+            MarketingActivities.TimeFrame = Enums.QuartersFinance.Select(timeframe => new BindDropdownData { Text = timeframe.Key, Value = timeframe.Value }).ToList();
             #endregion
 
             #region Bind Column set dropdown
@@ -94,14 +96,21 @@ namespace RevenuePlanner.Controllers
         //    throw new NotImplementedException();
         //}
 
-        public JsonResult GetBudgetData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested = 0) // need to pass columns requested
+		/// <summary>
+        /// Method to get marketing budget grid data for perticular budget
+        /// </summary>
+        /// <param name="budgetId">bedget id for which user want to get the data</param>
+        /// <param name="TimeFrame">in which view user want to view the data quater/months</param>
+        /// <param name="columnsRequested">Which columns user wants to see</param>
+        /// <returns>Json data to bind the grid</returns>
+        public JsonResult GetBudgetData(int budgetId, string TimeFrame, BudgetColumnFlag columnsRequested = 0) // need to pass columns requested
         {
             // set budgetId  and timeframe in session for import
-            Sessions.ImportTimeFrame = viewByType;
+            Sessions.ImportTimeFrame = TimeFrame;
             Sessions.BudgetDetailId = budgetId;
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             //Get all budget grid data.
-            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, viewByType, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol);
+            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, TimeFrame, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol, Sessions.ClientUsers);
             var jsonResult = Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader }, JsonRequestBehavior.AllowGet);
             return jsonResult;
         }
@@ -221,7 +230,7 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Created By Devanshi gandhi
-        /// Import finance budget #2804
+        /// Method used for upload/Import finance budget using xls/xlsx file - PL ticket #2804
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -254,15 +263,11 @@ namespace RevenuePlanner.Controllers
                             string FileSessionId = Convert.ToString(Session.Contents.SessionID);
                             string FileName = FileSessionId + DateTime.Now.ToString("mm.dd.yyyy.hh.mm.ss.fff") + fileExtension;
                             string fileLocation = DirectoryLocation + FileName;
-                            string excelConnectionString = string.Empty;
                             Request.Files[0].SaveAs(fileLocation);
 
                             if (fileExtension == ".xls")
                             {
-                                excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
-                                                                                   fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
-                                IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
-                                ds = excelReader.AsDataSet();
+                               ds= ReadXlSFile(fileLocation); //method to read xls file which uploaded
                                 if (ds != null && ds.Tables.Count > 0)
                                 {
                                     objImprtData = _MarketingBudget.GetXLSData(viewByType, ds, ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2003/(.xls) format file to xml
@@ -276,8 +281,11 @@ namespace RevenuePlanner.Controllers
                             {
                                 objImprtData = _MarketingBudget.GetXLSXData(viewByType, fileLocation, ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2007/(.xlsx) and above version format file to xml
                             }
+                            if (objImprtData != null)
+                            {
                             dtColumns = objImprtData.MarketingBudgetColumns;
                             xmlData = objImprtData.XmlData;
+                            }
                             if (System.IO.File.Exists(fileLocation))
                             {
                                 System.IO.File.Delete(fileLocation);
@@ -313,6 +321,22 @@ namespace RevenuePlanner.Controllers
             }
             return new EmptyResult();
         }
+        /// <summary>
+        /// Method to read XLS file while import/upload
+        /// </summary>
+        /// <param name="fileLocation">location of file to read the data</param>
+        /// <returns></returns>
+        private DataSet ReadXlSFile(string fileLocation)
+        {
+            string excelConnectionString = string.Empty;
+
+            excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                                                                                   fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
+            IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
+            DataSet ds = excelReader.AsDataSet();
+
+            return ds;
+        }
         #endregion
         #region Header
         /// <summary>
@@ -323,7 +347,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetFinanceHeaderValues(int BudgetId)
         {
             // Call function to get header values 
-            MarketingBudgetHeadsUp objHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate);
+            MarketingBudgetHeadsUp objHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate,Sessions.ClientUsers);
 
             string Budget, Forecast, Planned, Actual;
             Budget = Forecast = Planned = Actual = string.Empty;
@@ -339,5 +363,61 @@ namespace RevenuePlanner.Controllers
             return Json(new { Budget = Budget, Forecast = Forecast, Planned = Planned, Actual = Actual }, JsonRequestBehavior.AllowGet);
         }
         #endregion
+
+
+        #region "Create new Budget related methods"
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// returns add new budget partial view
+        /// </summary>
+        public ActionResult LoadnewBudget()
+        {
+            return PartialView("_newBudget");
+        }
+
+
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method to save new budget
+        /// </summary>
+        ///  /// <param name="budgetName">Name of the Budget</param>
+        /// <returns>Returns budget id in json format</returns>
+        public JsonResult SaveNewBudget(string budgetName)
+        {
+            int budgetId = 0;
+            try
+            {
+                 budgetId = _MarketingBudget.SaveNewBudget(budgetName,Sessions.User.CID,Sessions.User.ID);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { budgetId = budgetId }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Komal on 12/05/2016
+        /// Method to save new item /child item
+        /// </summary>
+        /// <param name="BudgetId">Id of the Budget</param>
+        /// <param name="BudgetDetailName">Name of the item</param>
+        /// <param name="ParentId">ParentId of the Budget item</param>
+        /// <param name="mainTimeFrame">Selected time frame value </param>
+        public void SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId, string mainTimeFrame = "Yearly")
+        {
+            try
+            {
+                _MarketingBudget.SaveNewBudgetDetail(BudgetId, BudgetDetailName, ParentId, Sessions.User.CID, Sessions.User.ID, mainTimeFrame);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+        }
+
+
+        #endregion
+
     }
 }

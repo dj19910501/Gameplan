@@ -724,8 +724,8 @@ namespace RevenuePlanner.Helpers
             }
         }
         /// <summary>
-        /// Add By Devanshi
-        /// Set Time frame for import in Session
+        /// Add By Devanshi - #2804
+        /// Set Time frame value in Session for checking view at the time of import marketing budget
         /// </summary>
         /// <returns></returns>
         public static string ImportTimeFrame
@@ -742,6 +742,26 @@ namespace RevenuePlanner.Helpers
             set
             {
                 HttpContext.Current.Session["ImportTimeFrame"] = value;
+            }
+        }
+        /// <summary>
+        /// Added by Arpita Soni 
+        /// List of users for the specific client
+        /// </summary>
+        public static List<BDSService.User> ClientUsers
+        {
+            get
+            {
+                List<BDSService.User> lstUsers = new List<BDSService.User>();
+                if (HttpContext.Current.Session["ClientUsers"] != null)
+                {
+                    lstUsers = (List<BDSService.User>)(HttpContext.Current.Session["ClientUsers"]);
+                }
+                return lstUsers;
+            }
+            set
+            {
+                HttpContext.Current.Session["ClientUsers"] = value;
             }
         }
 

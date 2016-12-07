@@ -310,6 +310,7 @@ namespace RevenuePlanner.Services.Transactions
                     LineItemId = transaction.LineItemId != null ? (int)transaction.LineItemId : 0,
                     DateCreated = transaction.DateCreated,
                     AmountAttributed = transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0,
+                    AmountRemaining = (double)transaction.Amount - (transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0),
                     LastProcessed = transaction.LastProcessed
                 };
 
@@ -355,6 +356,7 @@ namespace RevenuePlanner.Services.Transactions
                     LineItemId = transaction.LineItemId != null ? (int)transaction.LineItemId : 0,
                     DateCreated = transaction.DateCreated,
                     AmountAttributed = transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0,
+                    AmountRemaining = (double)transaction.Amount - (transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0),
                     LastProcessed = transaction.LastProcessed
                 };
 
@@ -368,6 +370,8 @@ namespace RevenuePlanner.Services.Transactions
                 new TransactionHeaderMapping() { ClientHeader = "Purchase Order", Hive9Header = "PurchaseOrder", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 10 },
                 new TransactionHeaderMapping() { ClientHeader = "Vendor", Hive9Header = "Vendor", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 20 },
                 new TransactionHeaderMapping() { ClientHeader = "Amount", Hive9Header = "Amount", HeaderFormat = HeaderMappingFormat.Currency, precision = 2, ExpectedCharacterLength = 10 },
+                new TransactionHeaderMapping() { ClientHeader = "Attributed", Hive9Header = "AmountAttributed", HeaderFormat = HeaderMappingFormat.Currency, precision = 2, ExpectedCharacterLength = 10 },
+                new TransactionHeaderMapping() { ClientHeader = "Remaining", Hive9Header = "AmountRemaining", HeaderFormat = HeaderMappingFormat.Currency, precision = 2, ExpectedCharacterLength = 10 },
                 new TransactionHeaderMapping() { ClientHeader = "Description", Hive9Header = "TransactionDescription", HeaderFormat = HeaderMappingFormat.Text, precision = 0, ExpectedCharacterLength = 30 },
                 new TransactionHeaderMapping() { ClientHeader = "Account", Hive9Header = "Account", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 7 },
                 new TransactionHeaderMapping() { ClientHeader = "Date", Hive9Header = "TransactionDate", HeaderFormat = HeaderMappingFormat.Date, precision = 0, ExpectedCharacterLength = 10 },

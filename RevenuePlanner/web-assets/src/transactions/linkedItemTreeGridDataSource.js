@@ -54,62 +54,64 @@ function renameProperty(object, from, to) {
     object[from] = undefined;
 }
 
+function transformData(result) {
+    // if there are no results, then we are done
+    if (!result.length) {
+        return result;
+    }
+
+    // convert the data into a TreeGrid format
+    for (const tactic of result) {
+        tactic.id = tactic.TacticId;
+
+        // needs to be called "rows", not LineItems
+        renameProperty(tactic, "LineItems", "rows");
+
+        // remove PlannedCost, ActualCost because we want to sum the line items instead
+        tactic.PlannedCost = undefined;
+        tactic.ActualCost = undefined;
+
+        // the "tree" column needs to be HTML-encoded "by hand"
+        tactic.Tree = escape(tactic.Title);
+
+        for (const item of tactic.rows) {
+            item.id = item.LineItemId;
+
+            renameProperty(item, "Cost", "PlannedCost");
+            renameProperty(item, "Actual", "ActualCost");
+            item.MappedAmount = item.LineItemMapping.Amount;
+
+            item.Tree = escape(item.Title);
+            item.Plan = `${item.PlanTitle} > ${item.CampaignTitle} > ${item.ProgramTitle}`;
+
+            // convert to actual dates
+            item.DateModified = {value: new Date(item.LineItemMapping.DateModified)};
+            item.DateProcessed = {value: new Date(item.LineItemMapping.DateProcessed)};
+        }
+    }
+
+    // If there is only 1 tactic, go ahead and start with it expanded
+    if (result.length === 1) {
+        result[0].open = true;
+    }
+
+    // Create a top-level node which contains the "Sys_Gen_Balance" row
+    const container = [{
+        id: "Sys_Gen_Balance",
+        Tree: "Sys_Gen_Balance",
+        rows: result,
+        open: true,
+    }];
+
+    return container;
+}
+
 function getData(filter) {
     const params = {
         transactionID: filter.transactionId,
     };
 
-    return $.getJSON(GET_LINKED_LINE_ITEMS, params).then(result => {
-        // if there are no results, then we are done
-        if (!result.length) {
-            return result;
-        }
-
-        // convert the data into a TreeGrid format
-        for (const tactic of result) {
-            tactic.id = tactic.TacticId;
-
-            // needs to be called "rows", not LineItems
-            renameProperty(tactic, "LineItems", "rows");
-
-            // remove PlannedCost, ActualCost because we want to sum the line items instead
-            tactic.PlannedCost = undefined;
-            tactic.ActualCost = undefined;
-
-            // the "tree" column needs to be HTML-encoded "by hand"
-            tactic.Tree = escape(tactic.Title);
-
-            for (const item of tactic.rows) {
-                item.id = item.LineItemId;
-
-                renameProperty(item, "Cost", "PlannedCost");
-                renameProperty(item, "Actual", "ActualCost");
-                item.MappedAmount = item.LineItemMapping.Amount;
-
-                item.Tree = escape(item.Title);
-                item.Plan = `${item.PlanTitle} > ${item.CampaignTitle} > ${item.ProgramTitle}`;
-
-                // convert to actual dates
-                item.DateModified = {value: new Date(item.LineItemMapping.DateModified)};
-                item.DateProcessed = {value: new Date(item.LineItemMapping.DateProcessed)};
-            }
-        }
-
-        // If there is only 1 tactic, go ahead and start with it expanded
-        if (result.length === 1) {
-            result[0].open = true;
-        }
-
-        // Create a top-level node which contains the "Sys_Gen_Balance" row
-        const container = [{
-            id: "Sys_Gen_Balance",
-            Tree: "Sys_Gen_Balance",
-            rows: result,
-            open: true,
-        }];
-
-        return container;
-    });
+    return $.getJSON(GET_LINKED_LINE_ITEMS, params);
 }
 
 function bindDataSourceToServer(dataSource) {
@@ -125,7 +127,7 @@ function bindDataSourceToServer(dataSource) {
             currentGridDataRequest = getData(dataSource.state.filter);
             currentGridDataRequest.then(result => {
                 currentGridDataRequest = undefined;
-                dataSource.updateRecords(result);
+                dataSource.assignRawData(result);
             });
         }
     }
@@ -143,9 +145,11 @@ export default function linkedItemTreeGridDataSource(transactionId) {
     const filter = { transactionId };
 
     const dataSource = gridDataSource(filter, undefined, columns);
+    dataSource.assignRawData = function (data) { this.updateRecords(transformData(data)); };
 
     // listen for filter/paging changes and request new data
     bindDataSourceToServer(dataSource);
+
 
     // return the dataSource
     return dataSource;

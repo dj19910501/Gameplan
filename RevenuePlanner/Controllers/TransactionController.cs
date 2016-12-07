@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Services.Transactions;
 using RevenuePlanner.Controllers.Filters;
+using System.Linq;
 
 namespace RevenuePlanner.Controllers
 {
@@ -121,7 +122,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="skip">Optional. This number of transactsions will be skipped in the results returned</param>
         /// <param name="take">Optiona. This is the top number of transactions that will be returned by this call, fewer may be returned if there are fewer transactions available</param>
         /// <returns>returns at most <param name="take" /> transactions after skipping the first <param name="skip" /></returns>
-        public IEnumerable<Transaction> GetTransactions(DateTime start, DateTime end, bool unprocessedOnly = true, int skip = 0, int take = 10000)
+        public IEnumerable<LeanTransaction> GetTransactions(DateTime start, DateTime end, bool unprocessedOnly = true, int skip = 0, int take = 10000)
         {
             if (skip < 0)
             {
@@ -132,7 +133,8 @@ namespace RevenuePlanner.Controllers
                 throw new ArgumentOutOfRangeException("take", "take must be a positive integer");
             }
 
-            return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take);
+            return Trim(_transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take));
+            //return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take);
         }
 
         /// <summary>
@@ -140,15 +142,74 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="lineItemId">The ID of the line item whose mapped transactions we are retreiving</param>
         /// <returns>The list of transactions mapped to the specified line item</returns>
-        public IEnumerable<Transaction> GetTransactionsForLineItem(int lineItemId)
+        public IEnumerable<LeanTransaction> GetTransactionsForLineItem(int lineItemId)
         {
             if (lineItemId <= 0)
             {
                 throw new ArgumentOutOfRangeException("lineItemId", "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
             }
 
-            return _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
+            return Trim(_transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId));
+            //return _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
         }
 
+        #region trim transactions for a lean data structure
+        /// <summary>
+        /// A trimmed version of Transaction with only required fields 
+        /// </summary>
+        public class LeanTransaction : Dictionary<string, object>
+        {
+            //nothing should be here 
+        }
+
+        /// <summary>
+        /// These are minimum required fields for transaction UI to work 
+        /// </summary>
+        private static List<string> _requiredTransactionColoumns = new List<string>()
+        {   "TransactionId", //internal transacion ID 
+            "ClientTransactionId", //Client transaction ID
+            "Amount", //amount on the transaction 
+            "AmountAttributed", //Amount attributed already 
+            "AmountRemaining", //Amount unattributed (remaining)
+            "TransactionDate", // Transaction date 
+        };  
+
+        /// <summary>
+        /// This function build a lean version of transaction that only contain the columns a client is needed.
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <returns></returns>
+        private List<LeanTransaction> Trim(IEnumerable<Transaction> transactions)
+        {
+            //Get all headers the current client requests 
+            var headers = _transaction.GetHeaderMappings(Sessions.User.CID).Select(x => x.Hive9Header).ToList();
+
+            //make sure required headers are always included for UI to function correctly 
+            foreach(var rh in _requiredTransactionColoumns)
+            {
+                if (!headers.Contains(rh))
+                {
+                    headers.Add(rh);
+                }
+            }
+
+            //to hold the fimal list of trimmed transactions 
+            var leanTransactions = new List<LeanTransaction>();
+
+            foreach (var trans in transactions)
+            {
+                var lean = new LeanTransaction();
+                foreach (var header in headers)
+                {
+                    lean.Add(header, trans.GetType().GetProperty(header).GetValue(trans));
+                }
+
+                leanTransactions.Add(lean);
+            }
+
+            return leanTransactions;
+        }
+
+        #endregion 
     }
 }

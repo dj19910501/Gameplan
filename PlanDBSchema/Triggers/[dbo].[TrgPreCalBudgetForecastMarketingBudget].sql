@@ -33,18 +33,17 @@ BEGIN
 
 	SET @BudgetColumnName = @Period+'_Budget'
 	SET @ForecastColumnName = @Period+'_Forecast'	
-
+	
 	IF ((SELECT COUNT(*) FROM INSERTED) > 0)
 	BEGIN
 		-- Get values which are inserted/updated
 		SELECT @Period = Period,
-			   @BudgetValue = Budget,
-			   @ForecastValue = Forecast,
+			   @BudgetValue = ISNULL(Budget,0),
+			   @ForecastValue = ISNULL(Forecast,0),
 			   @BudgetDetailId = BudgetDetailId,
 			   @Year = YEAR(CreatedDate)
 		FROM INSERTED I
 		INNER JOIN Budget_Detail BD ON I.BudgetDetailId = BD.Id
-
 		-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
 		EXEC [MV].[PreCalBudgetForecastForFinanceGrid] @BudgetDetailId, @Year, @Period, @BudgetValue, @ForecastValue
 	END

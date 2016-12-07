@@ -8,7 +8,7 @@
     string CurrencySymbol = Sessions.PlanCurrencySymbol;
 }
 
-<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" />
+
 
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
@@ -33,6 +33,9 @@
     .ui-helper-hidden-accessible {
         display: none;
     }
+
+    body{overflow-y:hidden}
+    .MarketingBudget-tbl{height:48vh}
 </style>
 
 <div class="light-blue-chart cf full-width-header" id="financeHeader">
@@ -116,8 +119,8 @@
     </div>
 </div>
 
-<div id="divGridView" class="MarketingBudget-tbl">
-    <div id="gridbox" style="width:100%; background-color:white;"></div>
+<div id="divGridView" class="MarketingBudget-tbl" >
+    <div id="gridbox" style="width:100%; height:100%;background-color:white;"></div>
 </div>
 @* Design for import modal pop up *@
 <div id="ImportModal" class="modal hide fade import-popover">
@@ -147,6 +150,10 @@
     </div>
 </div>
 
+<div class="market-activity-main">
+    <div class="btn-dropdwn" style="" id="popupType">
+    </div>
+</div>
 <script src="~/Scripts/js/MarketingBudget/MarketingBudget.js"></script>
 <script type="text/javascript">
     var budgetgrid;
@@ -154,10 +161,15 @@
     var AddNewrow = true;
     var backBudgetid = '';
     var standardcolumns;
+    var scrollstate = 0;
     //add variable for assigning index of grid column to use in export or anywhere else.
     var colIdIndex;
     var colIconIndex;
     var colTaskNameIndex;
+    var _isNewRowAdd = false;
+    var _newrowid = '';
+    var _newParentId = '';
+    var _row_parentId = '';
     var urlContent = '@Url.Content("~/")';
     var Yearly='@Enums.QuarterFinance.Yearly.ToString()';
     var Id = "@Enums.DefaultGridColumn.Id";

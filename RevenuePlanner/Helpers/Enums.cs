@@ -1495,7 +1495,7 @@ namespace RevenuePlanner.Helpers
             IsForcast = 8,
             Owner = 9,
             RowId = 10,
-            User = 11,
+            Users = 11,
             Permission = 12,
             Budget = 13,
             Forecast = 14,

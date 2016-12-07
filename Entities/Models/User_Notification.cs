@@ -18,6 +18,7 @@ namespace RevenuePlanner.Models
         public System.DateTime CreatedDate { get; set; }
         public int UserId { get; set; }
         public int CreatedBy { get; set; }
+        public Nullable<int> ClientId { get; set; }
     
         public virtual Notification Notification { get; set; }
     }

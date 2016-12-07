@@ -63,6 +63,7 @@ namespace RevenuePlanner.Services.Transactions
         /// The balance will be Amount - AmountAttributed (step 3)
         /// </summary>
         public double AmountAttributed { get; set; }
+        public double AmountRemaining { get; set; }
 
         /// <summary>
         /// Date and time this transaction was processed by batch attribution process (step 3) 
