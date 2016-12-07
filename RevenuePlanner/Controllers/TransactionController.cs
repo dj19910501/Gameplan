@@ -46,17 +46,26 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Delete an individual line item mapping. This just deletes the link between a transaction and a line item, neither
+        /// Deletes a group of individual line item mappings. This just deletes the link between a transaction and a line item, neither
         /// the transaction nor the line item are modified or deleted during this call.
-        /// This is a POST call, however there is no request body.
         /// </summary>
-        /// <param name="mappingId">The id of the transaction line item mapping reference to be deleted.</param>
+        /// <param name="mappingIds">The id of the transaction line item mapping reference to be deleted.</param>
         [System.Web.Http.HttpPost]
-        public void DeleteTransactionLineItemMapping(int mappingId)
+        public void DeleteTransactionLineItemMapping(List<int> mappingIds)
         {
             Contract.Requires<ArgumentOutOfRangeException>(mappingId > 0, "A mappingId less than or equal to zero is invalid, and likely indicates the mappingId was not set properly");
+            if (mappingIds == null)
+            {
+                throw new ArgumentNullException("mappingIds", "mappingIds cannot be null.");
+            }
 
-            _transaction.DeleteTransactionLineItemMapping(Sessions.User.CID, mappingId);
+            if (mappingIds.Any(id => id <= 0))
+            {
+                throw new ArgumentOutOfRangeException("mappingIds", "all mappingIds should be positive.");
+            }
+
+            // delete them one by one.  Perhaps the interface can be changed to delete them in bulk?
+            mappingIds.ForEach(id => _transaction.DeleteTransactionLineItemMapping(Sessions.User.CID, id));
         }
 
         /// <summary>
