@@ -500,7 +500,7 @@ namespace RevenuePlanner.Controllers
             string AuthorizedReportAPIPassword = string.Empty;
             string ApiUrl = string.Empty;
             string ConnectionString = string.Empty;
-            if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
+            if (!string.IsNullOrEmpty(DbName) && string.Compare(DbName, Convert.ToString(Enums.ApplicationCode.RPC), true) == 0)
             {
                 // Get Measure Connection String
                 ConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
@@ -540,10 +540,15 @@ namespace RevenuePlanner.Controllers
                     client.BaseAddress = baseAddress;
 
                     ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                    ConnectionString = ConnectionString + " multipleactiveresultsets=True;";
+                    ConnectionString = string.Concat(ConnectionString, " multipleactiveresultsets=True;");
                     ReportTableParameters objParams = new ReportTableParameters();
+
+                    if (string.IsNullOrEmpty(DashboardId))
+                    {
+                        DashboardId = "0";
+                    }
                     objParams.DashboardId = Convert.ToInt32(DashboardId);
-                    objParams.DashboardContentId = objDrillDownDetails.DashboardContentId;
+                    objParams.DashboardContentId = _dashboardContentId;
                     objParams.UserName = AuthorizedReportAPIUserName;
                     objParams.Password = AuthorizedReportAPIPassword;
                     objParams.ConnectionString = ConnectionString;
@@ -676,7 +681,7 @@ namespace RevenuePlanner.Controllers
                         {
                             if (SelectedOthersDimension != null && SelectedOthersDimension.Length > 0)
                             {
-                                SubDashboardOtherDimensionTable = SelectedOthersDimension[0].ToString().Replace("D", "");
+                                SubDashboardOtherDimensionTable = Convert.ToString(SelectedOthersDimension[0]).Replace("D", "");
                             }
                             SelectedDimension = null;
                         }
