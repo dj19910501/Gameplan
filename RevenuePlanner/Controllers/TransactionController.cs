@@ -163,7 +163,7 @@ namespace RevenuePlanner.Controllers
         private List<LeanTransaction> Trim(IEnumerable<Transaction> transactions)
         {
             //Get all headers the current client requests 
-            var headers = _transaction.GetHeaderMappings(Sessions.User.CID).Select(x => x.Hive9Header).ToList();
+            var headers = new HashSet<string>(_transaction.GetHeaderMappings(Sessions.User.CID).Select(x => x.Hive9Header).ToList());
 
             //make sure required headers are always included for UI to function correctly 
             foreach(var rh in _requiredTransactionColoumns)
