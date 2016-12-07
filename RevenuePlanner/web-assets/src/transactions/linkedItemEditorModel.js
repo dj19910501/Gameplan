@@ -4,6 +4,7 @@ import flatMap from 'lodash/flatMap';
 import gridDataSource from 'util/gridDataSource';
 import keyBy from 'lodash/keyBy';
 import groupBy from 'lodash/groupBy';
+import createNewItemModel from './linkedItemEditorNewLinkModel';
 
 const columns = [
     { id: "title", value: "Name", width: 300, type: "rotxt", align: "left", sort: "na" },
@@ -54,6 +55,7 @@ export default function createModel(transaction) {
 
     const model = {
         linkedItemGridDataSource: dataSource,
+        newItemModel: createNewItemModel(),
 
         on(event, cb) { $(this).on(event, cb); },
         off(event, cb) { $(this).off(event, cb); },

@@ -32,7 +32,6 @@ function createGrid(dataSource, $container) {
 
 function bindGrid(model, $container) {
     const dataSource = model.linkedItemGridDataSource;
-    let grid;
 
     function onData(ev) {
         if ((!ev || ev.which.records) && dataSource.state.records) {
