@@ -91,6 +91,13 @@ namespace RevenuePlanner.Controllers
         //    throw new NotImplementedException();
         //}
 
+		/// <summary>
+        /// Method to get marketing budget grid data for perticular budget
+        /// </summary>
+        /// <param name="budgetId">bedget id for which user want to get the data</param>
+        /// <param name="TimeFrame">in which view user want to view the data quater/months</param>
+        /// <param name="columnsRequested">Which columns user wants to see</param>
+        /// <returns>Json data to bind the grid</returns>
         public JsonResult GetBudgetData(int budgetId, string TimeFrame, BudgetColumnFlag columnsRequested = 0) // need to pass columns requested
         {
             // set budgetId  and timeframe in session for import
@@ -218,7 +225,7 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Created By Devanshi gandhi
-        /// Import finance budget #2804
+        /// Method used for upload/Import finance budget using xls/xlsx file - PL ticket #2804
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -251,15 +258,11 @@ namespace RevenuePlanner.Controllers
                             string FileSessionId = Convert.ToString(Session.Contents.SessionID);
                             string FileName = FileSessionId + DateTime.Now.ToString("mm.dd.yyyy.hh.mm.ss.fff") + fileExtension;
                             string fileLocation = DirectoryLocation + FileName;
-                            string excelConnectionString = string.Empty;
                             Request.Files[0].SaveAs(fileLocation);
 
                             if (fileExtension == ".xls")
                             {
-                                excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
-                                                                                   fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
-                                IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
-                                ds = excelReader.AsDataSet();
+                               ds= ReadXlSFile(fileLocation); //method to read xls file which uploaded
                                 if (ds != null && ds.Tables.Count > 0)
                                 {
                                     objImprtData = _MarketingBudget.GetXLSData(viewByType, ds, ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2003/(.xls) format file to xml
@@ -273,8 +276,11 @@ namespace RevenuePlanner.Controllers
                             {
                                 objImprtData = _MarketingBudget.GetXLSXData(viewByType, fileLocation, ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2007/(.xlsx) and above version format file to xml
                             }
+                            if (objImprtData != null)
+                            {
                             dtColumns = objImprtData.MarketingBudgetColumns;
                             xmlData = objImprtData.XmlData;
+                            }
                             if (System.IO.File.Exists(fileLocation))
                             {
                                 System.IO.File.Delete(fileLocation);
@@ -309,6 +315,22 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return new EmptyResult();
+        }
+        /// <summary>
+        /// Method to read XLS file while import/upload
+        /// </summary>
+        /// <param name="fileLocation">location of file to read the data</param>
+        /// <returns></returns>
+        private DataSet ReadXlSFile(string fileLocation)
+        {
+            string excelConnectionString = string.Empty;
+
+            excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                                                                                   fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
+            IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
+            DataSet ds = excelReader.AsDataSet();
+
+            return ds;
         }
         #endregion
         #region Header

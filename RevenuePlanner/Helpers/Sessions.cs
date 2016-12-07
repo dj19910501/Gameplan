@@ -724,8 +724,8 @@ namespace RevenuePlanner.Helpers
             }
         }
         /// <summary>
-        /// Add By Devanshi
-        /// Set Time frame for import in Session
+        /// Add By Devanshi - #2804
+        /// Set Time frame value in Session for checking view at the time of import marketing budget
         /// </summary>
         /// <returns></returns>
         public static string ImportTimeFrame

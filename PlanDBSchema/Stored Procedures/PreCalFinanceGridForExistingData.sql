@@ -35,11 +35,7 @@ BEGIN
 		-- Get monthly budget amount with pivoting
 		SELECT * FROM 
 		(
-			SELECT B.Id AS BudgetDetailId, Period, Budget 
-			FROM Budget A
-			INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
-			INNER JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
-			WHERE A.IsDeleted = 0 and A.Id=@BudgetId
+			SELECT BudgetDetailId, Period, Budget FROM BudgetDetail	WHERE  Id=@BudgetId
 		) P
 		PIVOT
 		(
@@ -56,11 +52,7 @@ BEGIN
 	SELECT Pvt.BudgetDetailId,Pvt.[Year],[Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12] FROM 
 	(
 		-- Get monthly budget amount with pivoting
-		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget 
-		FROM Budget A
-		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
-		LEFT JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
-		WHERE A.IsDeleted = 0 and A.Id=@BudgetId
+		SELECT  BudgetDetailId, [Year], Period, Budget 	FROM  BudgetDetail	WHERE  Id=@BudgetId
 	) P
 	PIVOT
 	(
@@ -85,10 +77,7 @@ BEGIN
 		-- Get monthly forecast amount with pivoting
 		SELECT * FROM 
 		(
-			SELECT B.Id AS BudgetDetailId, Period, Forecast FROM Budget A
-			INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
-			INNER JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
-			WHERE A.IsDeleted = 0 and A.Id=@BudgetId
+			SELECT  BudgetDetailId, Period, Forecast FROM  BudgetDetail	WHERE  Id=@BudgetId
 		) P
 		PIVOT
 		(
@@ -97,7 +86,6 @@ BEGIN
 		) AS Pvt
 	) ExistingFinanceData ON PreCal.BudgetDetailId = ExistingFinanceData.BudgetDetailId
 END
-
 BEGIN
 	-- Insert Forecast records into [MV].[PreCalculatedMarketingBudget] table
 	INSERT INTO [MV].PreCalculatedMarketingBudget (BudgetDetailId, [Year], Y1_Forecast, Y2_Forecast, Y3_Forecast, Y4_Forecast, Y5_Forecast, 
@@ -105,10 +93,7 @@ BEGIN
 	SELECT Pvt.BudgetDetailId,Pvt.[Year],[Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12] FROM 
 	(
 		-- Get monthly forecast amount with pivoting
-		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget FROM Budget A
-		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
-		LEFT JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
-		WHERE A.IsDeleted = 0 and A.Id=@BudgetId
+		SELECT  BudgetDetailId, [Year], Period, Budget FROM  BudgetDetail	WHERE  Id=@BudgetId
 	) P
 	PIVOT
 	(
