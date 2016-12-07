@@ -53,16 +53,8 @@ namespace RevenuePlanner.Controllers
         [System.Web.Http.HttpPost]
         public void DeleteTransactionLineItemMapping(List<int> mappingIds)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(mappingId > 0, "A mappingId less than or equal to zero is invalid, and likely indicates the mappingId was not set properly");
-            if (mappingIds == null)
-            {
-                throw new ArgumentNullException("mappingIds", "mappingIds cannot be null.");
-            }
-
-            if (mappingIds.Any(id => id <= 0))
-            {
-                throw new ArgumentOutOfRangeException("mappingIds", "all mappingIds should be positive.");
-            }
+            Contract.Requires<ArgumentNullException>(mappingIds != null, "mappingIds cannot be null");
+            Contract.Requires<ArgumentOutOfRangeException>(Contract.ForAll(mappingIds, id => id > 0), "A mappingId less than or equal to zero is invalid, and likely indicates the mappingId was not set properly");
 
             // delete them one by one.  Perhaps the interface can be changed to delete them in bulk?
             mappingIds.ForEach(id => _transaction.DeleteTransactionLineItemMapping(Sessions.User.CID, id));
