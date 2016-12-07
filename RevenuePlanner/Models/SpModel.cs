@@ -202,7 +202,7 @@ namespace RevenuePlanner.Models
         public Nullable<int> HelpTextId { get; set; }
         public List<DashboardContentModel> DashboardContent = new List<DashboardContentModel>();
     }
-   
+
     public class DashboardContentModel
     {
         public int ReportID { get; set; }
@@ -221,7 +221,7 @@ namespace RevenuePlanner.Models
     public class ReportParameters
     {
         public int Id { get; set; }
-        
+
         public string ConnectionString { get; set; }
         public string Container { get; set; }
         public string[] SDV { get; set; }
@@ -240,6 +240,8 @@ namespace RevenuePlanner.Models
         public string SortOrder { get; set; }
         public string DisplayName { get; set; }
         public string CustomQuery { get; set; }
+        //Following parameter is added on 30/11/2016 for ticket no #2818 by kausha to check isviewdata or not.     
+        public bool IsViewData { get; set; }
     }
     public class ReportTableParameters
     {
@@ -260,6 +262,7 @@ namespace RevenuePlanner.Models
         public string RoleId { get; set; }
         //Following parameter is added on 28/11/2016 for ticket no #2819 by kausha to display ReportTable name in drilldown popup.
         public string DisplayName { get; set; }
+
     }
 
     /// <summary>
@@ -323,4 +326,16 @@ namespace RevenuePlanner.Models
         public string ViewByValue { get; set; }
         public string[] SelectedDimension { get; set; }
     }
+    /// <summary>
+    /// Following class is added for API parametrs
+    /// </summary>
+    public class APIParameters
+    {
+        public string AuthorizedReportAPIUserName { get; set; }
+        public string AuthorizedReportAPIPassword { get; set; }
+        public string ApiUrl { get; set; }
+        public string ConnectionString { get; set; }
+        public string[] CurrencyRate { get; set; }
+    }
+
 }

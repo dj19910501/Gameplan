@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="@Url.Content("~/content/css/dhtmlxgrid_dhx_web.css")" type="text/css" />
 @Scripts.Render("~/bundles/DateRangeJs")
 @Scripts.Render("~/bundles/GetJSReport")
+@Styles.Render("~/Content/css/GetReportCSS")
 
 <div class="sidebar-toogle">
     <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true" title="Show/Hide Filters"></i></a>
@@ -65,26 +66,6 @@
             </div>
         </div>
 }
-<style type="text/css">
-    /* Below CSS is necessary on page level */
-    div.gridbox .objbox {
-        overflow: hidden !important;
-        overflow-x: hidden !important;
-        overflow-y: hidden !important;
-        width: inherit;
-    }
-    div.gridbox .xhdr {
-        overflow: hidden !important;
-        overflow-x: hidden !important;
-        overflow-y: hidden !important;
-        width: inherit;
-    }
-    div.gridbox table.obj td {
-        border-bottom: 1px solid #ededed !important;
-        border-left: 1px solid #ededed !important;
-    }
-    .tooltip{z-index:2222 !important;}
-</style>
 <div class="error-box data_error_box source-sans-proregular" id="divAggregationStatus">The data in the application is currently being updated, performance may be degraded during this process.<span><i style="cursor: pointer;" class="fa fa-times aggregationmsg"></i></span></div>
 <div class="col-sm-9  col-md-9 col-lg-10 main report-main">
     <div id="mainContent" class="col-md-12 content">
@@ -125,11 +106,17 @@
                     string cssWidthMinus = "21px";
                     string cssClass = "component";
                     string RepdivId = "divChart" + @ReportGraph.DashboardContentId;
+                    //ViewAll Icons id will be reportgraphid/reporttableid
+                    string drillDown = "";
+                    if (@ReportGraph.ReportID > 0)
+                        drillDown += @ReportGraph.ReportID;
+                    else
+                        drillDown += @ReportGraph.ReportTableID;
 
-                    <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); float:left; ">
+                    <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); float:left;">
                         <div class="tab-head">
                             @ReportGraph.DisplayName
-                            <span class="IconResize" id='@ReportGraph.ReportTableID' title="View All" clickon="ViewAll" reporttableid='@ReportGraph.ReportTableID' reportgraphid='@ReportGraph.ReportID' displayname="@ReportGraph.DisplayName" onclick="ViewAllContent(this);" dashboardcontentid='@ReportGraph.DashboardContentId' customquery='@ReportGraph.CustomQuery' charttype='@ReportGraph.ChartType'>
+                            <span class="IconResize" id=@drillDown title="View All" clickon="ViewAll" reporttableid='@ReportGraph.ReportTableID' reportgraphid='@ReportGraph.ReportID' displayName="@ReportGraph.DisplayName" onclick="ViewAllContent(this);" dashboardcontentid='@ReportGraph.DashboardContentId' customquery='@ReportGraph.CustomQuery' charttype='@ReportGraph.ChartType'>
                                 <i class="fa fa-info-circle"></i>
                             </span>
                         </div>
@@ -220,7 +207,9 @@
         //called update viewby function to update session
         UpdateViewBy();
         $('div[id^=divChart]').each(function () {
-            LoadReport(this, appCode, "@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi", "@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured", '@ApiUrl', '@DashId', '@DashPageID');
+            //Using Following method chart will be displayed using different type of parameters.
+            LoadReport(this, appCode, "@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi", "@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured", '@ApiUrl', '@DashId', '@DashPageID', '@Common.objCached.RptNoDataAvailable', '@Common.objCached.RptGraphNotSupported',false);
+
         });
     }
     //insertation start for ticket no #246 05/09/2016
@@ -249,7 +238,7 @@
     var appCode = '@Enums.ApplicationCode.RPC.ToString()'
 
 
-   
+
     @*Following function is used to get selected filters value*@
     function GetSelectedValues() {
         var ulListing = [];
@@ -271,7 +260,7 @@
     }
 
 
-   
+
     function BulkOwnerOperationSelect(id) {
         var hvParentUlID = "#ulListing" + id;
         var totalcnt = 0;
@@ -503,7 +492,7 @@
                 id = $(sender).attr('reporttableid');
                 IsGraph = false;
             }
-            var SelectedDimensionValue = GetSelectedValues();      
+            var SelectedDimensionValue = GetSelectedValues();
             var DisplayName = $(sender).attr('displayName');
             var DashboardContentId = $(sender).attr('dashboardcontentid');
             var Customquery = $(sender).attr('customquery');

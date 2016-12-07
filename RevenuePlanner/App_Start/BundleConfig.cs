@@ -123,6 +123,11 @@ namespace RevenuePlanner
              //   "~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css",
                 "~/Content/css/fileinput.css"
 ));
+            //Following bundle is added by kausha for measure reports.
+            bundles.Add(new StyleBundle("~/Content/css/GetReportCSS").Include(
+                //   "~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css",
+                "~/Content/css/reportcss.css"
+));
             BundleTable.EnableOptimizations = true;
 
         }

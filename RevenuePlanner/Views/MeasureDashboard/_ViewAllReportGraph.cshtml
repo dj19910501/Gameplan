@@ -17,28 +17,34 @@
                         {
                             @Html.HiddenFor(x => x.DisplayName)
                             <div id="ViewAllDataModule">
-                                <div class="tab-head">@Model.DisplayName<a class="close-popup-btn">Close</a>
+                                <div class="tab-head">
+                                    @Model.DisplayName<a class="close-popup-btn">Close</a>
                                 @*<img src="@Url.Content("~/content/images/help-icon.png")" alt="help" style="float:right; height:15px; width:15px; margin:13px;" title="Use shift key to allow sorting on multiple columns" />*@
-                                </div>
-                                <div class="home-chart-header  col-xs-12">
-                                    <div class="row date-value-wrapper">
-                                        <div class="col-xs-5">
-                                            <div class="datetitle">Date Range</div>
-                                            <span class="lblheader">From: </span><span class="lblvalue">@Sessions.StartDate </span>
-                                            <span class="lblheader">To: </span><span class="lblvalue">@Sessions.EndDate</span>
-                                        </div>
-
+                            </div>
+                            <div class="home-chart-header  col-xs-12">
+                                <div class="row date-value-wrapper">
+                                    <div class="col-xs-5">
+                                        <div class="datetitle">Date Range</div>
+                                        <span class="lblheader">From: </span><span class="lblvalue">@Sessions.StartDate </span>
+                                        <span class="lblheader">To: </span><span class="lblvalue">@Sessions.EndDate</span>
                                     </div>
-                                </div>
-                                <div class="tab-content-wrap tab-content-scroll">
-                                    <div class="tab-content">
-                                        <div class="table1-responsive" style="overflow: auto">
-                                            <div id="divViewChartTable_@Model.Id" class="table-popup">
-                                            </div>
-                                        </div>
-                                     </div>
+
                                 </div>
                             </div>
+                            @*In Following div chart will be displayed*@
+                            <div class="tab-content">
+                                <div class="table1-responsive">
+                                    <div id="divViewChart_@Model.Id" ReportGraphId="@Model.Id" class="table-popup" style="height:300px">
+                                    </div>
+                                </div>
+                                @*//In Following div report table will be displayed*@
+                                <div class="table1-responsive tableheightclass">
+                                    <div id="divViewChartTable_@Model.Id" class="table-popup">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                         }
                     </div>
                 </div>
@@ -46,8 +52,7 @@
         </div>
     </div>
     <div id="DivBackground" class="modal-backdrop fade in" style="opacity:0.2"></div>
-    }
-
+}
 <script type="text/javascript">
 
     $(function () {
@@ -81,7 +86,10 @@
             params.StartDate ='@Model.StartDate';
             params.EndDate = '@Model.EndDate';
             params.IsViewData = 'True';
-
+            //Using LoadReport report chart will be display in divViewChart_id div.
+            LoadReport("#divViewChart_"+'@Model.Id',"@RevenuePlanner.Helpers.Enums.ApplicationCode.RPC","@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi","@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured",'APIURL',0,0,'@RevenuePlanner.Helpers.Common.objCached.RptNoDataAvailable','@RevenuePlanner.Helpers.Common.objCached.RptGraphNotSupported',true)
+            params.isChartTable = true;
+            //Using Following call report table will be display.
 
             $.ajax({
                 url: URL,
@@ -90,6 +98,7 @@
                 data: $.param(params, true),
                 dataType: "json",
                 success: function (data) {
+                    if(data.data!=null && data.data!='')
                     LoadReportTable(params.Id, "divViewChartTable_", data.data,"ReportTable","_wrapper");
 
                     $("#ReportTable" + '@Model.Id' + " .border-r").click(function() {

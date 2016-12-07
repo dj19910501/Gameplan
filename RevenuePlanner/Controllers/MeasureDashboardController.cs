@@ -211,104 +211,71 @@ namespace RevenuePlanner.Controllers
             TempData["viewbyValue"] = viewBy;
             return Json(new { viewbyValue = viewBy }, JsonRequestBehavior.AllowGet);
         }
+
+        //IsChartTable Parameter is Added to check Method is called to get Chart or ChartTable.
         /// <summary>
-        /// Add By Nandish Shah
-        /// Get Chart Data
+        /// 
         /// </summary>
-        /// <returns>List<CurrencyModel.ClientCurrency></returns>
-        public async Task<ActionResult> GetChart(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", bool IsViewData = false)
+        /// <param name="Id">Report Graph Id</param>
+        /// <param name="DbName">This parameter is used to check this method is called for plan report or measure reports</param>
+        /// <param name="Container"></param>
+        /// <param name="SDV">Selected filters value</param>
+        /// <param name="TopOnly">Chart or Charttable will be return or row or Configured default rows</param>
+        /// <param name="ViewBy">Selected view by ie.'Quarter','Month'</param>
+        /// <param name="StartDate"></param>
+        /// <param name="EndDate"></param>
+        /// <param name="IsViewData">To Check this method is called from dashboard or on click of viewdata.</param>
+        /// <param name="isChartTable">To Check this method will return Chart Table or Chart</param>        
+        public async Task<ActionResult> GetChart(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", bool IsViewData = false, bool isChartTable = false)
         {
-            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+           
             HttpResponseMessage response = new HttpResponseMessage();
             string result = string.Empty;
-            string AuthorizedReportAPIUserName = string.Empty;
-            string AuthorizedReportAPIPassword = string.Empty;
-            string ApiUrl = string.Empty;
-            string ConnectionString = string.Empty;
             Sessions.ViewByValue = ViewBy;
-            if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
-            {
-                ConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
-            }
-            else if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.MRP))
-            {
-                var efConnectionString = ConfigurationManager.ConnectionStrings["MRPEntities"].ToString();
-                var builder = new EntityConnectionStringBuilder(efConnectionString);
-                string regularConnectionString = builder.ProviderConnectionString;
-
-                if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
-                {
-                    ConnectionString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
-                }
-            }
-
             if (ConfigurationManager.AppSettings.Count > 0)
             {
-                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
-                {
-                    AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
-                }
-                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
-                {
-                    AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
-                }
-                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
-                {
-                    ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
-                    if (!string.IsNullOrEmpty(ApiUrl) && !ApiUrl.EndsWith("/"))
-                    {
-                        ApiUrl += "/";
-                    }
-                }
-                List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> MonthWiseUserReportCurrency = objCurrency.GetUserCurrencyMonthwise(StartDate, EndDate);
-                string[] CurrencyRate = null;
-                if (MonthWiseUserReportCurrency != null)
-                {
-                    CurrencyRate = new string[MonthWiseUserReportCurrency.Count];
-                    int i = 0;
-                    foreach (var item in MonthWiseUserReportCurrency)
-                    {
-                        CurrencyRate[i] = item.StartDate.ToString("MM/dd/yyyy") + ":" + item.EndDate.ToString("MM/dd/yyyy") + ":" + item.ExchangeRate + ":" + item.CurrencySymbol;
-                        i++;
-                    }
-                }
-
                 try
                 {
-                    HttpClient client = new HttpClient();
+                    if (Id > 0)
+                    {
+                        //Using following method required parametr for Report API will be set.
+                        APIParameters objApiParameters = SetApiParameters(DbName,StartDate,EndDate);
+                        HttpClient client = new HttpClient();
+                        int CommonWebAPITimeout = 0;
+                        string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
+                        if (!string.IsNullOrEmpty(strwebAPITimeout))
+                            CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
 
-                    int CommonWebAPITimeout = 0;
-                    string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
-                    if (!string.IsNullOrEmpty(strwebAPITimeout))
-                        CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
+                        client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
+                        client.Timeout = TimeSpan.FromHours(3);  //set timeout for Common Integration API call
 
-                    client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
-                    client.Timeout = TimeSpan.FromHours(3);  //set timeout for Common Integration API call
+                        Uri baseAddress = new Uri(objApiParameters.ApiUrl);
+                        client.BaseAddress = baseAddress;
 
-                    Uri baseAddress = new Uri(ApiUrl);
-                    client.BaseAddress = baseAddress;
+                        ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                        ReportParameters objParams = new ReportParameters();
+                        objParams.Id = Id;
+                        objParams.ConnectionString = objApiParameters.ConnectionString;
+                        objParams.Container = Container;
+                        objParams.SDV = SDV;
+                        objParams.TopOnly = TopOnly;
+                        objParams.ViewBy = ViewBy;
+                        objParams.StartDate = StartDate;
+                        objParams.EndDate = EndDate;
+                        objParams.UserName = objApiParameters.AuthorizedReportAPIUserName;
+                        objParams.Password = objApiParameters.AuthorizedReportAPIPassword;
+                        objParams.CurrencyRate = objApiParameters.CurrencyRate;
+                        //Following parameter is added to check this method is called from view data or not and pass this parameter in to report API.
+                        objParams.IsViewData = IsViewData;
+                        //Following will be return chart or table based on passed parameter isChartTable
+                        if (isChartTable == false)
+                            response = await client.PostAsJsonAsync("api/Report/Chart ", objParams);
+                        else
+                            response = await client.PostAsJsonAsync("api/Report/GetChartTable", objParams);
 
-                    ReportParameters objParams = new ReportParameters();
-                    objParams.Id = Id;
-                    objParams.ConnectionString = ConnectionString;
-                    objParams.Container = Container;
-                    objParams.SDV = SDV;
-                    objParams.TopOnly = TopOnly;
-                    objParams.ViewBy = ViewBy;
-                    objParams.StartDate = StartDate;
-                    objParams.EndDate = EndDate;
-                    objParams.UserName = AuthorizedReportAPIUserName;
-                    objParams.Password = AuthorizedReportAPIPassword;
-                    objParams.CurrencyRate = CurrencyRate;
-                    //Following will be return chart or table based on passed parameter IsViewData
-                    if (IsViewData == false)
-                        response = await client.PostAsJsonAsync("api/Report/Chart ", objParams);
-                    else
-                        response = await client.PostAsJsonAsync("api/Report/GetChartTable", objParams);
-
-                    result = response.Content.ReadAsStringAsync().Result;
+                        result = response.Content.ReadAsStringAsync().Result;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -317,25 +284,90 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { isSuccess = true, data = result }, JsonRequestBehavior.AllowGet);
         }
+        /// <summary>
+        /// Following Common method is created to set parameter to call report API.
+        /// </summary>
+        /// <param name="DbName"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="EndDate"></param>
+        //TO DO:Currenly This method is used only in Chart Method of this controller, for other method we will implement it letter.
+        /// <returns></returns>
+        private APIParameters SetApiParameters(string DbName,string StartDate,string EndDate)
+        {
+            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+            APIParameters objApiParameters = new APIParameters();
+           
+            
+            if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
+            {
+                objApiParameters.ConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle.ToLower() == Convert.ToString(Enums.ApplicationCode.RPC).ToLower()).Select(o => o.ConnectionString).FirstOrDefault();
+            }
+            else if (!string.IsNullOrEmpty(DbName) && DbName.ToLower() == Convert.ToString(Enums.ApplicationCode.MRP).ToLower())
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.ConnectionStrings["MRPEntities"])))
+                {
+                    string efConnectionString = Convert.ToString(ConfigurationManager.ConnectionStrings["MRPEntities"]);
+                    EntityConnectionStringBuilder builder = new EntityConnectionStringBuilder(efConnectionString);
+                    string regularConnectionString = builder.ProviderConnectionString;
 
+                    if (!string.IsNullOrEmpty(regularConnectionString))
+                    {
+                        objApiParameters.ConnectionString = Convert.ToString(regularConnectionString.Replace(@"\", @"\\"));
+                    }
+                }
+            }
+
+            if (ConfigurationManager.AppSettings.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                {
+                    objApiParameters.AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                }
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                {
+                    objApiParameters.AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                }
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                {
+                    objApiParameters.ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                    if (!string.IsNullOrEmpty(objApiParameters.ApiUrl) && !objApiParameters.ApiUrl.EndsWith("/"))
+                    {
+                        objApiParameters.ApiUrl += "/";
+                    }
+                }
+                List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> MonthWiseUserReportCurrency = objCurrency.GetUserCurrencyMonthwise(StartDate, EndDate);
+                //string[] CurrencyRate = null;
+                if (MonthWiseUserReportCurrency != null)
+                {
+                    objApiParameters.CurrencyRate = new string[MonthWiseUserReportCurrency.Count];
+                    int i = 0;
+                    foreach (var item in MonthWiseUserReportCurrency)
+                    {
+                        objApiParameters.CurrencyRate[i] = item.StartDate.ToString("MM/dd/yyyy") + ":" + item.EndDate.ToString("MM/dd/yyyy") + ":" + item.ExchangeRate + ":" + item.CurrencySymbol;
+                        i++;
+                    }
+                }
+            }
+            return objApiParameters;
+        }
         /// <summary>
         /// Add By Nandish Shah
         /// Get Report table Data
         /// </summary>
         public async Task<string> GetReportTable(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0)
         {
-          
+
 
             string AuthorizedReportAPIUserName = string.Empty;
             string AuthorizedReportAPIPassword = string.Empty;
             string ApiUrl = string.Empty;
             string ConnectionString = string.Empty;
             Sessions.ViewByValue = ViewBy;
-            if(SDV!=null)
+            if (SDV != null)
             {
-                if(SDV.Count()==1)
+                if (SDV.Count() == 1)
                 {
-                    if(string.IsNullOrEmpty(SDV[0]))
+                    if (string.IsNullOrEmpty(SDV[0]))
                     {
                         SDV = null;
                     }
@@ -411,13 +443,13 @@ namespace RevenuePlanner.Controllers
             }
             return string.Empty;
         }
-     
-        
+
+
         /// <summary>
         /// Date:25/11/2016 #2819 Following method is created to load _ViewAllReportTable partial view(pop-up)
         /// </summary>
-      
-        public async  Task<PartialViewResult> LoadReportTablePartial(int Id, string Container, string[] SDV, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0, string DisplayName = "")     
+
+        public async Task<PartialViewResult> LoadReportTablePartial(int Id, string Container, string[] SDV, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0, string DisplayName = "")
         {
             ReportTableParameters objReportTable = new ReportTableParameters();
             objReportTable.Id = Id;
@@ -433,7 +465,7 @@ namespace RevenuePlanner.Controllers
             objReportTable.DashboardPageid = DashboardPageid;
             objReportTable.DashboardContentId = DashboardContentId;
             await Task.Delay(1);
-            return  PartialView("_ViewAllReportTable", objReportTable);
+            return PartialView("_ViewAllReportTable", objReportTable);
 
         }
         /// <summary>
@@ -649,7 +681,7 @@ namespace RevenuePlanner.Controllers
                         {
                             sSelectedOthersDimension = SelectedOthersDimension.ToArray();
                         }
-                        
+
                         if (sSelectedOthersDimension != null)
                         {
                             if (sSelectedOthersDimension.Length >= 1)
@@ -665,7 +697,7 @@ namespace RevenuePlanner.Controllers
                         }
 
                         string SubDashboardOtherDimensionTable = string.Empty;
-                        string[] SelectedDimension = new string []{ };
+                        string[] SelectedDimension = new string[] { };
                         if (DimensionValues != null)
                         {
                             if (!string.IsNullOrEmpty(DimensionTable))
@@ -675,7 +707,7 @@ namespace RevenuePlanner.Controllers
                             if (sDimensionTable != null && sDimensionTable.Count > 0)
                             {
                                 SelectedDimension = sDimensionTable.ToArray();
-                            }                            
+                            }
                         }
                         else if (SelectedOthersDimension.Count() == 1)
                         {
