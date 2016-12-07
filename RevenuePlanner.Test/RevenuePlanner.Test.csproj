@@ -87,7 +87,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controllers\FilterControllerTest.cs" />
-    <Compile Include="Controllers\FinanceControllerTest.cs" />
     <Compile Include="Controllers\HomeControllerTest.cs" />
     <Compile Include="Controllers\InspectControllerTest.cs" />
     <Compile Include="Controllers\LoginControllerTest.cs" />
