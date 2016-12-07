@@ -1,9 +1,9 @@
 import $ from 'jquery';
-import {GET_LINKED_LINE_ITEMS, SAVE_LINKED_LINE_ITEMS} from './apiUri';
+import {GET_LINKED_LINE_ITEMS, SAVE_LINKED_LINE_ITEMS, DELETE_LINKED_LINE_ITEMS} from './apiUri';
 import flatMap from 'lodash/flatMap';
 import gridDataSource from 'util/gridDataSource';
 import keyBy from 'lodash/keyBy';
-import map from 'lodash/map';
+import groupBy from 'lodash/groupBy';
 
 const columns = [
     { id: "title", value: "Name", width: 300, type: "rotxt", align: "left", sort: "na" },
@@ -11,6 +11,7 @@ const columns = [
     { id: "lineItemCost", value: "Planned Cost", width: 100, type: "ron", align: "right", sort: "na", numberFormat: `${window.CurrencySybmol} 0,000.00` },
     { id: "lineItemActual", value: "Total Actual Costs", width: 100, type: "ron", align: "right", sort: "na", numberFormat: `${window.CurrencySybmol} 0,000.00` },
     { id: "mappedAmount", value: "Linked to Account", width: 100, type: "edn", align: "right", sort: "na", numberFormat: `${window.CurrencySybmol} 0,000.00`, validator: "ValidNumeric" },
+    { id: "trash", value: "&nbsp;", width: 32, type: "ro", align: "center", sort: "na" },
 ];
 
 function mapLinkedItems(result) {
@@ -22,6 +23,7 @@ function mapLinkedItems(result) {
         lineItemCost: lineItem.Cost,
         lineItemActual: lineItem.Actual,
         title: lineItem.Title,
+        trash: `<i class="fa fa-trash-o fa-fw"></i>`,
     })));
 }
 
@@ -88,6 +90,8 @@ export default function createModel(transaction) {
                     if (--state.modifiedCount === 0) {
                         $(this).trigger("modified");
                     }
+
+                    $(this).trigger("availableFunds");
                 }
                 return false;
             }
@@ -96,17 +100,46 @@ export default function createModel(transaction) {
 
             let modifiedRecord = state.modifiedItems[id];
             if (!modifiedRecord) {
-                modifiedRecord = state.modifiedItems[id] = {...record};
+                modifiedRecord = state.modifiedItems[id] = {...record, mappedAmount: value};
                 if (++state.modifiedCount === 1) {
                     $(this).trigger("modified");
                 }
             }
-
-            modifiedRecord.mappedAmount = value;
+            else {
+                modifiedRecord.mappedAmount = value;
+            }
 
             $(this).trigger("availableFunds");
 
             return true;
+        },
+
+        toggleDelete(id) {
+            let modified = state.modifiedItems[id];
+            if (!modified) {
+                // this record has not been modified
+                const record = state.itemLookup[id];
+                modified = state.modifiedItems[id] = {...record, isDeleted: true};
+                if (++state.modifiedCount === 1) {
+                    $(this).trigger("modified");
+                }
+
+                $(this).trigger("availableFunds");
+
+                return true;
+            }
+            else {
+                modified.isDeleted = !modified.isDeleted;
+                if (modified.isDeleted) {
+                    $(this).trigger("availableFunds");
+                    return true;
+                }
+
+                // call modify() which will detect if there are any other changes
+                // and remove the record if there aren't
+                this.modify(id, modified.mappedAmount);
+                return false;
+            }
         },
 
         get isModified() {
@@ -136,7 +169,8 @@ export default function createModel(transaction) {
 
         save() {
             // Collect all of the modified records and create an array to send to the server
-            const updateRecords = map(state.modifiedItems, item => {
+            const changes = groupBy(state.modifiedItems, item => item.isDeleted ? "del" : "upd");
+            const updateRecords = changes.upd && changes.upd.map(item => {
                 const updateRecord = {
                     TransactionId: transaction.id,
                     LineItemId: item.lineItemId,
@@ -149,16 +183,33 @@ export default function createModel(transaction) {
 
                 return updateRecord;
             });
+            const deleteRecords = changes.del && changes.del.map(item => item.id);
 
-            const payload = updateRecords;
+            // run the update and the delete in parallel
+            const promises = [];
+            if (updateRecords) {
+                const payload = JSON.stringify(updateRecords);
+                promises.push($.ajax({
+                    type: "POST",
+                    url: SAVE_LINKED_LINE_ITEMS,
+                    data: payload,
+                    dataType: "json",
+                    contentType: 'application/json; charset=utf-8',
+                }));
+            }
+            if (deleteRecords) {
+                const payload = JSON.stringify(deleteRecords);
+                promises.push($.ajax({
+                    type: "POST",
+                    url: DELETE_LINKED_LINE_ITEMS,
+                    data: payload,
+                    dataType: "json",
+                    contentType: 'application/json; charset=utf-8',
+                }));
+            }
 
-            return $.ajax({
-                type: "POST",
-                url: SAVE_LINKED_LINE_ITEMS,
-                data: JSON.stringify(payload),
-                dataType: "json",
-                contentType: 'application/json; charset=utf-8',
-            }).then(() => {
+            // wait for both calls to finish
+            return $.when(...promises).then(() => {
                 // reload the data
                 return queryLinkedItems(transaction.id).then(result => {
                     state.invalidCount = 0;

@@ -6,6 +6,7 @@ import css from './linkedItemEditor.scss';
 import dhx4 from 'dhx4';
 import {isValidNumeric} from 'dhtmlxValidation';
 import createModel from './linkedItemEditorModel';
+import allowGridClickEvents from 'util/allowGridClickEvents';
 
 // define a currency formatter
 const currencyFormat = dhx4.template._parseFmt(`${window.CurrencySybmol} 0,000.00`);
@@ -17,6 +18,8 @@ function createGrid(dataSource, $container) {
     $container.empty();
     const $div = $("<div>").appendTo($container);
     const grid = new Grid($div[0]);
+    allowGridClickEvents(grid);
+
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
     grid.enableAutoHeight(true);
     //grid.enableAutoWidth(true);
@@ -29,9 +32,12 @@ function createGrid(dataSource, $container) {
 
 function bindGrid(model, $container) {
     const dataSource = model.linkedItemGridDataSource;
+    let grid;
 
     function onData(ev) {
         if ((!ev || ev.which.records) && dataSource.state.records) {
+            dataSource.off("change", onData);
+
             const grid = model.linkedItemGrid = createGrid(dataSource, $container);
 
             // listen for edit events and validation events
@@ -55,6 +61,27 @@ function bindGrid(model, $container) {
                 }
 
                 return true;
+            });
+
+            // Listen for clicks on the trash icon
+            $container.on("click", ".objbox td:last-child", function (ev) {
+                const td = this;
+                const tr = td.parentNode;
+                const itemId = tr.idd;
+
+                grid.clearSelection();
+
+                // toggle the delete status of the item
+                const isDeleted = model.toggleDelete(itemId);
+
+                // change the icon based on the delete status
+                const icon = isDeleted ? "fa-undo" : "fa-trash-o";
+                td.innerHTML = `<i class="fa ${icon} fa-fw"></i>`;
+
+                // toggle the deleted css on the row
+                $(tr).toggleClass(css.deleted, isDeleted);
+
+                ev.stopPropagation();
             });
         }
     }
