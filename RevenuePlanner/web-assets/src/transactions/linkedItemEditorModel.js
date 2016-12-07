@@ -1,9 +1,9 @@
 import $ from 'jquery';
-import {GET_LINKED_LINE_ITEMS, SAVE_LINKED_LINE_ITEMS} from './apiUri';
+import {GET_LINKED_LINE_ITEMS, SAVE_LINKED_LINE_ITEMS, DELETE_LINKED_LINE_ITEMS} from './apiUri';
 import flatMap from 'lodash/flatMap';
 import gridDataSource from 'util/gridDataSource';
 import keyBy from 'lodash/keyBy';
-import map from 'lodash/map';
+import groupBy from 'lodash/groupBy';
 
 const columns = [
     { id: "title", value: "Name", width: 300, type: "rotxt", align: "left", sort: "na" },
@@ -169,7 +169,8 @@ export default function createModel(transaction) {
 
         save() {
             // Collect all of the modified records and create an array to send to the server
-            const updateRecords = map(state.modifiedItems, item => {
+            const changes = groupBy(state.modifiedItems, item => item.isDeleted ? "del" : "upd");
+            const updateRecords = changes.upd && changes.upd.map(item => {
                 const updateRecord = {
                     TransactionId: transaction.id,
                     LineItemId: item.lineItemId,
@@ -182,16 +183,33 @@ export default function createModel(transaction) {
 
                 return updateRecord;
             });
+            const deleteRecords = changes.del && changes.del.map(item => item.id);
 
-            const payload = updateRecords;
+            // run the update and the delete in parallel
+            const promises = [];
+            if (updateRecords) {
+                const payload = JSON.stringify(updateRecords);
+                promises.push($.ajax({
+                    type: "POST",
+                    url: SAVE_LINKED_LINE_ITEMS,
+                    data: payload,
+                    dataType: "json",
+                    contentType: 'application/json; charset=utf-8',
+                }));
+            }
+            if (deleteRecords) {
+                const payload = JSON.stringify(deleteRecords);
+                promises.push($.ajax({
+                    type: "POST",
+                    url: DELETE_LINKED_LINE_ITEMS,
+                    data: payload,
+                    dataType: "json",
+                    contentType: 'application/json; charset=utf-8',
+                }));
+            }
 
-            return $.ajax({
-                type: "POST",
-                url: SAVE_LINKED_LINE_ITEMS,
-                data: JSON.stringify(payload),
-                dataType: "json",
-                contentType: 'application/json; charset=utf-8',
-            }).then(() => {
+            // wait for both calls to finish
+            return $.when(...promises).then(() => {
                 // reload the data
                 return queryLinkedItems(transaction.id).then(result => {
                     state.invalidCount = 0;

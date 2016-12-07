@@ -32,9 +32,12 @@ function createGrid(dataSource, $container) {
 
 function bindGrid(model, $container) {
     const dataSource = model.linkedItemGridDataSource;
+    let grid;
 
     function onData(ev) {
         if ((!ev || ev.which.records) && dataSource.state.records) {
+            dataSource.off("change", onData);
+
             const grid = model.linkedItemGrid = createGrid(dataSource, $container);
 
             // listen for edit events and validation events
@@ -60,32 +63,25 @@ function bindGrid(model, $container) {
                 return true;
             });
 
-            $container.on("click", ".objbox td:last-child", ev => ev.preventDefault());
-            $container.on("click", ev => {
-                console.log("booyah");
-            });
-
             // Listen for clicks on the trash icon
-            grid.attachEvent("onBeforeSelect", (newID, oldID, cellIndex) => {
-                switch (grid.getColumnId(cellIndex)) {
-                    case "trassssh": {
-                        // toggle the delete status of the item
-                        const isDeleted = model.toggleDelete(newID);
+            $container.on("click", ".objbox td:last-child", function (ev) {
+                const td = this;
+                const tr = td.parentNode;
+                const itemId = tr.idd;
 
-                        // change the icon based on the delete status
-                        const icon = isDeleted ? "fa-undo" : "fa-trash-o";
-                        const cell = grid.cellById(newID, cellIndex);
-                        cell.setValue(`<i class="fa ${icon} fa-fw"></i>`);
+                grid.clearSelection();
 
-                        // toggle the deleted css on the row
-                        $(cell.cell.parentNode).toggleClass(css.deleted, isDeleted);
+                // toggle the delete status of the item
+                const isDeleted = model.toggleDelete(itemId);
 
-                        return false;
-                        break;
-                    }
-                }
+                // change the icon based on the delete status
+                const icon = isDeleted ? "fa-undo" : "fa-trash-o";
+                td.innerHTML = `<i class="fa ${icon} fa-fw"></i>`;
 
-                return true;
+                // toggle the deleted css on the row
+                $(tr).toggleClass(css.deleted, isDeleted);
+
+                ev.stopPropagation();
             });
         }
     }
