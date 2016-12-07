@@ -1026,7 +1026,7 @@ IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[dbo].[GetLinke
 DROP PROCEDURE [dbo].[GetLinkedLineItemsForTransaction];
 GO 
 
-CREATE PROCEDURE [dbo].[GetLinkedLineItemsForTransaction](@TransactionId INT)
+CREATE PROCEDURE [dbo].[GetLinkedLineItemsForTransaction](@ClientID INT, @TransactionId INT)
 AS 
 BEGIN 
 
@@ -1041,7 +1041,8 @@ BEGIN
 		JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanTacticId = T.PlanTacticId
 		LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
 		JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId
-	WHERE M.TransactionId = @TransactionId
+		JOIN dbo.Transactions TR ON TR.TransactionId = M.TransactionId
+	WHERE M.TransactionId = @TransactionId AND TR.ClientID = @ClientId
 	GROUP BY T.PlanTacticId, T.Title, T.Cost
 
 	--dataset 2: line items linked to the @transaction
@@ -1065,7 +1066,8 @@ BEGIN
         JOIN dbo.[Plan] PL ON PL.PlanId = C.PlanId
 		LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
 		JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId
-	WHERE M.TransactionId = @TransactionId
+		JOIN dbo.Transactions TR ON TR.TransactionId = M.TransactionId
+	WHERE M.TransactionId = @TransactionId AND TR.ClientID = @ClientId
 	GROUP BY L.PlanTacticId, L.PlanLineItemId, L.Title, L.Cost, T.Title, P.Title, C.Title, PL.Title, M.TransactionLineItemMappingId, M.TransactionId
 
 END 

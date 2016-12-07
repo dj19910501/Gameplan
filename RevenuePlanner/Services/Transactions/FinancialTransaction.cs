@@ -6,6 +6,7 @@ using RevenuePlanner.Models;
 using System.Data;
 using System.Data.SqlClient;
 using System.Collections;
+using System.Diagnostics.Contracts;
 
 namespace RevenuePlanner.Services.Transactions
 {
@@ -33,12 +34,59 @@ namespace RevenuePlanner.Services.Transactions
             List<int> mappingIds = transactionLineItemMappings.Select(item => item.TransactionLineItemMappingId).Distinct().ToList();
 
             IQueryable<Models.TransactionLineItemMapping> sqlQuery = from tlim in _database.TransactionLineItemMappings
-                                                                        where mappingIds.Contains(tlim.TransactionLineItemMappingId)
-                                                                        select tlim;
+                                                                     where mappingIds.Contains(tlim.TransactionLineItemMappingId)
+                                                                     select tlim;
 
             return sqlQuery.ToDictionary(tlim => tlim.TransactionLineItemMappingId, tlim => tlim);
         }
 
+        /// <summary>
+        /// Insert or update the Line Item Mapping checking the conditionals to verify the transactionId and LineItemId belong 
+        /// to the ClientId.
+        /// </summary>
+        /// <param name="clientId">ClientId to check against</param>
+        /// <param name="mapping">The Entity object to insert/update</param>
+        /// <param name="modifyingUserId">The user making the change</param>
+        /// <param name="existingMapping">Whether Entity exists in the database or not</param>
+        private void SaveTransactionLineItemMapping(int clientId, Models.TransactionLineItemMapping mapping, int modifyingUserId, bool existingMapping)
+        {
+            List<SqlParameter> parameters = new List<SqlParameter>(7);
+            parameters.Add(new SqlParameter("@TransactionId", mapping.TransactionId));
+            parameters.Add(new SqlParameter("@LineItemId", mapping.LineItemId));
+            parameters.Add(new SqlParameter("@Amount", mapping.Amount));
+            parameters.Add(new SqlParameter("@DateModified", mapping.DateModified));
+            parameters.Add(new SqlParameter("@ModifiedBy", modifyingUserId));
+            parameters.Add(new SqlParameter("@ClientId", clientId));
+            
+            string sqlQuery;
+
+            if (existingMapping)
+            {
+                parameters.Add(new SqlParameter("@TransactionLineItemMappingId", mapping.TransactionLineItemMappingId));
+
+                sqlQuery = string.Format(@"update TransactionLineItemMapping 
+                                            set TransactionId = @TransactionId, LineItemId = @LineITemId, Amount = @Amount, DateModified = @DateModified, ModifiedBy = @ModifiedBy
+                                            from Transactions T
+                                            join LineItemDetail L on L.ClientId = T.ClientId
+                                            where T.TransactionId = @TransactionId and 
+                                                L.PlanLineItemId = @LineitemId and 
+                                                TransactionLineItemMappingId = @TransactionLineItemMappingId and
+                                                T.clientId = @ClientId");
+            }
+            else
+            {
+                sqlQuery = string.Format(@"insert into TransactionLineItemMapping (TransactionId, LineItemId, Amount, DateModified, ModifiedBy)
+	                                        select T.transactionId, L.PlanLineItemId, @Amount, @DateModified, @ModifiedBy 
+	                                        from Transactions T
+	                                        join LineItemDetail L on L.ClientId = T.clientid  
+	                                        where T.TransactionId = @TransactionId and 
+                                                L.PlanLineItemId = @LineItemId and 
+                                                T.ClientID = @ClientId");
+            }
+
+            _database.Database.ExecuteSqlCommand(sqlQuery, parameters.ToArray());
+
+        }
         public void SaveTransactionToLineItemMapping(int clientId, List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId)
         {
             if (clientId <= 0)
@@ -54,7 +102,7 @@ namespace RevenuePlanner.Services.Transactions
                 throw new ArgumentOutOfRangeException("modifyingUserId", "A modifyingUserId less than or equal to zero is invalid, and likely indicates the modifyingUserId was not set properly");
             }
 
-            Dictionary<int, Models.TransactionLineItemMapping> existingMappings = GetExistingLineItemMappings(transactionLineItemMappings);    
+            Dictionary<int, Models.TransactionLineItemMapping> existingMappings = GetExistingLineItemMappings(transactionLineItemMappings);
 
             foreach (TransactionLineItemMapping tlim in transactionLineItemMappings)
             {
@@ -63,23 +111,21 @@ namespace RevenuePlanner.Services.Transactions
                 if (existingMappings.ContainsKey(tlim.TransactionLineItemMappingId))
                 {
                     modelTlim = existingMappings[tlim.TransactionLineItemMappingId];
-                    _database.Entry(modelTlim).State = EntityState.Modified;
                 }
                 else
                 {
                     modelTlim = new Models.TransactionLineItemMapping();
                     modelTlim.TransactionId = tlim.TransactionId;
                     modelTlim.LineItemId = tlim.LineItemId;
-                    _database.Entry(modelTlim).State = EntityState.Added;
                 }
 
                 modelTlim.Amount = tlim.Amount;
                 modelTlim.DateModified = System.DateTime.Now;
                 modelTlim.ModifiedBy = modifyingUserId;
 
+                SaveTransactionLineItemMapping(clientId, modelTlim, modifyingUserId, existingMappings.ContainsKey(modelTlim.TransactionLineItemMappingId));
             }
 
-            _database.SaveChanges();
         }
 
         public void DeleteTransactionLineItemMapping(int clientId, int mappingId)
@@ -93,7 +139,12 @@ namespace RevenuePlanner.Services.Transactions
                 throw new ArgumentOutOfRangeException("mappingId", "A mappingId less than or equal to zero is invalid, and likely indicates the mappingId was not set properly");
             }
 
-            Models.TransactionLineItemMapping modelTLIM = _database.TransactionLineItemMappings.Where(dbtlim => dbtlim.TransactionLineItemMappingId == mappingId).SingleOrDefault();
+            IQueryable<Models.TransactionLineItemMapping> sqlQuery = from tlim in _database.TransactionLineItemMappings
+                                                                     join transaction in _database.Transactions on tlim.TransactionId equals transaction.TransactionId
+                                                                     where tlim.TransactionLineItemMappingId == mappingId && transaction.ClientID == clientId
+                                                                     select tlim;
+
+            Models.TransactionLineItemMapping modelTLIM = sqlQuery.SingleOrDefault();
 
             if (modelTLIM != null)
             {
@@ -136,7 +187,8 @@ namespace RevenuePlanner.Services.Transactions
             DataSet dataset = new DataSet();
             SqlCommand command = new SqlCommand("GetLinkedLineItemsForTransaction", _database.Database.Connection as SqlConnection);
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@TransactionId", transactionId);
+            command.Parameters.AddWithValue("@ClientID", clientId);
+            command.Parameters.AddWithValue("@TransactionId", transactionId);           
             SqlDataAdapter adp = new SqlDataAdapter(command);
             adp.Fill(dataset);
             
@@ -279,7 +331,7 @@ namespace RevenuePlanner.Services.Transactions
             IQueryable<Transaction> sqlQuery =
                 from tlim in _database.TransactionLineItemMappings
                 join transaction in _database.Transactions on tlim.TransactionId equals transaction.TransactionId
-                where tlim.LineItemId == lineItemId
+                where tlim.LineItemId == lineItemId && transaction.ClientID == clientId
                 select new Transaction
                 {
                     TransactionId = transaction.TransactionId,

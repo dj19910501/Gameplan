@@ -15,6 +15,7 @@ namespace RevenuePlanner.UnitTest.Service
 
         #region Test Data 
         private const int testClientId = 30; //demo client
+        private const int testOtherClientId = 31; // not the client id associated with any test data
         private const int testUserId = 297;
         private List<Models.Transaction> unprocessedTransactions = null;
         private const int numberOfUnprocessedTransactionsCreated = 5;
@@ -32,13 +33,15 @@ namespace RevenuePlanner.UnitTest.Service
         [TestInitialize]
         public void InitializeData()
         {
+            _database.Database.ExecuteSqlCommand("DELETE FROM transactions WHERE ClientTransactionID LIKE '%TransactionTest%'");            
+
             unprocessedTransactions = new List<Models.Transaction>();
             for (int ndx = 0; ndx < numberOfUnprocessedTransactionsCreated; ndx++)
             {
                 unprocessedTransactions.Add(_database.Transactions.Add(new Models.Transaction { ClientID = testClientId, ClientTransactionID = "TransactionTest" + ndx.ToString(), Amount = new decimal(100.1), AccountingDate = DateTime.Now, DateCreated = DateTime.Now }));
             }
             _database.SaveChanges();
-
+                           
         }
 
         /// <summary>
@@ -125,6 +128,16 @@ namespace RevenuePlanner.UnitTest.Service
             LinkedLineItem lineItem = ligbt.LineItems.Find(item => item.LineItemId == testLineItemId);
             Assert.IsNotNull(lineItem);
 
+            // Test deleting line item mapping with invalid clientId. MUST Be run before actually deleting the line item.
+            _transaction.DeleteTransactionLineItemMapping(testOtherClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
+
+            // Verify not deleted
+            groupedLineItems = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);
+            ligbt = groupedLineItems.Find(item => item.TacticId == testTacticId);
+            Assert.IsNotNull(ligbt);
+            lineItem = ligbt.LineItems.Find(item => item.LineItemId == testLineItemId);
+            Assert.IsNotNull(lineItem);
+
             // Test deleting line item mapping
             _transaction.DeleteTransactionLineItemMapping(testClientId, lineItem.LineItemMapping.TransactionLineItemMappingId);
 
@@ -140,7 +153,6 @@ namespace RevenuePlanner.UnitTest.Service
                 Assert.IsNull(lineItem);
             }
 
-            // TODOWCR: test with invalid clientId
         }
 
         [TestMethod]
@@ -248,7 +260,9 @@ namespace RevenuePlanner.UnitTest.Service
             LineItemsGroupedByTactic ligbt = ligbtList.Find(item => item.TacticId == testTacticId);
             Assert.AreEqual(expectedLineItemsForTactic, ligbt.LineItems.Count);
 
-            // TODOWCR: test with invalid clientId
+            // Test with invalid clientId
+            ligbtList = _transaction.GetLinkedLineItemsForTransaction(testOtherClientId, testTransactionId);
+            Assert.AreEqual(0, ligbtList.Count);
         }
 
         [TestMethod]
@@ -301,10 +315,6 @@ namespace RevenuePlanner.UnitTest.Service
             // Get transaction count with limited date range
             transactionCount = _transaction.GetTransactionCount(testClientId, testStartDate, testEndDate, false);
             Assert.AreEqual(expectedDateRangeCount, transactionCount);
-
-
-
-            // TODOWCR: test with invalid clientId
 
         }
 
@@ -412,8 +422,6 @@ namespace RevenuePlanner.UnitTest.Service
             transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, testTenthPageSkip, testTakeCount);
             Assert.AreEqual(paginationExpctedTenthPageCount, transactionList.Count);
 
-
-            // TODOWCR: test with invalid clientId
         }
 
         [TestMethod]
@@ -463,6 +471,7 @@ namespace RevenuePlanner.UnitTest.Service
                 Assert.AreEqual("lineItemId", e.ParamName);
             }
         }
+
         [TestMethod]
         public void Test_Transaction_GetTransactionsForLineItem()
         {
@@ -475,8 +484,9 @@ namespace RevenuePlanner.UnitTest.Service
             Assert.AreEqual(expectedMappedTransactions, transactions.Count);
             Assert.AreEqual(testTransactionId, transactions[0].TransactionId);
 
-
-            // TODOWCR: test with invalid clientId
+            // test with invalid clientId
+            transactions = _transaction.GetTransactionsForLineItem(testOtherClientId, testLineItemId);
+            Assert.AreEqual(0, transactions.Count);
         }
 
         [TestMethod]
@@ -544,6 +554,8 @@ namespace RevenuePlanner.UnitTest.Service
             const double testModifiedMappingAmount = 400.4;
             const int testNewLineItemId = 296;
             const double testNewMappingAmount = 500.5;
+            const int testOtherClientTransactionId = 214;
+            const int testOtherClientLineItemId = 1810; 
 
             // Test Create line item
             List<TransactionLineItemMapping> tlimList = new List<TransactionLineItemMapping>();
@@ -596,7 +608,34 @@ namespace RevenuePlanner.UnitTest.Service
                 _transaction.DeleteTransactionLineItemMapping(testClientId, li.LineItemMapping.TransactionLineItemMappingId);                   
             }
 
-            // TODOWCR: Test with invalid clientId
+            // Test with clientId that doesn't match transaction
+            tlimList = new List<TransactionLineItemMapping>();
+            tlimList.Add(new TransactionLineItemMapping { TransactionId = testOtherClientTransactionId, LineItemId = testLineItemIds[0], Amount = testMappingAmounts[0] });
+            _transaction.SaveTransactionToLineItemMapping(testClientId, tlimList, testUserId);
+
+            List<Models.TransactionLineItemMapping> lineItemMappings = GetTransactionLineItem(testOtherClientTransactionId, testLineItemIds[0]);
+            Assert.AreEqual(0, lineItemMappings.Count);
+
+            // Test with clientId that doesn't match line item
+            tlimList = new List<TransactionLineItemMapping>();
+            tlimList.Add(new TransactionLineItemMapping { TransactionId = testTransactionId, LineItemId = testOtherClientLineItemId, Amount = testMappingAmounts[0] });
+            _transaction.SaveTransactionToLineItemMapping(testClientId, tlimList, testUserId);
+            lineItemMappings = GetTransactionLineItem(testTransactionId, testOtherClientLineItemId);
+            Assert.AreEqual(0, lineItemMappings.Count);
+        }
+
+        /// <summary>
+        /// We need to explicitly get the line item mapping from the database since our Service level routine properly checks 
+        /// for clientId too and will not return any results even if a mapping was created by the save.
+        /// </summary>
+        /// <param name="transactionId">Transaction id of the mapping we're looking up</param>
+        /// <param name="lineItemId">Line Item Id of the mapping we're looking up</param>
+        /// <returns>List of line item mappings</returns>
+        private List<Models.TransactionLineItemMapping> GetTransactionLineItem(int transactionId, int lineItemId)
+        {
+            String sqlQuery = String.Format("Select * from TransactionLineItemMapping where TransactionId={0} and LineItemId={1}", transactionId, lineItemId);
+
+            return new List<Models.TransactionLineItemMapping>(_database.Database.SqlQuery<Models.TransactionLineItemMapping>(sqlQuery));
         }
 
     }
