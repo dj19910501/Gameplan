@@ -108,6 +108,8 @@ function BindColumnsfilter(ColumnSetId) {
                 // Append items to 'Filter Columns' to dropdown list & Check-Uncheck Filter columns.
                 BindFilterColumnsAndCheckUncheck(data);
             }
+
+            HideShowColumns();
         }
     });
 }
@@ -663,43 +665,41 @@ function LoadInputModelBox() {
     });
 }
 
-
+// Created by Komal Rawal
+// Desc: To Hide/Show Column based on column selection and column set selection.
 function HideShowColumns() {
-    var columnid = 0;
+    var columnid = 0; //columnid
     var Title = "";
-    var Hidecol = [];
-    var ColumnsCheckBox = $("#multipleselect_budget-select label[class^=ui-corner-all] input:not(:checked)");
+    var Showcol = []; // this array contains the list of columns which needs to be displayed
+    var ColumnsCheckBox = $("#multipleselect_budget-select label[class^=ui-corner-all] input:checked"); // get list of columns that are checked in the dropdown
 
-
-    for (var i = 0; i < budgetgrid.getColumnsNum() ; i++) {
+    for (var i = 0; i < budgetgrid.getColumnsNum() ; i++) { // loop through the columns
         columnid = budgetgrid.getColumnId(i);
         if (columnid != Id && columnid != Name
                      && columnid != "Add Row" && columnid != Lineitems) {
-            $.each(ColumnsCheckBox, function () {
+            $.each(ColumnsCheckBox, function () { // loop through the checked columns 
                 Title = $(this).parent().find('span').attr('title');
                 if (standardcolumns.indexOf(Title) >= 0) {
                     if (columnid.indexOf(Title) >= 0) {
-                        Hidecol.push(i);
+                        Showcol.push(i); //push to the array the columns that needs to be shown
                     }
-
                 }
                 else {
                     if (columnid == Title) {
-                        Hidecol.push(i);
+                        Showcol.push(i);
                     }
 
                 }
             });
-            budgetgrid.setColumnHidden(i, false)
+            budgetgrid.setColumnHidden(i, true) // by default hide column
         }
 
     }
 
-    if (Hidecol != null && Hidecol != undefined && Hidecol.length > 0) {
-        $.each(Hidecol, function (index, val) {
-            budgetgrid.setColumnHidden(val, true)
+    if (Showcol != null && Showcol != undefined && Showcol.length > 0) {
+        $.each(Showcol, function (index, val) { //loop through the columns that needs to be shown 
+            budgetgrid.setColumnHidden(val, false) //set column hidden false
         });
-
     }
 
 }
@@ -980,3 +980,10 @@ function ApplyFormattingAndTooltip(idName) {
             }
         });
     }
+
+    // Created by Komal
+    // Desc: Change event of column set dropdown.
+    $("#ddlColumnSet").change(function () {
+        var Columnsetval = $("#ddlColumnSet").val();
+        BindColumnsfilter(Columnsetval); // bind the columns dropdown as per column set selected
+    });

@@ -4878,6 +4878,13 @@ GO
 
 -- End - Added by Arpita Soni for Ticket #2788
 
+-- Start - Added by Komal rawal on 12-08-2016
+-- Update User Column name to Users for all existing data in custom field table for marketing budget
+
+update CustomField set Name = 'Users' where EntityType = 'Budget' and Name = 'User' 
+
+--End - Added by Komal rawal on 12-08-2016
+
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
