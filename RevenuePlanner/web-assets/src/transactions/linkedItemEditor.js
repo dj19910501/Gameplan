@@ -1,12 +1,16 @@
 import $ from 'jquery';
 import resolveAppUri from 'util/resolveAppUri';
 import Grid from 'dhtmlXGridObject';
-import view from './views/linkedItemEditor.ejs';
+import viewTemplate from './views/linkedItemEditor.ejs';
+import optionsTemplate from './views/selectOptions.ejs';
+import uniqueId from 'lodash/uniqueId';
 import css from './linkedItemEditor.scss';
 import dhx4 from 'dhx4';
 import {isValidNumeric} from 'dhtmlxValidation';
 import createModel from './linkedItemEditorModel';
 import allowGridClickEvents from 'util/allowGridClickEvents';
+
+const SPINNER = '<i class="fa fa-spinner fa-pulse fa fa-fw"></i>';
 
 // define a currency formatter
 const currencyFormat = dhx4.template._parseFmt(`${window.CurrencySybmol} 0,000.00`);
@@ -22,7 +26,7 @@ function createGrid(dataSource, $container) {
 
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
     grid.enableAutoHeight(true);
-    //grid.enableAutoWidth(true);
+    grid.enableAutoWidth(true);
     grid.setDateFormat("%m/%d/%Y");
     grid.enableEditEvents(true, false, false);
     dataSource.bindToGrid(grid);
@@ -38,6 +42,26 @@ function bindGrid(model, $container) {
             dataSource.off("change", onData);
 
             const grid = model.linkedItemGrid = createGrid(dataSource, $container);
+
+            if (dhx4.isIE11) {
+                // IE11 grid seems to always calculate a 0 size :/
+                let inSetSize = false;
+                grid.attachEvent("onSetSizes", () => {
+                    if (!inSetSize) {
+                        grid.entBox.style.width = "auto";
+                        inSetSize = true;
+
+                        try {
+                            grid.setSizes();
+                        }
+                        finally {
+                            inSetSize = false;
+                        }
+
+                        console.log(grid.entBox.style.width);
+                    }
+                });
+            }
 
             // listen for edit events and validation events
             grid.attachEvent("onEditCell", (stage, id, index, newValue, oldValue) => {
@@ -91,7 +115,7 @@ function bindGrid(model, $container) {
 
 function save(model, $window, $save, $cancel) {
     model.saving = true;
-    $save.html('<i class="fa fa-spinner fa-pulse fa- fa-fw"></i>Saving...').prop('disabled', true);
+    $save.html(`${SPINNER} Saving...`).prop('disabled', true);
     model.save().then(
         () => {
             model.saving = false;
@@ -104,7 +128,7 @@ function save(model, $window, $save, $cancel) {
         });
 }
 
-function bindModelToEditor(transactionId, model, $window) {
+function bindModelToEditor(transactionId, model, {$window, $selectPlan, $selectYear}) {
     const $content = $window.find(`.${css.links}`);
     $content.removeClass(css.loading);
     bindGrid(model, $content);
@@ -151,28 +175,104 @@ function bindModelToEditor(transactionId, model, $window) {
         const amount = model.availableFunds;
         $availableFunds.html((amount == null) ? "&nbsp;" : currency(amount));
     });
+
+    // Update the combo boxes when there is data
+    model.newItemModel.subscribe("years", ev => {
+        const years = ev.value;
+        if (years) {
+            const optionsHtml = optionsTemplate({ prompt: "Select Year", items: years.map(y => ({value: y, text: y})) });
+            $selectYear.html(optionsHtml);
+            $selectYear.multiselect("refresh");
+            $selectYear.multiselect("enable");
+        }
+        else {
+            $selectYear.multiselect("disable");
+            $selectYear.multiselect("getButton").children().eq(0).html(`${SPINNER} Loading...`);
+        }
+    });
+
+    $selectYear.on("change", function () {
+        const option = this.options[this.selectedIndex];
+        const value = option && option.value;
+        model.newItemModel.selectedYear = value || undefined;
+    });
+
+    model.newItemModel.subscribe("plans", ev => {
+        const plans = ev.value;
+        if (plans) {
+            const optionsHtml = optionsTemplate({ prompt: "Select Plan", items: plans.map(p => ({value: p.Id, text: p.Title }))});
+            $selectPlan.html(optionsHtml);
+            $selectPlan.multiselect("refresh");
+            $selectPlan.multiselect("enable");
+        }
+        else {
+            $selectPlan.multiselect("disable");
+            const label = model.newItemModel.selectedYear ? `${SPINNER} Loading...` : "&nbsp;";
+            $selectPlan.multiselect("getButton").children().eq(0).html(label);
+        }
+    });
+
+    $selectPlan.on("change", function () {
+        const option = this.options[this.selectedIndex];
+        const value = option && option.value;
+        model.newItemModel.selectedPlan = value || undefined;
+    });
 }
 
 function renderInitialView(transaction) {
+    const viewOptions = {
+        css,
+        transaction,
+        currency,
+        selectYearId: uniqueId("select"),
+        selectPlanId: uniqueId("select"),
+    };
+
     // use Bootstrap modal
-    const $view = $(view({ css, transaction, currency }));
+    const $view = $(viewTemplate(viewOptions));
     // remove everything but the div
     $view.contents().filter(function () { return this.nodeType !== 1; }).remove();
 
-    return $view.filter("div").appendTo(document.body);
+    const $window = $view.filter("div").appendTo(document.body);
+    const $selectYear = $window.find(`#${viewOptions.selectYearId}`);
+    const $selectPlan = $window.find(`#${viewOptions.selectPlanId}`);
+
+    $selectYear.multiselect({
+        multiple: false,
+        selectedList: 1,
+        minWidth: 220,
+        classes: css.selectYear,
+        position: {
+            my: "left top",
+            at: "left bottom+10",
+        },
+    }).multiselectfilter();
+
+    $selectPlan.multiselect({
+        multiple: false,
+        selectedList: 1,
+        minWidth: 220,
+        classes: css.selectPlan,
+        position: {
+            my: "left top",
+            at: "left bottom+10",
+        },
+    }).multiselectfilter();
+
+    return { $window, $selectYear, $selectPlan };
 }
 
 export default function linkedItemEditor(transaction) {
     const model = createModel(transaction);
-    const $window = renderInitialView(transaction);
+    const view = renderInitialView(transaction);
 
-    bindModelToEditor(transaction.id, model, $window);
+    bindModelToEditor(transaction.id, model, view);
 
     // destroy the modal when it is closed
-    $window.on('hidden', () => $window.remove());
+    view.$window.on('hidden', () => view.$window.remove());
 
     // display the dialog
-    $window.modal();
+    view.$window.modal();
 
-    return $window;
+    return view.$window;
 }

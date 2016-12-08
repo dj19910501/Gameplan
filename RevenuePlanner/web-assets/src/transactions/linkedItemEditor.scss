@@ -18,27 +18,38 @@ $INDICATOR_WIDTH: 4px;
     margin: 0;
     height: 100%;
 
+    :global(.modal-footer) {
+      height: 58px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    :global(.modal-header) {
+      height: 59px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
     :global(.modal-body) {
       // undo a setting in the legacy styling
-      max-height: initial;
-
-      // Use flexbox to make the addNewLink always consume a fixed height and the existLinks stretch/shirnk to fill the rest of the height
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      align-content: stretch;
-      align-items: stretch;
-
+      max-height: none;
+      position: absolute;
+      top: 59px;
+      bottom: 58px;
+      left: 0;
+      right: 0;
       padding: 0;
 
       .existingLinks {
-        order: 1;
-        flex: 1 1 auto;
-        align-self: auto;
-        height: auto;
-        min-height: 200px;
-        position: relative;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 300px;
 
         overflow-y: auto;
         padding: 10px;
@@ -114,7 +125,7 @@ $INDICATOR_WIDTH: 4px;
                 }
 
                 &.dhtmlx_validation_error {
-                  border: none;
+                  border-bottom: none !important;
                   background-image: linear-gradient(to top, $VALIDATION_ERROR_COLOR 0%, $VALIDATION_ERROR_COLOR $INDICATOR_WIDTH, transparent $INDICATOR_WIDTH + 1);
                 }
 
@@ -129,12 +140,37 @@ $INDICATOR_WIDTH: 4px;
     }
 
     .addNewLink {
-      order: 2;
-      flex: 0 0 auto;
-      align-self: auto;
-
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       height: 300px;
       padding: 0 10px 10px 10px;
+
+      .label {
+        font-size: smaller;
+        color: #6d6d6d;
+        padding-bottom: 5px;
+      }
+
+      .selectYear {
+        margin-right: 50px;
+      }
+
+      .selectPlan {
+
+      }
     }
+  }
+}
+.selectYear {
+  width: 200px;
+}
+
+.selectPlan {
+  width: 500px;
+
+  :global(.tipsyTitle) {
+    max-width: none !important;
   }
 }
