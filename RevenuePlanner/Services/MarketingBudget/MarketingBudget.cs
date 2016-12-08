@@ -30,6 +30,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             _database = database;
             _ServiceDatabase = ServiceDatabase;
         }
+    
         /// <summary>
         /// Function to Get Budget List
         /// Added By: Rahul Shah on 11/30/2016.
@@ -40,11 +41,18 @@ namespace RevenuePlanner.Services.MarketingBudget
         {
             //get budget name list for budget drop-down data binding.
             List<BindDropdownData> ddlBudget = new List<BindDropdownData>();
-            List<Models.Budget> lstBudget = _database.Budgets.Where(bdgt => bdgt.ClientId == ClientId && (bdgt.IsDeleted == false || bdgt.IsDeleted == null) && !string.IsNullOrEmpty(bdgt.Name)).ToList();
+            List<Models.Budget> lstBudget = _database.Budgets.Where(bdgt => bdgt.ClientId == ClientId 
+            && (bdgt.IsDeleted == false || bdgt.IsDeleted == null) 
+            && !string.IsNullOrEmpty(bdgt.Name)).ToList();
             ddlBudget = lstBudget.Select(budget => new BindDropdownData { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
             return ddlBudget;
         }
 
+        /// <summary>
+        /// Added by Komal Rawal
+        /// Returns list of column set for a particular client
+        /// </summary>
+        /// <param name="ClientId">Id of the Client</param>
         public List<BindDropdownData> GetColumnSet(int ClientId)
         {
             List<BindDropdownData> lstColumnset = (from ColumnSet in _database.Budget_ColumnSet
@@ -63,6 +71,11 @@ namespace RevenuePlanner.Services.MarketingBudget
             return lstColumnset;
         }
 
+        /// <summary>
+        /// Added by Komal Rawal
+        /// Returns list of columns based on column set id to bind the column management dropdown
+        /// </summary>
+        /// <param name="ColumnSetId">Id of the ColumnSet</param>
         public List<Budget_Columns> GetColumns(int ColumnSetId)
         {
             List<Budget_Columns> BudgetColumns = _database.Budget_Columns.Where(a => a.Column_SetId == ColumnSetId && a.IsDeleted == false).ToList();
@@ -71,21 +84,28 @@ namespace RevenuePlanner.Services.MarketingBudget
 
 
         /// <summary>
-        /// Method to get marketing budget grid data for perticular budget
+        /// Added by Komal Rawal
+        /// Returns model with the hierarchy that need to be displayed.
         /// </summary>
-        
-        public BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol,List<BDSService.User> lstUser)
+            /// <param name="budgetId">Id of the Budget</param>
+        /// <param name="TimeFrame">TimeFrame Selected</param>
+        /// <param name="ClientID">Id of the Client</param>
+        /// <param name="UserID">Id of the User</param>
+        /// <param name="Exchangerate">Exachange rate of the currency</param>
+        /// <param name="CurSymbol">preferred currency by the user</param>
+        public BudgetGridModel GetBudgetGridData(int budgetId, string TimeFrame, int ClientID, int UserID, double Exchangerate, string CurSymbol,List<BDSService.User> lstUser)
         {
 
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
-            BudgetGridDataModel objBudgetGridDataModel = new BudgetGridDataModel();
+            BudgetGridDataModel objBudgetGridDataModel = new BudgetGridDataModel(); //model to bind rows and header
             List<int> lstUserId = lstUser.Select(a => a.ID).ToList();
-            string CommaSeparatedUserIds = String.Join(",", lstUserId);
+            string CommaSeparatedUserIds = String.Join(",", lstUserId);  //comma separated ids
             List<string> CustomColumnNames = new List<string>();
             //Call Sp to get data.
-            DataSet BudgetGridData = GetBudgetDefaultData(budgetId, viewByType,ClientID, UserID, CommaSeparatedUserIds, Exchangerate);
-
-            if (BudgetGridData.Tables.Count > 1)
+            DataSet BudgetGridData = GetBudgetDefaultData(budgetId, TimeFrame, ClientID, UserID, CommaSeparatedUserIds, Exchangerate);
+            if(BudgetGridData != null) // checks if data set returned is not null
+            {
+                if (BudgetGridData.Tables.Count > 1) // checks if custom column table exists
             {
                 DataTable CustomColumnsTable = BudgetGridData.Tables[1];
                 CustomColumnNames = CustomColumnsTable.Columns.Cast<DataColumn>() //list to get custom column names
@@ -94,43 +114,53 @@ namespace RevenuePlanner.Services.MarketingBudget
             }
             DataTable StandardColumnTable = BudgetGridData.Tables[0];
             //list to get standard column names
-            List<string> StandardColumnNames = StandardColumnTable.Columns.Cast<DataColumn>().Where(name => name.ToString().ToLower() != Enums.DefaultGridColumn.Permission.ToString().ToLower() && name.ToString().ToLower() != Enums.DefaultGridColumn.ParentId.ToString().ToLower())
+                List<string> StandardColumnNames = StandardColumnTable.Columns.Cast<DataColumn>().Where(name => name.ToString().ToLower() != Enums.DefaultGridColumn.Permission.ToString().ToLower()
+                && name.ToString().ToLower() != Enums.DefaultGridColumn.ParentId.ToString().ToLower())
                   .Select(x => x.ToString())
                   .ToList();
 
             //Set Header Object.
-            SetHeaderObject(CustomColumnNames, StandardColumnNames, viewByType, objBudgetGridModel);
+                SetHeaderObject(CustomColumnNames, StandardColumnNames, TimeFrame, objBudgetGridModel);
 
             //Call recursive function to bind the hierarchy.
             List<BudgetGridRowModel> lstData = new List<BudgetGridRowModel>();
-            lstData = GetTopLevelRows(StandardColumnTable, null)
+                lstData = GetTopLevelRows(StandardColumnTable)
                         .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol)).ToList();
+
 
             objBudgetGridDataModel.head = objBudgetGridModel.GridDataStyleList;
             objBudgetGridDataModel.rows = lstData;
             objBudgetGridModel.objGridDataModel = objBudgetGridDataModel;
 
+            }
+
             return objBudgetGridModel;
         }
 
         /// <summary>
-        /// Get list of users for specific client
+        /// Added by Komal Rawal
+        /// Get the top level row i.e the parent row.
         /// </summary>
-        /// <param name="ClientID">Client Id</param>
-        /// <returns>Returns list of users for the client</returns>
-        public List<BDSService.User> GetUserListByClientId(int ClientID)
-        {
-            List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(ClientID).ToList();
-            return lstUser;
-        }
-        IEnumerable<DataRow> GetTopLevelRows(DataTable StandardColumnTable, int? minParentId)
+        /// <param name="StandardColumnTable">Standard table to get the row data</param>
+        /// <param name="minParentId">Parent id </param>
+        private IEnumerable<DataRow> GetTopLevelRows(DataTable StandardColumnTable)
         {
             return StandardColumnTable
               .Rows
               .Cast<DataRow>()
-              .Where(row => row.Field<Nullable<Int32>>("ParentId") == minParentId);
+              .Where(row => row.Field<Nullable<Int32>>("ParentId") == null);
         }
 
+        /// <summary>
+        /// Added by Komal Rawal
+        /// Returns row model to bind the budget grid
+        /// </summary>
+        /// <param name="DataSet">Set of tables containg custom field data and other standard data</param>
+        /// <param name="row">row wise data</param>
+        /// <param name="CustomColumnNames">List of names of custom column</param>
+        /// <param name="StandardColumnNames">List of names of standard column</param>
+        /// <param name="lstUser">List of users</param>
+        /// <param name="CurSymbol">Preferred currency symbol by user</param>
         private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol)
         {
             string istitleedit = "1";
@@ -147,10 +177,10 @@ namespace RevenuePlanner.Services.MarketingBudget
             {
                 if (ColumnName == Enums.DefaultGridColumn.Name.ToString())
                 {
-                    Data.Add(row[ColumnName.ToString()].ToString() == null ? string.Empty : row[ColumnName.ToString()].ToString());
+                    Data.Add(row[ColumnName].ToString() == null ? string.Empty : row[ColumnName].ToString());
 
                     //Add icons data after name
-                    if (Permission == "None" || Permission == "View")
+                    if (Permission == Enums.Permission.None.ToString() || Permission == Enums.Permission.View.ToString())
                     {
                         Data.Add(string.Empty);
                         istitleedit = "0";
@@ -163,11 +193,11 @@ namespace RevenuePlanner.Services.MarketingBudget
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.LineItems.ToString())
                 {
-                    BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
+                    BindColumnDataatend.Add(row[ColumnName].ToString());
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.Users.ToString())
                 {
-                    if (Permission == "View" || Permission == "None")
+                      if (Permission == Enums.Permission.View.ToString() || Permission == Enums.Permission.None.ToString())
                     {
                         BindColumnDataatend.Add(string.Format("<div onclick=Edit({0},false,{1},'" + rowId + "',this) class='finance_link' Rowid='" + rowId + "'><a class='marketing-tbl-link'>" + Convert.ToInt32(row[ColumnName]) + "</a><span class='pipeLine'></span><span class='marketing-tbl-link'>View</span></div>", id, HttpUtility.HtmlEncode(Convert.ToString("'User'"))));
                     }
@@ -182,7 +212,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 }
                 else
                 {
-                    if (Permission == "None" && ColumnName != Enums.DefaultGridColumn.BudgetDetailId.ToString())
+                    if (Permission == Enums.Permission.None.ToString() && ColumnName != Enums.DefaultGridColumn.BudgetDetailId.ToString())
                     {
                         Data.Add(TripleDash); // if none permission show tripe dash.
                     }
@@ -221,7 +251,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             {
                 CustomColumnRow = GetCustomColumnRow(DataSet, id);
             }
-            if (Permission == "None")
+            if (Permission == Enums.Permission.None.ToString())
             {
                 Data.AddRange(CustomColumnNames.Skip(1).Select(item => TripleDash).ToList());
             }
@@ -248,7 +278,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             lstChildren = GetChildren(DataSet, id);
 
             #region Handle Permissions in grid
-            if (Permission == "None")
+            if (Permission == Enums.Permission.None.ToString())
             {
                 stylecolorgray = "color:#999";
                 objuserData.lo = "1"; // checks if the cell is locked or not
@@ -260,7 +290,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 int rwcount = DataSet.Tables[0] != null ? DataSet.Tables[0].Rows.Count : 0;
                 if (rwcount == 1 || lstChildren.Count() == 0)
                 {
-                    objuserData.lo = Permission == "View" ? "1" : "0";
+                    objuserData.lo = Permission == Enums.Permission.View.ToString() ? "1" : "0";
                     objuserData.isTitleEdit = istitleedit;
                     objuserData.per = Permission;
                 }
@@ -281,7 +311,13 @@ namespace RevenuePlanner.Services.MarketingBudget
             return new BudgetGridRowModel { id = rowId, data = Data, rows = children, style = stylecolorgray, Detailid = Convert.ToString(id), userdata = objuserData };
         }
 
-        IEnumerable<DataRow> GetCustomColumnRow(DataSet DataSet, int? BudgetDetailId)
+        /// <summary>
+        /// Added by Komal Rawal
+        /// Get row data from custom table as per detail id.
+        /// </summary>
+        /// <param name="DataSet">Set of tables including standard and custom data</param>
+        /// <param name="BudgetDetailId">Budget detail id </param>
+        private IEnumerable<DataRow> GetCustomColumnRow(DataSet DataSet, int? BudgetDetailId)
         {
             return DataSet.Tables[1]
               .Rows
@@ -289,7 +325,13 @@ namespace RevenuePlanner.Services.MarketingBudget
               .Where(row => row.Field<Nullable<Int32>>("BudgetDetailId") == BudgetDetailId);
         }
 
-        IEnumerable<DataRow> GetChildren(DataSet DataSet, int? parentId)
+        /// <summary>
+        /// Added by Komal Rawal
+        /// Get child data from parent id.
+        /// </summary>
+        /// <param name="DataSet">Set of tables including standard and custom data</param>
+        /// <param name="parentId">Parent id to get child data from the table </param>
+        private IEnumerable<DataRow> GetChildren(DataSet DataSet, int? parentId)
         {
             return DataSet.Tables[0]
               .Rows
@@ -297,11 +339,20 @@ namespace RevenuePlanner.Services.MarketingBudget
               .Where(row => row.Field<Nullable<Int32>>("ParentId") == parentId);
         }
 
+        /// <summary>
+        /// Added by Komal Rawal
+        /// Returns data from Sp
+        /// </summary>
+        /// <param name="budgetId">Id of the Budget</param>
+        /// <param name="TimeFrame">TimeFrame Selected</param>
+        /// <param name="ClientID">Id of the Client</param>
+        /// <param name="UserID">Id of the User</param>
+        /// <param name="Exchangerate">Exachange rate of the currency</param>
+        /// <param name="CommaSeparatedUserIds">list of user ids </param>
         public DataSet GetBudgetDefaultData(int budgetId, string timeframe, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate)
         {
             DataSet EntityList = new DataSet();
-            try
-            {
+            
                 ///If connection is closed then it will be open
                 var Connection = _database.Database.Connection as SqlConnection;
                 if (Connection.State == System.Data.ConnectionState.Closed)
@@ -323,18 +374,28 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     Connection.Close();
                 }
-            }
-            catch { throw; }
+           
             return EntityList;
         }
 
-
-        BudgetGridModel SetHeaderObject(List<string> CustomColumnNames, List<string> StandardColumnNames, string timeframe, BudgetGridModel mdlGridHeader)
+        /// <summary>
+        /// Added by Komal Rawal
+        /// Method to set header for the grid
+        /// <param name="CustomColumnNames">List of names of custom column</param>
+        /// <param name="StandardColumnNames">List of names of standard column</param>
+        /// <param name="TimeFrame">Selected Time Frame</param>
+        private BudgetGridModel SetHeaderObject(List<string> CustomColumnNames, List<string> StandardColumnNames, string timeframe, BudgetGridModel mdlGridHeader)
         {
             List<GridDataStyle> ListHead = new List<GridDataStyle>(); //list to bind all header data
             StringBuilder sbAttachedHeaders = new StringBuilder(); //used to get comma separated values to attach 2 headers
             List<GridDataStyle> ListAppendAtLast = new List<GridDataStyle>();//list will have data oof user,owner,line items as we need to attach them at the end as per UI
             GridDataStyle headObj = new GridDataStyle();
+            string Readonly = "ro";
+            string Editable = "ed";
+            string ColumnId = "Id";
+            string TaskName = "Task Name";
+            string aligncenter = "center";
+            string sort = "na";
 
             #region Bind Standard Columns
             foreach (var columns in StandardColumnNames)
@@ -344,19 +405,19 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj = new GridDataStyle();
                     if (timeframe == Enums.QuarterFinance.Yearly.ToString())
                     {
-                        headObj.value = "Id";
+                        headObj.value = ColumnId;
                     }
                     else
                     {
                         headObj.value = string.Empty;
-                        sbAttachedHeaders.Append("Id,");
+                        sbAttachedHeaders.Append(ColumnId +",");
                     }
 
-                    headObj.sort = "na";
+                    headObj.sort = sort;
                     headObj.width = 100;
-                    headObj.align = "center";
-                    headObj.type = "ro";
-                    headObj.id = "Id";
+                    headObj.align = aligncenter;
+                    headObj.type = Readonly;
+                    headObj.id = ColumnId;
                     ListHead.Add(headObj);
 
                 }
@@ -365,15 +426,15 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj = new GridDataStyle();
                     if (timeframe == Enums.QuarterFinance.Yearly.ToString())
                     {
-                        headObj.value = "Task Name";
+                        headObj.value = TaskName;
                     }
                     else
                     {
                         headObj.value = string.Empty;
-                        sbAttachedHeaders.Append("Task Name" + ",");
+                        sbAttachedHeaders.Append(TaskName + ",");
                         sbAttachedHeaders.Append(string.Empty + ",");
                     }
-                    headObj.sort = "na";
+                    headObj.sort = sort;
                     headObj.width = 200;
                     headObj.align = "left";
                     headObj.type = "tree";
@@ -384,10 +445,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                     //Add icons column after name
                     headObj = new GridDataStyle();
                     headObj.value = string.Empty;
-                    headObj.sort = "na";
+                    headObj.sort = sort;
                     headObj.width = 50;
-                    headObj.align = "center";
-                    headObj.type = "ro";
+                    headObj.align = aligncenter;
+                    headObj.type = Readonly;
                     headObj.id = "Add Row";
                     ListHead.Add(headObj);
 
@@ -405,10 +466,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                     {
                         headObj.value = string.Empty;
                     }
-                    headObj.sort = "na";
+                    headObj.sort = sort;
                     headObj.width = 100;
-                    headObj.align = "center";
-                    headObj.type = "ro";
+                    headObj.align = aligncenter;
+                    headObj.type = Readonly;
                     headObj.id = columns;
                     ListAppendAtLast.Add(headObj);
                 }
@@ -423,10 +484,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                     {
                         headObj.value = string.Empty;
                     }
-                    headObj.sort = "na";
+                    headObj.sort = sort;
                     headObj.width = 100;
-                    headObj.align = "center";
-                    headObj.type = "ro";
+                    headObj.align = aligncenter;
+                    headObj.type = Readonly;
                     headObj.id = columns;
                     ListAppendAtLast.Add(headObj);
                 }
@@ -435,9 +496,9 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj = new GridDataStyle();
 
                     headObj.id = columns;
-                    headObj.sort = "na";
+                    headObj.sort = sort;
                     headObj.width = 100;
-                    headObj.align = "center";
+                    headObj.align = aligncenter;
 
                     // columns will have data like eg.Y1_Budget in case of time frame like This year(Monthly)
                     // so we will split them and attach the values to string builder to get double headers.
@@ -462,11 +523,11 @@ namespace RevenuePlanner.Services.MarketingBudget
                     if (columns.Contains(Enums.DefaultGridColumn.Planned.ToString()) ||
                        columns.Contains(Enums.DefaultGridColumn.Actual.ToString()))
                     {
-                        headObj.type = "ro";
+                        headObj.type = Readonly;
                     }
                     else
                     {
-                        headObj.type = "ed";
+                        headObj.type = Editable;
                     }
 
                     ListHead.Add(headObj);
@@ -489,10 +550,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                         headObj.value = string.Empty;
                         sbAttachedHeaders.Append(columns + ",");
                     }
-                    headObj.sort = "na";
+                    headObj.sort = sort;
                     headObj.width = 100;
-                    headObj.align = "center";
-                    headObj.type = "ed";
+                    headObj.align = aligncenter;
+                    headObj.type = Editable;
                     headObj.id = columns;
                     ListHead.Add(headObj);
                 }
@@ -510,6 +571,18 @@ namespace RevenuePlanner.Services.MarketingBudget
             return mdlGridHeader;
         }
 
+
+        /// <summary>
+        /// Get list of users for specific client
+        /// </summary>
+        /// <param name="ClientID">Client Id</param>
+        /// <returns>Returns list of users for the client</returns>
+        public List<BDSService.User> GetUserListByClientId(int ClientID)
+        {
+            List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(ClientID).ToList();
+            return lstUser;
+        }
+
         #region Method to convert number format
         /// <summary>
         /// Method for convert number to formatted string
@@ -521,46 +594,6 @@ namespace RevenuePlanner.Services.MarketingBudget
                                  @"[" + System.Globalization.NumberFormatInfo.CurrentInfo.NumberDecimalSeparator + "]?0+$", "");
         }
         #endregion
-
-        public List<LineItemAllocatingAccount> GetAccountsForLineItem(int lineItemId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<PlanAllocatingAccount> GetAccountsForPlan(int planId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<AllocatedLineItemForAccount> GetAllocatedLineItemsForAccount(int accountId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<BudgetItem> GetBudgetData(int budgetId, ViewByType viewByType, BudgetColumnFlag columnsRequested)
-        {
-            throw new NotImplementedException();
-        }
-
-        public BudgetSummary GetBudgetSummary(int budgetId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<UserBudgetPermission> GetUserPermissionsForAccount(int accountId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void LinkLineItemsToAccounts(List<LineItemAccountAssociation> lineItemAccountAssociations)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void LinkPlansToAccounts(List<PlanAccountAssociation> planAccountAssociations)
-        {
-            throw new NotImplementedException();
-        }
 
         public Dictionary<BudgetCloumn, double> UpdateBudgetCell(int budgetId, BudgetCloumn columnIndex, double oldValue, double newValue)
         {

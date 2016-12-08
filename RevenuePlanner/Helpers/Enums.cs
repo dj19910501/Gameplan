@@ -341,7 +341,8 @@ namespace RevenuePlanner.Helpers
         {
             None = 0,
             ViewOnly = 1,
-            Full = 2
+            Full = 2,
+            View = 3
         }
 
         public enum ActiveMenu

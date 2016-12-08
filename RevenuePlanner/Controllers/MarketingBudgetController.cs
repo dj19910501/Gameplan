@@ -19,10 +19,7 @@ namespace RevenuePlanner.Controllers
         {
             _MarketingBudget = MarketingBudget;
         }
-        #region Declartion
-        private bool _IsBudgetCreate_Edit = true;
-        private bool _IsForecastCreate_Edit = true;
-        #endregion
+
         [AuthorizeUser(Enums.ApplicationActivity.BudgetCreateEdit | Enums.ApplicationActivity.ForecastCreateEdit | Enums.ApplicationActivity.ForecastView)]
         public ActionResult Index()
         {
@@ -75,44 +72,29 @@ namespace RevenuePlanner.Controllers
 
         }
 
-        public List<LineItemAllocatingAccount> GetAccountsForLineItem(int lineItemId)
-        {
-            //Do whatever needed here
-            return ObjectFactory.GetInstance<IMarketingBudget>().GetAccountsForLineItem(lineItemId);
-        }
-
-        public List<PlanAllocatingAccount> GetAccountsForPlan(int planId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<AllocatedLineItemForAccount> GetAllocatedLineItemsForAccount(int accountId)
-        {
-            throw new NotImplementedException();
-        }
-
-        //public List<BudgetItem> GetBudgetData(int budgetId, ViewByType viewByType, BudgetColumnFlag columnsRequested)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
 		/// <summary>
-        /// Method to get marketing budget grid data for perticular budget
+        /// Added by Komal Rawal
+        /// Returns Budget Data Hierarchy
         /// </summary>
-        /// <param name="budgetId">bedget id for which user want to get the data</param>
-        /// <param name="TimeFrame">in which view user want to view the data quater/months</param>
-        /// <param name="columnsRequested">Which columns user wants to see</param>
+        /// <param name="BudgetId">Id of the Budget</param>
+        /// <param name="TimeFrame">Selected time frame</param>
         /// <returns>Json data to bind the grid</returns>
-        public JsonResult GetBudgetData(int budgetId, string TimeFrame, BudgetColumnFlag columnsRequested = 0) // need to pass columns requested
+        public JsonResult GetBudgetData(int budgetId, string TimeFrame) // need to pass columns requested
         {
             // set budgetId  and timeframe in session for import
             Sessions.ImportTimeFrame = TimeFrame;
             Sessions.BudgetDetailId = budgetId;
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
+            try
+            {
             //Get all budget grid data.
-            objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, TimeFrame, columnsRequested, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol, Sessions.ClientUsers);
-            var jsonResult = Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader }, JsonRequestBehavior.AllowGet);
-            return jsonResult;
+                objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, TimeFrame, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol, Sessions.ClientUsers);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader }, JsonRequestBehavior.AllowGet);
         }
 
 
@@ -163,30 +145,12 @@ namespace RevenuePlanner.Controllers
             return StandardTimeFrameColumns;
         }
 
-        public BudgetSummary GetBudgetSummary(int budgetId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<UserBudgetPermission> GetUserPermissionsForAccount(int accountId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void LinkLineItemsToAccounts(List<LineItemAccountAssociation> lineItemAccountAssociations)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void LinkPlansToAccounts(List<PlanAccountAssociation> planAccountAssociations)
-        {
-            throw new NotImplementedException();
-        }
-
         public Dictionary<BudgetCloumn, double> UpdateBudgetCell(int budgetId, BudgetCloumn columnIndex, double oldValue, double newValue)
         {
             throw new NotImplementedException();
         }
+     
+        
        /// <summary>
         /// Function to deleting budget data and its child heirarchy.
         /// Added By: Rahul Shah on 11/30/2016.
@@ -328,6 +292,7 @@ namespace RevenuePlanner.Controllers
             return ds;
         }
         #endregion
+    
         #region Header
         /// <summary>
         /// Get finance header values(Budget, Forecast, Planned and Actual)

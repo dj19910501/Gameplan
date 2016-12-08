@@ -61,18 +61,22 @@
         <div style="float:left;" id="divAddnew">
             <input type="button" id="btnAddNewBudget" name="btnAddNewBudget" value="Add New Budget" class="btn btn-fill-white remove-box-shadow source-sans-proregular" />
         </div>
+
         <span class="selectBox quarter_selection" id="ddlMainTimeFrameSelectBox">
             <label id="" for="Time_Frame:">Time Frame:</label>
             @Html.DropDownList("ddlMainGridTimeFrame", new SelectList(Model.TimeFrame, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
         </span>
-        <div id="ddlColumnsFrameBox" class="filter-columns selectBox">
-            <label id="" for="Filter Columns:">Filter Columns:</label>
-            <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>
-        </div>
+      
         <span class="selectBox quarter_selection" id="ddlColumnSetFrameBox">
             <label id="" for="View by:">View by:</label>
             @Html.DropDownList("ddlColumnSet", new SelectList(Model.Columnset, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
         </span>
+
+        <div id="ddlColumnsFrameBox" class="filter-columns selectBox">
+            <label id="" for="Filter Columns:">Filter Columns:</label>
+            <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>
+        </div>
+
     </div>
 
     <div class="plancart-box finance-cart">

@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Data.OleDb;
+using System.Linq;
 using System;
 
 namespace RevenuePlanner.UnitTest.Service
@@ -110,8 +111,104 @@ namespace RevenuePlanner.UnitTest.Service
             }
         }
 
+			 /// <summary>
+        /// Test Case to save new budget.
+        /// </summary>
+        [TestMethod]
+        public void Test_MarketingBudget_SaveNewBudget()
+        {
+            Console.WriteLine("To Save New Budget.\n");
+            int res = _marketingBudget.SaveNewBudget("Test Budget", 30, 627);
+            Assert.IsTrue(res >= 0);
+
+            var delres = _marketingBudget.DeleteBudget(res, ClientId);
+            Assert.IsTrue(delres >= 0);
+        }
+
+        /// <summary>
+        /// Test Case to save budget with empty name.
+        /// </summary>
+        [TestMethod]
+        public void Test_MarketingBudget_SaveNewBudgetWithemptybudgetname()
+        {
+            Console.WriteLine("To Save New Budget With Empty Value.\n");
+            int res = _marketingBudget.SaveNewBudget(string.Empty, 30, 627);
+            Assert.AreEqual(0, res);
+        }
+
+        /// <summary>
+        /// Test Case to save budget detail when we add new item/child item.
+        /// </summary>
+        [TestMethod]
+        public void Test_MarketingBudget_SaveNewItemBudgetDetail()
+        {
+            Console.WriteLine("To Save New Budget Detail Item.\n");
+
+            int BudgetID = _marketingBudget.SaveNewBudget("Budget Test", 30, 627);
+
+            DataSet BudgetDetails = _marketingBudget.GetBudgetDefaultData(BudgetID, "yearly", 30, 627, "627", 0);
+            DataTable BudgetDetailTable = BudgetDetails.Tables[0];
+            int DataCount = BudgetDetailTable.Rows.Count;
+
+            DataRow ParentRow = BudgetDetailTable.Rows.Cast<DataRow>()
+                                       .Where(row => row.Field<Nullable<Int32>>("ParentId") == null).FirstOrDefault();
+            int BudgetDetailID = Convert.ToInt32(ParentRow["BudgetDetailID"]);
+            _marketingBudget.SaveNewBudgetDetail(BudgetID, "Item 1", BudgetDetailID, 30, 627);
+
+            DataSet BudgetDetailsafterSaving = _marketingBudget.GetBudgetDefaultData(BudgetID, "yearly", 30, 627, "627", 0);
+            int DataCountAfterSaving = BudgetDetailsafterSaving.Tables[0].Rows.Count;
+
+            Assert.IsTrue(DataCountAfterSaving > DataCount);
+
+            var res = _marketingBudget.DeleteBudget(BudgetDetailID, ClientId);
+            Assert.IsTrue(res >= 0);
+
+        }
+
+
+
+        [TestMethod]
+        public void Test_MarketingBudget_GetColumnSet()
+        {
+            Console.WriteLine("To Get Columnset Values.\n");
+            var res = _marketingBudget.GetColumnSet(ClientId);
+            Assert.IsTrue(res.Count > 0);
+        }
+
+        [TestMethod]
+        public void Test_MarketingBudget_Columns()
+        {
+            Console.WriteLine("To get Columns based on column set id.\n");
+            var result = _marketingBudget.GetColumnSet(ClientId);
+            Assert.IsTrue(result.Count > 0);
+
+            string ColumnSetID = result.SingleOrDefault().Value;
+            var res = _marketingBudget.GetColumns(Convert.ToInt32(ColumnSetID));
+            Assert.IsTrue(res.Count > 0);
+        }
+
+        [TestMethod]
+        public void Test_MarketingBudget_GetBudgetGridData()
+        {
+            Console.WriteLine("To get budget grid data.\n");
+            // Get users list for current client
+            List<BDSService.User> lstUsers = _marketingBudget.GetUserListByClientId(30);
+
+            int res = _marketingBudget.SaveNewBudget("Test Budget", 30, 627);
+            Assert.IsTrue(res >= 0);
+
+            BudgetGridModel Data = _marketingBudget.GetBudgetGridData(res, "yearly", 30, 627, 1, "$", lstUsers);
+            Assert.IsNotNull(Data);
+            Assert.IsTrue(Data.objGridDataModel.rows.Count > 0);
+            Assert.IsTrue(Data.GridDataStyleList.Count > 0);
+
+            var delres = _marketingBudget.DeleteBudget(res, ClientId);
+            Assert.IsTrue(delres >= 0);
+
+        }
 
     }
+    
 
 
     /// <summary>

@@ -216,15 +216,6 @@ namespace RevenuePlanner.Services.MarketingBudget
     /// </summary>
     public interface IMarketingBudget
     {
-        List<BudgetItem> GetBudgetData(int budgetId, ViewByType viewByType, BudgetColumnFlag columnsRequested); //initial budget display
-        BudgetSummary GetBudgetSummary(int budgetId); //HUD display 
-        List<UserBudgetPermission> GetUserPermissionsForAccount(int accountId); //manage users  
-        List<AllocatedLineItemForAccount> GetAllocatedLineItemsForAccount(int accountId); //show linked line items  
-        void LinkLineItemsToAccounts(List<LineItemAccountAssociation> lineItemAccountAssociations); //link a line item 
-        void LinkPlansToAccounts(List<PlanAccountAssociation> planAccountAssociations); //link a plan  
-        List<LineItemAllocatingAccount> GetAccountsForLineItem(int lineItemId); //line item page  
-        List<PlanAllocatingAccount> GetAccountsForPlan(int planId); //plan page  
-
         List<BindDropdownData> GetBudgetlist(int ClientId); //mainbudget dropdown
 
         List<BindDropdownData> GetColumnSet(int ClientId);// Column set dropdown
@@ -234,7 +225,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         int SaveNewBudget(string BudgetName, int ClientId, int UserId);
         void  SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId ,int ClientId, int UserId, string mainTimeFrame = "Yearly");
         DataSet GetBudgetDefaultData(int budgetId, string timeframe, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate);
-        BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, BudgetColumnFlag columnsRequested, int ClientID, int UserID, double Exchangerate, string CurSymbol,List<BDSService.User> lstUser);
+        BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, int ClientID, int UserID, double Exchangerate, string CurSymbol,List<BDSService.User> lstUser);
 
         MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate,List<BDSService.User> lstUser); // Header values
         List<BDSService.User> GetUserListByClientId(int ClientID); // List of users for specific client
