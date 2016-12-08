@@ -19,32 +19,39 @@
                             <div id="ViewAllDataModule">
                                 <div class="tab-head">
                                     @Model.DisplayName<a class="close-popup-btn">Close</a>
-                                @*<img src="@Url.Content("~/content/images/help-icon.png")" alt="help" style="float:right; height:15px; width:15px; margin:13px;" title="Use shift key to allow sorting on multiple columns" />*@
-                            </div>
-                            <div class="home-chart-header  col-xs-12">
-                                <div class="row date-value-wrapper">
-                                    <div class="col-xs-5">
-                                        <div class="datetitle">Date Range</div>
-                                        <span class="lblheader">From: </span><span class="lblvalue">@Sessions.StartDate </span>
-                                        <span class="lblheader">To: </span><span class="lblvalue">@Sessions.EndDate</span>
-                                    </div>
+                                    @*<img src="@Url.Content("~/content/images/help-icon.png")" alt="help" style="float:right; height:15px; width:15px; margin:13px;" title="Use shift key to allow sorting on multiple columns" />*@
+                                </div>
+                                <div class="home-chart-header  col-xs-12">
+                                    <div class="row date-value-wrapper">
+                                        <div class="col-xs-5">
+                                            <div class="datetitle">Date Range</div>
+                                            <span class="lblheader">From: </span><span class="lblvalue">@Sessions.StartDate </span>
+                                            <span class="lblheader">To: </span><span class="lblvalue">@Sessions.EndDate</span>
+                                        </div>
 
-                                </div>
-                            </div>
-                            @*In Following div chart will be displayed*@
-                            <div class="tab-content">
-                                <div class="table1-responsive">
-                                    <div id="divViewChart_@Model.Id" ReportGraphId="@Model.Id" class="table-popup" style="height:300px">
                                     </div>
                                 </div>
-                                @*//In Following div report table will be displayed*@
-                                <div class="table1-responsive tableheightclass">
-                                    <div id="divViewChartTable_@Model.Id" class="table-popup">
+                                @*In Following div chart will be displayed*@
+                                <div class="tab-content">
+                                    <div class="table1-responsive">
+                                        <div id="divViewChart_@Model.Id" ReportGraphId="@Model.Id" class="table-popup" style="height:300px">
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
+                                    @*//In Following div report table will be displayed*@
+                                    <ul class="nav nav-tabs table_graph_tab_container" id="graphdata_tab" data-tabs="tabs">
+                                        <li id="liData" class="active"><a href="#data_tab" data-toggle="tab">Data</a></li>
 
-                        </div>
+                                    </ul>
+                                    <div class="tblheader" style="margin-bottom: 10px;" id="msgdata_tab">
+                                        <span id="spanMsg">Click on a table cell to view the data behind the numbers</span>
+                                    </div>
+                                    <div class="table1-responsive tableheightclass">
+                                        <div id="divViewChartTable_@Model.Id" class="table-popup">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         }
                     </div>
                 </div>
@@ -98,8 +105,9 @@
                 data: $.param(params, true),
                 dataType: "json",
                 success: function (data) {
+                   
                     if(data.data!=null && data.data!='')
-                    LoadReportTable(params.Id, "divViewChartTable_", data.data,"ReportTable","_wrapper");
+                        LoadReportTable(params.Id, "divViewChartTable_",jQuery.parseJSON(data.data),"ReportTable","_wrapper");
 
                     $("#ReportTable" + '@Model.Id' + " .border-r").click(function() {
                         var dimensionValueName = $(this).parent().find('.border-r:first').not('.border-r.tdGraphData').html();

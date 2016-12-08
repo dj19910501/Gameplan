@@ -21,3 +21,10 @@ div.gridbox .objbox {
         max-height: 210px;
         height: auto;
     }
+    .tblheader {
+    margin: 5px 0 5px /*by bheur 14-9-2015*/;
+    font-size: 16px;
+    font-family: 'ProximaNova-Bold';
+    font-weight: normal;
+    margin-bottom: 14px;
+}

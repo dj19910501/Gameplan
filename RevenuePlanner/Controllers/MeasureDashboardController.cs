@@ -249,7 +249,7 @@ namespace RevenuePlanner.Controllers
                         }
 
                         client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
-                        client.Timeout = TimeSpan.FromSeconds(5);  //set timeout for Common Integration API call
+                        client.Timeout = TimeSpan.FromMinutes(5);  //set timeout for Common Integration API call
 
                         Uri baseAddress = new Uri(objApiParameters.ApiUrl);
                         client.BaseAddress = baseAddress;

@@ -851,7 +851,9 @@ function ManageViewAllIcon(obj,msgNoDataAvailable, msgGraphNotConfigure) {
             $("#" + id).show();
     }
 }
+//Following function is created to bind report table in to dhtmlx grid.
 function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperName, isReportTable) {
+  
     $('#' + divName + DashboardContentId).html(data);
     var reportTableId = tableType + DashboardContentId;
     var defaultRows = $('#hdn_' + reportTableId).attr('defaultRows');
@@ -907,11 +909,7 @@ function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperNa
         if (isReportTable)
             mygrid.setColumnHidden(1, true);
 
-        $('#' + reportTableId).find('tfoot').find('.totalRow').find('td').each(function (j, cell) {
-            if (j == 1) {
-                $(this).css('display', 'none');
-            }
-        });
+        $('#' + reportTableId).find('tfoot').find('.totalRow').find('td').each(function (j, cell) { if (j == 1) $(this).css('display', 'none'); });
         $('#' + reportTableId).find('tfoot').find('.goalRow').find('td').each(function (j, cell) {
             if (j == 1) {
                 $(this).css('display', 'none');
@@ -932,8 +930,7 @@ function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperNa
         for (var j = 0; j < count; j++) {
             mygrid.adjustColumnSize(j);
         }
-        var widthx = (parseInt($('#' + reportTableId).parent().width()) * 75) / 100;
-
+     
         $('#' + reportTableId).css('margin', '0 auto');
         $('#' + reportTableId).css('width', '100%');
         $('#' + reportTableId).find('.xhdr').css('width', '100%');
