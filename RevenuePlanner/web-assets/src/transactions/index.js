@@ -75,6 +75,18 @@ function createPager($pager, dataSource) {
 }
 
 function bindViewBy($viewBy, dataSource) {
+    // use multiselect plugin for this dropdown
+    $viewBy.multiselect({
+        multiple: false,
+        selectedList: 1,
+        minWidth: 220,
+        classes: css.viewByMultiSelect,
+        position: {
+            my: "right top",
+            at: "right bottom+10",
+        },
+    });
+
     $viewBy.on("change", function () {
         const index = this.selectedIndex;
         const option = this.options[index];

@@ -18,6 +18,7 @@ var outputFolder = path.resolve('dist');
 var libraryName = "libhive9";
 // *************************************************************
 
+var isWatchMode = process.argv && process.argv.indexOf("--watch") !== -1;
 
 var jsSuffix = ".js";
 var entry = path.resolve("src/main.js");
@@ -79,7 +80,7 @@ var config = {
         filename: libraryName + "-[hash]" + jsSuffix,
         publicPath: undefined // ASP.NET app will inject a BASE_URL to tell us where the app is hosted and we will use this to set the path in main.js
     },
-    bail: true,
+    bail: !isWatchMode,
     // Declare libraries that are loaded globally so we can still "import" them
     externals: [
         {

@@ -4,6 +4,11 @@ import flatMap from 'lodash/flatMap';
 import gridDataSource from 'util/gridDataSource';
 import keyBy from 'lodash/keyBy';
 import groupBy from 'lodash/groupBy';
+import find from 'lodash/find';
+import findIndex from 'lodash/findIndex';
+import createNewItemModel from './linkedItemEditorNewLinkModel';
+import css from './linkedItemEditor.scss';
+import uniqueId from 'lodash/uniqueId';
 
 const columns = [
     { id: "title", value: "Name", width: 300, type: "rotxt", align: "left", sort: "na" },
@@ -30,7 +35,7 @@ function mapLinkedItems(result) {
 function updateDataSource(state, dataSource, items) {
     // store a lookup table
     state.itemLookup = keyBy(items, "id");
-    state.items = items;
+    state.items = [...items];
 
     // give the records to the grid
     dataSource.updateRecords(items)
@@ -50,10 +55,63 @@ export default function createModel(transaction) {
         modifiedItems: Object.create(null),
         modifiedCount: 0,
         itemLookup: undefined,
+        items: undefined,
     };
 
     const model = {
         linkedItemGridDataSource: dataSource,
+        newItemModel: createNewItemModel(),
+
+        containsLineItem(lineItemId) {
+            return !!(state.items && find(state.items, {lineItemId}));
+        },
+
+        refreshLineItems() {
+            this.newItemModel.refreshLineItems();
+        },
+
+        /**
+         * GridDataSource bound to one of the arrays in newItemModel
+         * @param which
+         * @param title
+         */
+        createNewItemGridDataSource(which, title) {
+            const columns = [
+                { id: "Title", value: title, width: "*", type: "rotxt", align: "left", sort: "na" },
+            ];
+
+            let mapItem = item => ({id: item.Id, Title: item.Title });
+
+            if (which === "lineItems") {
+                // add some extra columns for this grid
+                columns.push(
+                    { id: "Cost", value: "Cost", width: 100, type: "ron", align: "right", sort: "na", numberFormat: `${window.CurrencySybmol} 0,000.00` },
+                    { id: "action", value: "&nbsp;", width: 100, type: "ro", align: "left", sort: "na" },
+                );
+
+                mapItem = item => {
+                    const isInList = this.containsLineItem(item.Id);
+                    const action = isInList ? "" : '<i class="fa fa-plus fa-fw"></i> Add To List';
+                    const rowClass = isInList ? undefined : css.notMapped;
+                    return {
+                        id: item.Id,
+                        Title: item.Title,
+                        Cost: item.Cost,
+                        action: action,
+                        class: rowClass,
+                    };
+                };
+            }
+
+            const ds = gridDataSource(undefined, undefined, columns);
+
+            this.newItemModel.subscribe(which, ev => {
+                const records = ev.value && ev.value.map(mapItem);
+                ds.updateRecords(records);
+            });
+
+            return ds;
+        },
 
         on(event, cb) { $(this).on(event, cb); },
         off(event, cb) { $(this).off(event, cb); },
@@ -114,6 +172,37 @@ export default function createModel(transaction) {
             return true;
         },
 
+        addNewMapping(lineItemId) {
+            const lineItem = find(this.newItemModel.lineItems, {Id: lineItemId});
+            const campaign = find(this.newItemModel.campaigns, {Id: this.newItemModel.selectedCampaign});
+            const program = find(this.newItemModel.programs, {Id: this.newItemModel.selectedProgram});
+            const tactic = find(this.newItemModel.tactics, {Id: this.newItemModel.selectedTactic});
+            const plan = find(this.newItemModel.plans, {Id: this.newItemModel.selectedPlan});
+            const newItem = {
+                isNew: true,
+                // this is just a temporary id until we save the record and get a real id from the sever
+                id: uniqueId("mappedItem"),
+                lineItemId: lineItem.Id,
+                tacticName: `${plan.Title} > ${campaign.Title} > ${program.Title} > ${tactic.Title}`,
+                mappedAmount: lineItem.Cost || 0,
+                lineItemCost: lineItem.Cost,
+                lineItemActual: lineItem.Actual,
+                title: lineItem.Title,
+                trash: `<i class="fa fa-trash-o fa-fw"></i>`,
+            };
+
+            state.items.push(newItem);
+            state.itemLookup[newItem.id] = newItem;
+            state.modifiedItems[newItem.id] = newItem;
+            if (++state.modifiedCount === 1) {
+                $(this).trigger("modified");
+            }
+
+            $(this).trigger("availableFunds");
+
+            return newItem;
+        },
+
         toggleDelete(id) {
             let modified = state.modifiedItems[id];
             if (!modified) {
@@ -127,6 +216,23 @@ export default function createModel(transaction) {
                 $(this).trigger("availableFunds");
 
                 return true;
+            }
+            else if (modified.isNew) {
+                // they are deleting a "new" unsaved item.  We want to completely remove it from the list
+                delete state.modifiedItems[id];
+                delete state.itemLookup[id];
+                const itemIndex = findIndex(state.items, {id});
+                state.items.splice(itemIndex, 1);
+
+                if (--state.modifiedCount === 0) {
+                    $(this).trigger("modified");
+                }
+
+                $(this).trigger("availableFunds");
+
+                this.refreshLineItems();
+
+                return undefined; // signals the caller to remove the item from the list
             }
             else {
                 modified.isDeleted = !modified.isDeleted;
