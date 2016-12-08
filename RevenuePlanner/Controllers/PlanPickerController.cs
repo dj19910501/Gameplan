@@ -20,7 +20,7 @@ namespace RevenuePlanner.Controllers
             return _planPicker.GetCampaigns(planId);
         }
 
-        public IEnumerable<PlanItem> GetLineItems(int tacticId)
+        public IEnumerable<PlanItemWithCost> GetLineItems(int tacticId)
         {
             return _planPicker.GetLineItems(tacticId);
         }

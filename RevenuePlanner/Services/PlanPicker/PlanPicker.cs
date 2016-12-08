@@ -22,12 +22,12 @@ namespace RevenuePlanner.Services.PlanPicker
             return sqlQuery.ToList();
         }
 
-        public List<PlanItem> GetLineItems(int tacticId)
+        public List<PlanItemWithCost> GetLineItems(int tacticId)
         {
             var sqlQuery =
                 from lineItem in _database.Plan_Campaign_Program_Tactic_LineItem
-                where lineItem.PlanTacticId == tacticId
-                select new PlanItem { Id = lineItem.PlanLineItemId, Title = lineItem.Title };
+                where lineItem.PlanTacticId == tacticId && lineItem.Title.ToLower() != "sys_gen_balance"
+                select new PlanItemWithCost { Id = lineItem.PlanLineItemId, Title = lineItem.Title, Cost = lineItem.Cost };
             return sqlQuery.ToList();
         }
 

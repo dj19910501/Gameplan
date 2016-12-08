@@ -1,0 +1,4 @@
+    <option value=""><%- o.prompt %></option>
+<% o.items.forEach(function (item) { %>
+    <option value="<%= item.value %>"><%- item.text %></option>
+<% }) %>

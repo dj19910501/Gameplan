@@ -78,7 +78,7 @@ namespace RevenuePlanner.UnitTest.Service
     /// </summary>
     public static class TestExtension
     {
-        public static bool ContainsTitle(this List<PlanItem> list, string title)
+        public static bool ContainsTitle<T>(this List<T> list, string title) where T : PlanItem
         {
             foreach (var item in list)
             {
