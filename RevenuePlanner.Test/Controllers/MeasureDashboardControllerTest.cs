@@ -21,16 +21,16 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class MeasureDashboardControllerTest
     {
-        MeasureDashboardController objMeasureDashboiardController = new MeasureDashboardController();
+        MeasureDashboardController objMeasureDashboardController = new MeasureDashboardController();
         [TestInitialize]
         public void LoadCacheMessage()
         {
             HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            objMeasureDashboiardController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(),
+            objMeasureDashboardController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(),
 
-objMeasureDashboiardController);
-            objMeasureDashboiardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+objMeasureDashboardController);
+            objMeasureDashboardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
         }
         /// <summary>
         /// Following is testcase to get report table.
@@ -90,9 +90,9 @@ System.Configuration.ConfigurationManager.AppSettings.Get(connectionString);
                             viewBy = Convert.ToString(dr["ViewBy"]);
                         Console.WriteLine("Get  report table data.\n");
                         MeasureDashboardController objDashboard = new MeasureDashboardController();
-                        objMeasureDashboiardController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(),
+                        objMeasureDashboardController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(),
 
-objMeasureDashboiardController);
+objMeasureDashboardController);
                         //Set Connection string in UserApplicationId of session
                         List<RevenuePlanner.BDSService.User.ApplicationDetail> lstApplicationDetail = new List<RevenuePlanner.BDSService.User.ApplicationDetail>();
                         RevenuePlanner.BDSService.User.ApplicationDetail objApplicationDetail = new RevenuePlanner.BDSService.User.ApplicationDetail();
@@ -128,14 +128,14 @@ dashBoardId, 0, dashBoardContentID) as string;
             var routes = new RouteCollection();
             Console.WriteLine("Get Drill Down Data.\n");
             MRPEntities db = new MRPEntities();
-            objMeasureDashboiardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objMeasureDashboiardController.Url = new UrlHelper(
+            objMeasureDashboardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objMeasureDashboardController.Url = new UrlHelper(
             new RequestContext(
-            objMeasureDashboiardController.HttpContext, new RouteData()
+            objMeasureDashboardController.HttpContext, new RouteData()
             ),
             routes
             );
-            var result = objMeasureDashboiardController.LoadDrillDownData("", 0, "", "", "", "", "", "", "", "", "", "", 0, false, "", "") as Task<PartialViewResult>;
+            var result = objMeasureDashboardController.LoadDrillDownData("", 0, "", "", "", "", "", "", "", "", "", "", 0, false, "", "") as Task<PartialViewResult>;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
         }
 
@@ -148,14 +148,14 @@ dashBoardId, 0, dashBoardContentID) as string;
             var routes = new RouteCollection();
             Console.WriteLine("Get Drill Down Data.\n");
             MRPEntities db = new MRPEntities();
-            objMeasureDashboiardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objMeasureDashboiardController.Url = new UrlHelper(
+            objMeasureDashboardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objMeasureDashboardController.Url = new UrlHelper(
             new RequestContext(
-            objMeasureDashboiardController.HttpContext, new RouteData()
+            objMeasureDashboardController.HttpContext, new RouteData()
             ),
             routes
             );
-            var result = objMeasureDashboiardController.LoadDrillDownData("Test", 1, "Inquiries Generated", "Q3-2014", "12,261.00", "12261", "Enterprise", "1", "1", "", "0", "0", 0, false, "desc", "") as Task<PartialViewResult>;
+            var result = objMeasureDashboardController.LoadDrillDownData("Test", 1, "Inquiries Generated", "Q3-2014", "12,261.00", "12261", "Enterprise", "1", "1", "", "0", "0", 0, false, "desc", "") as Task<PartialViewResult>;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
         }
 
@@ -168,14 +168,14 @@ dashBoardId, 0, dashBoardContentID) as string;
             var routes = new RouteCollection();
             Console.WriteLine("Get Drill Down Data.\n");
             MRPEntities db = new MRPEntities();
-            objMeasureDashboiardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objMeasureDashboiardController.Url = new UrlHelper(
+            objMeasureDashboardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objMeasureDashboardController.Url = new UrlHelper(
             new RequestContext(
-            objMeasureDashboiardController.HttpContext, new RouteData()
+            objMeasureDashboardController.HttpContext, new RouteData()
             ),
             routes
             );
-            var result = objMeasureDashboiardController.GetDrillDownReportTable(null, null, "", 0, "", "", "", "", "", 0, 0, "", "", 0, "0", "") as Task<ActionResult>;
+            var result = objMeasureDashboardController.GetDrillDownReportTable(null, null, "", 0, "", "", "", "", "", 0, 0, "", "", 0, "0", "") as Task<ActionResult>;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
         }
 
@@ -188,16 +188,16 @@ dashBoardId, 0, dashBoardContentID) as string;
             var routes = new RouteCollection();
             Console.WriteLine("Get Drill Down Data.\n");
             MRPEntities db = new MRPEntities();
-            objMeasureDashboiardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objMeasureDashboiardController.Url = new UrlHelper(
+            objMeasureDashboardController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objMeasureDashboardController.Url = new UrlHelper(
             new RequestContext(
-            objMeasureDashboiardController.HttpContext, new RouteData()
+            objMeasureDashboardController.HttpContext, new RouteData()
             ),
             routes
             );
             string[] SelectedOthersDimension = new string[] { "59", "46" };
             string[] SelectedDimensionValue = new string[] { "59:612", "46:9" };
-            var result = objMeasureDashboiardController.GetDrillDownReportTable(SelectedOthersDimension, SelectedDimensionValue, "Test", 19, "Q3-2014", "Enterprise", "Campaign", "", "", 0, 10, "0", "", 13, "0", "0") as Task<ActionResult>;
+            var result = objMeasureDashboardController.GetDrillDownReportTable(SelectedOthersDimension, SelectedDimensionValue, "Test", 19, "Q3-2014", "Enterprise", "Campaign", "", "", 0, 10, "0", "", 13, "0", "0") as Task<ActionResult>;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
         }
         /// <summary>
@@ -218,9 +218,9 @@ dashBoardId, 0, dashBoardContentID) as string;
                     foreach (DataRow dr in ds.Tables[0].Rows)
                     {
                         //Check column is exist in databale or not, and get that fields value.
-                        int reportTableId = 0;
-                        if (ds.Tables[0].Columns.Contains("ReportTableId"))
-                            reportTableId = Convert.ToInt32(dr["ReportTableId"]);
+                        int reportGraphId = 0;
+                        if (ds.Tables[0].Columns.Contains("ReportGraphId"))
+                            reportGraphId = Convert.ToInt32(dr["ReportGraphId"]);
                         int dashBoardId = 0;
                         if (ds.Tables[0].Columns.Contains("DashBoardId"))
                             dashBoardId = Convert.ToInt32(dr["DashBoardId"]);
@@ -246,11 +246,14 @@ dashBoardId, 0, dashBoardContentID) as string;
                         string viewBy = string.Empty;
                         if (ds.Tables[0].Columns.Contains("ViewBy"))
                             viewBy = Convert.ToString(dr["ViewBy"]);
+                        string chartType = string.Empty;
+                        if (ds.Tables[0].Columns.Contains("chartType"))
+                            chartType = Convert.ToString(dr["chartType"]);
                         Console.WriteLine("Get  report table data.\n");
                         MeasureDashboardController objDashboard = new MeasureDashboardController();
-                        objMeasureDashboiardController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(),
+                        objMeasureDashboardController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(),
 
-objMeasureDashboiardController);
+objMeasureDashboardController);
                         //Set Connection string in UserApplicationId of session
                         List<RevenuePlanner.BDSService.User.ApplicationDetail> lstApplicationDetail = new List<RevenuePlanner.BDSService.User.ApplicationDetail>();
                         RevenuePlanner.BDSService.User.ApplicationDetail objApplicationDetail = new RevenuePlanner.BDSService.User.ApplicationDetail();
@@ -258,9 +261,8 @@ objMeasureDashboiardController);
                         objApplicationDetail.ConnectionString = dbconnectionString;
                         lstApplicationDetail.Add(objApplicationDetail);
                         Sessions.User.UserApplicationId = lstApplicationDetail;
-                        JsonResult result = await objDashboard.GetChart(reportTableId, Enums.ApplicationCode.RPC.ToString(), "", null, false, viewBy, startDate, endDate, true, false) as JsonResult;
-                        Assert.IsTrue(Convert.ToString(result.Data).Contains("true"));
-                        Assert.IsNotNull(result);
+                        JsonResult result = await objDashboard.GetChart(reportGraphId, Enums.ApplicationCode.RPC.ToString(), "", null, false, viewBy, startDate, endDate, true, false) as JsonResult;                       
+                        Assert.IsTrue(Convert.ToString(result.Data).Contains("type: '"+ chartType + "'"));                        
                         Console.WriteLine("MeasureDashboardController - GetChart" + " \n The Assert Value is :  " + result);
                     }
                 }
@@ -282,17 +284,25 @@ objMeasureDashboiardController);
         private DataSet ReturnDataSetFromExcel(string connectionString, string sheetName)
         {
             DataSet ds = new DataSet();
-            OleDbConnection ExcelConnection; OleDbDataAdapter Command;
-            string ExcelPath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" +
-System.Configuration.ConfigurationManager.AppSettings.Get(connectionString);
-            string path = connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + ExcelPath + ";Extended Properties=\"Excel 8.0;HDR=YES;\"";
-            ExcelConnection = new OleDbConnection(path);
-            ExcelConnection.Open();
-            Command = new OleDbDataAdapter("select * from " + "[" + sheetName + "$]", ExcelConnection);
-            Command.TableMappings.Add("Table", "TestTable");
-            Command.Fill(ds);
-            ExcelConnection.Close();
-            return ds;
+            try
+            {
+               
+                OleDbConnection ExcelConnection; OleDbDataAdapter Command;
+                string ExcelPath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" +
+    System.Configuration.ConfigurationManager.AppSettings.Get(connectionString);
+                string path = connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + ExcelPath + ";Extended Properties=\"Excel 8.0;HDR=YES;\"";
+                ExcelConnection = new OleDbConnection(path);
+                ExcelConnection.Open();
+                Command = new OleDbDataAdapter("select * from " + "[" + sheetName + "$]", ExcelConnection);
+                Command.TableMappings.Add("Table", "TestTable");
+                Command.Fill(ds);
+                ExcelConnection.Close();
+                return ds;
+            }
+            catch(Exception)
+            {
+                return ds;
+            }
         }
 
 

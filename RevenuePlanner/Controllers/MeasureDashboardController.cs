@@ -228,7 +228,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="isChartTable">To Check this method will return Chart Table or Chart</param>        
         public async Task<ActionResult> GetChart(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", bool IsViewData = false, bool isChartTable = false)
         {
-           
+
             HttpResponseMessage response = new HttpResponseMessage();
             string result = string.Empty;
             Sessions.ViewByValue = ViewBy;
@@ -239,15 +239,17 @@ namespace RevenuePlanner.Controllers
                     if (Id > 0)
                     {
                         //Using following method required parametr for Report API will be set.
-                        APIParameters objApiParameters = SetApiParameters(DbName,StartDate,EndDate);
+                        APIParameters objApiParameters = SetApiParameters(DbName, StartDate, EndDate);
                         HttpClient client = new HttpClient();
                         int CommonWebAPITimeout = 0;
                         string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
                         if (!string.IsNullOrEmpty(strwebAPITimeout))
+                        {
                             CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
+                        }
 
                         client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
-                        client.Timeout = TimeSpan.FromHours(3);  //set timeout for Common Integration API call
+                        client.Timeout = TimeSpan.FromMinutes(5);  //set timeout for Common Integration API call
 
                         Uri baseAddress = new Uri(objApiParameters.ApiUrl);
                         client.BaseAddress = baseAddress;
@@ -270,9 +272,13 @@ namespace RevenuePlanner.Controllers
                         objParams.IsViewData = IsViewData;
                         //Following will be return chart or table based on passed parameter isChartTable
                         if (isChartTable == false)
+                        {
                             response = await client.PostAsJsonAsync("api/Report/Chart ", objParams);
+                        }
                         else
+                        {
                             response = await client.PostAsJsonAsync("api/Report/GetChartTable", objParams);
+                        }
 
                         result = response.Content.ReadAsStringAsync().Result;
                     }
@@ -292,12 +298,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="EndDate"></param>
         //TO DO:Currenly This method is used only in Chart Method of this controller, for other method we will implement it letter.
         /// <returns></returns>
-        private APIParameters SetApiParameters(string DbName,string StartDate,string EndDate)
+        private APIParameters SetApiParameters(string DbName, string StartDate, string EndDate)
         {
             RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
             APIParameters objApiParameters = new APIParameters();
-           
-            
+
+
             if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
             {
                 objApiParameters.ConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle.ToLower() == Convert.ToString(Enums.ApplicationCode.RPC).ToLower()).Select(o => o.ConnectionString).FirstOrDefault();
@@ -363,15 +369,9 @@ namespace RevenuePlanner.Controllers
             string ApiUrl = string.Empty;
             string ConnectionString = string.Empty;
             Sessions.ViewByValue = ViewBy;
-            if (SDV != null)
+            if (SDV != null && SDV.Count() == 1 && string.IsNullOrEmpty(SDV[0]))
             {
-                if (SDV.Count() == 1)
-                {
-                    if (string.IsNullOrEmpty(SDV[0]))
-                    {
-                        SDV = null;
-                    }
-                }
+                SDV = null;
             }
             if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
             {
