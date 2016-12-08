@@ -3887,7 +3887,7 @@ GO
 SET ANSI_NULLS ON
 GO
 
-CREATE  PROCEDURE [dbo].[ImportMarketingBudgetQuarter]
+CREATE PROCEDURE [dbo].[ImportMarketingBudgetQuarter]
 @XMLData AS XML
 ,@ImportBudgetCol MarketingBudgetColumns READONLY
 ,@clientId INT
@@ -3909,6 +3909,7 @@ BEGIN TRY
 
 	----end
 	CREATE TABLE #tmpXmlData (ROWNUM BIGINT) --create # table because there are dynamic columns added as per file imported for marketing budget
+	CREATE TABLE  #childtempData (ROWNUM BIGINT)
 
 	DECLARE @Textboxcol nvarchar(max)=''
 	DECLARE @UpdateColumn NVARCHAR(255)
@@ -3944,7 +3945,8 @@ BEGIN TRY
 
 	SET @ConcatColumns  += 'pref.value(''(value)['+CAST(@Count AS VARCHAR(50))+']'', ''nvarchar(max)'') as ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'],' --set name of dynamic column
 
-	SET @tmpXmlDataAlter+= ' ALTER TABLE #tmpXmlData ADD ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'] NVARCHAR(MAX) ' -- add dynamic columns into table from XML data
+	SET @tmpXmlDataAlter+= ' ALTER TABLE #tmpXmlData ADD ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'] NVARCHAR(MAX)
+							ALTER TABLE #childtempData ADD ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'] NVARCHAR(MAX) ' -- add dynamic columns into table from XML data
 	SET @Count=@Count+1;
 	END
 	SELECT @ConcatColumns=CASE WHEN LEN(@ConcatColumns)>1
@@ -3985,7 +3987,8 @@ BEGIN TRY
 	WHERE BudgetPermission.Id IS NULL
 
 	-- Add only Child/Forecast item
-	Select *  into #childtempData from #tmpXmlData
+	Insert  into #childtempData 
+	select #tmpXmlData.* from #tmpXmlData
 	inner join (select * from dbo.fnGetBudgetForeCast_List (@BudgetDetailId,@clientId)) child
 	on CAST(#tmpXmlData.[Id#1] AS INT) = child.Id
 
@@ -4401,7 +4404,7 @@ BEGIN TRY
 	END
 	----end
 	CREATE TABLE  #tmpXmlData  (ROWNUM BIGINT) --create # table because there are dynamic columns added as per file imported for marketing budget
-
+	CREATE TABLE  #childtempData (ROWNUM BIGINT)
 	DECLARE @Textboxcol nvarchar(max)=''
 	DECLARE @UpdateColumn NVARCHAR(255)
 	DECLARE @CustomEntityDeleteDropdownCount BIGINT
@@ -4427,7 +4430,8 @@ BEGIN TRY
 
 		SET @ConcatColumns  += 'pref.value(''(value)['+CAST(@Count AS VARCHAR(50))+']'', ''nvarchar(max)'') as ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'],'
 
-		SET @tmpXmlDataAlter+= ' ALTER TABLE #tmpXmlData ADD ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'] NVARCHAR(MAX) '
+		SET @tmpXmlDataAlter+= ' ALTER TABLE #tmpXmlData ADD ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'] NVARCHAR(MAX) 
+								 ALTER TABLE #childtempData ADD ['+@ColName+'#'+CAST(@Count AS VARCHAR(50))+'] NVARCHAR(MAX) '
 		SET @Count=@Count+1;
 	END
 	SELECT @ConcatColumns=CASE WHEN LEN(@ConcatColumns)>1
@@ -4450,6 +4454,7 @@ BEGIN TRY
 	insert into @tmpChildBudgets
 	select *FROM tblChild
 	OPTION(MAXRECURSION 0)
+	
 
 	INSERT INTO #tmpXmlData EXECUTE sp_executesql @XmldataQuery, N'@XmlData XML OUT', @XmlData = @XmlData  OUT
 		-- Remove Other Child items which are not related to parent
@@ -4466,7 +4471,8 @@ BEGIN TRY
 		WHERE BudgetPermission.Id IS NULL
 
 		-- Add only Child/Forecast item and store into # table because there are dynamic columns added as per imported file.
-		Select *  into #childtempData from #tmpXmlData
+		Insert into #childtempData 
+		select #tmpXmlData.* from #tmpXmlData
 		inner join (select * from dbo.fnGetBudgetForeCast_List (@BudgetDetailId,@clientId)) child
 		on CAST(#tmpXmlData.[Id#1] AS INT) = child.Id
 
@@ -4699,6 +4705,7 @@ BEGIN CATCH
 	----end
 END CATCH
 END
+
 
 
 GO
