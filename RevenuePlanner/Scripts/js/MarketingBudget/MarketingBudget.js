@@ -298,13 +298,25 @@ function GetGridData(budgetId) {
                     }
                 }
             }
-                        
+            SetTooltip();
             ManageBorderBoxClass();//For alignment of column line 
 }
         });
 
     }
-    
+    //function to set tool tip on add and delete icons
+    function SetTooltip() {
+        $(".grid_Delete").tooltip({
+            'toggle': 'hover',
+            'container': 'body',
+            'placement': 'bottom'
+        });
+        $(".finance_grid_add").tooltip({
+            'toggle': 'hover',
+            'container': 'body',
+            'placement': 'bottom'
+        });
+    }
 
     //Function to manage dit event on main grid
     function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
