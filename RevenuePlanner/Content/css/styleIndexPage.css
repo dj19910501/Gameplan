@@ -1495,13 +1495,6 @@ color: #89CEDE;
 /*.task-tbl #divgridview.budget-grid .odd_dhx_skyblue,*/
 .task-tbl .gantt_task_row.odd {background:#f2f2f2}
 
- /*.task-tbl #divgridview #gridbox > div:nth-child(2) .obj .uneven {
-        background-color: #f2f2f2;
-    }*/
-/*.task-tbl #divgridview  #gridbox  div:first-child .obj .uneven, 
-.task-tbl #divgridview.budget-grid div#gridbox .gridbox.gridbox_dhx_skyblue table.obj .odd_dhx_skyblue{
-    background:#fff !important;
-}*/
 #divgridview #gridbox div:nth-child(2) > .objbox table.obj tr:nth-child(odd){
     background-color: #fff;
 }
@@ -1599,11 +1592,13 @@ color: #89CEDE;
   box-sizing: border-box !important;
 }*/
 /* #2607 Resolve column alignment issue on Budget grid when less column and scroll appear */
+
 #divgridview.budget-grid div.gridbox table.hdr {
   -webkit-box-sizing: content-box !important;
   -moz-box-sizing: content-box !important;
   box-sizing: content-box !important;
-  padding-right:0 !important
+  padding-right:0 !important;
+  
 }
 #divgridview.budget-grid div.gridbox.border-box table.hdr {
     -webkit-box-sizing: border-box !important;

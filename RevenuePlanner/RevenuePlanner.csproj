@@ -418,7 +418,7 @@
     <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Content\css\reportcss.css" />
-    <Content Include="Content\css\style_min_Dec_8.css" />
+    <Content Include="Content\css\style_min_Dec_9.css" />
     <Content Include="Scripts\js\MarketingBudget\MarketingBudget.js" />
     <Content Include="Views\Finance\Transactions.cshtml" />
     <Content Include="Views\MeasureDashboard\_ViewAllReportGraph.cshtml" />
@@ -530,10 +530,9 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\styleIndexPage.css" />
     <Content Include="Content\css\style.css" />
-    <Content Include="Content\css\styleIndexPage_min_06.css" />
+    <Content Include="Content\css\styleIndexPage_min_09.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Aug_2.css" />
-    <Content Include="Content\css\style_min_Dec_7.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />

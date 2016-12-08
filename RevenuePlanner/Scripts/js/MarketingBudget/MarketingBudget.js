@@ -1,4 +1,23 @@
-﻿//Added By Jaymin Modi at 01/Dec/2016. For Maintain States of Row.Ticket:-2806
+﻿
+//Added By Jaymin Modi at 08/Dec/2016. For Alignment  of column .Ticket:-2806- working with Bhumika
+(function ($) {
+    $.fn.hasScrollBar = function () {
+        return this.get(0).scrollHeight > this.height();
+    }
+})(jQuery);
+function ManageBorderBoxClass() {
+    $('.objbox').each(function () {
+        if ($(this).hasScrollBar()) {
+            $("#gridbox").addClass("border-box");
+        }
+        else {
+            $("#gridbox").removeClass("border-box");
+        }
+    });
+}
+
+
+//Added By Jaymin Modi at 01/Dec/2016. For Maintain States of Row.Ticket:-2806
 function createCookie(name, value, days) {
     
     if (days) {
@@ -256,7 +275,7 @@ function GetGridData(budgetId) {
                     y: budgetgrid.objBox.scrollTop,
                     x: budgetgrid.objBox.scrollLeft,
                 }
-
+                ManageBorderBoxClass();
                 return true;
             });
             
@@ -279,11 +298,13 @@ function GetGridData(budgetId) {
                     }
                 }
             }
-            
-            }
+                        
+            ManageBorderBoxClass();//For alignment of column line 
+}
         });
 
     }
+    
 
     //Function to manage dit event on main grid
     function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {

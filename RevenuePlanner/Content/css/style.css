@@ -3624,11 +3624,11 @@ a.link-gray {
 	margin-right: 0; /*by bheru 1678 05-11-2015*/
 	/*margin-left: 10px;*/
 }
-.fin-head-left .quarter_selection button{margin:0 !important}
+
 .fin-head-left .filter-columns /*by bheru 1678 05-11-2015 start*/ {
 	display: inline-block;
 	float: left;
-	margin-left: 10px; /* Changed for #2312*/
+	margin-left: 0; /* Changed for #2312*/
 }
 /*by bheru 1678 05-11-2015 end*/
 .finance-header {
@@ -14034,21 +14034,17 @@ div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td{
         /*border-bottom: 1px solid #f0f0f0;*/
         border-right: 1px solid #d4d4d4;
  }
-
 /* Common Css for all Grid */
 div.gridbox table td, div.gridbox table td .hdrcell{
     font-family: "source_sans_proregular",Arial,sans-serif ;
     font-size: 14px;
 }
-/*div.gridbox table td, div.gridbox table td .hdrcell{text-align:center}*/
-div.gridbox table.hdr td{
+
+div.gridbox_dhx_skyblue.gridbox table.hdr td {
+    border:1px solid #d4d4d4;
     border-top:0;
 }
 
-div.gridbox_dhx_skyblue.gridbox table.hdr td {
-    border: 1px 1px 1px 1px;
-    border-color: #d4d4d4;
-}
 div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
     width: 100% !important;
 }
@@ -14056,9 +14052,11 @@ div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
 div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
     width: 100% !important;
 }
-/* ===================== Dhtmlxtreegrid Table Commin CSS ===================== */
+/* ===================== Dhtmlxtreegrid Table Commin CSS End ===================== */
+/* ===================== MarketingBudget Table Commin CSS  ===================== */
+.MarketingBudget-tbl{height:64.5vh}
 .MarketingBudget-tbl div.gridbox_dhx_skyblue.gridbox table.hdr {
-    border-bottom: 1px solid #d4d4d4;
+    border-bottom: 1px solid #d4d4d4 ;
 }
 .MarketingBudget-tbl div.gridbox .pipeLine{border-left:1px solid #000;height:20px; margin:0 5px}
 .MarketingBudget-tbl span.marketing-tbl-link{text-decoration:underline}
@@ -14069,9 +14067,7 @@ div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
     background-color: #f0f0f0;
 }
 .MarketingBudget-tbl div.gridbox table td, div.gridbox table td .hdrcell{text-align:center}
-
-
-
+#gridbox.gridbox_dhx_skyblue.gridbox.border-box table.hdr{width:99.1% !important}
 /************************************************ Responsive css start here **********************************************************/
 
 @media (max-width: 1600px) {
@@ -14079,6 +14075,7 @@ div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
 	margin-right: 0;
 }
 /*by bheru 1678 05-11-2015*/
+.MarketingBudget-tbl{height:60vh}
 }
 
 @media (max-width: 1600px) {
@@ -14506,7 +14503,11 @@ html, body {
 	width: 241px !important;
 }
 }
-
+@media (max-width: 1280px) {
+    .MarketingBudget-tbl {
+        height: 52vh;
+}
+}
 @media (max-width: 1279px) {
 body{overflow:auto}
 .container-fluid {
@@ -15717,7 +15718,7 @@ tbody.column2 {
 	margin-bottom: 10px;
 	display: block;
 }
-
+/* Added for #2547 bhumika 30/08/2016  End*/
 .header-content-footer-layout {
     display: -ms-flexbox;
     display: -webkit-flex;
