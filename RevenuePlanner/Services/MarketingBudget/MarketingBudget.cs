@@ -127,15 +127,17 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                 //Set Header Object.
                 SetHeaderObject(CustomColumnNames, StandardColumnNames, TimeFrame, objBudgetGridModel);
-
+                List<string> NonePermissionIds = new List<string>(); //Get rowid of non permisson rows to show three dash in rollup columns 
+                NonePermissionIds = BudgetGridData.Tables[0].AsEnumerable().Where(p => p.Field<string>(Enums.DefaultGridColumn.Permission.ToString()).ToLower() == "none").Select(p => Regex.Replace((p[Enums.DefaultGridColumn.Name.ToString()].ToString() == null ? "" : p[Enums.DefaultGridColumn.Name.ToString().Trim().Replace("_", "")]).ToString(), @"[^0-9a-zA-Z]+", "") + "_" + Convert.ToInt32(p[Enums.DefaultGridColumn.BudgetDetailId.ToString()]) + "_" + (p[Enums.DefaultGridColumn.ParentId.ToString()].ToString() == "" ? "0" : p[Enums.DefaultGridColumn.ParentId.ToString()])).ToList();
                 //Call recursive function to bind the hierarchy.
                 List<BudgetGridRowModel> lstData = new List<BudgetGridRowModel>();
                 lstData = GetTopLevelRows(StandardColumnTable)
-                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol)).ToList();
+                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,NonePermissionIds,TimeFrame)).ToList();
 
 
                 objBudgetGridDataModel.head = objBudgetGridModel.GridDataStyleList;
                 objBudgetGridDataModel.rows = lstData;
+			objBudgetGridModel.nonePermissonIDs = NonePermissionIds;
                 objBudgetGridModel.objGridDataModel = objBudgetGridDataModel;
 
             }
@@ -167,7 +169,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="StandardColumnNames">List of names of standard column</param>
         /// <param name="lstUser">List of users</param>
         /// <param name="CurSymbol">Preferred currency symbol by user</param>
-        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol)
+        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol, List<string> NonPermissonIds, string TimeFrame)
         {
             string istitleedit = "1";
             string stylecolorgray = string.Empty; // if no permission set style to gray
@@ -220,7 +222,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     if (Permission == Enums.Permission.None.ToString() && ColumnName != Enums.DefaultGridColumn.BudgetDetailId.ToString())
                     {
-                        Data.Add(TripleDash); // if none permission show tripe dash.
+                        Data.Add(string.Empty); // if none permission add empty value so that we can make the values roll up.
                     }
                     else
                     {
@@ -229,18 +231,8 @@ namespace RevenuePlanner.Services.MarketingBudget
                         string DisplayValue = string.Empty;
                         if (objValue != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(objValue)))
                         {
-                            double value;
-                            double.TryParse(Convert.ToString(objValue), out value);
-                            if (ColumnName != Enums.DefaultGridColumn.BudgetDetailId.ToString())
-                            {
-                                DisplayValue = string.Format("{0}{1}", CurSymbol, value.ToString(formatThousand));
-                            }
-                            else
-                            {
                                 DisplayValue = Convert.ToString(objValue);
                             }
-
-                        }
                         Data.Add(DisplayValue);
                     }
 
@@ -249,6 +241,14 @@ namespace RevenuePlanner.Services.MarketingBudget
             }
 
             #endregion
+
+            if (TimeFrame != Enums.QuarterFinance.Yearly.ToString())
+            {
+                #region Add Blank Values to Unallocated Columns
+                Data.Add(string.Empty); //unallocated budget
+                Data.Add(string.Empty); //unallocated forecast
+                #endregion
+            }
 
             #region Bind Custom Columns
             //Get Custom Column row
@@ -311,7 +311,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
 
             children = lstChildren
-                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol))
+                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,NonPermissonIds,TimeFrame))
                   .ToList();
 
             return new BudgetGridRowModel { id = rowId, data = Data, rows = children, style = stylecolorgray, Detailid = Convert.ToString(id), userdata = objuserData };
@@ -402,6 +402,16 @@ namespace RevenuePlanner.Services.MarketingBudget
             string TaskName = "Task Name";
             string aligncenter = "center";
             string sort = "na";
+			List<int> colIndexes = new List<int>(); //List index of column used for given numberformat to rollup columns and also used in aggregation in unallocated columns
+           
+            int colindex = 0;//find the index of column used for given numberformat to rollup columns and also used in aggregation in unallocated columns  
+            StringBuilder Allocatedforcastcolums = new StringBuilder(); ;//store indexes of all forcast columns used to create unallocated column foumula
+            StringBuilder Allocatedbudgetcolums = new StringBuilder();//store indexes of all Budget columns used to create unallocated column foumula
+            string totalforcastcolumns = string.Empty;//store indexe of total forcast column used to create unallocated column foumula
+            string totalbudgetcolumns = string.Empty;////store indexe of total Budget columns used to create unallocated column foumula
+            char plus = '+';
+            string c = "c";
+
 
             #region Bind Standard Columns
             foreach (var columns in StandardColumnNames)
@@ -425,7 +435,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.type = Readonly;
                     headObj.id = ColumnId;
                     ListHead.Add(headObj);
-
+					 colindex++;
                 }
                 else if (columns == Enums.DefaultGridColumn.Name.ToString())
                 {
@@ -446,7 +456,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.type = "tree";
                     headObj.id = columns;
                     ListHead.Add(headObj);
-
+				    colindex++;
 
                     //Add icons column after name
                     headObj = new GridDataStyle();
@@ -457,6 +467,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.type = Readonly;
                     headObj.id = "Add Row";
                     ListHead.Add(headObj);
+					 colindex++;
 
                 }
                 else if (columns == Enums.DefaultGridColumn.Users.ToString() ||
@@ -525,11 +536,44 @@ namespace RevenuePlanner.Services.MarketingBudget
                         headObj.value = columns;
                         sbAttachedHeaders.Append(columns + ",");
                     }
-
-                    if (columns.Contains(Enums.DefaultGridColumn.Planned.ToString()) ||
-                       columns.Contains(Enums.DefaultGridColumn.Actual.ToString()))
+                    if (columns.ToString().Contains(Enums.DefaultGridColumn.Budget.ToString()) || columns.ToString().Contains(Enums.DefaultGridColumn.Forecast.ToString()) || columns.ToString().Contains(Enums.DefaultGridColumn.Planned.ToString()) || columns.ToString().Contains(Enums.DefaultGridColumn.Actual.ToString()))
                     {
-                        headObj.type = Readonly;
+                        colIndexes.Add(colindex);//add index of rollup column
+                        headObj.type = "edn[=sum]"; // set coltype for rollup columns
+
+                        #region  set formaula for unallocated columns
+
+                        if (timeframe != Enums.QuarterFinance.Yearly.ToString())
+                        {
+                            if (columns.ToString().Contains(Enums.DefaultGridColumn.Forecast.ToString()))
+                            {
+                                if (columns.ToString().ToLower().Contains("total"))
+                                {
+                                    totalforcastcolumns = c + colindex;
+                                }
+                                else
+                                {
+
+                                    Allocatedforcastcolums.Append(c + colindex + plus);
+
+                                }
+                            }
+                            else if (columns.ToString().Contains(Enums.DefaultGridColumn.Budget.ToString()))
+                            {
+                                if (columns.ToString().ToLower().Contains("total"))
+                                {
+                                    totalbudgetcolumns = c + colindex;
+                                }
+                                else
+                                {
+                                    Allocatedbudgetcolums.Append(c + colindex + plus);
+
+                                }
+                            }
+                        }
+
+                        #endregion
+
                     }
                     else
                     {
@@ -537,10 +581,42 @@ namespace RevenuePlanner.Services.MarketingBudget
                     }
 
                     ListHead.Add(headObj);
+                    colindex++;
+
                 }
 
             }
             #endregion
+
+            #region Add Unallocated Columns for views other than yearly
+
+            if (timeframe != Enums.QuarterFinance.Yearly.ToString())
+            {
+                headObj = new GridDataStyle();
+                headObj.value = "Unallocated";
+                headObj.sort = "";
+                headObj.width = 100;
+                headObj.align = "center";
+                headObj.type = "edn[=" + totalforcastcolumns + "-(" + Allocatedforcastcolums.ToString().TrimEnd(plus) + ")]";
+                headObj.id = "Unallocated_Forecast";
+                ListHead.Add(headObj);
+                colIndexes.Add(colindex);
+                sbAttachedHeaders.Append("Forecast" + ",");
+
+                headObj = new GridDataStyle();
+                headObj.value = "Unallocated";
+                headObj.sort = "";
+                headObj.width = 100;
+                headObj.align = "center";
+                headObj.type = "edn[=" + totalbudgetcolumns + "-(" + Allocatedbudgetcolums.ToString().TrimEnd(plus) + ")]";
+                headObj.id = "Unallocated_Budget";
+                ListHead.Add(headObj);
+                colIndexes.Add(colindex + 1);
+                sbAttachedHeaders.Append("Budget" + ",");
+            }
+
+            #endregion
+
             #region Bind Header for custom columns
             foreach (var columns in CustomColumnNames)
             {
@@ -573,6 +649,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 sbAttachedHeaders.Append(String.Join(",", ListAppendAtLast.Select(name => name.id).ToList()));
                 mdlGridHeader.attachedHeader = sbAttachedHeaders.ToString();
             }
+            mdlGridHeader.colIndexes = colIndexes;
             mdlGridHeader.GridDataStyleList = ListHead;
             return mdlGridHeader;
         }

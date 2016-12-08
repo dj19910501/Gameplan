@@ -220,6 +220,7 @@ function GetGridData(budgetId) {
             budgetgrid.init();
             BudgetGridData = data.GridData;
             var rows = BudgetGridData.rows;
+            dataNonPermissionIds = data.nonPermissionIDs;
             UpdateGridDataFromSavedOpenState(rows, "budgetgridState");//Added By Jaymin Modi at 01/Dec/2016. For Maintain States of Row.Ticket:-2806
             budgetgrid.parse(BudgetGridData, "json");       // Load data to DHTMLXTreeGrid.
             colIdIndex = budgetgrid.getColIndexById('Id');  // Get the index of "Id" hidden column to refer it else to access this column.
@@ -229,6 +230,17 @@ function GetGridData(budgetId) {
             budgetgrid.setColumnHidden(colIdIndex, true)            // Hide the "Id" column by enable the DHTMLXTreeGrid property "setColumnHidden".
             HideShowColumns();  // Show/Hide the BudgetGrid columns to show default columns while load Grid 1st time.
             
+            
+            budgetgrid.enableMathEditing(true);//edit in rollup columns
+            var sumcolumns = false;
+            if (data.SumColumns != undefined && data.SumColumns.length != 0) //to set format of rollup columns
+            {
+                sumcolumns = true;
+                for (var i = 0; i < data.SumColumns.length; i++) {
+                    budgetgrid.setNumberFormat(CurrencySymbol + "0,000.00", data.SumColumns[i]);
+                }
+            }
+           
             //Added By Jaymin Modi at 01/Dec/2016 For Saving Open and Close States.Ticket:-2806 
             var cookieBudgetgridState = dhtmlXGridObject.prototype.getCookie("budgetgridState", "gridOpen");
             if (cookieBudgetgridState == null) {
@@ -253,6 +265,19 @@ function GetGridData(budgetId) {
             //-----------------End--------------------------
             // Declare the "EditCell" event of DHTMLXTreeGrid.
                 budgetgrid.attachEvent("onEditCell", OnEditMainGridCell);
+            
+            //below code for set Three Dash to nonPermission rollup columns
+            if (sumcolumns == true && dataNonPermissionIds != undefined && dataNonPermissionIds.length != 0) {
+                for (var i = 0; i < data.SumColumns.length; i++) {
+                    for (var j = 0; j < dataNonPermissionIds.length; j++) {
+                        if (budgetgrid.rowsAr[dataNonPermissionIds[j]] != undefined) {
+                            budgetgrid.cells(dataNonPermissionIds[j], data.SumColumns[i]).cell.innerHTML = "---";
+                        }
+
+                    }
+                }
+            }
+            
             }
         });
 
@@ -369,6 +394,26 @@ function GetGridData(budgetId) {
             }
         }
     }
+       //---#2799----
+    if (ColumnId.indexOf('Planned') >= 0 || ColumnId.indexOf('Actual') >= 0 || ColumnId.indexOf('Unallocated') >= 0) {
+        budgetgrid.cells(rId, cInd).setDisabled(true);
+        return false;
+    }
+    if (ColumnId.indexOf('Budget') >= 0 || ColumnId.indexOf('Forecast') >= 0) {
+        if (budgetgrid.cells(rId, cInd).grid.cell.original != undefined && budgetgrid.cells(rId, cInd).grid.cell.original == "=sum") {
+            budgetgrid.cells(rId, cInd).grid.cell.original = "0";
+        }
+    }
+
+    if (dataNonPermissionIds != undefined && dataNonPermissionIds.length != 0) {
+        for (var j = 0; j < dataNonPermissionIds.length; j++) {
+            if (budgetgrid.rowsAr[dataNonPermissionIds[j]] != undefined) {
+                budgetgrid.cells(dataNonPermissionIds[j], cInd).cell.innerHTML = "---";
+            }
+        }
+    }
+
+    return true;
 }
     //Added by - Komal rawal
     //To save budget detail when we add any new item/child item
@@ -410,7 +455,7 @@ function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childIte
         },
         success: function (data) {
             //TODO : grid is update only user change the owner.
-            GetGridData(budgetId); //refresh grid once we update any new item
+            //GetGridData(budgetId); //refresh grid once we update any new item
             UpdateFinanceHeaderValues();
         }
     });

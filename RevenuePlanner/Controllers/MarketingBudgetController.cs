@@ -94,7 +94,8 @@ namespace RevenuePlanner.Controllers
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
-            return Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader }, JsonRequestBehavior.AllowGet);
+
+            return Json(new { GridData = objBudgetGridModel.objGridDataModel, AttacheHeader = objBudgetGridModel.attachedHeader, SumColumns = objBudgetGridModel.colIndexes, nonPermissionIDs = objBudgetGridModel.nonePermissonIDs }, JsonRequestBehavior.AllowGet);
         }
 
 

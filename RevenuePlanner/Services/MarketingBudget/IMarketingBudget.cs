@@ -83,6 +83,8 @@ namespace RevenuePlanner.Services.MarketingBudget
     {
         public List<GridDataStyle> GridDataStyleList { get; set; }
         public string attachedHeader { get; set; }
+			   public List<string> nonePermissonIDs { get; set; } //set Three Dash for rollup columns
+        public List<int> colIndexes { get; set; }   //set numberformat to rollup columns
         public BudgetGridDataModel objGridDataModel { get; set; }
     }
     public enum ViewByType
