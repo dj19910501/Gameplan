@@ -32,7 +32,8 @@ namespace RevenuePlanner.Test.QA
         List<string> QuaterlyROIList; List<string> QuaterlyTotalRevenueList;
 
         ReportController objReportController; ReportModel objReportModel; RevenueDataTable objReportDataTable; CardSectionModel objCardSection;
-        RevenueToPlanModel objRevenueToPlanModel; RevenueSubDataTableModel subModelList; Projected_Goal objProjected_Goal;
+        RevenueToPlanModel objRevenueToPlanModel; RevenueSubDataTableModel subModelList; Projected_Goal objProjected_Goal; lineChartData objlineChartData;
+        CardSectionListModel objCardSectionListModel;
 
         static string[] MonthList = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
         static string[] QuarterList = { "Q1", "Q2", "Q3", "Q4" };
@@ -41,7 +42,7 @@ namespace RevenuePlanner.Test.QA
 
         [TestMethod()]
         [Priority(2)]
-        public void AAMonthlyRevenueReport()
+        public void MonthlyRevenueReport()
         {
             try
             {
@@ -64,38 +65,7 @@ namespace RevenuePlanner.Test.QA
                         VerifyReport_TotalRevenue(ActualList, TotalRevenueList);
                         VerifyHeaderValue(objProjected_Goal, ActualList, GoalList, ProjectedList);
                         VerifyCardSectionValue(objCardSection, ActualCostList);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-        [TestMethod()]
-        [Priority(1)]
-        public void ABQuarterlyRevenueReport()
-        {
-            try
-            {
-                //Call common function for login
-                var IsLogin = ObjCommonFunctions.CheckLogin();
-                if (IsLogin != null)
-                {
-                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
-                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
-                    SetValuesForReport(currentyear, "Quarterly");
-                    if (objRevenueToPlanModel != null)
-                    {
-                        VerifyQuarterly_Actual(ActualList, QuaterlyActualList);
-                        VerifyQuarterly_ActualCost(ActualCostList, QuaterlyActualCostList);
-                        VerifyQuarterly_Goal(GoalList, QuaterlyGoalList);
-                        VerifyQuarterly_ProjectedRevenue(ProjectedList, QuaterlyProjectedList);
-                        VerifyQuarterly_Performance(QuaterlyActualList, QuaterlyGoalList, QuaterlyPerformanceList);
-                        VerifyQuarterly_ROI(QuaterlyActualList,QuaterlyActualCostList, QuaterlyROIList);
-                        VerifyQuarterly_TotalRevenue(TotalRevenueList, QuaterlyTotalRevenueList);
-
+                        VerifyMonthlyGraphValue(objlineChartData, dt, ProjectedList);
                     }
                 }
             }
@@ -114,6 +84,8 @@ namespace RevenuePlanner.Test.QA
             objRevenueToPlanModel = new RevenueToPlanModel();
             objProjected_Goal = new Projected_Goal();
             objCardSection = new CardSectionModel();
+            objlineChartData = new lineChartData();
+            objCardSectionListModel = new CardSectionListModel();
             ObjPlanCommonFunctions.SetSessionData();
 
             var result1 = objReportController.GetRevenueData(Year, isQuarterly) as PartialViewResult;
@@ -121,9 +93,10 @@ namespace RevenuePlanner.Test.QA
             objRevenueToPlanModel = objReportModel.RevenueToPlanModel;
             objReportDataTable = objRevenueToPlanModel.RevenueToPlanDataModel;
             subModelList = objReportDataTable.SubDataModel;
-
+            objlineChartData = objRevenueToPlanModel.LineChartModel;
             objProjected_Goal = objReportModel.RevenueHeaderModel;
             objCardSection = objReportModel.CardSectionModel;
+            objCardSectionListModel = objCardSection.CardSectionListModel[0];
 
             if (isQuarterly == "Monthly")
             {
@@ -171,7 +144,6 @@ namespace RevenuePlanner.Test.QA
             {
                 for (int i = 1; i <= dt.Columns.Count - 1; i++)
                 {
-                    var currentMonth = DateTime.Now.Month;
                     if (i > currentMonth)
                     {
                         dt.Rows[4][i] = 0;
@@ -228,23 +200,23 @@ namespace RevenuePlanner.Test.QA
 
                     for (int i = 1; i <= GoalList.Count(); i++)
                     {
-                        int currentMonthNo = DateTime.Now.Month - NewStartDate.Month + 1;
-                        if (DateTime.Now.Month == i)
+                        int currentMonthNo = currentMonth - NewStartDate.Month + 1;
+                        if (currentMonth == i)
                         {
                             double proCal = (GoalList[i - 1] / MonthDiff) * currentMonthNo;
                             Assert.AreEqual(Convert.ToDouble(ProjectedList[i - 1].ToString()), Convert.ToDouble(proCal));
                             Console.WriteLine("ReportController - GetRevenueData \n The assert value of projected in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
                         }
-                        else if (DateTime.Now.Month < i)
+                        else if (currentMonth < i)
                         {
                             double proCal = 0;
-                            int current = i - DateTime.Now.Month + currentMonthNo;
+                            int current = i - currentMonth + currentMonthNo;
                             double cal = (GoalList[i - 1] / MonthDiff) * current;
                             for (int j = 0; j < ActualList.Count(); j++)
                             {
                                 proCal = proCal + ActualList[j];
                             }
-                            var final = proCal / DateTime.Now.Month;
+                            var final = proCal / currentMonth;
                             var profinal = cal + final;
                             Assert.AreEqual(Math.Round(Convert.ToDouble(ProjectedList[i - 1].ToString()), 2), Math.Round(Convert.ToDouble(profinal), 2));
                             Console.WriteLine("ReportController - GetRevenueData \n The assert value of projected in " + MonthList[i - 1] + " is " + ProjectedList[i - 1].ToString() + ".");
@@ -416,6 +388,96 @@ namespace RevenuePlanner.Test.QA
 
         #endregion
 
+        #region Monthly Graph
+
+        public void VerifyMonthlyGraphValue(lineChartData objlineChartData, DataTable dt, List<double> ProjectedList)
+        {
+            if (objlineChartData.categories != null && objlineChartData.categories.Count > 0 && objlineChartData.series != null && objlineChartData.series.Count > 0)
+            {
+                List<string> categories = objlineChartData.categories;
+                series ActualSeries = objlineChartData.series[0];
+                series GoalSeries = objlineChartData.series[1];
+                series ProjectedSeries = objlineChartData.series[2];
+                decimal SumOfActualSeries = 0;
+                if (dt.Rows[3] != null)
+                {
+                    for (int i = 1; i <= dt.Columns.Count - 1; i++)
+                    {
+                        SumOfActualSeries = SumOfActualSeries + Convert.ToDecimal(dt.Rows[3].ItemArray[i].ToString()) + Convert.ToDecimal(ProjectedList[i - 1]);
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(ActualSeries.data[i + 1].ToString()), 2), Math.Round(SumOfActualSeries, 2));
+                        Console.WriteLine("ReportController - GetRevenueData \n The assert value of actual revenue in graph " + MonthList[i - 1] + " is " + ActualSeries.data[i + 1].ToString() + ".");
+                    }
+                }
+                if (GoalAmount != 0)
+                {
+                    decimal goal = 0;
+                    for (int i = 2; i <= GoalSeries.data.Count - 1; i++)
+                    {
+                        if (i - 1 >= NewStartDate.Month && i - 1 <= NewEndDate.Month)
+                        {
+                            goal = goal + GoalAmount;
+                            Assert.AreEqual(Math.Round(Convert.ToDecimal(GoalSeries.data[i].ToString()), 2), Math.Round(goal, 2));
+                            Console.WriteLine("ReportController - GetRevenueData \n The assert value of goal in graph " + MonthList[i - 2] + " is " + GoalSeries.data[i].ToString() + ".");
+                        }
+                        else
+                        {
+                            Assert.AreEqual(GoalSeries.data[i].ToString(), "0");
+                            Console.WriteLine("ReportController - GetRevenueData \n The assert value of goal in graph " + MonthList[i - 2] + " is " + GoalSeries.data[i].ToString() + ".");
+                        }
+                    }
+                }
+                for (int i = 2; i <= ProjectedSeries.data.Count - 1; i++)
+                {
+                    decimal projectedData = 0; decimal projected = 0;
+                    if (ProjectedSeries.data[i].ToString() != null)
+                    {
+                        projectedData = Convert.ToDecimal(ProjectedSeries.data[i]);
+                        if (currentMonth > i - 1)
+                            projected = Convert.ToDecimal(ProjectedList[i - 2]);
+                        else
+                            projected = Convert.ToDecimal(ProjectedList[i - 2]) + Convert.ToDecimal(TotalRevenueList[i - 2].ToString());
+                    }
+                    Assert.AreEqual(Math.Round(projectedData, 2), Math.Round(projected, 2));
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of projected revenue in graph " + MonthList[i - 2] + " is " + projectedData.ToString() + ".");
+                }
+            }
+        }
+
+        #endregion
+
+        [TestMethod()]
+        [Priority(1)]
+        public void QuarterlyRevenueReport()
+        {
+            try
+            {
+                //Call common function for login
+                var IsLogin = ObjCommonFunctions.CheckLogin();
+                if (IsLogin != null)
+                {
+                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
+                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
+                    SetValuesForReport(currentyear, "Quarterly");
+                    if (objRevenueToPlanModel != null)
+                    {
+                        VerifyQuarterly_Actual(ActualList, QuaterlyActualList);
+                        VerifyQuarterly_ActualCost(ActualCostList, QuaterlyActualCostList);
+                        VerifyQuarterly_Goal(GoalList, QuaterlyGoalList);
+                        VerifyQuarterly_ProjectedRevenue(ProjectedList, QuaterlyProjectedList);
+                        VerifyQuarterly_Performance(QuaterlyActualList, QuaterlyGoalList, QuaterlyPerformanceList);
+                        VerifyQuarterly_ROI(QuaterlyActualList, QuaterlyActualCostList, QuaterlyROIList);
+                        VerifyQuarterly_TotalRevenue(TotalRevenueList, QuaterlyTotalRevenueList);
+                        VerifyQuarterlyGraphValue(objlineChartData, objCardSectionListModel);
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
         #region Quarterly Report Calculation
 
         public void VerifyQuarterly_Actual(List<double> ActualList, List<double> QuaterlyActualList)
@@ -428,7 +490,7 @@ namespace RevenuePlanner.Test.QA
                 if (num.Contains(i))
                 {
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyActualList[j].ToString()), 2), Math.Round(QuaActual, 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly actual in " + QuarterList[j]  + " is " + QuaterlyActualList[j].ToString() + ".");
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly actual in " + QuarterList[j] + " is " + QuaterlyActualList[j].ToString() + ".");
                     QuaActual = 0;
                     j++;
                 }
@@ -488,10 +550,10 @@ namespace RevenuePlanner.Test.QA
                 if (Convert.ToInt32(QuaterlyGoalList[i]) != 0)
                 {
                     QuaPerformance = Convert.ToDecimal((QuaterlyActualList[i] - QuaterlyGoalList[i]) / QuaterlyGoalList[i]) * 100;
-                }           
+                }
                 Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyPerformanceList[i].ToString()), 2), Math.Round(QuaPerformance, 2));
                 Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly performance in " + QuarterList[i] + " is " + QuaterlyPerformanceList[i].ToString() + ".");
-              
+
             }
         }
         public void VerifyQuarterly_ROI(List<double> QuaterlyActualList, List<string> QuaterlyActualCostList, List<string> QuaterlyROIList)
@@ -502,9 +564,9 @@ namespace RevenuePlanner.Test.QA
                 if (Convert.ToInt32(QuaterlyActualCostList[i]) != 0)
                 {
                     QuaROI = ((Convert.ToDecimal(QuaterlyActualList[i]) - Convert.ToDecimal(QuaterlyActualCostList[i])) / Convert.ToDecimal(QuaterlyActualCostList[i])) * 100;
-                } 
-                    Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyROIList[i].ToString()), 2), Math.Round(QuaROI, 2));
-                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly ROI in " + QuarterList[i] + " is " + QuaterlyROIList[i].ToString() + ".");            
+                }
+                Assert.AreEqual(Math.Round(Convert.ToDecimal(QuaterlyROIList[i].ToString()), 2), Math.Round(QuaROI, 2));
+                Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly ROI in " + QuarterList[i] + " is " + QuaterlyROIList[i].ToString() + ".");
             }
         }
         public void VerifyQuarterly_TotalRevenue(List<string> TotalRevenueList, List<string> QuaterlyTotalRevenueList)
@@ -520,7 +582,87 @@ namespace RevenuePlanner.Test.QA
                 }
             }
         }
-       
+
+        #endregion
+
+        #region Quarterly Graph
+
+        public void VerifyQuarterlyGraphValue(lineChartData objlineChartData, CardSectionListModel objCardSectionListModel)
+        {
+            if (objlineChartData.categories != null && objlineChartData.categories.Count > 0 && objlineChartData.series != null && objlineChartData.series.Count > 0)
+            {
+                List<string> categories = objlineChartData.categories;
+                series ActualSeries = objlineChartData.series[0];
+                series GoalSeries = objlineChartData.series[1];
+                series ProjectedSeries = objlineChartData.series[2];
+                decimal SumOfActualSeries = 0; decimal SumOfGoalSeries = 0; decimal SumOfProjectedSeries = 0; decimal SumOfActualCostSeries = 0;
+
+                lineChartData tacticLineChartData = objCardSectionListModel.LineChartData;
+                series tacticRevenueSeries = tacticLineChartData.series[0];
+                series tacticCostSeries = tacticLineChartData.series[1];
+               
+
+
+                #region Graph for Plan
+                for (int i = 1; i <= ActualSeries.data.Count - 1; i++)
+                {
+                    if (QuaterlyTotalRevenueList != null && QuaterlyTotalRevenueList.Count > 0 && QuaterlyProjectedList != null && QuaterlyProjectedList.Count > 0)
+                    {
+                        SumOfActualSeries = Convert.ToDecimal(QuaterlyTotalRevenueList[i - 1]) + Convert.ToDecimal(QuaterlyProjectedList[i - 1]);
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(ActualSeries.data[i].ToString()), 2), Math.Round(SumOfActualSeries, 2));
+                        Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly actual revenue in graph " + QuarterList[i - 1] + " is " + ActualSeries.data[i].ToString() + ".");
+                    }
+                }
+                for (int i = 1; i <= GoalSeries.data.Count - 1; i++)
+                {
+                    if (QuaterlyGoalList != null && QuaterlyGoalList.Count > 0)
+                    {
+                        SumOfGoalSeries = SumOfGoalSeries + Convert.ToDecimal(QuaterlyGoalList[i - 1]);
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(GoalSeries.data[i].ToString()), 2), Math.Round(SumOfGoalSeries, 2));
+                        Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly goal in graph " + QuarterList[i - 1] + " is " + GoalSeries.data[i].ToString() + ".");
+                    }
+                }
+                for (int i = 1; i <= ProjectedSeries.data.Count - 1; i++)
+                {
+                    decimal projectedSeries = 0;
+                    if (QuaterlyProjectedList != null && QuaterlyProjectedList.Count > 0 && QuaterlyProjectedList[i - 1] != 0)
+                    {
+                        SumOfProjectedSeries = Convert.ToDecimal(QuaterlyTotalRevenueList[i - 1]) + Convert.ToDecimal(QuaterlyProjectedList[i - 1]);
+                    }
+                    if (ProjectedSeries.data[i].ToString() == "")
+                        projectedSeries = 0;
+                    else
+                     projectedSeries = Convert.ToDecimal(ProjectedSeries.data[i].ToString());
+
+                    Assert.AreEqual(Math.Round(Convert.ToDecimal(projectedSeries), 2), Math.Round(SumOfProjectedSeries, 2));
+                    Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly projected revenue in graph " + QuarterList[i - 1] + " is " + ProjectedSeries.data[i].ToString() + ".");
+                }
+                #endregion 
+
+                #region Graph for Tactic
+
+                for (int i = 0; i <= QuaterlyTotalRevenueList.Count - 1; i++)
+                {
+                    if (QuaterlyTotalRevenueList != null && QuaterlyTotalRevenueList.Count > 0 )
+                    {
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(tacticRevenueSeries.data[i].ToString()), 2), Math.Round(Convert.ToDecimal(QuaterlyTotalRevenueList[i]), 2));
+                        Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly tactic actual revenue in graph " + QuarterList[i] + " is " + tacticRevenueSeries.data[i].ToString() + ".");
+                    }
+                }
+
+                for (int i = 0; i <= QuaterlyActualCostList.Count - 1; i++)
+                {
+                    if (QuaterlyActualCostList != null && QuaterlyActualCostList.Count > 0)
+                    {
+                        SumOfActualCostSeries = SumOfActualCostSeries + Convert.ToDecimal(QuaterlyActualCostList[i]);
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(tacticCostSeries.data[i].ToString()), 2), Math.Round(SumOfActualCostSeries, 2));
+                        Console.WriteLine("ReportController - GetRevenueData \n The assert value of quarterly tactic actual cost in graph " + QuarterList[i] + " is " + tacticCostSeries.data[i].ToString() + ".");
+                    }
+                }
+                #endregion 
+            }
+        }
+
         #endregion
     }
 }
