@@ -224,6 +224,7 @@ function GetGridData(budgetId) {
             budgetgrid.parse(BudgetGridData, "json");       // Load data to DHTMLXTreeGrid.
             colIdIndex = budgetgrid.getColIndexById('Id');  // Get the index of "Id" hidden column to refer it else to access this column.
             ColTaskNameIndex = budgetgrid.getColIndexById('Name');  // Get the index of "Name" column to refer it else to access this column.
+            colOwnerNameIndex = budgetgrid.getColIndexById('Owner');  // Get the index of "Owner" column to refer it else to access this column.
             colIconIndex = budgetgrid.getColIndexById('Add Row');   // Get the index of "Add Row" column to refer it else to access this column.
             budgetgrid.setColumnHidden(colIdIndex, true)            // Hide the "Id" column by enable the DHTMLXTreeGrid property "setColumnHidden".
             HideShowColumns();  // Show/Hide the BudgetGrid columns to show default columns while load Grid 1st time.
@@ -262,7 +263,7 @@ function GetGridData(budgetId) {
                 var ColumnId = budgetgrid.getColumnId(cInd);            // Get column index.
                 var locked = budgetgrid.getUserData(rId, "lo");         // Get "lo"(i.e. row locked or not) property to identify that row is locked or not.
                 var Permission = budgetgrid.getUserData(rId, "per");    // Get user permission "per" property.
-
+                var Period = budgetgrid.getColLabel(cInd, 0);
                 // Doesn't allow the user to edit while cell is locked and doesn't have edit permission
                 if (locked == 1 && (Permission == "View" || Permission == "None")) {
                     budgetgrid.cells(rId, cInd).setDisabled(true);
@@ -282,36 +283,93 @@ function GetGridData(budgetId) {
                         return false;
                     }
                 }
-        if (nValue != oValue && stage.toString() == '2')
-        {
+    if (stage == 1) {       
+        
+        if (ColumnId.split('_').length > 1) {
+            ColumnId = ColumnId.split('_')[1];
+        }
+       
+        if (ColumnId == BudgetColumn || ColumnId == ForecastColumn) {
+            $(".dhx_combo_edit").off("keydown");
+            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+            budgetgrid.editor.obj.onkeypress = function (e) {
+                e = e || window.event;
+                if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                    var text = this.value;
+                    if (text.length > 10) { //max length of the text
+                        return false;
+                    }
+                }
+            }
 
-            var rowId = '', parentId = '';
+            var psv = budgetgrid.cell;
+            this.editor.obj.value = (psv.title.replace(/,/g, ""));
+            var actualcost = budgetgrid.cells(rId, cInd).getValue().replace(CurrencySybmol, '');
+            this.editor.obj.value = (ReplaceCC(actualcost.toString()));
+        } else if (ColumnId == "Name") {
+
+            $(".dhx_combo_edit").on('keydown', (
+            budgetgrid.editor.obj.onkeypress = function (event) {
+                var text = this.value;
+                if (event.keyCode == 8 || event.keyCode == 46
+                 || event.keyCode == 37 || event.keyCode == 39) {
+
+                    return true;
+                }
+                else if (text.length > 250) { //max length of the text
+                    return false;
+                }
+                else { return true; }
+
+            }));
+        }
+    }
+    
+    if (nValue != oValue && stage.toString() == '2') {       
+        var budgetDetailId = '', parentId = '';
             var itemIndex = -1;
             if (_row_parentId != null && _row_parentId.length > 0) {
                 splitRowParentIds = _row_parentId.split(',');
                 $.each(splitRowParentIds, function (key, val) {
-                    rowId = val.split('~')[0]; //get row id from the global id "_row_parentid"
+                budgetDetailId = val.split('~')[0]; //get row id from the global id "_row_parentid"
                     parentId = val.split('~')[1]; //get parent id from the global id "_row_parentid"
+
                     itemIndex = key;
-                    if (rowId == rId) {
+                if (budgetDetailId == rId) {
                         return false;
                     }
             });
+        }
+        else {
+            splitRowParentIds = rId.split('_');
+            if (splitRowParentIds.length > 1) {
+                budgetDetailId = splitRowParentIds[1];
+                parentId = splitRowParentIds[2];
+            }
             }
 
             if (nValue == null || nValue == '' || nValue.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oValue) {
                 return false;
             }
             else {
-                if (rowId == rId) {
                     var _budgetIdVal = $("#ddlParentFinanceMain").val();
+            if (budgetDetailId == rId) {
+                
                     SaveNewBudgetDetail(_budgetIdVal, nValue, parentId); // save data when we add new item/child item
                     _isNewRowAdd = false;
+                }
+            else {
+                if (rId != null && rId != 'undefined' && rId != '') {
+                    var ownerId = budgetgrid.cells(rId, colOwnerNameIndex).getValue();
+                    var childItems = budgetgrid.getAllSubItems(rId);                    
+                    UpdateBudgetDetail(_budgetIdVal, budgetDetailId, parentId, nValue, childItems, ColumnId, Period);
+
+
                 }
             }
         }
     }
-
+}
     //Added by - Komal rawal
     //To save budget detail when we add any new item/child item
     function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId) {
@@ -327,11 +385,36 @@ function GetGridData(budgetId) {
             },
             success: function (data) {
                 GetGridData(budgetId); //refresh grid once we add any new item
+            _row_parentId = "";
+        }
+    });
+}
+function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childItems, columnId, period) {    
+    var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+    $.ajax({
+        type: 'POST',
+        url: urlContent + "MarketingBudget/UpdateMarketingBudget/",
+        dataType: 'json',
+        data: {
+            BudgetId: budgetId,
+            BudgetDetailId: budgetDetailId,
+            ParentId: parentId,            
+            nValue: nValue,
+            ChildItemIds: childItems,
+            ColumnName: columnId,
+            AllocationType: mainTimeFrame,
+            Period: period
+        },
+        beforeSend: function (x) {
+            myApp.hidePleaseWait();
+        },
+        success: function (data) {
+            //TODO : grid is update only user change the owner.
+            GetGridData(budgetId); //refresh grid once we update any new item
         }
     });
 
 }
-
 function DeleteBudgetIconClick(data) {
 
     // Added By Jaymin Modi To get scroll set of selected row from grid

@@ -251,5 +251,10 @@ namespace RevenuePlanner.Services.MarketingBudget
         BudgetImportData GetXLSXData(string viewByType, string fileLocation, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$");
         BudgetImportData GetXLSData(string viewByType, DataSet ds, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$");
         int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int UserID, int ClientID, int BudgetDetailId = 0);
+        void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int ClientId, List<string> ListItems, string nValue);
+
+        void UpdateTotalAmount(List<string> ListItems, int budgetDetailId, string nValue, string ColumnName = "", double PlanExchangeRate = 1.0);
+
+        void UpdateBudgetorForecast(int budgetDetailId, int UserId, string nValue, string ColumnName = "", string AllocationType = "", string Period = "", double PlanExchangeRate = 1.0);
     }
 }

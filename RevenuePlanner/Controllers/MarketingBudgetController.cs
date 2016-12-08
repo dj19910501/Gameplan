@@ -374,5 +374,68 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+
+        /// <summary>
+        /// Function to Updating budget data.
+        /// Added By: Rahul Shah on 12/07/2016.
+        /// </summary>
+        /// <param name="BudgetId">Budget Id.</param>        
+        /// <param name="BudgetDetailId">Budget Detail Id.</param>
+        /// <param name="ParentId">Parent Budget Detail Id.</param>       
+        /// <param name="nValue">new Value.</param>       
+        /// <param name="ChildItemIds">Child Budget Detail Ids.</param>       
+        /// <param name="ColumnName">Column Name.</param>       
+        /// <param name="AllocationType">Allocation Type.</param>       
+        /// <param name="Period">Perido (i.e Jan,Feb..etc).</param>       
+
+        public JsonResult UpdateMarketingBudget(int BudgetId, int BudgetDetailId, int ParentId, string nValue, string ChildItemIds, string ColumnName, string AllocationType, string Period)
+        {
+            //Check budget Id and budget detaild id is valid or not.
+            if (BudgetId <= 0 || BudgetDetailId <= 0)
+            {
+                return Json(new { IsSuccess = false, ErrorMessage = "A BudgetId less than or equal to zero is invalid, and likely indicates the BudgetId was not set properly" }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                List<string> ListItems = new List<string>();
+
+                //Check Child budget items are exist or not 
+                if (!string.IsNullOrEmpty(ChildItemIds))
+                {
+                    ListItems = ChildItemIds.Split(',').ToList();
+
+                }
+                ListItems.Add(Convert.ToString(BudgetDetailId));
+
+
+                if (string.Compare(ColumnName, Enums.DefaultGridColumn.Owner.ToString(), true) == 0)
+                {
+                    int OwnerId = 0;
+                    int.TryParse(nValue, out OwnerId);
+                    if (OwnerId <= 0)
+                    {
+                        return Json(new { IsSuccess = false, ErrorMsg = "Owner is not valid" }, JsonRequestBehavior.AllowGet);
+                    }
+                    //TODO : here we need to call update owner name function.
+                }
+                else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Name.ToString(), true) == 0)
+                {
+                    _MarketingBudget.UpdateTaskName(BudgetId, BudgetDetailId, ParentId, Sessions.User.CID, ListItems, nValue);
+                }
+                else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Budget.ToString(), true) == 0 ||
+                         string.Compare(ColumnName, Enums.DefaultGridColumn.Forecast.ToString(), true) == 0 ||
+                         string.Compare(ColumnName, "Total_Forecast", true) == 0 ||
+                         string.Compare(ColumnName, "Total_Budget", true) == 0)
+                {
+                    _MarketingBudget.UpdateTotalAmount(ListItems, BudgetDetailId, nValue, ColumnName, Sessions.PlanExchangeRate);
+                }
+                else
+                {
+                    _MarketingBudget.UpdateBudgetorForecast(BudgetDetailId, Sessions.User.ID, nValue, ColumnName, AllocationType, Period, Sessions.PlanExchangeRate);
+                }
+                return Json(new { IsSuccess = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
     }
 }
