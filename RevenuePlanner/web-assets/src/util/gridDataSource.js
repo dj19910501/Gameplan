@@ -73,11 +73,32 @@ class GridDataSource {
 
                     grid.init();
                 }
+                else if (ev && ev.which.append) {
+                    // convert to "json" format
+                    const rows = [];
+                    for (let i = 0; i < ev.which.append; ++i) {
+                        const record = records[records.length - i - 1];
+                        const row = {
+                            id: record.id,
+                            data: this.state.columns.map(c => record[c.id]),
+                            class: record.class,
+                            bgColor: record.bgColor,
+                            style: record.style,
+                        };
+                        rows.unshift(row);
+                    }
+                    grid._refresh_mode = [true, true, false];
+                    grid.parse({rows}, "json");
+                    grid.setSizes();
+                    return;
+                }
                 else {
                     grid.clearAll(false);
                 }
 
-                grid.parse(records, "js");
+                if (records) {
+                    grid.parse(records, "js");
+                }
 
                 firstTime = false;
             }
@@ -104,6 +125,16 @@ class GridDataSource {
                 }
             };
             this.on("change", handler);
+        }
+    }
+
+    appendRecord(record) {
+        if (this.state.records) {
+            this.state.records.push(record);
+            this._notify({records: true, append: 1});
+        }
+        else {
+            this.updateRecords([record]);
         }
     }
 

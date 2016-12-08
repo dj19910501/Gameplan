@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import * as planPicker from 'planPicker/apiUri';
-import upperFirst from 'lodash/upperFirst';
 
 class NewLinkModel {
     _state = {
@@ -48,8 +47,8 @@ class NewLinkModel {
         return $.Event(which, {value: this._state[which]});
     }
 
-    _update(which, data) {
-        if (this._state[which] !== data) {
+    _update(which, data, force) {
+        if (force || this._state[which] !== data) {
             this._state[which] = data;
             this._notify(which);
         }
@@ -93,6 +92,16 @@ class NewLinkModel {
         }
     }
 
+    get plans() { return this._state.plans; }
+    get campaigns() { return this._state.campaigns; }
+    get programs() { return this._state.programs; }
+    get tactics() { return this._state.tactics; }
+    get lineItems() { return this._state.lineItems; }
+
+    refreshLineItems() {
+        this._update("lineItems", this.lineItems, true);
+    }
+
     get selectedYear() { return this._state.selectedYear; }
 
     set selectedYear(value) {
@@ -125,5 +134,5 @@ class NewLinkModel {
 }
 
 export default function createNewLinkModel() {
-    return (window.mm = new NewLinkModel());
+    return new NewLinkModel();
 }

@@ -20,9 +20,17 @@
                     </div>
                 </div>
                 <div class="<%= o.css.addNewLink %>">
-                    <div class="<%= o.css.label %>">Add New Link</div>
-                    <select id="<%= o.selectYearId %>" disabled="disabled"><option>Select Year</option></select>
-                    <select id="<%= o.selectPlanId %>" disabled="disabled" class="ui-helper-hidden"><option>Select Plan</option></select>
+                    <div class="<%= o.css.top %>">
+                        <div class="<%= o.css.label %>">Add New Link</div>
+                        <select id="<%= o.selectYearId %>" disabled="disabled"><option>Select Year</option></select>
+                        <select id="<%= o.selectPlanId %>" disabled="disabled" class="ui-helper-hidden"><option>Select Plan</option></select>
+                    </div>
+                    <div class="<%= o.css.bottom %>">
+                        <div class="<%= o.css.campaigns %>"></div>
+                        <div class="<%= o.css.programs %>"></div>
+                        <div class="<%= o.css.tactics %>"></div>
+                        <div class="<%= o.css.lineItems %>"></div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

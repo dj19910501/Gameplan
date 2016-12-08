@@ -34,6 +34,42 @@ function createGrid(dataSource, $container) {
     return grid;
 }
 
+function createBrowserGrid(view, model, which, selectedWhich, title) {
+    const $container = view[`$${which}`];
+    const $div = $("<div>").appendTo($container);
+    const grid = new Grid($div[0]);
+    grid.setImagePath(resolveAppUri("codebase/imgs/"));
+
+    if (which !== "lineItems") {
+        grid.attachEvent("onRowSelect", id => model.newItemModel[selectedWhich] = id);
+    }
+    else {
+        allowGridClickEvents(grid);
+        $container.on("click", `tr.${css.notMapped} td:last-child`, function () {
+            // remove the action from the grid
+            const $td = $(this);
+            const $tr = $td.parent();
+            $td.html("");
+            $tr.removeClass(css.notMapped);
+
+            // update the model
+            const id = $tr[0].idd;
+            const newMapping = model.addNewMapping(id);
+
+            // Add the row to the grid.
+            model.linkedItemGridDataSource.appendRecord(newMapping);
+
+            // mark the entire row as "modified"
+            const newRow = model.linkedItemGrid.getRowById(newMapping.id);
+            $(newRow).children().addClass(css.modified);
+            model.linkedItemGrid.selectRowById(newMapping.id);
+        });
+    }
+
+    const dataSource = model.createNewItemGridDataSource(which, title);
+    dataSource.bindToGrid(grid);
+}
+
 function bindGrid(model, $container) {
     const dataSource = model.linkedItemGridDataSource;
 
@@ -97,12 +133,19 @@ function bindGrid(model, $container) {
                 // toggle the delete status of the item
                 const isDeleted = model.toggleDelete(itemId);
 
-                // change the icon based on the delete status
-                const icon = isDeleted ? "fa-undo" : "fa-trash-o";
-                td.innerHTML = `<i class="fa ${icon} fa-fw"></i>`;
+                if (isDeleted === undefined) {
+                    // the user deleted a "new" record.  We want to completely remove this row from the grid.
+                    grid.deleteRow(itemId);
+                }
+                else {
 
-                // toggle the deleted css on the row
-                $(tr).toggleClass(css.deleted, isDeleted);
+                    // change the icon based on the delete status
+                    const icon = isDeleted ? "fa-undo" : "fa-trash-o";
+                    td.innerHTML = `<i class="fa ${icon} fa-fw"></i>`;
+
+                    // toggle the deleted css on the row
+                    $(tr).toggleClass(css.deleted, isDeleted);
+                }
 
                 ev.stopPropagation();
             });
@@ -128,7 +171,8 @@ function save(model, $window, $save, $cancel) {
         });
 }
 
-function bindModelToEditor(transactionId, model, {$window, $selectPlan, $selectYear}) {
+function bindModelToEditor(transactionId, model, view) {
+    const {$window, $selectPlan, $selectYear} = view;
     const $content = $window.find(`.${css.links}`);
     $content.removeClass(css.loading);
     bindGrid(model, $content);
@@ -214,9 +258,14 @@ function bindModelToEditor(transactionId, model, {$window, $selectPlan, $selectY
 
     $selectPlan.on("change", function () {
         const option = this.options[this.selectedIndex];
-        const value = option && option.value;
+        const value = option && parseInt(option.value, 10);
         model.newItemModel.selectedPlan = value || undefined;
     });
+
+    createBrowserGrid(view, model, "campaigns", "selectedCampaign", "Campaigns");
+    createBrowserGrid(view, model, "programs", "selectedProgram", "Programs");
+    createBrowserGrid(view, model, "tactics", "selectedTactic", "Tactics");
+    createBrowserGrid(view, model, "lineItems", null, "Line Items");
 }
 
 function renderInitialView(transaction) {
@@ -236,6 +285,10 @@ function renderInitialView(transaction) {
     const $window = $view.filter("div").appendTo(document.body);
     const $selectYear = $window.find(`#${viewOptions.selectYearId}`);
     const $selectPlan = $window.find(`#${viewOptions.selectPlanId}`);
+    const $campaigns = $window.find(`.${css.campaigns}`);
+    const $programs = $window.find(`.${css.programs}`);
+    const $tactics = $window.find(`.${css.tactics}`);
+    const $lineItems = $window.find(`.${css.lineItems}`);
 
     $selectYear.multiselect({
         multiple: false,
@@ -259,7 +312,7 @@ function renderInitialView(transaction) {
         },
     }).multiselectfilter();
 
-    return { $window, $selectYear, $selectPlan };
+    return { $window, $selectYear, $selectPlan, $campaigns, $programs, $tactics, $lineItems };
 }
 
 export default function linkedItemEditor(transaction) {
