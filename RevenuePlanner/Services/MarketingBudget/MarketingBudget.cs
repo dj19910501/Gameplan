@@ -1101,7 +1101,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             #region "Get Data"
             calResultset = _database.Database
-                .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinance_arpita @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
+                .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinance @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
             #endregion
 
             return calResultset; // Returns Model having 4 values(Budget, Forecast, Planned, Actual)
