@@ -37,10 +37,10 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
-            var result = objOrganizationController.ViewEditPermission(0, Enums.UserPermissionMode.View.ToString()) as ViewResult;
-            
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
-            Assert.AreEqual("ViewEditPermission", result.ViewName);
+            var result = objOrganizationController.ViewEditPermission(0, Enums.UserPermissionMode.View.ToString()) as RedirectToRouteResult;
+
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.RouteValues["Action"]);
+            Assert.AreEqual("OrganizationHierarchy", result.RouteValues["Action"]);
             
         }
         #endregion
