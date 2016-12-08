@@ -187,44 +187,34 @@ namespace RevenuePlanner.Controllers
         {
             throw new NotImplementedException();
         }
-        /// <summary>
+       /// <summary>
         /// Function to deleting budget data and its child heirarchy.
         /// Added By: Rahul Shah on 11/30/2016.
         /// </summary>
-        /// <param name="SelectedBudgetId">Budget Detail Id.</param>
-        /// <param name="CurrentBudgetId">Budget Id.</param>        
-        /// <returns>Return Budget Id.</returns>
-        public JsonResult DeleteBudgetData(string SelectedBudgetId, string BudgetId)
+        public JsonResult DeleteBudgetData(int SelectedBudgetId, int BudgetId)
         {
-            #region Delete Budget   
-
-            if (SelectedBudgetId != null && SelectedBudgetId != "")
+            if (SelectedBudgetId <= 0 || BudgetId <= 0)
             {
-                int _budgetId = 0, _currentBudgetId = 0;
-                int ClientId = Sessions.User.CID; //Assign ClientId from Session
-                int NextBudgetId = 0;
-
-                int Selectedid = !string.IsNullOrEmpty(SelectedBudgetId) ? Int32.Parse(SelectedBudgetId) : 0;
-
-                NextBudgetId = _MarketingBudget.DeleteBudget(Selectedid, ClientId); // call DeleteBudget function to delete selected data.
-
-                _currentBudgetId = !string.IsNullOrEmpty(BudgetId) ? Int32.Parse(BudgetId) : 0;
-
-                // assign next budget if current root budget is deleted to display budget other than the one deleted
-                if (NextBudgetId > 0)
-                {
-                    _budgetId = NextBudgetId;
-                }
-                else
-                {
-                    _budgetId = _currentBudgetId;
-                }
-                return Json(new { IsSuccess = true, budgetId = _budgetId }, JsonRequestBehavior.AllowGet);
+                return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetData }, JsonRequestBehavior.AllowGet);
             }
-            #endregion
-            return Json(new { IsSuccess = false, budgetId = BudgetId }, JsonRequestBehavior.AllowGet);
-
-            //End
+            else
+            {
+                try
+                {
+                    int NextBudgetId = _MarketingBudget.DeleteBudget(SelectedBudgetId, Sessions.User.CID); // call DeleteBudget function to delete selected data.
+                    if (NextBudgetId > 0)
+                    {
+                        BudgetId = NextBudgetId;
+                    }
+                    return Json(new { IsSuccess = true, budgetId = BudgetId }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.ClientPermissionDeleteBudgetRestrictionMessage }, JsonRequestBehavior.AllowGet);
+                    
+                }
+                
+            }
         }
         #region Import Marketing Budget
 

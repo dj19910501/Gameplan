@@ -576,8 +576,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         public int DeleteBudget(int selectedBudgetId, int ClientId)
         {
             int NextBudgetId = 0; // 
-            try
-            {
+           
                 ///If connection is closed then it will be open
                 var Connection = _database.Database.Connection as SqlConnection;
                 if (Connection.State == System.Data.ConnectionState.Closed)
@@ -598,8 +597,8 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     Connection.Close();
                 }
-            }
-            catch { throw; }
+            
+           
             return NextBudgetId; //return new budgetid if user delete root/Parent budget.
         }
 

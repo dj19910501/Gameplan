@@ -125,7 +125,7 @@
 		<Name>ValidateForEmptyField</Name>
 		<!--Modiefied by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.-->
 		<value>Please fill all required fields.</value>
-	</Field>	
+	</Field>
 	<Field>
 		<Name>ValidateForValidField</Name>
 		<value>Make sure all fields are filled with valid values and try again.</value>
@@ -1180,30 +1180,29 @@
 		<Name>ExchangeRateSaved</Name>
 		<value>Changes saved. The updated exchange rate would apply from next login.</value>
 	</Field>
-  <!--//insertation End 09/08/2016 kausha #2492 -->
-  <!--//insertation start 30/09/2016 kausha #2637.-->
-  <Field>
-    <Name>ImportValidation</Name>
-    <value>{0} must have a proper value.</value>
-  </Field>
-  <Field>
-    <Name>InvalidImportData</Name>
-    <value>Invalid data.</value>
-  </Field>
-  <Field>
-    <Name>ActivityIdInvalid</Name>
-    <value>Data that were not part of exported file were not added or updated.</value>
-  </Field>
-  <Field>
-    <Name>FileUsedMessage</Name>
-    <value>File is being used by another process.</value>
-  </Field>
-  <Field>
-    <Name>ImportSuccessMessage</Name>
-    <value>File imported successfully.</value>
-  </Field>
-  <!--//insertation End  -->
-
+	<!--//insertation End 09/08/2016 kausha #2492 -->
+	<!--//insertation start 30/09/2016 kausha #2637.-->
+	<Field>
+		<Name>ImportValidation</Name>
+		<value>{0} must have a proper value.</value>
+	</Field>
+	<Field>
+		<Name>InvalidImportData</Name>
+		<value>Invalid data.</value>
+	</Field>
+	<Field>
+		<Name>ActivityIdInvalid</Name>
+		<value>Data that were not part of exported file were not added or updated.</value>
+	</Field>
+	<Field>
+		<Name>FileUsedMessage</Name>
+		<value>File is being used by another process.</value>
+	</Field>
+	<Field>
+		<Name>ImportSuccessMessage</Name>
+		<value>File imported successfully.</value>
+	</Field>
+	<!--//insertation End  -->
 	<!--//added by devanshi for #2469 alert message.-->
 	<Field>
 		<Name>DuplicateAlertRule</Name>
@@ -1229,30 +1228,41 @@
 		<Name>SuccessColumnView</Name>
 		<value>Column view created successfully.</value>
 	</Field>
-  <Field>
+	<Field>
 		<Name>ValidateForPartialField</Name>
 		<value>Please fill all required fields in order to submit it for approval.</value>
 	</Field>
-  <!--#2878 Security - Account Creation – Client Id and User Id-->
-  <Field> 
-    <Name>UserDeleteRestrictionMessage</Name>
-    <value>You don't have permission to delete this user.</value>
-  </Field>
-  <Field>
-    <Name>UserAssignRestrictionMessage</Name>
-    <value>You don't have permission to assign this user.</value>
-  </Field>
-  <Field>
-    <Name>UserPermissionRestrictionMessage</Name>
-    <value>You don't have permission to view/modify permission of this user.</value>
-  </Field>
-  <Field>
-    <Name>RptNoDataAvailable</Name>
-    <value>No data available to view</value>
-  </Field>
-<Field>
-    <Name>RptGraphNotSupported</Name>
-    <value>Currently we are not supporting graph type</value>
-  </Field>
+	<!--#2878 Security - Account Creation – Client Id and User Id-->
+	<Field>
+		<Name>UserDeleteRestrictionMessage</Name>
+		<value>You don't have permission to delete this user.</value>
+	</Field>
+	<Field>
+		<Name>UserAssignRestrictionMessage</Name>
+		<value>You don't have permission to assign this user.</value>
+	</Field>
+	<Field>
+		<Name>UserPermissionRestrictionMessage</Name>
+		<value>You don't have permission to view/modify permission of this user.</value>
+	</Field>
+	<Field>
+		<Name>RptNoDataAvailable</Name>
+		<value>No data available to view</value>
+	</Field>
+	<Field>
+		<Name>RptGraphNotSupported</Name>
+		<value>Currently we are not supporting graph type</value>
+	</Field>
 	<!--//end for #2469 alert message.-->
+ <!--#2801 Added By Jaymin Modi for Cross Client Check Budget and Parameter-->
+	<Field>
+		<Name>ClientPermissionDeleteBudgetRestrictionMessage</Name>
+		<value>You don't have permission to delete this budget.</value>
+	</Field>
+	<!--Check Parameter BudgetId Should not be Zero or Equal to Zero-->
+	<Field>
+		<Name>InvalidBudgetData</Name>
+		<value>You don't have permission to delete this budget.</value>
+	</Field>
+	<!--End for #2801 Message-->
 </Messages>

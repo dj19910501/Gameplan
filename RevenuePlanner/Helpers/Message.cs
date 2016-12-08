@@ -3167,6 +3167,33 @@ namespace RevenuePlanner.Helpers
                 _RptGraphNotSupported = value;
             }
         }
+//Added By Jaymin Modi for #2801
+        private string _ClientPermissionDeleteBudgetRestrictionMessage;
+
+        public string ClientPermissionDeleteBudgetRestrictionMessage
+        {
+            get
+            {
+                return _ClientPermissionDeleteBudgetRestrictionMessage;
+            }
+            set
+            {
+                _ClientPermissionDeleteBudgetRestrictionMessage = value;
+            }
+        }
+        private string _InvalidBudgetData;
+
+        public string InvalidBudgetData
+        {
+            get
+            {
+                return _InvalidBudgetData;
+            }
+            set
+            {
+                _InvalidBudgetData = value;
+            }
+        }
         #endregion
 
         #region  Functions
@@ -4166,6 +4193,14 @@ namespace RevenuePlanner.Helpers
                                         case "RptGraphNotSupported":
                                             _RptGraphNotSupported = strMsgValue;
                                             break;
+									   //Added By Jaymin Modi For #2801
+                                        case "ClientPermissionDeleteBudgetRestrictionMessage":
+                                            _ClientPermissionDeleteBudgetRestrictionMessage = strMsgValue;
+                                            break;
+                                        case "InvalidBudgetData":
+                                            _InvalidBudgetData = strMsgValue;
+                                            break;
+                                        //End #2801
                                     }
                                 }
                                 i = i + 1;

@@ -3607,13 +3607,23 @@ GO
 -- Description:	SP to Delete Marketing Budget data
 -- =============================================
 
-CREATE  PROCEDURE [dbo].[DeleteMarketingBudget]
+CREATE PROCEDURE [dbo].[DeleteMarketingBudget]
 @BudgetDetailId int = 0,
 @ClientId INT = 0
 AS 
 
 BEGIN
 	SET NOCOUNT ON
+	--Check the cross client and thorws an error 
+	Declare @TempClientId INT=0
+	SELECT @TempClientId= ClientId FROM Budget B INNER JOIN Budget_Detail bd ON bd.BudgetId=b.Id
+	WHERE bd.Id=@BudgetDetailId
+	--print(@TempClientId)
+	IF(@ClientId<>@TempClientId)
+	BEGIN
+		RAISERROR ('You don''t have permission to delete this budget.', 16, 1);
+	END
+
 	Declare @ErrorMeesgae varchar(3000) = ''
 	Declare @OtherBudgetId int = 0
 	Declare @ParentIdCount int = 0
@@ -3690,6 +3700,7 @@ BEGIN CATCH
 	SELECT @ErrorMeesgae as 'ErrorMessage'
 END CATCH
 END
+
 
 GO
 

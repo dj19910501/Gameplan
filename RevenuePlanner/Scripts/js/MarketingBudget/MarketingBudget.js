@@ -1,6 +1,6 @@
 ﻿//Added By Jaymin Modi at 01/Dec/2016. For Maintain States of Row.Ticket:-2806
 function createCookie(name, value, days) {
-    debugger;
+    
     if (days) {
 
         var date = new Date();
@@ -376,10 +376,20 @@ function DeleteBudget() {
             BudgetId: currentBudgetId,
         },
         success: function (data) {
-            var BudgetId = data.budgetId;
-            UpdateFinanceHeaderValues(); // Update header values
-            GetGridData(BudgetId);
-                RefreshBudgetDropdown(BudgetId);
+ if (data.IsSuccess == false) {
+                ShowMessage(true, data.ErrorMessage);
+            }
+            else {
+                var BudgetId = data.budgetId;
+                UpdateFinanceHeaderValues(); // Update header values
+                GetGridData(BudgetId);
+                RefreshBudgetDropdown(false, BudgetId);
+                //TODO :  here we need to call Finance Header function to refresh the header after deleting budget data
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            // Handle error
+            //alert(errorThrown);
         }
     });
 }
