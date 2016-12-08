@@ -124,7 +124,7 @@ BEGIN TRY
 			-- Update the Budget Detail amount table for Forecast and Budget values
 			UPDATE BudgetDetailAmount SET ['+(@UpdateColumn)+']=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+']) = 1 
 			THEN 
-			Commented by Preet Shah on 08/12/2016. For allowed negative values PL #2850
+			--Commented by Preet Shah on 08/12/2016. For allowed negative values PL #2850
 			--CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) > 0
 			--THEN 
 			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) 
@@ -136,7 +136,7 @@ BEGIN TRY
 			AND BudgetDetailAmount.Period=''Y'+@MonthNumber+''' AND ISNULL(['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')<>'''' 
 			AND CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+']) = 1 
 			THEN 
-			Commented by Preet Shah on 08/12/2016. For allowed negative values PL #2850
+			--Commented by Preet Shah on 08/12/2016. For allowed negative values PL #2850
 			--CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) > 0
 			--THEN 
 			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) 
@@ -150,7 +150,7 @@ BEGIN TRY
 			,''Y'+@MonthNumber+'''
 			,CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+']) = 1 
 			THEN 
-			Commented by Preet Shah on 08/12/2016. For allowed negative values PL #2850
+			--Commented by Preet Shah on 08/12/2016. For allowed negative values PL #2850
 			--CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) > 0
 			--THEN 
 			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) 
