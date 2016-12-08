@@ -4,6 +4,7 @@ using StructureMap;
 using RevenuePlanner.Services.Transactions;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlTypes;
 
 namespace RevenuePlanner.UnitTest.Service
 {
@@ -17,44 +18,14 @@ namespace RevenuePlanner.UnitTest.Service
         private const int testClientId = 30; //demo client
         private const int testOtherClientId = 31; // not the client id associated with any test data
         private const int testUserId = 297;
-        private List<Models.Transaction> unprocessedTransactions = null;
-        private const int numberOfUnprocessedTransactionsCreated = 5;
+        private DateTime testMinStartDate = (DateTime)SqlDateTime.MinValue;
+        private DateTime testMaxEndDate = (DateTime)SqlDateTime.MaxValue;
         #endregion
 
         public TransactionTest()
         {
             _transaction = ObjectFactory.GetInstance<ITransaction>();
             _database = ObjectFactory.GetInstance<Models.MRPEntities>();
-        }
-
-        /// <summary>
-        /// Create some unprocessed transactions for testing purposes
-        /// </summary>
-        [TestInitialize]
-        public void InitializeData()
-        {
-            _database.Database.ExecuteSqlCommand("DELETE FROM transactions WHERE ClientTransactionID LIKE '%TransactionTest%'");            
-
-            unprocessedTransactions = new List<Models.Transaction>();
-            for (int ndx = 0; ndx < numberOfUnprocessedTransactionsCreated; ndx++)
-            {
-                unprocessedTransactions.Add(_database.Transactions.Add(new Models.Transaction { ClientID = testClientId, ClientTransactionID = "TransactionTest" + ndx.ToString(), Amount = new decimal(100.1), AccountingDate = DateTime.Now, DateCreated = DateTime.Now }));
-            }
-            _database.SaveChanges();
-                           
-        }
-
-        /// <summary>
-        /// Delete those unprocessed transactions created in InitializeData
-        /// </summary>
-        [TestCleanup]
-        public void CleanupData()
-        {
-            foreach (Models.Transaction transaction in unprocessedTransactions)
-            {
-                _database.Entry(transaction).State = EntityState.Deleted;
-            }
-            _database.SaveChanges();
         }
 
         [TestMethod]
@@ -250,7 +221,7 @@ namespace RevenuePlanner.UnitTest.Service
             const int testTransactionId = 30;
             const int expectedLineItemsGroupedByTactic = 5;
             const int testTacticId = 4671;
-            const int expectedLineItemsForTactic = 4;
+            const int expectedLineItemsForTactic = 5;
                
             // Test that we get line items by tactic
             List<LineItemsGroupedByTactic> ligbtList = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);           
@@ -289,27 +260,49 @@ namespace RevenuePlanner.UnitTest.Service
             {
                 Assert.IsTrue(e.Message.Contains("clientId"));
             }
+
+            // Test start date too small
+            try
+            {
+                _transaction.GetTransactionCount(testClientId, DateTime.MinValue, testMaxEndDate, false);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.IsTrue(e.Message.Contains("start"));
+            }
+
+            // Test end date too big
+            try
+            {
+                _transaction.GetTransactionCount(testClientId, testMaxEndDate, DateTime.MaxValue, false);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.IsTrue(e.Message.Contains("end"));
+            }
         }
 
         [TestMethod]
         public void Test_Transaction_GetTransactionCount()
         {
-            const int expectedAllDatesUnprocessedCount = numberOfUnprocessedTransactionsCreated; 
-            const int expectedAllDatesAllItemsCount = 22 + expectedAllDatesUnprocessedCount;
+            const int expectedAllDatesUnprocessedCount = 9; 
+            const int expectedAllDatesAllItemsCount = 22;
             DateTime testStartDate = new DateTime(2016, 01, 01);
             DateTime testEndDate = new DateTime(2016, 07, 01);
             const int expectedDateRangeCount = 14;
 
             // Get transaction count with default unprocessedOnly set
-            int transactionCount = _transaction.GetTransactionCount(testClientId, DateTime.MinValue, DateTime.MaxValue);
+            int transactionCount = _transaction.GetTransactionCount(testClientId, testMinStartDate, testMaxEndDate);
             Assert.AreEqual(expectedAllDatesUnprocessedCount, transactionCount);
 
             // Get Transaction count with all dates, unprocessedOnly == false
-            transactionCount = _transaction.GetTransactionCount(testClientId, DateTime.MinValue, DateTime.MaxValue, false);
+            transactionCount = _transaction.GetTransactionCount(testClientId, testMinStartDate, testMaxEndDate, false);
             Assert.AreEqual(expectedAllDatesAllItemsCount, transactionCount);
 
             // Get Transaction count with all dates, unprocessedOnly == true
-            transactionCount = _transaction.GetTransactionCount(testClientId, DateTime.MinValue, DateTime.MaxValue, true);
+            transactionCount = _transaction.GetTransactionCount(testClientId, testMinStartDate, testMaxEndDate, true);
             Assert.AreEqual(expectedAllDatesUnprocessedCount, transactionCount);
 
             // Get transaction count with limited date range
@@ -324,7 +317,7 @@ namespace RevenuePlanner.UnitTest.Service
             // Test clientId == 0
             try
             {
-                _transaction.GetTransactions(0, DateTime.MinValue, DateTime.MaxValue);
+                _transaction.GetTransactions(0, testMinStartDate, testMaxEndDate);
                 Assert.Fail();
             }
             catch (ArgumentOutOfRangeException e)
@@ -335,7 +328,7 @@ namespace RevenuePlanner.UnitTest.Service
             // Test negative clientId 
             try
             {
-                _transaction.GetTransactions(-100, DateTime.MinValue, DateTime.MaxValue);
+                _transaction.GetTransactions(-100, testMinStartDate, testMaxEndDate);
                 Assert.Fail();
             }
             catch (ArgumentOutOfRangeException e)
@@ -343,10 +336,31 @@ namespace RevenuePlanner.UnitTest.Service
                 Assert.IsTrue(e.Message.Contains("clientId"));
             }
 
+            // Test start date too small
+            try
+            {
+                _transaction.GetTransactions(testClientId, DateTime.MinValue, testMaxEndDate, false, 0, 0);
+                Assert.Fail();
+            } catch (ArgumentOutOfRangeException e)
+            {
+                Assert.IsTrue(e.Message.Contains("start"));
+            }
+
+            // Test end date too big
+            try
+            {
+                _transaction.GetTransactions(testClientId, testMaxEndDate, DateTime.MaxValue, false, 0, 0);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.IsTrue(e.Message.Contains("end"));
+            }
+
             // Test with negative skip
             try
             {
-                _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, -100, 0);
+                _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate, false, -100, 0);
                 Assert.Fail();
             } catch (ArgumentOutOfRangeException e)
             {
@@ -356,7 +370,7 @@ namespace RevenuePlanner.UnitTest.Service
             // Test with negative take
             try
             {
-                _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, 0, -100);
+                _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate, false, 0, -100);
                 Assert.Fail();
             } catch (ArgumentOutOfRangeException e)
             {
@@ -367,8 +381,8 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_GetTransactions()
         {
-            const int expectedAllDatesUnprocessedCount = numberOfUnprocessedTransactionsCreated; 
-            const int expectedAllDatesAllItemsCount = 22 + expectedAllDatesUnprocessedCount;
+            const int expectedAllDatesUnprocessedCount = 9; 
+            const int expectedAllDatesAllItemsCount = 22;
             DateTime testStartDate = new DateTime(2016, 01, 01);
             DateTime testEndDate = new DateTime(2016, 07, 01);
             const int expectedDateRangeCount = 14;
@@ -377,28 +391,30 @@ namespace RevenuePlanner.UnitTest.Service
             const int testThirdPageSkip = 20;
             const int testTenthPageSkip = 90;
             const int paginationExpectedFirstPageCount = 10;
-            const int paginationExpectedThirdPageCount = 2 + expectedAllDatesUnprocessedCount;
+            const int paginationExpectedThirdPageCount = 2;
             const int paginationExpctedTenthPageCount = 0;
             const string expectedFirstPageFirstItemClientTransactionId = "39899";
             const string expectedThirdPageFirstItemClientTransactionId = "85316";
 
             // Get transactions with default unprocessed set, default pagination
-            List<Transaction> transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue);
+            List<Transaction> transactionList = _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate);
             Assert.AreEqual(expectedAllDatesUnprocessedCount, transactionList.Count);
 
-            // Get transactions with all dates, unprocessedOnly == true, default pagination
-            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, true);
+            // Get transactions with all dates, unlinkedOnly == true, default pagination
+            transactionList = _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate, true);
             Assert.AreEqual(expectedAllDatesUnprocessedCount, transactionList.Count);
             foreach (Transaction transaction in transactionList)
             {
-                Assert.IsNull(transaction.LastProcessed);
+                List<LineItemsGroupedByTactic> lineItems = _transaction.GetLinkedLineItemsForTransaction(testClientId, transaction.TransactionId);
+                Assert.AreEqual(0, lineItems.Count);
+                //Assert.IsNull(transaction.LastProcessed);
             }
 
-            // Get transactions with all dates, unprocessedOnly == false, default pagination
-            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false);
+            // Get transactions with all dates, unlinkedOnly == false, default pagination
+            transactionList = _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate, false);
             Assert.AreEqual(expectedAllDatesAllItemsCount, transactionList.Count);
 
-            // Get transactions with limited date range, unprocessedOnly == false, default pagination
+            // Get transactions with limited date range, unlinkedOnly == false, default pagination
             transactionList = _transaction.GetTransactions(testClientId, testStartDate, testEndDate, false);
             Assert.AreEqual(expectedDateRangeCount, transactionList.Count);
             foreach (Transaction transaction in transactionList)
@@ -409,17 +425,17 @@ namespace RevenuePlanner.UnitTest.Service
 
             // Exercise pagination
             // Get Page 1
-            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, testFirstPageSkip, testTakeCount);
+            transactionList = _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate, false, testFirstPageSkip, testTakeCount);
             Assert.AreEqual(expectedFirstPageFirstItemClientTransactionId, transactionList[0].ClientTransactionId);
             Assert.AreEqual(paginationExpectedFirstPageCount, transactionList.Count);
 
             // Get Page 3
-            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, testThirdPageSkip, testTakeCount);
+            transactionList = _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate, false, testThirdPageSkip, testTakeCount);
             Assert.AreEqual(expectedThirdPageFirstItemClientTransactionId, transactionList[0].ClientTransactionId);
             Assert.AreEqual(paginationExpectedThirdPageCount, transactionList.Count);
 
             // Get Page 10 (less than 90 items, should be zero but not throw exception or return null
-            transactionList = _transaction.GetTransactions(testClientId, DateTime.MinValue, DateTime.MaxValue, false, testTenthPageSkip, testTakeCount);
+            transactionList = _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate, false, testTenthPageSkip, testTakeCount);
             Assert.AreEqual(paginationExpctedTenthPageCount, transactionList.Count);
 
         }
@@ -543,6 +559,7 @@ namespace RevenuePlanner.UnitTest.Service
                 Assert.IsTrue(e.Message.Contains("modifyingUserId"));
             }
         }
+
         [TestMethod]
         public void Test_Transaction_SaveTransactionToLineItemMapping()
         {

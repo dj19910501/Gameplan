@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Collections;
 using System.Diagnostics.Contracts;
+using System.Data.SqlTypes;
 
 namespace RevenuePlanner.Services.Transactions
 {
@@ -19,7 +20,6 @@ namespace RevenuePlanner.Services.Transactions
 
             _database = database;
         }
-
 
         /// <summary>
         /// Return a dictionary of any line item mappings that exist in the db
@@ -252,31 +252,80 @@ namespace RevenuePlanner.Services.Transactions
             return new List<LineItemsGroupedByTactic>(lineItemsByTacticId.Values);
         }
 
-        public int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true)
+        public int GetTransactionCount(int clientId, DateTime start, DateTime end, bool unlinkedOnly = true)
         {
             Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            Contract.Requires<ArgumentOutOfRangeException>(start >= (DateTime)SqlDateTime.MinValue, "start date must be greater than '1/1/1753 12:00:00 AM'");
+            Contract.Requires<ArgumentOutOfRangeException>(end <= (DateTime)SqlDateTime.MaxValue, "end date must be less than '12/31/9999 11:59:59 PM'");
 
+            String sqlQuery;
 
-            int count = _database.Transactions.Count(transaction => (transaction.ClientID == clientId) &&
-                                                    ((unprocessdedOnly && transaction.LastProcessed == null) || !unprocessdedOnly) &&
-                                                    transaction.DateCreated >= start &&
-                                                    transaction.DateCreated <= end);
+            if (unlinkedOnly)
+            {
+                sqlQuery = @"SELECT COUNT(1) from Transactions T
+                                LEFT JOIN TransactionLineItemMapping M ON T.TransactionId = M.TransactionId
+                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND M.TransactionId IS NULL";
+            } else
+            {
+                sqlQuery = @"SELECT COUNT(1) from Transactions T
+                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate";
+            }
+
+            if (_database.Database.Connection.State == ConnectionState.Closed)
+            {
+                _database.Database.Connection.Open();
+            }
+
+            SqlCommand sqlCmd = new SqlCommand(sqlQuery, _database.Database.Connection as SqlConnection);           
+            sqlCmd.Parameters.AddWithValue("@ClientId", clientId);
+            sqlCmd.Parameters.AddWithValue("@StartDate", start);
+            sqlCmd.Parameters.AddWithValue("@EndDate", end);
+
+            int count = (int)sqlCmd.ExecuteScalar();
+            _database.Database.Connection.Close();
+
             return count;
-
         }
 
-        public List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessdedOnly = true, int skip = 0, int take = 10000)
+        public List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unlinkedOnly = true, int skip = 0, int take = 10000)
         {
             Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
-            Contract.Requires<ArgumentOutOfRangeException>(skip >= 0, "skip must be a postive integer");
+            Contract.Requires<ArgumentOutOfRangeException>(start >= (DateTime)SqlDateTime.MinValue, "start date must be greater than '1/1/1753 12:00:00 AM'"); 
+            Contract.Requires<ArgumentOutOfRangeException>(end <= (DateTime)SqlDateTime.MaxValue, "end date must be less than '12/31/9999 11:59:59 PM'");
+            Contract.Requires<ArgumentOutOfRangeException>(skip >= 0, "skip must be a positive integer");
             Contract.Requires<ArgumentOutOfRangeException>(take >= 0, "take must be a positive integer");
 
+            String sqlQuery = null;
 
-            IQueryable<Transaction> sqlQuery =
-                from transaction in _database.Transactions
-                where transaction.ClientID == clientId && ((unprocessdedOnly && transaction.LastProcessed == null)  || !unprocessdedOnly && transaction.DateCreated >= start && transaction.DateCreated <= end)
-                orderby transaction.DateCreated
-                select new Transaction {
+            SqlParameter[] parameters = new SqlParameter[5];
+            parameters[0] = new SqlParameter { ParameterName = "@ClientId", Value = clientId };
+            parameters[1] = new SqlParameter { ParameterName = "@StartDate", Value = start};
+            parameters[2] = new SqlParameter { ParameterName = "@EndDate", Value = end};
+            parameters[3] = new SqlParameter { ParameterName = "@SkipRows", Value = skip };
+            parameters[4] = new SqlParameter { ParameterName = "@TakeRows", Value = take };
+
+            if (unlinkedOnly)
+            {
+                sqlQuery = @"SELECT T.* FROM Transactions T
+                                LEFT JOIN TransactionLineItemMapping M ON T.TransactionId = M.TransactionId
+                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND M.TransactionId IS NULL
+                                ORDER BY T.DateCreated
+                                OFFSET @SkipRows ROWS FETCH NEXT @TakeRows ROWS ONLY";
+            } else
+            {
+                sqlQuery = @"SELECT T.* FROM Transactions T 
+                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate 
+                                ORDER BY T.DateCreated
+                                OFFSET @SkipRows ROWS FETCH NEXT @TakeRows ROWS ONLY";
+            }
+
+            IEnumerable<Models.Transaction> modelTransactions = _database.Database.SqlQuery<Models.Transaction>(sqlQuery, parameters);
+
+            List<Transaction> transactions = new List<Transaction>();
+            foreach (Models.Transaction transaction in modelTransactions)
+            {
+                transactions.Add(new Transaction
+                {
                     TransactionId = transaction.TransactionId,
                     ClientTransactionId = transaction.ClientTransactionID,
                     TransactionDescription = transaction.TransactionDescription,
@@ -300,10 +349,10 @@ namespace RevenuePlanner.Services.Transactions
                     AmountAttributed = transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0,
                     AmountRemaining = (double)transaction.Amount - (transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0),
                     LastProcessed = transaction.LastProcessed
-                };
+                });
+            }
 
-            // TODOWCR: It appears that linq's query for pagination is not terribly efficient (appears to be 3 embedded selects vs 2)
-            return sqlQuery.Skip(skip).Take(take).ToList();
+            return transactions;
         }
 
         public List<Transaction> GetTransactionsForLineItem(int clientId, int lineItemId)
