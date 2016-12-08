@@ -24,6 +24,10 @@ $INDICATOR_WIDTH: 4px;
       bottom: 0;
       left: 0;
       right: 0;
+
+      .cancel {
+        display: none;
+      }
     }
 
     :global(.modal-header) {
