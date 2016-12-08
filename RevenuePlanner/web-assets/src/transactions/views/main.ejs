@@ -1,7 +1,7 @@
 <div class="<%= o.css.header %>">
     <div class="<%= o.css.viewByContainer %>">
         <label for="<%= o.viewById %>">View by:</label>
-        <select name="<%= o.viewById %>" id="<%= o.viewById %>">
+        <select name="<%= o.viewById %>" id="<%= o.viewById %>" class="ddlStyle">
             <option value="all" <%= o.viewByValue === "all" ? 'selected="selected"' : "" %>>All Transactions</option>
             <option value="unlinked" <%= o.viewByValue === "unlinked" ? 'selected="selected"' : "" %>>Only Unlinked Transactions</option>
         </select>
