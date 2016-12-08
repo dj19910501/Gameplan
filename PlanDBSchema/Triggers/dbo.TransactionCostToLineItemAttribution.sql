@@ -1,14 +1,10 @@
-/****** Object:  Trigger [dbo].[UpdateCustomFieldEntityRestrictedTextByUser]    Script Date: 11/22/2016 11:56:34 AM ******/
+/****** Object:  Trigger [dbo].[TransactionCostToLineItemAttribution]    Script Date: 12/8/2016 1:05:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT *FROM sys.triggers WHERE OBJECT_ID = OBJECT_ID('[dbo].TransactionCostToLineItemAttribution'))
-	DROP TRIGGER  [dbo].[TransactionCostToLineItemAttribution]
-GO
-
-CREATE TRIGGER [dbo].[TransactionCostToLineItemAttribution] 
+ALTER TRIGGER [dbo].[TransactionCostToLineItemAttribution] 
    ON  [dbo].[TransactionLineItemMapping] 
    AFTER INSERT,UPDATE, DELETE
 AS 
@@ -27,10 +23,10 @@ BEGIN
     -- We need set the createdBy and CreatedDate for both inserts and updates. 
 	-- NOTE: there is no modified on line item actuals   
     DECLARE @CreatedBy INT
-	DECLARE @CreatedDate DATETIME
-	SELECT TOP 1  @CreatedBy = INSERTED.ModifiedBy
-			, @CreatedDate = INSERTED.ModifiedBy 
-	FROM INSERTED
+	DECLARE @CreatedDate DATETIME = GETDATE()
+	SELECT TOP 1  @CreatedBy = A.ModifiedBy
+	FROM (SELECT Inserted.ModifiedBy FROM INSERTED UNION ALL SELECT Deleted.ModifiedBy FROM Deleted) A
+	--get created by from deleted is NOT a good solution - zz
 	
 	---Handle updates 
 	UPDATE dbo.Plan_Campaign_Program_Tactic_LineItem_Actual 
@@ -46,9 +42,9 @@ BEGIN
 					JOIN dbo.Plan_Campaign_Program_Tactic T ON T.PlanTacticId = L.PlanTacticId
 					JOIN dbo.Transactions TX ON TX.TransactionId = M.TransactionId
 					JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual A ON A.PlanLineItemId = L.PlanLineItemId
+						AND A.Period = INT.Period(T.StartDate, TX.AccountingDate) 
 	
-			WHERE A.Period = INT.Period(T.StartDate, TX.AccountingDate) 
-				  AND M.LineItemId IN (SELECT M.LineItemId FROM INSERTED)
+			WHERE M.LineItemId IN (SELECT M.LineItemId FROM INSERTED)
 			GROUP BY L.PlanLineItemId, A.Period
 	) A
 	WHERE A.PlanLineItemId = dbo.Plan_Campaign_Program_Tactic_LineItem_Actual.PlanLineItemId
@@ -90,18 +86,28 @@ BEGIN
 
 
 	--update transactions table with AmountAttributed and LastProcessed
+
+	--First set the value to 0 in case the delete is on the last line item
+	UPDATE dbo.Transactions
+	SET AmountAttributed = 0, 
+		LastProcessed = GETDATE()
+	WHERE TransactionId IN (SELECT TransactionID FROM Deleted) 
+
+	--Update with correct logic 
 	UPDATE dbo.Transactions
 	SET AmountAttributed = A.TotalAttributed, 
-	    LastProcessed = GETDATE()
+		LastProcessed = GETDATE()
 	FROM (	
-			SELECT SUM(A.Value) AS TotalAttributed, TX.TransactionId 
+			SELECT SUM(ISNULL(A.Value, 0)) AS TotalAttributed, TX.TransactionId 
 			FROM dbo.Transactions TX 
 				JOIN dbo.TransactionLineItemMapping M ON M.TransactionId = TX.TransactionId
 				JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = M.LineItemId 
-				JOIN dbo.Plan_Campaign_Program_Tactic T ON T.PlanTacticId = L.PlanLineItemId
-				JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual A ON A.PlanLineItemId = M.LineItemId AND A.Period = [INT].Period(T.StartDate, TX.AccountingDate)
+				JOIN dbo.Plan_Campaign_Program_Tactic T ON T.PlanTacticId = L.PlanTacticId
+				LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual A ON A.PlanLineItemId = M.LineItemId AND A.Period = [INT].Period(T.StartDate, TX.AccountingDate)
 			WHERE TX.TransactionId IN (SELECT TransactionID FROM Deleted UNION ALL SELECT TransactionId FROM INSERTED)
 			GROUP BY TX.TransactionId
 	) A
+	WHERE dbo.Transactions.TransactionId = A.TransactionId
 
 END
+GO

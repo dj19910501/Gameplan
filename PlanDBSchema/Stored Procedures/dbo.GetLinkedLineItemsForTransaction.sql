@@ -25,6 +25,7 @@ BEGIN
 		LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
 		JOIN dbo.TransactionLineItemMapping M ON M.LineItemId = L.PlanLineItemId
 		JOIN dbo.Transactions TR ON TR.TransactionId = M.TransactionId
+			 AND LA.Period = [INT].Period(T.StartDate, TR.AccountingDate)
 
 	WHERE M.TransactionId = @TransactionId AND TR.ClientID = @ClientId
 	GROUP BY T.PlanTacticId, T.Title, T.Cost
@@ -33,25 +34,22 @@ BEGIN
 
 	DECLARE @LineItemDataTable TABLE (
 					TransactionLineItemMappingId INT NOT NULL,
-					LineItemTotalLinkedCost FLOAT NOT NULL, 
 					LineItemTotalActual FLOAT NOT NULL 
 				)
 
 	INSERT @LineItemDataTable
 	        ( TransactionLineItemMappingId ,
-	          LineItemTotalLinkedCost ,
 	          LineItemTotalActual 
 	        )
 	SELECT   M.TransactionLineItemMappingId
-            , SUM(M.Amount) AS TotalLinkedCost -- SUM is a no-op as a transaction can only be linked once per line item
 			, SUM(ISNULL(LA.Value, 0.0)) AS Actual
 
 	FROM	dbo.TransactionLineItemMapping M 
 			JOIN dbo.Transactions TR ON TR.TransactionId = M.TransactionId
 			JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = M.LineItemId
-			LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = LA.PlanLineItemId
+			LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem_Actual LA ON LA.PlanLineItemId = L.PlanLineItemId
 	WHERE M.TransactionId = @TransactionId AND TR.ClientID = @ClientId
-	GROUP BY M.TransactionLineItemMappingId
+	GROUP BY M.TransactionLineItemMappingId, M.Amount
 
 
 	SELECT    L.PlanTacticId AS TacticId
@@ -64,7 +62,7 @@ BEGIN
 			, PL.Title AS PlanTitle
             , M.TransactionLineItemMappingId
             , M.TransactionId
-            , LIT.LineItemTotalLinkedCost AS TotalLinkedCost -- SUM is a no-op as a transaction can only be linked once per line item
+            , M.Amount AS TotalLinkedCost 
 			, LIT.LineItemTotalActual AS Actual
 
 	FROM dbo.Plan_Campaign_Program_Tactic_LineItem L
@@ -77,5 +75,3 @@ BEGIN
 
 END 
 GO
-
-
