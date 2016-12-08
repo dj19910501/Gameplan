@@ -411,6 +411,7 @@ function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childIte
         success: function (data) {
             //TODO : grid is update only user change the owner.
             GetGridData(budgetId); //refresh grid once we update any new item
+            UpdateFinanceHeaderValues();
         }
     });
 
