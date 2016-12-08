@@ -75,8 +75,11 @@ function FormatCurrency(amount, showDecimals) {
     if (i < 0) { minus = true; }
     // Commented by Arpita Soni on 10/17/2016 to handle negative values for balance
     // i = Math.abs(i); 
-    i = parseInt((i + .005) * 100);
-    i = i / 100;
+
+    // Commented by Preet Shah on 06/12/2016 to allowe negative values
+    //i = parseInt((i + .005) * 100);
+    //i = i / 100;
+
     s = new String(i);
     if (showDecimals) {
         if (s.indexOf('.') < 0) { s += '.00'; }
@@ -135,12 +138,24 @@ function FormatCommasBudget(amount, showDecimals, showCurrencySymbol) {
     var limit = 3;
     if (isNaN(i)) { return ''; }
     var minus = '';
-    if (i < 0) { minus = '-'; limit = 4; }
-    i = Math.abs(i);
+
+    // Commented by Preet Shah on 06/12/2016 to allowe negative values
+    // i = Math.abs(i);
     var n = new String(i);
     var a = [];
-    
-    
+
+    // Added by Preet Shah on 06/12/2016 to check, if minus sign not present for negative balance, add minus sign
+    if (i < 0) {
+        //Added by Preet Shah on 06/12/2016 to remove minus sign if it is already exists.
+        //It will help for formatting balance
+        if ((~n.indexOf("-"))) {
+            n = n.substring(1);
+        }
+
+        minus = '-';
+        limit = 3;
+    }
+
     while (n.length > limit) {
         var nn = n.substr(n.length - limit);
         a.unshift(nn);
@@ -162,7 +177,7 @@ function FormatCommasBudget(amount, showDecimals, showCurrencySymbol) {
     else {
         amount = minus + amount;
     }
-    
+
     return amount;
 }
 
@@ -300,7 +315,7 @@ function FormatNumber(value, isPercentage) {
         //// Modified By: Maninder Singh to address TFS Bug 149.
         var absValue = Math.abs(parseFloat(value));
         if (absValue < 1000) {
-        value = numberWithCommas(Math.round(parseFloat(value) * 10) / 10);
+            value = numberWithCommas(Math.round(parseFloat(value) * 10) / 10);
         }
         else {
             value = GetAbberiviatedValue(value);
@@ -462,11 +477,11 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
     else {
         $(lableId).removeAttr('original-title');
         $(lableId).removeClass('north');
-        if (iscurrency) {            
+        if (iscurrency) {
             $(lableId).text(CurrencySybmol + number_format(roundValue, 0, '.', ','));
         }
         else {
-              $(lableId).text(number_format(roundValue, 0, '.', ','));
+            $(lableId).text(number_format(roundValue, 0, '.', ','));
         }
     }
 }
@@ -506,7 +521,7 @@ function setBootstrapTooltip(lableId, value, maxSize, iscurrency, decimaldigit) 
             //Insertation start #2501 24/08/2016 kausha
             $(lableId).text((CurrencySybmol + number_format(roundValue, digit, '.', ',')).replace(' ', ''));
             //Insertation end #2501 24/08/2016 kausha
-            
+
         }
         else {
             //Modified by Preet Shah on 29/11/2016 for #2768 - Change passing value in number_format function 0 to digit variable.
@@ -766,8 +781,8 @@ function GrapSubstring(originalText, maxSize) {
 function formSubmitEvent(url, queryStringArr) {
     var formHtml = '<form action="' + url + '" method="Post">';
     if (typeof queryStringArr != 'undefined') {
-    for (var i = 0; i < queryStringArr.length; i++) {
-        formHtml += '<input type="hidden" name="' + queryStringArr[i].key + '" value="' + queryStringArr[i].Value + '" />';
+        for (var i = 0; i < queryStringArr.length; i++) {
+            formHtml += '<input type="hidden" name="' + queryStringArr[i].key + '" value="' + queryStringArr[i].Value + '" />';
         }
     }
 

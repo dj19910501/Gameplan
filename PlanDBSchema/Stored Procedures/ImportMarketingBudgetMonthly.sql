@@ -121,10 +121,11 @@ BEGIN TRY
 			-- Update the Budget Detail amount table for Forecast and Budget values
 			UPDATE BudgetDetailAmount SET ['+(@UpdateColumn)+']=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+']) = 1 
 			THEN 
-			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) > 0
-			THEN 
+			Commented by Preet Shah on 08/12/2016. For allowed negative values PL #2850
+			--CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) > 0
+			--THEN 
 			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) 
-			ELSE 0 END
+			--ELSE 0 END
 			ELSE 0 END 
 			FROM 
 			Budget_DetailAmount BudgetDetailAmount
@@ -132,10 +133,11 @@ BEGIN TRY
 			AND BudgetDetailAmount.Period=''Y'+@MonthNumber+''' AND ISNULL(['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')<>'''' 
 			AND CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+']) = 1 
 			THEN 
-			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) > 0
-			THEN 
+			Commented by Preet Shah on 08/12/2016. For allowed negative values PL #2850
+			--CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) > 0
+			--THEN 
 			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) 
-			ELSE 0 END
+			--ELSE 0 END
 			ELSE 0 END <> ISNULL(['+(@UpdateColumn)+'],0)
 			) tmpXmlData
 			
@@ -145,10 +147,11 @@ BEGIN TRY
 			,''Y'+@MonthNumber+'''
 			,CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+']) = 1 
 			THEN 
-			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) > 0
-			THEN 
+			Commented by Preet Shah on 08/12/2016. For allowed negative values PL #2850
+			--CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) > 0
+			--THEN 
 			CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+@ConvertCount+'],'','','''') AS FLOAT) 
-			ELSE 0 END
+			--ELSE 0 END
 			ELSE 0 END
 			FROM #childtempData  tmpXmlData
 			OUTER APPLY (SELECT A.BudgetDetailId,A.Period,A.Id FROM Budget_DetailAmount A

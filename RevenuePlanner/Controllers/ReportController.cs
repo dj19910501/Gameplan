@@ -3904,7 +3904,7 @@ namespace RevenuePlanner.Controllers
                     if (actualValue > childAllocatedValue)
                     {
                         cssclass = cssclass + budgetError;
-                        overbudget = "OverBudget = " + Math.Abs(childAllocatedValue - actualValue).ToString(formatThousand);
+                        overbudget = "OverBudget = " + (childAllocatedValue - actualValue).ToString(formatThousand);
                     }
                     dblProgress = (actualValue == 0 && childAllocatedValue == 0) ? 0 : (actualValue > 0 && childAllocatedValue == 0) ? 101 : actualValue / childAllocatedValue * 100;
                     if (dblProgress > 100)
@@ -3929,7 +3929,7 @@ namespace RevenuePlanner.Controllers
                     if (plannedValue > childAllocatedValue)
                     {
                         cssclass = cssclass + budgetError;
-                        overbudget = "OverBudget = " + Math.Abs(childAllocatedValue - plannedValue).ToString(formatThousand);
+                        overbudget = "OverBudget = " + (childAllocatedValue - plannedValue).ToString(formatThousand);
                     }
                     dblProgress = (plannedValue == 0 && childAllocatedValue == 0) ? 0 : (plannedValue > 0 && childAllocatedValue == 0) ? 101 : plannedValue / childAllocatedValue * 100;
                     if (dblProgress > 100)
@@ -4078,7 +4078,7 @@ namespace RevenuePlanner.Controllers
                             if (actualValue > allocatedValue)
                             {
                                 cssclass = cssclass + budgetError;
-                                overbudget = "OverBudget = " + Math.Abs(allocatedValue - actualValue).ToString(formatThousand);
+                                overbudget = "OverBudget = " + (allocatedValue - actualValue).ToString(formatThousand);
                             }
                             dblProgress = 0;
                             dblProgress = (actualValue == 0 && allocatedValue == 0) ? 0 : (actualValue > 0 && allocatedValue == 0) ? 101 : actualValue / allocatedValue * 100;
@@ -4116,7 +4116,7 @@ namespace RevenuePlanner.Controllers
                             if (plannedValue > allocatedValue)
                             {
                                 cssclass = cssclass + budgetError;
-                                overbudget = "OverBudget = " + Math.Abs(allocatedValue - plannedValue).ToString(formatThousand);
+                                overbudget = "OverBudget = " + (allocatedValue - plannedValue).ToString(formatThousand);
                             }
                             dblProgress = 0;
                             dblProgress = (plannedValue == 0 && allocatedValue == 0) ? 0 : (plannedValue > 0 && allocatedValue == 0) ? 101 : plannedValue / allocatedValue * 100;
@@ -4193,16 +4193,16 @@ namespace RevenuePlanner.Controllers
                 dblProgress = (sumMonthActual == 0 && sumMonthAllocated == 0) ? 0 : (sumMonthActual > 0 && sumMonthAllocated == 0) ? 101 : sumMonthActual / sumMonthAllocated * 100;
                 if (dblProgress > 100)
                 {
-                    BudgetDataObj.value = "<div class=budgetError OverBudget=" + Math.Abs(sumMonthAllocated - sumMonthActual).ToString(formatThousand) + ">" + Math.Abs(sumMonthActual).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar ></span></div>";
+                    BudgetDataObj.value = "<div class=budgetError OverBudget=" + (sumMonthAllocated - sumMonthActual).ToString(formatThousand) + ">" + (sumMonthActual).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar ></span></div>";
                 }
                 else
                 {
-                    BudgetDataObj.value = "<div>" + Math.Abs(sumMonthActual).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span></div>";
+                    BudgetDataObj.value = "<div>" + (sumMonthActual).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span></div>";
                 }
             }
             else
             {
-                BudgetDataObj.value = "<div>" + Math.Abs(sumMonthActual).ToString(formatThousand) + "</div>";
+                BudgetDataObj.value = "<div>" + (sumMonthActual).ToString(formatThousand) + "</div>";
             }
             BudgetDataObjList.Add(BudgetDataObj);
             //Planned
@@ -4213,16 +4213,16 @@ namespace RevenuePlanner.Controllers
                 dblProgress = (sumMonthPlanned == 0 && sumMonthAllocated == 0) ? 0 : (sumMonthPlanned > 0 && sumMonthAllocated == 0) ? 101 : sumMonthPlanned / sumMonthAllocated * 100;
                 if (dblProgress > 100)
                 {
-                    BudgetDataObj.value = "<div class= budgetError OverBudget=" + Math.Abs(sumMonthAllocated - sumMonthPlanned).ToString(formatThousand) + ">" + Math.Abs(sumMonthPlanned).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar ></span></div>";
+                    BudgetDataObj.value = "<div class= budgetError OverBudget=" + (sumMonthAllocated - sumMonthPlanned).ToString(formatThousand) + ">" + (sumMonthPlanned).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar ></span></div>";
                 }
                 else
                 {
-                    BudgetDataObj.value = "<div>" + Math.Abs(sumMonthPlanned).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span></div>";
+                    BudgetDataObj.value = "<div>" + (sumMonthPlanned).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span></div>";
                 }
             }
             else
             {
-                BudgetDataObj.value = "<div>" + Math.Abs(sumMonthPlanned).ToString(formatThousand) + "</div>";
+                BudgetDataObj.value = "<div>" + (sumMonthPlanned).ToString(formatThousand) + "</div>";
             }
             BudgetDataObjList.Add(BudgetDataObj);
             //Budget
@@ -4232,23 +4232,23 @@ namespace RevenuePlanner.Controllers
                 if (sumMonthAllocated < sumMonthChildAllocated)
                 {
                     if (bm.ActivityType == ActivityType.ActivityMain)
-                        BudgetDataObj.value = "<div>" + Math.Abs(sumMonthChildAllocated).ToString(formatThousand) + "</div>";
+                        BudgetDataObj.value = "<div>" + (sumMonthChildAllocated).ToString(formatThousand) + "</div>";
                     else
-                        BudgetDataObj.value = "<div class = budgetError Allocated=" + sumMonthChildAllocated.ToString(formatThousand) + ">" + Math.Abs(sumMonthAllocated).ToString(formatThousand) + "</div>";
+                        BudgetDataObj.value = "<div class = budgetError Allocated=" + sumMonthChildAllocated.ToString(formatThousand) + ">" + (sumMonthAllocated).ToString(formatThousand) + "</div>";
                 }
                 else if (sumMonthAllocated > sumMonthChildAllocated)
                 {
                     if (bm.ActivityType == ActivityType.ActivityMain)
-                        BudgetDataObj.value = "<div >" + Math.Abs(sumMonthChildAllocated).ToString(formatThousand) + "</div>";
+                        BudgetDataObj.value = "<div >" + (sumMonthChildAllocated).ToString(formatThousand) + "</div>";
                     else
-                        BudgetDataObj.value = "<div  Remaining=" + (sumMonthAllocated - sumMonthChildAllocated).ToString(formatThousand) + ">" + Math.Abs(sumMonthAllocated).ToString(formatThousand) + "</div>";
+                        BudgetDataObj.value = "<div  Remaining=" + (sumMonthAllocated - sumMonthChildAllocated).ToString(formatThousand) + ">" + (sumMonthAllocated).ToString(formatThousand) + "</div>";
                 }
                 else
                 {
                     if (bm.ActivityType == ActivityType.ActivityMain)
-                        BudgetDataObj.value = "<div>" + Math.Abs(sumMonthChildAllocated).ToString(formatThousand) + "</div>";
+                        BudgetDataObj.value = "<div>" + (sumMonthChildAllocated).ToString(formatThousand) + "</div>";
                     else
-                        BudgetDataObj.value = "<div>" + Math.Abs(sumMonthAllocated).ToString(formatThousand) + "</div>";
+                        BudgetDataObj.value = "<div>" + (sumMonthAllocated).ToString(formatThousand) + "</div>";
                 }
             }
             else

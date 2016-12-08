@@ -462,7 +462,9 @@
           //// Assign default values to controls having classname = .resubmission
           assignDefaultValue(".resubmission");
           $("#txtRevenue").val(CurrencySybmol + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
-          $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+          //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+          $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
           $("#liSetup,#liReview,#liBudget,#liActuals").removeClass('setdefultcursor');
@@ -1099,7 +1101,8 @@
                         GetConversionRatePopup(projectedStageValue, true);
                         $("#TacticCost").val(pcost);
 
-                        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                        //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+                        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true });
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         if (data.IsDeployedToIntegration) {
                             $("#t_integration_status").val("Sync to integration");
@@ -1158,7 +1161,8 @@
             $("#txtRevenue").val('0');
 
             $("#TacticCost").val('0');
-            $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+            $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true });
             $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
             $("#lblStageTitle").text("Stage");
             $("#hdnStageId").val("0");

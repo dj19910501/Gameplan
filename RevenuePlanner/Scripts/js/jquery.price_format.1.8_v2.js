@@ -120,7 +120,7 @@
             // format as price
             function price_format(str) {
                 // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
-                
+
                 var iszero = false;
                 if (str == '0' || (prefix != '' && str == prefix + '0') || (suffix && str == '0' + suffix)) {
                     iszero = true;
@@ -224,7 +224,10 @@
                     //        // Allow: Ctrl+A
                    (e.keyCode == 65 && e.ctrlKey === true) ||
                     //        // Allow: home, end, left, right
-                   (e.keyCode >= 35 && e.keyCode <= 39)) {
+                   (e.keyCode >= 35 && e.keyCode <= 39)
+                    // allow minus sign /* Added by Preet Shah for allow negative sign */ #PL 2850
+                    || (allowNegative && e.key == "-")
+                    ) {
                     //        // let it happen, don't do anything
                     return;
 

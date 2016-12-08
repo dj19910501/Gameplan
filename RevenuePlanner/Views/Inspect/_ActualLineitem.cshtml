@@ -12,7 +12,7 @@
     }
     int StartYear = Convert.ToInt32(ViewBag.StartYear);
     int YearDiffrence = Convert.ToInt32(ViewBag.YearDiffrence);
- }
+}
 <style type="text/css">
     .disabled-row > th {
         background-color: #EEE!important;
@@ -124,14 +124,14 @@
         <div class="pull-left" style="width: 100%">
             <label id="last-updated" class="pull-left last-updated" style="Width: 45%;"></label>
         </div>
-       @* <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveLineitemActualSection">
-            <div class="span2 btn-save">
-                <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float: left;" type="button">Update Actuals</button>
-            </div>
-            <div class="span2">
-                <button id="cancelLineitemActuals" class="close-form btn-link source-sans-proregular margin-top23 actual_cancel" type="button">Cancel</button>
-            </div>
-        </div>*@
+        @* <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveLineitemActualSection">
+                <div class="span2 btn-save">
+                    <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float: left;" type="button">Update Actuals</button>
+                </div>
+                <div class="span2">
+                    <button id="cancelLineitemActuals" class="close-form btn-link source-sans-proregular margin-top23 actual_cancel" type="button">Cancel</button>
+                </div>
+            </div>*@
     </div>
 </div>
 <!--end content-panel-tab-->
@@ -141,8 +141,9 @@
         /* Adde by Viral Kadiya on 11/18/2014 to slide up error or success message on page load.*/
         $("#successMessageViewLineItem").slideUp(50);
         $("#errorMessageEditLineitem").slideUp(50);
-        
-        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+
+        //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, allowNegative: true });
         function ActualTab() {
             html = '<div class="bold padding-top16 font-size18"> Parent Tactic should be "Approved" for adding actuals.</div>'
             return html;
@@ -161,10 +162,10 @@
         if ((hdnTacticStatus == null || hdnTacticStatus == '') || (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus)) {
             $("#divActualInner").empty();
             $("#divActualInner").append(ActualTab());
-           // $("#lblLineitemTitle").show();
-           // $("#txtTitle").hide();
+            // $("#lblLineitemTitle").show();
+            // $("#txtTitle").hide();
             //// Commented By: Arpita Soni on 1/7/2015.
-            //// Ticket: 1067 
+            //// Ticket: 1067
             //$("#btnEditlineItem").unbind('click');
             //$("#btnEditlineItem").on("click", function (e) {
             //    $("#errorMessage").css("display", "none");
@@ -194,33 +195,33 @@
                             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                         }
                         else {
-                        var actualData = data.ActualData;
-                        if (actualData.length) {
-                            for (i in actualData) {
-                                var indx = parseInt(i) + 1;
-                                var actVal = actualData[i].costValue;
-                                if (!isNaN(actVal) && actVal != '') {
-                                    //Added by Ashish for PL #1656
-                                    if (actVal.toString().indexOf('.') != -1) {
-                                        $("#txtActual-Y" + indx).val(FormatCurrency(actVal, true));
+                            var actualData = data.ActualData;
+                            if (actualData.length) {
+                                for (i in actualData) {
+                                    var indx = parseInt(i) + 1;
+                                    var actVal = actualData[i].costValue;
+                                    if (!isNaN(actVal) && actVal != '') {
+                                        //Added by Ashish for PL #1656
+                                        if (actVal.toString().indexOf('.') != -1) {
+                                            $("#txtActual-Y" + indx).val(FormatCurrency(actVal, true));
+                                        }
+                                        else {
+                                            $("#txtActual-Y" + indx).val(FormatCurrency(actVal, false));
+                                        }
+                                        //Added by Ashish for PL #1656
                                     }
                                     else {
-                                        $("#txtActual-Y" + indx).val(FormatCurrency(actVal, false));
+                                        $("#txtActual-Y" + indx).val("");
                                     }
-                                    //Added by Ashish for PL #1656
-                                }
-                                else {
-                                    $("#txtActual-Y" + indx).val("");
                                 }
                             }
+                            var projectedval = data.ProjectedValue;
+                            if (projectedval != null)
+                                $("#cP").text(projectedval);
+                            var lastupdatedby = data.LastUpdatedBy;
+                            if (lastupdatedby != null)
+                                $("#last-updated").text(lastupdatedby);
                         }
-                        var projectedval = data.ProjectedValue;
-                        if (projectedval != null)
-                            $("#cP").text(projectedval);
-                        var lastupdatedby = data.LastUpdatedBy;
-                        if (lastupdatedby != null)
-                            $("#last-updated").text(lastupdatedby);
-                    }
                     }
 
                     CalculateTotalCost();
@@ -301,7 +302,7 @@
         }
         //End - Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
 
-       
+
 
     });
     function SaveLineitemActual() {
@@ -313,55 +314,55 @@
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-            var iserror = false;
-            var _lineitemtitle = htmlEncode($('#txtTitle').val());
-            var _stractualsData = '';
+        var iserror = false;
+        var _lineitemtitle = htmlEncode($('#txtTitle').val());
+        var _stractualsData = '';
         // #1642 Comment By Bhavesh Dobariya #09-10-2015
-          //  var isotherlineitem = $("#hdnIsOtherLineItem").val();
-           @* if (isotherlineitem.toLowerCase() == 'false') {
+        //  var isotherlineitem = $("#hdnIsOtherLineItem").val();
+        @* if (isotherlineitem.toLowerCase() == 'false') {
                 if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
                     var errorMsg = "You can't use 'Other' as title.";
                     ShowError(errorMsg);
                     return false;
                 }
             }*@
-            $('#trActualCost').find('input').each(function () {
-                var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, ''));
-                if (isNaN(cvalue)) {
-                    cvalue = ' ';
-                }
-                _stractualsData = _stractualsData + "," + cvalue;
-            });
-            var _strPlanLineitemId = $("#hdnPlanLineItemID").val();
-            if (_lineitemtitle == '') {
-                iserror = true;
+        $('#trActualCost').find('input').each(function () {
+            var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, ''));
+            if (isNaN(cvalue)) {
+                cvalue = ' ';
             }
+            _stractualsData = _stractualsData + "," + cvalue;
+        });
+        var _strPlanLineitemId = $("#hdnPlanLineItemID").val();
+        if (_lineitemtitle == '') {
+            iserror = true;
+        }
 
-            if (iserror) {
-                ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
-                $('#InspectTab').removeClass('SpanDisable');
-                return false;
-            }
-            $.ajax({
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                type: 'POST',
-                    async: false,
-                url: '@Url.Content("~/Plan/SaveActualsLineitemData/")',
-                data: JSON.stringify({ strActualsData: _stractualsData, strPlanItemId: _strPlanLineitemId, LineItemTitle: _lineitemtitle }),
-                success: function (data) {
-                    if (data != 'undefined') {
-                      
-                        if (!data.IsDuplicate) {
-                           
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            async: false,
+            url: '@Url.Content("~/Plan/SaveActualsLineitemData/")',
+            data: JSON.stringify({ strActualsData: _stractualsData, strPlanItemId: _strPlanLineitemId, LineItemTitle: _lineitemtitle }),
+            success: function (data) {
+                if (data != 'undefined') {
+
+                    if (!data.IsDuplicate) {
+
                         if (data.id != 0) {
                             $("#successMessage").css("display", "block");
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
                             var requestedModule = $("#hdnRedirectType").val();
                             var activeTab = $("#InspectTab li.active a").text();
-                            var planLineItemId = data.id;   
-                                    //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                            var planLineItemId = data.id;
+                            //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                 $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
                                 $("#hdnBudgetingIsSave").val("true");
@@ -376,30 +377,30 @@
                             $("#spanMessageError").empty();
                             $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                         }
-                                returnparameter = true;
+                        returnparameter = true;
                     }
-                        else {
-                            ShowError(data.errormsg);
-                            //if (data.strmsg != "") {
-                            //    ShowError(data.strmsg);
-                            //}
-                                returnparameter = false;
-                    }
-                         //   returnparameter = true;
-                }
-                },
-                error: function () {
-                    $("#errorMessage").css("display", "block");
-                    $("#spanMessageError").empty();
-                    GoToLogin();
+                    else {
+                        ShowError(data.errormsg);
+                        //if (data.strmsg != "") {
+                        //    ShowError(data.strmsg);
+                        //}
                         returnparameter = false;
+                    }
+                    //   returnparameter = true;
                 }
-            });
-
-                return returnparameter;
-
-         // });
+            },
+            error: function () {
+                $("#errorMessage").css("display", "block");
+                $("#spanMessageError").empty();
+                GoToLogin();
+                returnparameter = false;
             }
+        });
+
+        return returnparameter;
+
+        // });
+    }
 
 
 </script>

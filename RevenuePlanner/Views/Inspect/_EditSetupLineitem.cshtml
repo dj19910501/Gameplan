@@ -566,7 +566,8 @@
 
         $("#successMessageViewLineItem").slideUp(50);
         $("#errorMessageEditLineitem").slideUp(50);
-        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true });
         $('#LineItemTypeId').multiselect({
             multiple: false,
             noneSelectedText: "Please Select",

@@ -46,8 +46,9 @@
 			catch(err) {}
 		    // Add For format Price & currency Value.
 		    //Addded By Bhavesh Dobariya Date : 20-12-2013
-			$(".priceValue").priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-			$('.currency_dollar').priceFormat({ prefix: htmlDecode(CurrencySybmol), centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); //Modified by Rahul Shah for PL#2499. to resolve special Character issue 
+		    $(".priceValue").priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+	        //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+			$('.currency_dollar').priceFormat({ prefix: htmlDecode(CurrencySybmol), centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true }); //Modified by Rahul Shah for PL#2499. to resolve special Character issue 
 			$('.dollarValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
 			$('.percentValue').priceFormat({ prefix: '', suffix: '%', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true, });

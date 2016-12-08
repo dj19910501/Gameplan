@@ -305,8 +305,11 @@
     var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
     var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
     var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-    var _decmlRegex = '^(0|[1-9][0-9]*)[.]?[0-9]*$'; // Old: '^(0|[1-9][0-9]*)$';
-    var _intRegex = '^(0|[1-9][0-9]*)$';
+    //Start- Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+    var _decmlRegex = '^(0|-?[1-9][0-9]*)[.]?[0-9]*$';  // Old: '^(0|[1-9][0-9]*)$';
+    var _intRegex = '^(0|-?[1-9][0-9]*)$';
+    //End- Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+
     $(document).ready(function () {
         var TacticActual;
         var planTacticId = $("#hdnPlanTacticId").val();
@@ -551,7 +554,8 @@
         }
         function getLoadActual() {
             //Added By : Kalpesh Sharma Functional and code Review changes 
-            $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+            //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+            $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true, allowNegative: true });
             $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
             var inqP = document.getElementById('inqP');
             if (inqP != null && inqP != 'undefined' && inqP != '') {
@@ -718,8 +722,10 @@
     function SaveActual() {
         var planTacticId = $("#hdnPlanTacticId").val();
         var returnparameter = false;
-        var _decimalRegex = '^(0|[0-9][0-9]*)[.]?[0-9]*$';
-        var _IntgerRegex = '^(0|[0-9][0-9]*)$';
+        //Start- Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+        var _decimalRegex = '^(0|-?[0-9][0-9]*)[.]?[0-9]*$';
+        var _IntgerRegex = '^(0|-?[0-9][0-9]*)$';
+        //End- Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
         var ReturnParameter = SaveTitle();
         if (ReturnParameter == false) {
             $('#InspectTab').removeClass('SpanDisable');

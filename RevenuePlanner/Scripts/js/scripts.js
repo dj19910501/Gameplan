@@ -107,8 +107,10 @@ function GridPriceFormatKeydown(e) {
         (e.keyCode == 65 && e.ctrlKey === true) ||
         // Allow: home, end, left, right
         (e.keyCode >= 35 && e.keyCode <= 39) ||
-            //allow period
-         (e.key=="."))   {
+        //allow period
+         (e.key == ".") ||
+        // allow minus sign /* Added by Preet Shah for allow negative sign */
+         (e.key == "-")) {
         // let it happen, don't do anything
         return;
     }
@@ -178,7 +180,7 @@ function SetddlSelectedItemScripts(obj) {
                 }).attr("selected", "selected");
             }
         }
-    }    
+    }
 }
 
 

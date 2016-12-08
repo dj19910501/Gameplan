@@ -73,119 +73,119 @@
     @Html.HiddenFor(model => model.CampaignBudget, new { id = "hdnOldCampaignBudget" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })  // Added by Viral Kadiya on 11/15/2014 for PL ticket #794
 
-    <div id="CampaignMainDiv" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
+                                                                                <div id="CampaignMainDiv" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
 
-        <div class="span6" id="inspect-modal-left-column1">
-            <p>@Html.Raw("Description")</p>
-            @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+                                                                                    <div class="span6" id="inspect-modal-left-column1">
+                                                                                        <p>@Html.Raw("Description")</p>
+                                                                                        @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
 
-            @if (ExtIntService)
-            {
-                <p class="clear-section" style="line-height: 11px; padding-bottom: 5px;">@Html.Raw("Deployed to Integration")</p>
-                if (Model.IsDeployedToIntegration)
-                {
-                    <input id="t_integration_status" name="t_status" title="Active" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
-                }
-                else
-                {
-                    <input id="t_integration_status" name="t_status" title="Inactive" type="text" class="icon-check-gray" placeholder="Don't sync to integration" maxlength="18" readonly />
-                }
-            }
-            <div style="clear: both; width: 250%;">
-                <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
-            </div>
-        </div>
-        <div class="span3 calendar_div" id="inspect-modal-left-column2" style="padding-left:1.9%;">
-            <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
-            @if (IsCampaignEdit)
-            {
-                <span style="min-width: 100%; position: relative;display:block;">
-                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
-                </span>
-            }
-            else
-            {
-                @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
-            }
-            <p>Start Date</p>
-            <span style="position: relative;">
-                <div class="form-group">
-                    <div class='input-group date' id='divStartDate'>
-                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control without-margin ", id = "t_startdate" })
-                        <span class="input-group-addon">
-                            <span class="fa fa-calendar"></span>
-                        </span>
-                    </div>
-                </div>
-            </span>
-            <p class="clear-section" style="padding-top: 10px;">End Date</p>
-            <span style="position: relative;">
-                <div class='input-group date' id='divEndDate'>
-                    @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control without-margin ", id = "t_enddate" })
-                    <span class="input-group-addon">
-                        <span class="fa fa-calendar"></span>
-                    </span>
-                </div>
-            </span>
-        </div>
-        <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width:24%">
-            <p>@Html.Raw("Campaign Budget")</p>
-            @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate input-setup", id = "txtCampaignBudget", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-            <p>Remaining Plan Budget</p>
-            @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { id = "txtRemainingBudget", @readonly = "true" })
-            <div class="content dark inline-ellipsis">
-                @if (!(bool)ViewBag.IsCreated)
-                {
-                    <div class="cf width100">
-                        <div class="width65px margin-right10 pull-left" style="width: 48%;">
-                            <p>@Html.LabelForMQL("MQL")</p>
-                            @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
-                        </div>
+                                                                                        @if (ExtIntService)
+                                                                                        {
+                                                                                            <p class="clear-section" style="line-height: 11px; padding-bottom: 5px;">@Html.Raw("Deployed to Integration")</p>
+                                                                                            if (Model.IsDeployedToIntegration)
+                                                                                            {
+                                                                                                <input id="t_integration_status" name="t_status" title="Active" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <input id="t_integration_status" name="t_status" title="Inactive" type="text" class="icon-check-gray" placeholder="Don't sync to integration" maxlength="18" readonly />
+                                                                                            }
+                                                                                        }
+                                                                                        <div style="clear: both; width: 250%;">
+                                                                                            <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="span3 calendar_div" id="inspect-modal-left-column2" style="padding-left:1.9%;">
+                                                                                        <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
+                                                                                        @if (IsCampaignEdit)
+                                                                                        {
+                                                                                            <span style="min-width: 100%; position: relative;display:block;">
+                                                                                                @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                                                                                            </span>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
+                                                                                        }
+                                                                                        <p>Start Date</p>
+                                                                                        <span style="position: relative;">
+                                                                                            <div class="form-group">
+                                                                                                <div class='input-group date' id='divStartDate'>
+                                                                                                    @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control without-margin ", id = "t_startdate" })
+                                                                                                    <span class="input-group-addon">
+                                                                                                        <span class="fa fa-calendar"></span>
+                                                                                                    </span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </span>
+                                                                                        <p class="clear-section" style="padding-top: 10px;">End Date</p>
+                                                                                        <span style="position: relative;">
+                                                                                            <div class='input-group date' id='divEndDate'>
+                                                                                                @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control without-margin ", id = "t_enddate" })
+                                                                                                <span class="input-group-addon">
+                                                                                                    <span class="fa fa-calendar"></span>
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width:24%">
+                                                                                        <p>@Html.Raw("Campaign Budget")</p>
+                                                                                        @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate input-setup", id = "txtCampaignBudget", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                                                                                        <p>Remaining Plan Budget</p>
+                                                                                        @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { id = "txtRemainingBudget", @readonly = "true" })
+                                                                                        <div class="content dark inline-ellipsis">
+                                                                                            @if (!(bool)ViewBag.IsCreated)
+                                                                                            {
+                                                                                                <div class="cf width100">
+                                                                                                    <div class="width65px margin-right10 pull-left" style="width: 48%;">
+                                                                                                        <p>@Html.LabelForMQL("MQL")</p>
+                                                                                                        @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
+                                                                                                    </div>
 
-                        <div class="width65px pull-left" style="width: 48%;">
-                            <p>Cost</p>
-                            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = CurrencySymbol + "0" })
-                        </div>
-                    </div>
-                    <div class="cf width100">
-                        <div class="width65px pull-left" style="width: 48%;">
-                            <p>Revenue</p>
-                            @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = CurrencySymbol + "0" })
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-    <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
-        <li class="pull-left">
-            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
-        </li>
-    </ul>
-    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left" id="attributesControlsArea">
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString().ToLower(), Model.Status, 0, Enums.InspectPopupMode.Edit.ToString())
-    </div>
+                                                                                                    <div class="width65px pull-left" style="width: 48%;">
+                                                                                                        <p>Cost</p>
+                                                                                                        @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = CurrencySymbol + "0" })
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div class="cf width100">
+                                                                                                    <div class="width65px pull-left" style="width: 48%;">
+                                                                                                        <p>Revenue</p>
+                                                                                                        @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = CurrencySymbol + "0" })
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            }
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
+                                                                                    <li class="pull-left">
+                                                                                        <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
+                                                                                    </li>
+                                                                                </ul>
+                                                                                <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left" id="attributesControlsArea">
+                                                                                    @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString().ToLower(), Model.Status, 0, Enums.InspectPopupMode.Edit.ToString())
+                                                                                </div>
 }
 <script type="text/javascript">
     //insertation start #2369 Added year validation on blur event.
     $("#t_startdate").blur(function () {
         //alert("Handler for .blur() called.");
         var hdnYear = @ViewBag.Year;
-        var sdateNew = $('#t_startdate').val();       
-        if (!CheckDateYear(sdateNew, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) {                   
+        var sdateNew = $('#t_startdate').val();
+        if (!CheckDateYear(sdateNew, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) {
             return false;
         }
-       
-       
+
+
     });
     $("#t_enddate").blur(function () {
         //alert("Handler for .blur() called.");
-        var hdnYear = @ViewBag.Year;       
-        var edateNew = $('#t_enddate').val();       
-        if (!CheckDateYear(edateNew, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) {           
+        var hdnYear = @ViewBag.Year;
+        var edateNew = $('#t_enddate').val();
+        if (!CheckDateYear(edateNew, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) {
             return false;
         }
-      
+
     });
     //insertation end #2369 Added year validation on blur event.
     var selectbox_keys = '';
@@ -420,7 +420,8 @@
           $("#successMessageViewCampaign").slideUp(50);
           $("#errorMessageEditCampaign").slideUp(50);
 
-          $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+          $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
           $(".selectBox select").selectbox();
@@ -510,21 +511,27 @@
 
     $("#txtCampaignBudget").keyup(function () {
         var ProgramBudgetValue = ReplaceCC($("#txtCampaignBudget").val());
+        //Modified by Preet Shah on 06/12/2016. removing/truncate leading zeroes. PL #2850
+        ProgramBudgetValue = ProgramBudgetValue.replace(/^0+/, '');
         if (ProgramBudgetValue == '' || typeof ProgramBudgetValue == 'undefined') {
             ProgramBudgetValue = '0';
             $("#txtCampaignBudget").val(CurrencySybmol + '0')
         }
-        var OldProgramBudgetValue = ReplaceCC($("#hdnOldCampaignBudget").val());
-        var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
-        var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
-        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
-        $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
-        $("#hdnOldCampaignBudget").val(ProgramBudgetValue);
-        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
-            $("#txtRemainingBudget").addClass('error-text');
-        }
-        else {
-            $("#txtRemainingBudget").removeClass('error-text');
+        //Modified by Preet Shah on 06/12/2016. check for numeric. PL #2850
+        if($.isNumeric(ProgramBudgetValue))
+        {
+            var OldProgramBudgetValue = ReplaceCC($("#hdnOldCampaignBudget").val());
+            var differenceVal = (parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue))||0;
+            var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
+            $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+            $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+            $("#hdnOldCampaignBudget").val(ProgramBudgetValue);
+            if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+                $("#txtRemainingBudget").addClass('error-text');
+            }
+            else {
+                $("#txtRemainingBudget").removeClass('error-text');
+            }
         }
     });
 
@@ -565,10 +572,10 @@
             });
         }
         else {
-        $('form').find('input[type=text], select, textarea').each(function () {
-            if ($(this).attr('require') == 'true') {
-                if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
-                    $(this).addClass("error");
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        $(this).addClass("error");
                         isEmptyFieldError = true;
                     }
                     else {
@@ -588,9 +595,9 @@
         }
         if (campaignTitle == "") {
             $('#txtTitle').addClass("error");
-                    iserror = true;
-                }
-                else {
+            iserror = true;
+        }
+        else {
             $('#txtTitle').removeClass("error");
         }
         if (campaignTitle == "") {
@@ -602,11 +609,11 @@
         //// RequireField validation for Owner Dropdown
         var OwnerValue = $('#ddlOwner').val();
         if (OwnerValue == "") {
-                $('#btnMultiselect_ddlOwner').addClass("error");
-            }
-            else {
-                $('#btnMultiselect_ddlOwner').removeClass("error");
-            }
+            $('#btnMultiselect_ddlOwner').addClass("error");
+        }
+        else {
+            $('#btnMultiselect_ddlOwner').removeClass("error");
+        }
         /* End - Added by bhavesh on 10/03/2015 for PL ticket #711 */
 
         if (iserror) {

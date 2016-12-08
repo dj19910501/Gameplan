@@ -183,7 +183,7 @@
     var $prevtext = '';
     var $nextdata = -1;
     var $_prevdata = -1;
-        var isRequiredProgramfield = false;
+    var isRequiredProgramfield = false;
     $('.dropdown_new_btn').click(function () {
         $('.trdropdownhover').removeClass('setfocusTr');
         $('.dropdown_new_btn').focus();
@@ -411,8 +411,9 @@
         $("#errorMessageEditProgram").slideUp(50);
         var SaveCampaignFlag = true;
         var isredirect = "@ViewBag.RedirectType";
-        var hdnYear = @ViewBag.Year
-        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        var hdnYear = @ViewBag.Year;
+        //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
         //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
@@ -497,72 +498,72 @@
         var iserror = false;
         var isEmptyFieldError = false;
         var title = htmlEncode($('#txtProgramTitle').val().trim());
-            if ($('#status').text().toString() == "" || $('#status').text().toString().trim() == '@Enums.TacticStatus.Created.ToString()' || $('#status').text().toString().trim() == '@Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value.ToString().Trim()') {
-                $('#ProgramMainDiv').find('input[type=text], select, textarea').each(function () {
-            if ($(this).attr('require') == 'true') {
-                if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
-                    $(this).addClass("error");
-                    iserror = true;
-                }
-                else {
-                    $(this).removeClass("error");
-                }
-            }
-        });
-                $('#CustomHtmlHelperfield').find('input[type=text], select, textarea').each(function () {
-                    if ($(this).attr('require') == 'true') {
-                        if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
-                            isRequiredProgramfield = true;
-                        }
+        if ($('#status').text().toString() == "" || $('#status').text().toString().trim() == '@Enums.TacticStatus.Created.ToString()' || $('#status').text().toString().trim() == '@Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value.ToString().Trim()') {
+            $('#ProgramMainDiv').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        $(this).addClass("error");
+                        iserror = true;
                     }
-                });
-                $('.dropdown_new_btn').each(function () {
-                    if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            $('#CustomHtmlHelperfield').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
                         isRequiredProgramfield = true;
                     }
-                });
-            }
-            else {
-        $('form').find('input[type=text], select, textarea').each(function () {
-            if ($(this).attr('require') == 'true') {
-                if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
-                    $(this).addClass("error");
-                    isEmptyFieldError = true;
                 }
-                else {
-                    $(this).removeClass("error");
+            });
+            $('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                    isRequiredProgramfield = true;
                 }
-            }
-        });
-        $('form').find('.sbSelector').each(function () {
+            });
+        }
+        else {
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        $(this).addClass("error");
+                        isEmptyFieldError = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            $('form').find('.sbSelector').each(function () {
 
-            if ($(this).parent().prev().attr('require') == 'true') {
-                if ($(this).text() == 'Please Select') {
+                if ($(this).parent().prev().attr('require') == 'true') {
+                    if ($(this).text() == 'Please Select') {
+                        $(this).addClass("error");
+                        isEmptyFieldError = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            $('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
                     $(this).addClass("error");
                     isEmptyFieldError = true;
                 }
                 else {
                     $(this).removeClass("error");
                 }
-            }
-        });
-        $('.dropdown_new_btn').each(function () {
-            if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
-                $(this).addClass("error");
-                isEmptyFieldError = true;
-            }
-            else {
-                $(this).removeClass("error");
-            }
-        });
-            }            
+            });
+        }
         if (title == '') {
-                $('#txtProgramTitle').addClass("error");
+            $('#txtProgramTitle').addClass("error");
             iserror = true;
         }
-            else {
-                $('#txtProgramTitle').removeClass("error");
-            }
+        else {
+            $('#txtProgramTitle').removeClass("error");
+        }
         var OwnerValue = $('#ddlOwner').val();
         if (OwnerValue == "") {
             $('#btnMultiselect_ddlOwner').addClass("error");
@@ -596,7 +597,7 @@
             $("#txtProgramTitle").addClass("error");
             iserror = true;
             return false;
-            }
+        }
         sdate = $('#t_startdate').val();
         edate = $('#t_enddate').val();
         var tsdate = $('#hdnTStartDate').val();
@@ -675,7 +676,7 @@
                     $("#spanMessageSuccess").text(data.Msg);
                     $("#errorMessageEditProgram").css("display", "none");
 
-                    $("#liReview,#liBudget,#liSetup").bind('click');                   
+                    $("#liReview,#liBudget,#liSetup").bind('click');
                     //// if new record save then set Refresh flag to true.
                     if (_planProgramId == '' || _planProgramId == null || _planProgramId == '0' || _planProgramId == 'undefined') {
                         logMixpanelTrack("New Program:" + escape(title)); // log New Program created event to mixpanel. Added by Viral regarding PL ticket #2434.
@@ -687,12 +688,12 @@
                     if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                         $("#hdnBudgetingExpandId").val("program" + planProgramId);
                         $("#hdnBudgetingIsSave").val("true");
-                    } 
-                    returnparameter = true;                    
+                    }
+                    returnparameter = true;
                     // Add By Nishant Sheth
                     // Desc :: #1812 refresh dropdown with change of date diffrence
                     if (!(data.EndDatediff == 0)) {
-                        BindUpcomingActivites(data.PlanId);// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId                        
+                        BindUpcomingActivites(data.PlanId);// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId
                     }
                     // End By Nishant Sheth
                 }
@@ -731,25 +732,31 @@
 
     $("#txtProgramBudget").keyup(function () {
         var ProgramBudgetValue = ReplaceCC($("#txtProgramBudget").val());
+        //Modified by Preet Shah on 06/12/2016. removing/truncate leading zeroes. PL #2850
+        ProgramBudgetValue = ProgramBudgetValue.replace(/^0+/, '');
         if (ProgramBudgetValue == '' || typeof ProgramBudgetValue == 'undefined') {
             ProgramBudgetValue = '0';
-            $("#txtProgramBudget").val('$0')
+            $("#txtProgramBudget").val(CurrencySybmol + '0')
         }
-        var OldProgramBudgetValue = ReplaceCC($("#hdnOldProgramBudget").val());
-        var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
-        var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
+        //Modified by Preet Shah on 06/12/2016. check for numeric. PL #2850
+        if($.isNumeric(ProgramBudgetValue))
+        {
+            var OldProgramBudgetValue = ReplaceCC($("#hdnOldProgramBudget").val());
+            var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
+            var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
 
-        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
-        $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+            $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+            $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
 
-        $("#hdnOldProgramBudget").val(ProgramBudgetValue);
-        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
-            $("#txtRemainingBudget").addClass('error-text');
+            $("#hdnOldProgramBudget").val(ProgramBudgetValue);
+            if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+                $("#txtRemainingBudget").addClass('error-text');
+            }
+            else {
+                $("#txtRemainingBudget").removeClass('error-text');
+            }
         }
-        else {
-            $("#txtRemainingBudget").removeClass('error-text');
-        }
-    }); 
+    });
     // Modified by Komal Rawal for ticket #1196
     function isEmpty(el) {
         return !$.trim(el.html())
