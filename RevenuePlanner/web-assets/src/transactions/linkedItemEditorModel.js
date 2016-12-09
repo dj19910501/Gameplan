@@ -20,6 +20,19 @@ const columns = [
     { id: "trash", value: "&nbsp;", width: 32, type: "ro", align: "center", sort: "na" },
 ];
 
+/**
+ * Server gives us some values with bad precision.
+ * @param value
+ * @returns {*}
+ */
+function round(value) {
+    if (typeof value === "number") {
+        return Math.round(value * 100) / 100;
+    }
+
+    return value;
+}
+
 function mapLinkedItems(result) {
     return flatMap(result, tactic => tactic.LineItems
         .filter(lineItem => lineItem.LineItemId !== -1) // filter out Sys_Gen_Balance line items from the editor.
@@ -27,9 +40,9 @@ function mapLinkedItems(result) {
             id: lineItem.LineItemMapping.TransactionLineItemMappingId,
             lineItemId: lineItem.LineItemId,
             tacticName: breadcrumb(lineItem.PlanTitle, lineItem.CampaignTitle, lineItem.ProgramTitle, tactic.Title),
-            mappedAmount: lineItem.LineItemMapping.Amount,
-            lineItemCost: lineItem.Cost,
-            lineItemActual: lineItem.Actual,
+            mappedAmount: round(lineItem.LineItemMapping.Amount),
+            lineItemCost: round(lineItem.Cost),
+            lineItemActual: round(lineItem.Actual),
             title: lineItem.Title,
             trash: `<i class="fa fa-trash-o fa-fw"></i>`,
         })));
