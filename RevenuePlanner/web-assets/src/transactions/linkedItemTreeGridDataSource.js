@@ -2,6 +2,7 @@ import $ from 'jquery';
 import gridDataSource from 'util/gridDataSource';
 import {GET_LINKED_LINE_ITEMS} from './apiUri';
 import escape from 'lodash/escape';
+import breadcrumb from 'util/breadcrumb';
 
 const columns = [
     {
@@ -93,7 +94,7 @@ function transformData(result) {
             item.MappedAmount = item.LineItemMapping.Amount;
 
             item.Tree = escape(item.Title);
-            item.Plan = `${item.PlanTitle} > ${item.CampaignTitle} > ${item.ProgramTitle}`;
+            item.Plan = breadcrumb(item.PlanTitle, item.CampaignTitle, item.ProgramTitle);
 
             // convert to actual dates
             item.DateModified = {value: new Date(item.LineItemMapping.DateModified)};

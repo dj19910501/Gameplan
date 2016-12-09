@@ -1,0 +1,38 @@
+@import 'sass-mixins/common';
+
+.dateRangeContainer {
+  background-color: $BG_LIGHT;
+  padding: 5px;
+
+  .label {
+    margin-bottom: 10px;
+  }
+
+  .range {
+    cursor: pointer;
+    border: solid 1px $BORDER_COLOR;
+    padding: 3px;
+
+    i {
+      color: $ICON_COLOR;
+    }
+
+    &:hover {
+      i {
+        color: $ICON_COLOR_HOVER;
+      }
+    }
+  }
+}
+
+:global {
+  .daterangepicker {
+    .ranges ul {
+      max-height: none;
+    }
+
+    .btn-primary {
+      @include primary-button-color;
+    }
+  }
+}

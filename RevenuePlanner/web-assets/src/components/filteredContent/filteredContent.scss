@@ -1,0 +1,72 @@
+@import "sass-mixins/common";
+
+$FILTER_PANEL_WIDTH: 280px;
+$FILTER_PADDING_TOP: 10px;
+$FILTER_PADDING_RIGHT: 15px;
+$FILTER_PADDING_LEFT: 20px;
+$FILTER_PADDING_BOTTOM: 22px;
+
+// IF YOU CHANGE EITHER Of THESE 2 TIMING VALUES, MAKE SURE AND UPDATE SLIDE_TOTAL_TIME variable in filteredContent.js
+$SLIDE_DURATION: 0.1s;
+$SLIDE_DELAY: 0.1s;
+$SLIDE_EASING: ease-in-out;
+
+.filteredContent {
+  @include fill-parent;
+
+  > .filterPanel {
+    @include fill-parent(0, null, 0, 0);
+    width: $FILTER_PANEL_WIDTH;
+
+    background-color: $BG_MEDIUM;
+    border-right: solid 1px $BORDER_COLOR;
+    padding: $FILTER_PADDING_TOP $FILTER_PADDING_RIGHT $FILTER_PADDING_BOTTOM $FILTER_PADDING_LEFT;
+    overflow-y: auto;
+    overflow-x: visible;
+
+    transition: left $SLIDE_DURATION $SLIDE_EASING $SLIDE_DELAY;
+
+    .header {
+      font-size: 24px;
+      padding-bottom: 10px;
+    }
+
+    .filterContent {
+      padding: 0;
+    }
+  }
+
+  > .toggle {
+    position: absolute;
+    top: $FILTER_PADDING_TOP;
+    left: $FILTER_PANEL_WIDTH;
+    padding: 4px 8px;
+
+    font-size: 25px;
+    @include primary-button-color;
+    cursor: pointer;
+    border-radius: 0 4px 4px 0;
+
+    transition: left $SLIDE_DURATION $SLIDE_EASING $SLIDE_DELAY;
+  }
+
+  > .content {
+    @include fill-parent(0, 0, 0, $FILTER_PANEL_WIDTH);
+    transition: left $SLIDE_DURATION $SLIDE_EASING $SLIDE_DELAY;
+  }
+
+  // When filter is closed, filterPanel should be off-screen and content should fill the screen
+  &.hideFilter {
+    >.filterPanel {
+      left: -$FILTER_PANEL_WIDTH;
+    }
+
+    >.toggle {
+      left: 0;
+    }
+
+    > .content {
+      left: 0;
+    }
+  }
+}

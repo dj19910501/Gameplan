@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import {GET_LINKED_LINE_ITEMS, SAVE_LINKED_LINE_ITEMS, DELETE_LINKED_LINE_ITEMS} from './apiUri';
+import {GET_LINKED_LINE_ITEMS, SAVE_LINKED_LINE_ITEMS, DELETE_LINKED_LINE_ITEMS, GET_SINGLE_TRANSACTION_URI} from './apiUri';
 import flatMap from 'lodash/flatMap';
 import gridDataSource from 'util/gridDataSource';
 import keyBy from 'lodash/keyBy';
@@ -9,6 +9,7 @@ import findIndex from 'lodash/findIndex';
 import createNewItemModel from './linkedItemEditorNewLinkModel';
 import css from './linkedItemEditor.scss';
 import uniqueId from 'lodash/uniqueId';
+import breadcrumb from 'util/breadcrumb';
 
 const columns = [
     { id: "title", value: "Name", width: 300, type: "rotxt", align: "left", sort: "na" },
@@ -25,7 +26,7 @@ function mapLinkedItems(result) {
         .map(lineItem => ({
             id: lineItem.LineItemMapping.TransactionLineItemMappingId,
             lineItemId: lineItem.LineItemId,
-            tacticName: `${lineItem.PlanTitle} > ${lineItem.CampaignTitle} > ${lineItem.ProgramTitle} > ${tactic.Title}`,
+            tacticName: breadcrumb(lineItem.PlanTitle, lineItem.CampaignTitle, lineItem.ProgramTitle, tactic.Title),
             mappedAmount: lineItem.LineItemMapping.Amount,
             lineItemCost: lineItem.Cost,
             lineItemActual: lineItem.Actual,
@@ -45,6 +46,10 @@ function updateDataSource(state, dataSource, items) {
 
 function queryLinkedItems(transactionId) {
     return $.getJSON(GET_LINKED_LINE_ITEMS, { transactionID: transactionId});
+}
+
+function queryTransaction(transactionId) {
+    return $.getJSON(GET_SINGLE_TRANSACTION_URI, { transactionId });
 }
 
 export default function createModel(transaction) {
@@ -185,7 +190,7 @@ export default function createModel(transaction) {
                 // this is just a temporary id until we save the record and get a real id from the sever
                 id: uniqueId("mappedItem"),
                 lineItemId: lineItem.Id,
-                tacticName: `${plan.Title} > ${campaign.Title} > ${program.Title} > ${tactic.Title}`,
+                tacticName: breadcrumb(plan.Title, campaign.Title, program.Title, tactic.Title),
                 mappedAmount: lineItem.Cost || 0,
                 lineItemCost: lineItem.Cost,
                 lineItemActual: lineItem.Actual,
@@ -319,13 +324,15 @@ export default function createModel(transaction) {
             // wait for both calls to finish
             return $.when(...promises).then(() => {
                 // reload the data
-                return queryLinkedItems(transaction.id).then(result => {
+                const linked = queryLinkedItems(transaction.id);
+                const single = queryTransaction(transaction.id);
+                return $.when(linked, single).then(([links], [singleTransaction]) => {
                     state.invalidCount = 0;
                     state.invalidIds = Object.create(null);
                     state.modifiedItems = Object.create(null);
                     state.modifiedCount = 0;
-                    updateDataSource(state, dataSource, mapLinkedItems(result));
-                    this.updatedData = result;
+                    updateDataSource(state, dataSource, mapLinkedItems(links));
+                    this.updatedData = { links, transaction: singleTransaction };
                     $(this).trigger("modified");
                     $(this).trigger("invalid");
                 });
@@ -336,6 +343,7 @@ export default function createModel(transaction) {
     queryLinkedItems(transaction.id).then(result => {
         updateDataSource(state, dataSource, mapLinkedItems(result));
         $(model).trigger("availableFunds");
+        return result;
     });
 
     return model;
