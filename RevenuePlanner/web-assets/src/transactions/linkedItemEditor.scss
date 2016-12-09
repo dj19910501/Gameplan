@@ -3,6 +3,7 @@
 $MODIFIED_COLOR: #00c806;
 $VALIDATION_ERROR_COLOR: red;
 $INDICATOR_WIDTH: 4px;
+$ADD_LINK_COLOR: #f2914a;
 
 .editor {
   width: auto;
@@ -229,8 +230,15 @@ $INDICATOR_WIDTH: 4px;
             tr.notMapped {
               td:last-child {
                 font-size: smaller;
-                color: #f2914a;
+                color: $ADD_LINK_COLOR;
                 cursor: pointer;
+
+                i:global(.fa) {
+                  color: $ADD_LINK_COLOR;
+                  &:hover {
+                    color: $ADD_LINK_COLOR;
+                  }
+                }
               }
             }
           }

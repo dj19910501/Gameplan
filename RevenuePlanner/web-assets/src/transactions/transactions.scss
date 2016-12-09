@@ -5,6 +5,15 @@ $GRID_PADDING: 5px;
 :global {
   div.gridbox.gridbox_dhx_skyblue {
     table.obj {
+      td i.fa {
+        color: $GRID_ICON_COLOR;
+        font-size: $GRID_ICON_FONT_SIZE;
+
+        &:hover {
+          color: $GRID_ICON_COLOR_HOVER;
+        }
+      }
+
       tr.ev_dhx_skyblue {
         background-color: $GRID_EVEN_ROW_BG;
 
