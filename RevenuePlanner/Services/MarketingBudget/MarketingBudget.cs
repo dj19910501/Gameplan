@@ -1611,7 +1611,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="isForecast">check the field is forecast or not</param>
         /// <param name="nValue">new Value</param>        
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
-        public void UpdateBudgetorForecast(int budgetDetailId, string allocationType, string nValue, bool isForecast = false, double planExchangeRate = 1.0)
+        private void UpdateBudgetorForecast(int budgetDetailId, string allocationType, string nValue, bool isForecast = false, double planExchangeRate = 1.0)
         {
             if (string.Compare(allocationType, Enums.PlanAllocatedBy.quarters.ToString(), true) == 0)
             {
@@ -1790,7 +1790,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="allocationType">Type of allocation i.e(quarter, monthly, yearly)</param>
         ///  <param name="Period">period (i.e Jan, Feb.. etc)</param>
         ///  <returns>Return Budget amount object.</returns>
-        public Budget_DetailAmount GetBudgetAmount(int budgetDetailId, string allocationType, string period)
+        private Budget_DetailAmount GetBudgetAmount(int budgetDetailId, string allocationType, string period)
         {
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
 

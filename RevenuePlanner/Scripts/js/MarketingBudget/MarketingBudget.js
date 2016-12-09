@@ -592,7 +592,7 @@ function DeleteBudget() {
                 var BudgetId = data.budgetId;
                 UpdateFinanceHeaderValues(); // Update header values
                 GetGridData(BudgetId);
-                RefreshBudgetDropdown(false, BudgetId);
+                RefreshBudgetDropdown(BudgetId);
                 //TODO :  here we need to call Finance Header function to refresh the header after deleting budget data
             }
         },
@@ -603,7 +603,7 @@ function DeleteBudget() {
     });
 }
 
-    function RefreshBudgetDropdown(BudgetId) {
+function RefreshBudgetDropdown(BudgetId) {    
     var _budgetId = "";
     if (BudgetId != undefined && BudgetId != "") {
         _budgetId = BudgetId.toString();

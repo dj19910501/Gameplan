@@ -262,6 +262,11 @@ namespace RevenuePlanner.UnitTest.Service
             Assert.IsNotNull(Data);
             Assert.IsNotNull(Data.parentId);
         }
+        public void Test_MarketingBudget_GetBudgetColumn()
+        {
+            var res = _marketingBudget.GetBudgetColumn(ClientId);
+            Assert.IsTrue(res.Count > 0);
+        }
     }
     
 
