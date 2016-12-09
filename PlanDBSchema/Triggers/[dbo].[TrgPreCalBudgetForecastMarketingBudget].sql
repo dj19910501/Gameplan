@@ -1,3 +1,4 @@
+
 IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalBudgetForecastMarketingBudget]'))
 BEGIN
 	DROP TRIGGER [dbo].[TrgPreCalBudgetForecastMarketingBudget]
@@ -43,7 +44,7 @@ BEGIN
 			   @BudgetDetailId = BudgetDetailId,
 			   @Year = YEAR(CreatedDate)
 		FROM INSERTED I
-		INNER JOIN Budget_Detail BD ON I.BudgetDetailId = BD.Id
+		INNER JOIN Budget_Detail(NOLOCK) BD ON I.BudgetDetailId = BD.Id
 		-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
 		EXEC [MV].[PreCalBudgetForecastForFinanceGrid] @BudgetDetailId, @Year, @Period, @BudgetValue, @ForecastValue
 	END
@@ -53,7 +54,7 @@ BEGIN
 		SELECT @Period = Period,
 			   @BudgetDetailId = BudgetDetailId,
 			   @Year = YEAR(CreatedDate) FROM DELETED D
-			   INNER JOIN Budget_Detail BD ON D.BudgetDetailId = BD.Id
+			   INNER JOIN Budget_Detail(NOLOCK) BD ON D.BudgetDetailId = BD.Id
 
 		-- Delete/Update record into pre-calculated table while Cost entry is deleted
 		SET @DeleteQuery = 'UPDATE P SET ' +@Period + '_'+@BudgetColumnName +' = NULL, 

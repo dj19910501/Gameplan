@@ -2206,6 +2206,56 @@ END
 --Insertation End #2623 import multiple plan
 Go
 
+/* Start - Update existing Marketing Budget data for parent records to NULL for ROLL UP */
+
+-- 1. Back up Budget_Detail and Budget_DetailAmount tables
+-- 2. Update total budget and total forecast in Budget_Detail table
+-- 3. Update parent budget detail records with NULL values for budget and forecast
+-- 4. Remove parent records from Budget_DetailAmount table
+
+-- 1. Back up Budget_Detail and Budget_DetailAmount tables
+	BEGIN
+		IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Budget_Detail_BKP]') AND type in (N'U'))
+		BEGIN
+		 SELECT * INTO Budget_Detail_BKP FROM Budget_Detail(NOLOCK)
+		END
+		
+		IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Budget_DetailAmount_BKP]') AND type in (N'U'))
+		BEGIN
+		 SELECT * INTO Budget_DetailAmount_BKP FROM Budget_DetailAmount(NOLOCK)
+		END
+	END
+
+-- 2. Update total budget and total forecast in Budget_Detail table
+	BEGIN
+		UPDATE BD SET TotalBudget = TblGrpBy.Budget, TotalForecast = TblGrpBy.Forecast 
+		FROM Budget_Detail BD 
+		INNER JOIN (
+		SELECT BD.Id BudgetDetailId, SUM(BDA.Budget) Budget,SUM(BDA.Forecast) Forecast 
+		FROM Budget_Detail(NOLOCK) BD 
+		INNER JOIN Budget_DetailAmount(NOLOCK) BDA ON BD.Id = BDA.BudgetDetailId
+		GROUP BY BD.Id) TblGrpBy ON BD.Id = TblGrpBy.BudgetDetailId
+	END
+
+-- 3. Update Budget_Detail table to do TotalBudget & TotalForecast value to null of Parent records.
+	BEGIN
+		Update BD SET TotalBudget = NULL, TotalForecast = Null 
+		FROM Budget_Detail(NOLOCK) BD
+		INNER JOIN Budget_DetailAmount(NOLOCK) BDA ON BDA.BudgetDetailId = BD.ParentId
+		WHERE ParentId IS NOT NULL AND IsDeleted = 0
+	END
+
+-- 4. Remove Budget & Forecast values of Parent records from Budget_DetailAmount table
+	BEGIN
+		DELETE FROM Budget_DetailAmount 
+		WHERE Id IN (
+		SELECT DISTINCT BDA.Id FROM Budget_Detail(NOLOCK) BD
+		INNER JOIN Budget_DetailAmount(NOLOCK) BDA ON BDA.BudgetDetailId = BD.ParentId
+		WHERE ParentId IS NOT NULL AND IsDeleted = 0)
+	END
+
+/* End - Update existing Marketing Budget data for parent records to NULL for ROLL UP */
+
 -- Start - Added by Arpita Soni for Ticket #2790 on 11/28/2016
 
 /****** Object:  Table [MV].[PreCalculatedMarketingBudget]    Script Date: 11/18/2016 03:00:10 PM ******/
@@ -2335,9 +2385,9 @@ BEGIN
 		SELECT * FROM 
 		(
 			SELECT B.Id AS BudgetDetailId, Period, Budget 
-			FROM Budget A
-			INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
-			INNER JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+			FROM Budget(NOLOCK) A
+			INNER JOIN Budget_Detail(NOLOCK) B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+			INNER JOIN Budget_DetailAmount(NOLOCK) C ON B.Id = C.BudgetDetailId
 			WHERE A.IsDeleted = 0
 		) P
 		PIVOT
@@ -2357,9 +2407,9 @@ BEGIN
 	(
 		-- Get monthly budget amount with pivoting
 		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget 
-		FROM Budget A
-		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
-		LEFT JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+		FROM Budget(NOLOCK) A
+		INNER JOIN Budget_Detail(NOLOCK) B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN Budget_DetailAmount(NOLOCK) C ON B.Id = C.BudgetDetailId
 		WHERE A.IsDeleted = 0
 	) P
 	PIVOT
@@ -2386,9 +2436,9 @@ BEGIN
 		-- Get monthly forecast amount with pivoting
 		SELECT * FROM 
 		(
-			SELECT B.Id AS BudgetDetailId, Period, Forecast FROM Budget A
-			INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
-			INNER JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+			SELECT B.Id AS BudgetDetailId, Period, Forecast FROM Budget(NOLOCK) A
+			INNER JOIN Budget_Detail(NOLOCK) B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+			INNER JOIN Budget_DetailAmount(NOLOCK) C ON B.Id = C.BudgetDetailId
 			WHERE A.IsDeleted = 0
 		) P
 		PIVOT
@@ -2407,9 +2457,9 @@ BEGIN
 	SELECT Pvt.BudgetDetailId,Pvt.[Year],[Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12] FROM 
 	(
 		-- Get monthly forecast amount with pivoting
-		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget FROM Budget A
-		INNER JOIN Budget_Detail B ON A.Id = B.BudgetId AND B.IsDeleted = 0
-		LEFT JOIN Budget_DetailAmount C ON B.Id = C.BudgetDetailId
+		SELECT B.Id AS BudgetDetailId,YEAR(B.CreatedDate) AS [Year], Period, Budget FROM Budget(NOLOCK) A
+		INNER JOIN Budget_Detail(NOLOCK) B ON A.Id = B.BudgetId AND B.IsDeleted = 0
+		LEFT JOIN Budget_DetailAmount(NOLOCK) C ON B.Id = C.BudgetDetailId
 		WHERE A.IsDeleted = 0
 	) P
 	PIVOT
@@ -2441,10 +2491,10 @@ BEGIN
 		LEFT JOIN 
 		(
 			SELECT BD.Id AS BudgetDetailId,PCPTLC.Period, SUM((ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100)) AS TotalPlanned FROM 
-			[dbo].[Budget_Detail] BD 
-			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PCPTLC ON PCPTL.PlanLineItemId = PCPTLC.PlanLineItemId
+			[dbo].[Budget_Detail](NOLOCK) BD 
+			INNER JOIN LineItem_Budget(NOLOCK) LB ON BD.Id = LB.BudgetDetailId
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem(NOLOCK) PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost(NOLOCK) PCPTLC ON PCPTL.PlanLineItemId = PCPTLC.PlanLineItemId
 			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
 			GROUP BY BD.Id, PCPTLC.Period
 		) LineItems ON B.Id = LineItems.BudgetDetailId
@@ -2473,10 +2523,10 @@ BEGIN
 		(
 			-- Apply weightage on planned cost and sum up costs for all line items associated to the single budget 
 			SELECT BD.Id AS BudgetDetailId,PCPTLC.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalPlanned FROM 
-			[dbo].[Budget_Detail] BD 
-			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PCPTLC ON PCPTL.PlanLineItemId = PCPTLC.PlanLineItemId
+			[dbo].[Budget_Detail](NOLOCK) BD 
+			INNER JOIN LineItem_Budget(NOLOCK) LB ON BD.Id = LB.BudgetDetailId
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem(NOLOCK) PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Cost(NOLOCK) PCPTLC ON PCPTL.PlanLineItemId = PCPTLC.PlanLineItemId
 			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
 			GROUP BY BD.Id, PCPTLC.Period
 		) LineItems ON B.Id = LineItems.BudgetDetailId
@@ -2511,10 +2561,10 @@ BEGIN
 		(
 			-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
 			SELECT BD.Id AS BudgetDetailId,PCPTLA.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalActual FROM 
-			[dbo].[Budget_Detail] BD 
-			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
+			[dbo].[Budget_Detail](NOLOCK) BD 
+			INNER JOIN LineItem_Budget(NOLOCK) LB ON BD.Id = LB.BudgetDetailId
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem(NOLOCK) PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual(NOLOCK) PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
 			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
 			GROUP BY BD.Id, PCPTLA.Period
 		) LineItems ON B.Id = LineItems.BudgetDetailId
@@ -2543,10 +2593,10 @@ BEGIN
 		(
 			-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
 			SELECT BD.Id AS BudgetDetailId,PCPTLA.Period, SUM(ISNULL(Value,0) * CAST(Weightage AS FLOAT)/100) AS TotalActual FROM 
-			[dbo].[Budget_Detail] BD 
-			INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
+			[dbo].[Budget_Detail](NOLOCK) BD 
+			INNER JOIN LineItem_Budget(NOLOCK) LB ON BD.Id = LB.BudgetDetailId
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem(NOLOCK) PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId 
+			INNER JOIN Plan_Campaign_Program_Tactic_LineItem_Actual(NOLOCK) PCPTLA ON PCPTL.PlanLineItemId = PCPTLA.PlanLineItemId
 			WHERE BD.IsDeleted = 0 AND PCPTL.IsDeleted = 0 AND PCPTL.LineItemTypeId IS NOT NULL 
 			GROUP BY BD.Id, PCPTLA.Period
 		) LineItems ON B.Id = LineItems.BudgetDetailId
@@ -2570,8 +2620,8 @@ BEGIN
 	(
 		-- Get permitted user count for each budget detail
 		SELECT  BD.Id as BudgetDetailId, COUNT(BP.UserId) as UsersCount
-		FROM [dbo].[Budget_Detail] BD
-		INNER JOIN [dbo].[Budget_Permission] BP ON BD.Id = BP.BudgetDetailId 
+		FROM [dbo].[Budget_Detail](NOLOCK) BD
+		INNER JOIN [dbo].[Budget_Permission](NOLOCK) BP ON BD.Id = BP.BudgetDetailId 
 		WHERE BD.IsDeleted = 0
 		GROUP BY BD.Id
 	) AS UserCount ON PreCal.BudgetDetailId = UserCount.BudgetDetailId
@@ -2586,8 +2636,8 @@ BEGIN
 	(
 		-- Get associated line items count for each budget detail 
 		SELECT LB.BudgetDetailId, COUNT(LB.PlanLineItemId) AS LineItemCount 
-		FROM LineItem_Budget LB 
-		INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
+		FROM LineItem_Budget(NOLOCK) LB 
+		INNER JOIN Plan_Campaign_Program_Tactic_LineItem(NOLOCK) PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
 		GROUP BY LB.BudgetDetailId
 	) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
 END
@@ -2774,9 +2824,9 @@ BEGIN
 				,U.UserId as '[Owner]'
 				,BD.TotalBudget
 				,BD.TotalForecast
-		FROM [dbo].Budget_Detail BD 
+		FROM [dbo].Budget_Detail(NOLOCK) BD 
 		INNER JOIN @tblUserIds U ON BD.CreatedBy = U.UserId 
-		LEFT JOIN [dbo].[Budget_Permission] BP ON BD.Id = BP.BudgetDetailId AND BP.UserId = @UserId
+		LEFT JOIN [dbo].[Budget_Permission](NOLOCK) BP ON BD.Id = BP.BudgetDetailId AND BP.UserId = @UserId
 		WHERE BD.IsDeleted='0' AND BD.BudgetId = @BudgetId 
 	END
 	
@@ -2787,9 +2837,9 @@ BEGIN
 	(	
 		-- Get Planned Cost values
 		SELECT BD.Id AS BudgetDetailId, SUM((PCPTL.Cost * CAST(Weightage AS FLOAT)/100)) AS TotalPlanned FROM 
-		[dbo].[Budget_Detail] BD 
-		INNER JOIN LineItem_Budget LB ON BD.Id = LB.BudgetDetailId
-		INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
+		[dbo].[Budget_Detail](NOLOCK) BD 
+		INNER JOIN LineItem_Budget(NOLOCK) LB ON BD.Id = LB.BudgetDetailId
+		INNER JOIN Plan_Campaign_Program_Tactic_LineItem(NOLOCK) PCPTL ON LB.PlanLineItemId = PCPTL.PlanLineItemId
 		WHERE BD.IsDeleted=0 AND BD.BudgetId = @BudgetId AND PCPTL.LineItemTypeId IS NOT NULL and PCPTL.IsDeleted = 0
 		GROUP BY BD.Id
 	) LineItem ON R.BudgetDetailId = LineItem.BudgetDetailId
@@ -2846,7 +2896,7 @@ BEGIN
 			   @BudgetDetailId = BudgetDetailId,
 			   @Year = YEAR(CreatedDate)
 		FROM INSERTED I
-		INNER JOIN Budget_Detail BD ON I.BudgetDetailId = BD.Id
+		INNER JOIN Budget_Detail(NOLOCK) BD ON I.BudgetDetailId = BD.Id
 		-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
 		EXEC [MV].[PreCalBudgetForecastForFinanceGrid] @BudgetDetailId, @Year, @Period, @BudgetValue, @ForecastValue
 	END
@@ -2856,7 +2906,7 @@ BEGIN
 		SELECT @Period = Period,
 			   @BudgetDetailId = BudgetDetailId,
 			   @Year = YEAR(CreatedDate) FROM DELETED D
-			   INNER JOIN Budget_Detail BD ON D.BudgetDetailId = BD.Id
+			   INNER JOIN Budget_Detail(NOLOCK) BD ON D.BudgetDetailId = BD.Id
 
 		-- Delete/Update record into pre-calculated table while Cost entry is deleted
 		SET @DeleteQuery = 'UPDATE P SET ' +@Period + '_'+@BudgetColumnName +' = NULL, 
@@ -2913,7 +2963,7 @@ BEGIN
 		-- Get old value in case of update
 		SELECT @OldValue = Value FROM DELETED
 
-		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
+		IF ((SELECT COUNT(id) FROM LineItem_Budget(NOLOCK) WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
 			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Year, @Period, @NewValue,@OldValue, @PlanLineItemId
@@ -2924,7 +2974,7 @@ BEGIN
 		-- Get values which are deleted
 		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate) FROM DELETED 
 
-		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
+		IF ((SELECT COUNT(id) FROM LineItem_Budget(NOLOCK) WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Delete/Update record into pre-calculated table while Cost entry is deleted
 			SET @DeleteQuery = 'UPDATE P SET 
@@ -2983,7 +3033,7 @@ BEGIN
 		-- Get old value in case of update
 		SELECT @OldValue = Value FROM DELETED
 
-		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
+		IF ((SELECT COUNT(id) FROM LineItem_Budget(NOLOCK) WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Call SP which update/insert new values to pre-calculated table(i.e.[MV].[PreCalculatedMarketingBudget]) for Marketing Budget
 			EXEC [MV].[PreCalPlannedActualForFinanceGrid] @UpdatedColumn, @Year, @Period, @NewValue,@OldValue, @PlanLineItemId
@@ -2994,7 +3044,7 @@ BEGIN
 		-- Get values which are deleted
 		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate) FROM DELETED 
 
-		IF ((SELECT COUNT(id) FROM LineItem_Budget WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
+		IF ((SELECT COUNT(id) FROM LineItem_Budget(NOLOCK) WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Delete/Update record into pre-calculated table while Cost entry is deleted
 			SET @DeleteQuery = 'UPDATE P SET 
@@ -3085,9 +3135,9 @@ BEGIN
 		Declare @drpdCustomType varchar(50)='DropDownList'
 		
 		SELECT @columns= COALESCE(@columns+', ' ,'')+C.Name
-		FROM Budget_ColumnSet A
-		INNER JOIN Budget_Columns B ON A.Id= B.Column_SetId
-		INNER JOIN CustomField C ON B.CustomFieldId = C.CustomFieldId and C.EntityType='Budget'
+		FROM Budget_ColumnSet(NOLOCK) A
+		INNER JOIN Budget_Columns(NOLOCK) B ON A.Id= B.Column_SetId
+		INNER JOIN CustomField(NOLOCK) C ON B.CustomFieldId = C.CustomFieldId and C.EntityType='Budget'
 		WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND A.ClientId = @clientID AND MapTableName = 'CustomField_Entity'
 		
 		SET @query = '
@@ -3097,13 +3147,13 @@ BEGIN
 			 		CASE 
 					WHEN CT.Name='''+@drpdCustomType+''' THEN CFO.Value ELSE CF.Value
 				END as Value
-			FROM Budget_ColumnSet A
-			INNER JOIN Budget_Columns B ON A.Id= B.Column_SetId
-			INNER JOIN CustomField C ON B.CustomFieldId = C.CustomFieldId and C.EntityType=''Budget''
-			INNER JOIN CustomFieldType CT ON C.CustomFieldTypeId = CT.CustomFieldTypeId
-			LEFT JOIN CustomField_Entity CF ON C.CustomFieldId = CF.CustomFieldId and EntityID IN (select Id FROM Budget_Detail where BudgetId = '+Cast(@budgetID as varchar(20)) +' and IsDeleted=0) 
+			FROM Budget_ColumnSet(NOLOCK) A
+			INNER JOIN Budget_Columns(NOLOCK) B ON A.Id= B.Column_SetId
+			INNER JOIN CustomField(NOLOCK) C ON B.CustomFieldId = C.CustomFieldId and C.EntityType=''Budget''
+			INNER JOIN CustomFieldType(NOLOCK) CT ON C.CustomFieldTypeId = CT.CustomFieldTypeId
+			LEFT JOIN CustomField_Entity(NOLOCK) CF ON C.CustomFieldId = CF.CustomFieldId and EntityID IN (select Id FROM Budget_Detail where BudgetId = '+Cast(@budgetID as varchar(20)) +' and IsDeleted=0) 
 			--INNER JOIN Budget_Detail BD ON CF.EntityId = BD.Id and BD.IsDeleted=0 and BD.BudgetId ='+Cast(@budgetID as varchar(20)) +'
-			LEFT JOIN CustomFieldOption CFO ON CF.Value = CAST(CFO.CustomFieldOptionId AS nvarchar(30)) and CT.Name='''+@drpdCustomType+''' AND CFO.IsDeleted = 0 
+			LEFT JOIN CustomFieldOption(NOLOCK) CFO ON CF.Value = CAST(CFO.CustomFieldOptionId AS nvarchar(30)) and CT.Name='''+@drpdCustomType+''' AND CFO.IsDeleted = 0 
 			WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND 
 			A.ClientId = '+Cast(@clientID as varchar(20))+' AND MapTableName = ''CustomField_Entity'' and IsNUll(CF.EntityId,'''') <> ''''
 		) as s
