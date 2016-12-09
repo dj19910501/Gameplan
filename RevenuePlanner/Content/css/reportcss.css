@@ -1,30 +1,42 @@
-﻿/*Following Css datalist added form measure report table*/  
+﻿/*Following Css datalist added form measure report table*/
 div.gridbox .objbox {
-        overflow: hidden !important;
-        overflow-x: hidden !important;
-        overflow-y: hidden !important;
-        width: inherit;
-    }
-    div.gridbox .xhdr {
-        overflow: hidden !important;
-        overflow-x: hidden !important;
-        overflow-y: hidden !important;
-        width: inherit;
-    }
-    div.gridbox table.obj td {
-        border-bottom: 1px solid #ededed !important;
-        border-left: 1px solid #ededed !important;
-    }
-    .tooltip{z-index:2222 !important;}
-    .tableheightclass {
-        overflow: auto;
-        max-height: 210px;
-        height: auto;
-    }
-    .tblheader {
+    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    width: inherit;
+}
+
+div.gridbox .xhdr {
+    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    width: inherit;
+}
+
+div.gridbox table.obj td {
+    border-bottom: 1px solid #ededed !important;
+    border-left: 1px solid #ededed !important;
+}
+
+.tooltip {
+    z-index: 2222 !important;
+}
+
+.tableheightclass {
+    overflow: auto;
+    max-height: 210px;
+    height: auto;
+}
+
+.tblheader {
     margin: 5px 0 5px /*by bheur 14-9-2015*/;
     font-size: 16px;
     font-family: 'ProximaNova-Bold';
     font-weight: normal;
     margin-bottom: 14px;
+}
+
+
+.closeiconheight {
+    height:15px;
 }

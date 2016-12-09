@@ -18,7 +18,7 @@
                             @Html.HiddenFor(x => x.DisplayName)
                             <div id="ViewAllDataModule">
                                 <div class="tab-head">
-                                    @Model.DisplayName<a class="close-popup-btn">Close</a>
+                                    @Model.DisplayName<a class="close-popup-btn"><img src="~/Content/images/close-x-big.png"   class="img-popup-close closeiconheight"> Close</a>
                                     @*<img src="@Url.Content("~/content/images/help-icon.png")" alt="help" style="float:right; height:15px; width:15px; margin:13px;" title="Use shift key to allow sorting on multiple columns" />*@
                                 </div>
                                 <div class="home-chart-header  col-xs-12">
@@ -109,7 +109,7 @@
                     if(data.data!=null && data.data!='')
                         LoadReportTable(params.Id, "divViewChartTable_",jQuery.parseJSON(data.data),"ReportTable","_wrapper");
 
-                    $("#ReportTable" + '@Model.Id' + " .border-r").click(function() {
+                    $("#ReportTable" + '@Model.Id' + " .border-r").click(function() {                      
                         var dimensionValueName = $(this).parent().find('.border-r:first').not('.border-r.tdGraphData').html();
                         var dimensionActualValueCount = $(this).attr('data-original-title');
                         var dimensionValueCount = $(this).clone().children().remove().end().text();
