@@ -292,6 +292,8 @@ namespace RevenuePlanner.UnitTest.Service
             DateTime testStartDate = new DateTime(2016, 01, 01);
             DateTime testEndDate = new DateTime(2016, 07, 01);
             const int expectedDateRangeCount = 14;
+            const int testClientIdWithDirectLinkedLineItems = 1;
+            const int testExpctectCountForClientWithDirectLinkedLineItems = 1;
 
             // Get transaction count with default unprocessedOnly set
             int transactionCount = _transaction.GetTransactionCount(testClientId, testMinStartDate, testMaxEndDate);
@@ -309,6 +311,9 @@ namespace RevenuePlanner.UnitTest.Service
             transactionCount = _transaction.GetTransactionCount(testClientId, testStartDate, testEndDate, false);
             Assert.AreEqual(expectedDateRangeCount, transactionCount);
 
+            // Verify we don't get transactions that directly have a lineItemId
+            transactionCount = _transaction.GetTransactionCount(testClientIdWithDirectLinkedLineItems, testMinStartDate, testMaxEndDate, false);
+            Assert.AreEqual(testExpctectCountForClientWithDirectLinkedLineItems, transactionCount);
         }
 
         [TestMethod]
@@ -395,6 +400,8 @@ namespace RevenuePlanner.UnitTest.Service
             const int paginationExpctedTenthPageCount = 0;
             const string expectedFirstPageFirstItemClientTransactionId = "39899";
             const string expectedThirdPageFirstItemClientTransactionId = "85316";
+            const int testClientIdWithDirectLinkedLineItems = 1;
+            const int testExpctectCountForClientWithDirectLinkedLineItems = 1;     
 
             // Get transactions with default unprocessed set, default pagination
             List<Transaction> transactionList = _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate);
@@ -438,6 +445,9 @@ namespace RevenuePlanner.UnitTest.Service
             transactionList = _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate, false, testTenthPageSkip, testTakeCount);
             Assert.AreEqual(paginationExpctedTenthPageCount, transactionList.Count);
 
+            // Verify we don't get transactions that directly have a lineItemId
+            transactionList = _transaction.GetTransactions(testClientIdWithDirectLinkedLineItems, testMinStartDate, testMaxEndDate, false);
+            Assert.AreEqual(testExpctectCountForClientWithDirectLinkedLineItems, transactionList.Count);
         }
 
         [TestMethod]
@@ -494,6 +504,9 @@ namespace RevenuePlanner.UnitTest.Service
             const int testTransactionId = 570;
             const int testLineItemId = 8837;
             const int expectedMappedTransactions = 1;
+            const int testLineItemIdDirectlyOnTransaction = 225;
+            const int testClientIdWithDirectLineItems = 1;
+            const int testExpctedTransactionCountForDirectlyLinkedLineItems = 1;
 
             // Get transactions for a line item
             List<LinkedTransaction> transactions = _transaction.GetTransactionsForLineItem(testClientId, testLineItemId);
@@ -503,6 +516,10 @@ namespace RevenuePlanner.UnitTest.Service
             // test with invalid clientId
             transactions = _transaction.GetTransactionsForLineItem(testOtherClientId, testLineItemId);
             Assert.AreEqual(0, transactions.Count);
+
+            // Test that we get the transactions that have directly linked line items
+            transactions = _transaction.GetTransactionsForLineItem(testClientIdWithDirectLineItems, testLineItemIdDirectlyOnTransaction);
+            Assert.AreEqual(testExpctedTransactionCountForDirectlyLinkedLineItems, transactions.Count);
         }
 
         [TestMethod]
@@ -641,13 +658,69 @@ namespace RevenuePlanner.UnitTest.Service
             Assert.AreEqual(0, lineItemMappings.Count);
         }
 
+        [TestMethod] 
+        public void Test_Transaction_GetTransaction_InvalidArgument()
+        {
+            // Test clientId == 0
+            try
+            {
+                _transaction.GetTransaction(0, 100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.IsTrue(e.Message.Contains("clientId"));
+            }
+
+            // Test negative clientId 
+            try
+            {
+                _transaction.GetTransaction(-100, 100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.IsTrue(e.Message.Contains("clientId"));
+            }
+
+            // Test transactionId == 0
+            try
+            {
+                _transaction.GetTransaction(testClientId, 0);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.IsTrue(e.Message.Contains("transactionId"));
+            }
+
+            // Test negative transactionId
+            try
+            {
+                _transaction.GetTransaction(testClientId, -100);
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Assert.IsTrue(e.Message.Contains("transactionId"));
+            }
+        }
+
         [TestMethod]
         public void Test_Transaction_GetTransaction()
         {
-            int testTransactionId = 120;
-            var trans = _transaction.GetTransaction(testClientId, testTransactionId);
+            const int testTransactionId = 120;
+            const int testInvalidTransactionId = Int32.MaxValue;
+
+            // Test with valid transaction
+            Transaction trans = _transaction.GetTransaction(testClientId, testTransactionId);
             Assert.AreEqual(testTransactionId, trans.TransactionId);
+
+            // Test with invalid transaction
+            trans = _transaction.GetTransaction(testClientId, testInvalidTransactionId);
+            Assert.IsNull(trans);
         }
+
         /// <summary>
         /// We need to explicitly get the line item mapping from the database since our Service level routine properly checks 
         /// for clientId too and will not return any results even if a mapping was created by the save.

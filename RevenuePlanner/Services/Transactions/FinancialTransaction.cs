@@ -264,11 +264,11 @@ namespace RevenuePlanner.Services.Transactions
             {
                 sqlQuery = @"SELECT COUNT(1) from Transactions T
                                 LEFT JOIN TransactionLineItemMapping M ON T.TransactionId = M.TransactionId
-                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND M.TransactionId IS NULL";
+                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND T.LineItemId IS NULL AND M.TransactionId IS NULL";
             } else
             {
                 sqlQuery = @"SELECT COUNT(1) from Transactions T
-                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate";
+                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND T.LineItemId IS NULL ";
             }
 
             if (_database.Database.Connection.State == ConnectionState.Closed)
@@ -308,13 +308,13 @@ namespace RevenuePlanner.Services.Transactions
             {
                 sqlQuery = @"SELECT T.* FROM Transactions T
                                 LEFT JOIN TransactionLineItemMapping M ON T.TransactionId = M.TransactionId
-                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND M.TransactionId IS NULL
+                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND T.LineItemId IS NULL AND M.TransactionId IS NULL
                                 ORDER BY T.DateCreated
                                 OFFSET @SkipRows ROWS FETCH NEXT @TakeRows ROWS ONLY";
             } else
             {
                 sqlQuery = @"SELECT T.* FROM Transactions T 
-                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate 
+                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND T.LineItemId IS NULL 
                                 ORDER BY T.DateCreated
                                 OFFSET @SkipRows ROWS FETCH NEXT @TakeRows ROWS ONLY";
             }
@@ -333,36 +333,43 @@ namespace RevenuePlanner.Services.Transactions
         /// <summary>
         /// Translate a db transaction model to a DTO transaction model
         /// </summary>
-        /// <param name="transaction"></param>
+        /// <param name="modelTransaction"></param>
         /// <returns></returns>
-        private static Transaction BuildTransaction(Models.Transaction transaction)
+        private static Transaction BuildTransaction(Models.Transaction modelTransaction)
         {
-            return new Transaction
+            Transaction transaction = null;
+
+            if (modelTransaction != null)
             {
-                TransactionId = transaction.TransactionId,
-                ClientTransactionId = transaction.ClientTransactionID,
-                TransactionDescription = transaction.TransactionDescription,
-                Amount = (double)transaction.Amount,
-                Account = transaction.Account,
-                AccountDescription = transaction.AccountDescription,
-                SubAccount = transaction.SubAccount,
-                Department = transaction.Department,
-                TransactionDate = transaction.TransactionDate != null ? (DateTime)transaction.TransactionDate : DateTime.MinValue,
-                AccountingDate = transaction.AccountingDate,
-                Vendor = transaction.Vendor,
-                PurchaseOrder = transaction.PurchaseOrder,
-                CustomField1 = transaction.CustomField1,
-                CustomField2 = transaction.CustomField2,
-                CustomField3 = transaction.CustomField3,
-                CustomField4 = transaction.CustomField4,
-                CustomField5 = transaction.CustomField5,
-                CustomField6 = transaction.CustomField6,
-                LineItemId = transaction.LineItemId != null ? (int)transaction.LineItemId : 0,
-                DateCreated = transaction.DateCreated,
-                AmountAttributed = transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0,
-                AmountRemaining = (double)transaction.Amount - (transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0),
-                LastProcessed = transaction.LastProcessed
-            };
+                transaction = new Transaction
+                {
+                    TransactionId = modelTransaction.TransactionId,
+                    ClientTransactionId = modelTransaction.ClientTransactionID,
+                    TransactionDescription = modelTransaction.TransactionDescription,
+                    Amount = (double)modelTransaction.Amount,
+                    Account = modelTransaction.Account,
+                    AccountDescription = modelTransaction.AccountDescription,
+                    SubAccount = modelTransaction.SubAccount,
+                    Department = modelTransaction.Department,
+                    TransactionDate = modelTransaction.TransactionDate != null ? (DateTime)modelTransaction.TransactionDate : DateTime.MinValue,
+                    AccountingDate = modelTransaction.AccountingDate,
+                    Vendor = modelTransaction.Vendor,
+                    PurchaseOrder = modelTransaction.PurchaseOrder,
+                    CustomField1 = modelTransaction.CustomField1,
+                    CustomField2 = modelTransaction.CustomField2,
+                    CustomField3 = modelTransaction.CustomField3,
+                    CustomField4 = modelTransaction.CustomField4,
+                    CustomField5 = modelTransaction.CustomField5,
+                    CustomField6 = modelTransaction.CustomField6,
+                    LineItemId = modelTransaction.LineItemId != null ? (int)modelTransaction.LineItemId : 0,
+                    DateCreated = modelTransaction.DateCreated,
+                    AmountAttributed = modelTransaction.AmountAttributed != null ? (double)modelTransaction.AmountAttributed : 0.0,
+                    AmountRemaining = (double)modelTransaction.Amount - (modelTransaction.AmountAttributed != null ? (double)modelTransaction.AmountAttributed : 0.0),
+                    LastProcessed = modelTransaction.LastProcessed
+                };
+            }
+
+            return transaction;
         }
 
         public List<LinkedTransaction> GetTransactionsForLineItem(int clientId, int lineItemId)
@@ -370,22 +377,18 @@ namespace RevenuePlanner.Services.Transactions
             Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
             Contract.Requires<ArgumentOutOfRangeException>(lineItemId > 0, "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
 
+            SqlParameter[] parameters = new SqlParameter[2];
+            parameters[0] = new SqlParameter("@ClientId", clientId);
+            parameters[1] = new SqlParameter("@LineItemId", lineItemId);
 
-            IQueryable<LinkedTransaction> sqlQuery =
-                from tlim in _database.TransactionLineItemMappings
-                join transaction in _database.Transactions on tlim.TransactionId equals transaction.TransactionId
-                where tlim.LineItemId == lineItemId && transaction.ClientID == clientId
-                select new LinkedTransaction
-                {
-                    TransactionId = transaction.TransactionId,
-                    ClientTransactionId = transaction.ClientTransactionID,
-                    Amount = (double)transaction.Amount,
-                    PurchaseOrder = transaction.PurchaseOrder,
-                    LineItemId = tlim.LineItemId,
-                    LinkedAmount = tlim.Amount != null ? (double)tlim.Amount : 0.0
-                };
+            // We want to get all the transactions that the user has mapped AND the transaction with direct lineItemIds on them
+            String sqlQuery = @"SELECT T.TransactionId, T.ClientTransactionID, CAST(T.Amount AS FLOAT), T.PurchaseOrder, M.LineItemId, CAST(M.Amount AS FLOAT) AS LinkedAmount FROM Transactions T
+                                    JOIN TransactionLineItemMapping M ON T.TransactionId = M.TransactionId
+                                    WHERE T.ClientId = @ClientId AND M.LineItemId = @LineItemId
+                                    UNION (SELECT T.TransactionId, T.ClientTransactionID, CAST(T.Amount AS FLOAT), T.PurchaseOrder, T.LineItemId, CAST(T.Amount AS FLOAT) AS LinkedAmount FROM Transactions T
+                                                WHERE T.ClientId = @ClientId AND T.LineItemId = @LineItemId)";
 
-            return sqlQuery.ToList();
+            return _database.Database.SqlQuery<LinkedTransaction>(sqlQuery, parameters).ToList();
         }
 
         public Transaction GetTransaction(int clientId, int transactionId)
@@ -400,7 +403,7 @@ namespace RevenuePlanner.Services.Transactions
             parameters[1] = new SqlParameter { ParameterName = "@TransactionId", Value = transactionId };
             sqlQuery = @"SELECT * FROM Transactions WHERE ClientId = @ClientId AND TransactionId = @TransactionId";
 
-            Models.Transaction transaction = _database.Database.SqlQuery<Models.Transaction>(sqlQuery, parameters).FirstOrDefault();
+            Models.Transaction transaction = _database.Database.SqlQuery<Models.Transaction>(sqlQuery, parameters).SingleOrDefault();
             return BuildTransaction(transaction);
         }
 
