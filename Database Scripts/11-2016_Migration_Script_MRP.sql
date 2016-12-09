@@ -112,6 +112,9 @@ DECLARE @OwnerCustomFieldId INT --fetch inserted CustomFieldId customfield table
 				DELETE FROM [dbo].[Budget_Columns] WHERE CustomFieldId IN 
 				(SELECT CustomFieldId FROM [dbo].[CustomField] WHERE Name = 'Users' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0)
 
+				DELETE FROM [dbo].[CustomField_Entity] WHERE CustomFieldId IN 
+				(SELECT CustomFieldId FROM [dbo].[CustomField] WHERE Name = 'Users' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0)
+
 				DELETE FROM [dbo].[CustomField] WHERE Name = 'Users' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0
 
 				  IF NOT EXISTS(SELECT CustomFieldid FROM [dbo].[CustomField] WHERE Name = 'Users' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0) -- check client specific User name already exists in CustomField Table
