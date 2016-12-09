@@ -20,16 +20,18 @@ const columns = [
 ];
 
 function mapLinkedItems(result) {
-    return flatMap(result, tactic => tactic.LineItems.map(lineItem => ({
-        id: lineItem.LineItemMapping.TransactionLineItemMappingId,
-        lineItemId: lineItem.LineItemId,
-        tacticName: `${lineItem.PlanTitle} > ${lineItem.CampaignTitle} > ${lineItem.ProgramTitle} > ${tactic.Title}`,
-        mappedAmount: lineItem.LineItemMapping.Amount,
-        lineItemCost: lineItem.Cost,
-        lineItemActual: lineItem.Actual,
-        title: lineItem.Title,
-        trash: `<i class="fa fa-trash-o fa-fw"></i>`,
-    })));
+    return flatMap(result, tactic => tactic.LineItems
+        .filter(lineItem => lineItem.LineItemId !== -1) // filter out Sys_Gen_Balance line items from the editor.
+        .map(lineItem => ({
+            id: lineItem.LineItemMapping.TransactionLineItemMappingId,
+            lineItemId: lineItem.LineItemId,
+            tacticName: `${lineItem.PlanTitle} > ${lineItem.CampaignTitle} > ${lineItem.ProgramTitle} > ${tactic.Title}`,
+            mappedAmount: lineItem.LineItemMapping.Amount,
+            lineItemCost: lineItem.Cost,
+            lineItemActual: lineItem.Actual,
+            title: lineItem.Title,
+            trash: `<i class="fa fa-trash-o fa-fw"></i>`,
+        })));
 }
 
 function updateDataSource(state, dataSource, items) {
