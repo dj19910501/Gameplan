@@ -141,7 +141,7 @@ export default function transactionGridDataSource() {
     const filter = {
         // Initial date range is the past year.  Should we use some other default?
         endDate: now,
-        startDate: now.clone().subtract(1, 'year'),
+        startDate: now.clone().subtract(6, 'months'),
         includeProcessedTransactions: true,
     };
     const paging = {
