@@ -258,32 +258,10 @@
             $("#gridbox").find("table").css("width", GridWidth);
         });
 
-        myTreeGrid.attachEvent("onResizeEnd", function (cInd, cWidth, obj) {
-            $("#gridbox").find("table").css("width", GridWidth);
-        });
-        
-        myTreeGrid.attachEvent("onOpenEnd", function () {
-
-            //$("#gridbox").find("table").css("width", "100%");
-            var tableheight = $(".objbox").find("table").height();
-
-            $("#gridbox").css("height", tableheight + 100);
-            myTreeGrid.setSizes();
-
-            $("#gridbox").find("table").css("width", GridWidth);
-            return true;
-        });
+     
 
         myTreeGrid.expandAll();
         
-        var tableheight = $(".objbox").find("table").height();
-
-        $("#gridbox").css("height", tableheight + 100);
-        myTreeGrid.setSizes();
-
-
-        $("#gridbox").find("table").css("width", GridWidth);
-
         $(".grid_add").attr("data-title", "Add Row");
         CollapseExpand = true;
         _isNewRowAdd = false;

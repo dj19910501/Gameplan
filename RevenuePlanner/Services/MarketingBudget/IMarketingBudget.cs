@@ -318,18 +318,18 @@ namespace RevenuePlanner.Services.MarketingBudget
         void SaveCustomColumnValues(int customfieldId, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0);
         List<Budget_Columns> GetBudgetColumn(int clientId);
         //Methods for user permissiopn and lineitems for budget
-        LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0);
-        List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0);
-        LineItemDetail GetLineItemGrid(int BudgetDetailId, string IsQuaterly = "quarters");
+        LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0, int ClientId=0);
+        List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0, int ClientId=0);
+        LineItemDetail GetLineItemGrid(int BudgetDetailId, string IsQuaterly = "quarters", double PlanExchangeRate=1.0);
         List<Budget_Permission> GetUserList(int BudgetId);
         List<UserPermission> FilterByBudget(int BudgetId, Guid ApplicationId);
         string CheckUserPermission(int BudgetId, int ClientId, int UserId);
         UserModel GetuserRecord(int Id, int UserId, Guid ApplicationId);
-        FinanceModel EditPermission(int BudgetId, Guid ApplicationId, List<Budget_Permission> UserList);
+        FinanceModel EditPermission(int BudgetId, Guid ApplicationId, List<Budget_Permission> UserList, int UserId);
         List<ViewByModel> GetChildBudget(int BudgetId);
         List<BDSService.User> GetAllUserList(int ClientId, int UserId, Guid ApplicationId);
         void DeleteUserForBudget(List<int> BudgetDetailIds, int UserID);
-        void SaveUSerPermission(List<UserBudgetPermissionDetail> UserData, string ChildItems, string ParentID);
+        void SaveUSerPermission(List<UserBudgetPermissionDetail> UserData, string ChildItems, string ParentID, int UserId);
         //end
     }
 }

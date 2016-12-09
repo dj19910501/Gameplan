@@ -223,7 +223,7 @@
         <form>
             <h2 class="primary-title source-sans-prosemibold resubmission_header">Deleting an item</h2>
             <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to delete </label>
-            <label id="lipname" style="text-align: center; width: 100%;font-weight: bold;" class="resubmission_content"></label>
+            <label id="lblname" style="text-align: center; width: 100%;font-weight: bold;" class="resubmission_content"></label>
             <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
             <input type="hidden" id="hdnsourceid" />
             <input type="hidden" id="hdndestid" />
@@ -398,7 +398,7 @@
             var Name = $(this).closest('tr').find('td').eq('2').text() + " " + $(this).closest('tr').find('td').eq(3).text() + ".";
 
             $("#divDeleteUserPopup h2").text('Deleting a user');
-            $("#lipname").html(Name);
+            $("#lblname").html(Name);
             $("#divDeleteUserPopup").modal('show');
             row = $(this).closest('tr');
             return false;
@@ -679,7 +679,7 @@
         _isDatabase = "Fromdatabase";
         var name = firsname + " " + lastname + ".";
         $("#divDeleteUserPopup h2").text('Deleting a user');
-        $("#lipname").html(name);
+        $("#lblname").html(name);
         $("#divDeleteUserPopup").modal('show');
         _id = id;
         _budgetId = budgetID;

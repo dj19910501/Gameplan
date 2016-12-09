@@ -538,13 +538,13 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetParentLineItemList(int BudgetDetailId = 0)
         {
             LineItemDropdownModel objParentDDLModel = new LineItemDropdownModel();
-            objParentDDLModel = _MarketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId);
+            objParentDDLModel = _MarketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId, Sessions.User.CID);
             return Json(objParentDDLModel, JsonRequestBehavior.AllowGet);
         }
         //Method to get all child items for budget
         public JsonResult GetChildLineItemList(int BudgetDetailId = 0)
         {
-            var lstchildbudget = _MarketingBudget.GetChildLineItemBudgetDetailslist(BudgetDetailId);
+            var lstchildbudget = _MarketingBudget.GetChildLineItemBudgetDetailslist(BudgetDetailId, Sessions.User.CID);
             return Json(lstchildbudget, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
@@ -560,7 +560,7 @@ namespace RevenuePlanner.Controllers
             _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
             _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
             #endregion
-            AlllineItemdetail = _MarketingBudget.GetLineItemGrid(BudgetDetailId, IsQuaterly);
+            AlllineItemdetail = _MarketingBudget.GetLineItemGrid(BudgetDetailId, IsQuaterly,Sessions.PlanExchangeRate);
             TempData["FinanceHeader"] = new FinanceModelHeaders();
             ViewBag.HasLineItems = AlllineItemdetail.childLineItemCount;
             return PartialView("_LineItem", AlllineItemdetail.LineItemGridData);
@@ -610,7 +610,7 @@ namespace RevenuePlanner.Controllers
                 });
                 TempData["Userlist"] = lstUserDetail;
                 #endregion
-                FinanceModel objFinanceModel = _MarketingBudget.EditPermission(BudgetId, Sessions.ApplicationId, UserList);
+                FinanceModel objFinanceModel = _MarketingBudget.EditPermission(BudgetId, Sessions.ApplicationId, UserList, Sessions.User.ID);
 
                 return PartialView("_UserPermission", objFinanceModel);
             }
@@ -731,7 +731,7 @@ namespace RevenuePlanner.Controllers
             //Modified by Komal Rawal for #2242 change child item permission on change of parent item
             if (UserData != null)
             {
-               _MarketingBudget.SaveUSerPermission(UserData,ChildItems,ParentID);
+               _MarketingBudget.SaveUSerPermission(UserData,ChildItems,ParentID, Sessions.User.ID);
 
                 //End
                 return Json(true, JsonRequestBehavior.AllowGet);
