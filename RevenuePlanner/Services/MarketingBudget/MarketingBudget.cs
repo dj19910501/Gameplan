@@ -1409,7 +1409,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="ListItems">List of BudgetDetaildIds of the Budget and its child budget</param>
         /// <param name="nValue">new Value</param>
 
-        public void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int clientId, List<string> listItems, string nValue)
+        public void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int clientId, string nValue)
         {
             if (clientId <= 0)
             {
@@ -1417,14 +1417,10 @@ namespace RevenuePlanner.Services.MarketingBudget
             }
             else
             {
-
-                List<Budget_Detail> listobjBudgetDetail = GetBudgetDetailList(listItems); // get Budget Detail List
                 Budget_Detail objBudgetDetail = new Budget_Detail();
-                if (listobjBudgetDetail != null && listobjBudgetDetail.Count > 0)
+                objBudgetDetail  = _database.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
+                if (objBudgetDetail != null)
                 {
-
-                    objBudgetDetail = listobjBudgetDetail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
-                }
                 if (budgetDetailId > 0 && parentId > 0)
                 {
                     //check objBudgetDetail is not null.
@@ -1465,6 +1461,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 }
                 _database.SaveChanges();
             }
+        }
         }
 
         /// <summary>
@@ -1725,9 +1722,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="nValue">new Value</param>        
         /// <param name="userId">User Id</param>        
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
-        public void SaveCustomColumnValues(string columnName, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0)
+        public void SaveCustomColumnValues(int customfieldId, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0)
         {
-            if (string.Compare(columnName, customCol.CustomField.Name, true) == 0)
+            if (customfieldId == customCol.CustomField.CustomFieldId)
             {
                 string[] DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString(), Enums.ColumnValidation.ValidNumeric.ToString() };
                 CustomField_Entity objCustomFieldEnity = new CustomField_Entity();

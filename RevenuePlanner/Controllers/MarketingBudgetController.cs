@@ -184,7 +184,7 @@ namespace RevenuePlanner.Controllers
         {
             if (SelectedBudgetId <= 0 || BudgetId <= 0)
             {
-                return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetData }, JsonRequestBehavior.AllowGet);
+                return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetId }, JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -431,7 +431,7 @@ namespace RevenuePlanner.Controllers
             //Check budget Id and budget detaild id is valid or not.
             if (BudgetId <= 0 || BudgetDetailId <= 0)
             {
-                return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetData }, JsonRequestBehavior.AllowGet);
+                return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetId }, JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -462,7 +462,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Name.ToString(), true) == 0)
                     {
-                        _MarketingBudget.UpdateTaskName(BudgetId, BudgetDetailId, ParentId, Sessions.User.CID, ListItems, nValue);
+                        _MarketingBudget.UpdateTaskName(BudgetId, BudgetDetailId, ParentId, Sessions.User.CID, nValue);
                     }
                     else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Budget.ToString(), true) == 0 ||
                              string.Compare(ColumnName, Enums.DefaultGridColumn.Forecast.ToString(), true) == 0 ||
@@ -472,15 +472,21 @@ namespace RevenuePlanner.Controllers
 
                         _MarketingBudget.UpdateTotalAmount(BudgetDetailId, nValue, ColumnName, Sessions.PlanExchangeRate);
                     }
-                    else if (string.Compare(ColumnName.Split('_')[0], "cust") == 0)
+                    else if (string.Compare(ColumnName.Split('_')[0], "cust", true) == 0)
                     {
                         if (objColumns != null && objColumns.Count > 0)
                         {
-                            RevenuePlanner.Models.Budget_Columns objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false && a.CustomField.Name == (ColumnName != null ? ColumnName.Trim() : "")).Select(a => a).FirstOrDefault();
+                            //here we get customfield column name Like 'cust_' + 'customfieldId' so we need to split and convert 'cusmfieldid' from string to int.
+                            int CustomfieldId = 0;
+                            if (ColumnName.Split('_').Length > 1) {
+                                int.TryParse(ColumnName.Split('_')[1].ToString(),out CustomfieldId);
+                            }
+                          
+                            RevenuePlanner.Models.Budget_Columns objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false && a.CustomField.CustomFieldId == CustomfieldId).Select(a => a).FirstOrDefault();
 
                             if (objCustomColumns != null)
                             {
-                                _MarketingBudget.SaveCustomColumnValues(ColumnName, objCustomColumns, BudgetDetailId, nValue, Sessions.User.ID, Sessions.PlanExchangeRate);//Call SaveBudgetorForecast method to save customfield cell value.
+                                _MarketingBudget.SaveCustomColumnValues(CustomfieldId, objCustomColumns, BudgetDetailId, nValue, Sessions.User.ID, Sessions.PlanExchangeRate);//Call SaveBudgetorForecast method to save customfield cell value.
                             }
                         }
                     }
@@ -520,7 +526,7 @@ namespace RevenuePlanner.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetData }, JsonRequestBehavior.AllowGet);
+                    return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetId }, JsonRequestBehavior.AllowGet);
                 }
             }
         }

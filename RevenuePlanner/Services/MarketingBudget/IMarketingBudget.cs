@@ -309,13 +309,13 @@ namespace RevenuePlanner.Services.MarketingBudget
         BudgetImportData GetXLSXData(string viewByType, string fileLocation, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$");
         BudgetImportData GetXLSData(string viewByType, DataSet ds, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$");
         int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int UserID, int ClientID, int BudgetDetailId = 0);
-        void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int ClientId, List<string> ListItems, string nValue);
+        void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int ClientId, string nValue);
 
         void UpdateOwnerName(int budgetDetailId, List<string> listItems, int ownerId);
         void UpdateTotalAmount(int budgetDetailId, string nValue, string ColumnName = "", double PlanExchangeRate = 1.0);
 
         void SaveBudgetorForecast(int budgetDetailId, string nValue, bool isForecast = false, string AllocationType = "", string Period = "", double PlanExchangeRate = 1.0);
-        void SaveCustomColumnValues(string columnName, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0);
+        void SaveCustomColumnValues(int customfieldId, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0);
         List<Budget_Columns> GetBudgetColumn(int clientId);
         //Methods for user permissiopn and lineitems for budget
         LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0);
