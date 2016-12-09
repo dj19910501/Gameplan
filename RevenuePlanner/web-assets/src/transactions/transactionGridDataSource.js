@@ -140,17 +140,17 @@ function bindDataSourceToServer(dataSource) {
 /**
  * Creates a GridDataSource that populates with Transactions
  */
-export default function transactionGridDataSource() {
+export default function transactionGridDataSource(rowsPerPage = 10) {
     const now = moment();
     const filter = {
-        // Initial date range is the past year.  Should we use some other default?
+        // Initial date range is past 6 months
         endDate: now,
         startDate: now.clone().subtract(6, 'months'),
         includeProcessedTransactions: true,
     };
     const paging = {
         skip: 0,
-        take: 10, // TODO make user selectable and/or change default based on Browser speed
+        take: rowsPerPage,
     };
 
     const dataSource = gridDataSource(filter, paging);

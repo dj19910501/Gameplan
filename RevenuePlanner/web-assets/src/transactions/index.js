@@ -142,6 +142,16 @@ function bindNoRecordsMessage(dataSource, $pager, $gridContainer) {
     updateDisplay();
 }
 
+function calculateRowsPerPage($gridContainer) {
+    const HEADER_HEIGHT = 32; // based on  measurement in Chrome
+    const ROW_HEIGHT = 26; // based on measurement in Chrome
+    const containerHeight = $gridContainer.height();
+
+    const rowsPerPage = Math.floor((containerHeight - HEADER_HEIGHT) / ROW_HEIGHT);
+
+    return Math.max(5, rowsPerPage);
+}
+
 export default function main($rootElement) {
     const filteredView = createFilteredContentView($rootElement);
     const viewOptions = {
@@ -160,7 +170,7 @@ export default function main($rootElement) {
     const $gridContainer = filteredView.$content.find(`.${css.gridContainer}`);
     const $viewBy = filteredView.$content.find(`#${viewOptions.viewById}`);
 
-    const dataSource = transactionGridDataSource();
+    const dataSource = transactionGridDataSource(calculateRowsPerPage($gridContainer));
     const filterPanel = createFilterView(filteredView.$filterPanel, dataSource);
     bindViewBy($viewBy, dataSource);
     createPager($pager, dataSource);
