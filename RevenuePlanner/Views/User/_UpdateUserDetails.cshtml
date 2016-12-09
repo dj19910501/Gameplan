@@ -324,26 +324,26 @@
             }
             // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
             if (($("#ManagerId option").eq(0).val() == "" && $("#ManagerId").val() == "") && $('#IsDeleted').val().toLowerCase() != 'yes') {
-              
-                    $("#ddlManagerIdSelectBox .sbHolder").addClass("selectBoxError");
-                        $('#lblManagerIdRequired').show();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                        isValid = false;
-                    }
-                    else {
-                        $("#ddlManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
-                        $('#lblManagerIdRequired').hide();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                    }
-            if ($('#IsDeleted').val()!= null && $('#IsDeleted').val().toLowerCase() == 'yes' && $('#IsManager').val().toLowerCase() == 'true') {
-                    if ($("#NewManagerId option").eq(0).val() == "" && $("#NewManagerId").val() == "") {
-                        $("#ddlNewManagerIdSelectBox .sbHolder").addClass("selectBoxError");
-                        $('#lblNewManagerIdRequired').show();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                        isValid = false;
-                    }
-                    else {
-                        $("#ddlNewManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
-                        $('#lblNewManagerIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                    }
+
+                $("#ddlManagerIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblManagerIdRequired').show();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                isValid = false;
+            }
+            else {
+                $("#ddlManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
+                $('#lblManagerIdRequired').hide();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+            }
+            if ($('#IsDeleted').val() != null && $('#IsDeleted').val().toLowerCase() == 'yes' && '@Model.IsManager.ToString().ToLower()' == 'true') {
+                if ($("#NewManagerId option").eq(0).val() == "" && $("#NewManagerId").val() == "") {
+                    $("#ddlNewManagerIdSelectBox .sbHolder").addClass("selectBoxError");
+                    $('#lblNewManagerIdRequired').show();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                    isValid = false;
                 }
+                else {
+                    $("#ddlNewManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
+                    $('#lblNewManagerIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                }
+            }
             // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
             return isValid;
         });
@@ -353,12 +353,12 @@
         $("#aRemoveImage").click(function () {
             var src = $(this).attr('prop');
             $('#userImage').attr('src', 'data:image/jpg;base64,' + src);
-            $("<input/>", { type: 'hidden', name: 'removeflag', id: 'removeflagid' }).val("true").appendTo("#btnSubmit");//added by uday #555 
+            $("<input/>", { type: 'hidden', name: 'removeflag', id: 'removeflagid' }).val("true").appendTo("#btnSubmit");//added by uday #555
         });
 
         $('#btnSubmit').click(function () {
             $('#content :input').each(function () {
-                if (($(this).attr('type') == 'text' || $(this).attr('type') == 'select') && this.id != 'Phone') {   // Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                if (($(this).attr('type') == 'text' || $(this).attr('type') == 'select') && this.id != 'Phone') {   // Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     var input = $(this).val();
                     if (input == '') {
                         $(this).addClass("error");
@@ -456,10 +456,10 @@
             }
         }
         // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
-       
-        
+
+
         // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-        if ($('#IsManager').val().toLowerCase() == 'true') {
+        if ('@Model.IsManager.ToString().ToLower()' == 'true') {
             if (typeof $('#IsDeleted').val() != 'undefined') {
                 if ($('#IsDeleted').val().toLowerCase() == 'yes')
                     $('#divNewManager').show();
@@ -603,24 +603,24 @@
                     $(".selectBox select").selectbox('detach');
                     $(".selectBox select").selectbox("attach");
                 });
-            }
+        }
     }
     // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
 
     $('#IsDeleted').change(function () {
-            if ($('#IsManager').val().toLowerCase() == 'true') {
-                if ($(this).val().toLowerCase() == 'yes') {
-                    $('#divNewManager').show();
-                    // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
-                    var ClientId = $('#ClientId').val();
-                    loadNewManagers(ClientId);
-                    // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
-                }
-                else {
-                    $('#divNewManager').hide();
-                    $('#lblNewManagerIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                }
+        if ('@Model.IsManager.ToString().ToLower()' == 'true') {
+            if ($(this).val().toLowerCase() == 'yes') {
+                $('#divNewManager').show();
+                // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
+                var ClientId = $('#ClientId').val();
+                loadNewManagers(ClientId);
+                // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
             }
+            else {
+                $('#divNewManager').hide();
+                $('#lblNewManagerIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+            }
+        }
         //}
     });
     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517

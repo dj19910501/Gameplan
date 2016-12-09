@@ -244,7 +244,7 @@
 	</Field>
 	<!--
   * changed by : Nirav Shah on 31 Jan 2013
-  * Bug 19:Model - should not be able to publish a model with no tactics selected 
+  * Bug 19:Model - should not be able to publish a model with no tactics selected
 	-->
 	<Field>
 		<Name>DeleteTacticDependency</Name>
