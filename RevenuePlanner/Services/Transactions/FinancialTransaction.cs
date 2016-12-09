@@ -346,7 +346,7 @@ namespace RevenuePlanner.Services.Transactions
                     TransactionId = modelTransaction.TransactionId,
                     ClientTransactionId = modelTransaction.ClientTransactionID,
                     TransactionDescription = modelTransaction.TransactionDescription,
-                    Amount = (double)modelTransaction.Amount,
+                    Amount = modelTransaction.Amount,
                     Account = modelTransaction.Account,
                     AccountDescription = modelTransaction.AccountDescription,
                     SubAccount = modelTransaction.SubAccount,
@@ -382,10 +382,10 @@ namespace RevenuePlanner.Services.Transactions
             parameters[1] = new SqlParameter("@LineItemId", lineItemId);
 
             // We want to get all the transactions that the user has mapped AND the transaction with direct lineItemIds on them
-            String sqlQuery = @"SELECT T.TransactionId, T.ClientTransactionID, CAST(T.Amount AS FLOAT), T.PurchaseOrder, M.LineItemId, CAST(M.Amount AS FLOAT) AS LinkedAmount FROM Transactions T
+            String sqlQuery = @"SELECT T.TransactionId, T.ClientTransactionID, T.Amount, T.PurchaseOrder, M.LineItemId, M.Amount AS LinkedAmount FROM Transactions T
                                     JOIN TransactionLineItemMapping M ON T.TransactionId = M.TransactionId
                                     WHERE T.ClientId = @ClientId AND M.LineItemId = @LineItemId
-                                    UNION (SELECT T.TransactionId, T.ClientTransactionID, CAST(T.Amount AS FLOAT), T.PurchaseOrder, T.LineItemId, CAST(T.Amount AS FLOAT) AS LinkedAmount FROM Transactions T
+                                    UNION (SELECT T.TransactionId, T.ClientTransactionID, T.Amount, T.PurchaseOrder, T.LineItemId, T.Amount AS LinkedAmount FROM Transactions T
                                                 WHERE T.ClientId = @ClientId AND T.LineItemId = @LineItemId)";
 
             return _database.Database.SqlQuery<LinkedTransaction>(sqlQuery, parameters).ToList();
