@@ -12,6 +12,16 @@ AS
 BEGIN
 	--Direct attribution by line item ID
 
+	--Make sure we have the correct line item IDs or else we will make them with error 
+	UPDATE TX
+	SET TX.Error = 'Invalid Line Item ID: ' + STR(TX.LineItemId), 
+		TX.LineItemId = NULL
+	FROM dbo.Transactions TX 
+		LEFT JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = TX.LineItemId
+	WHERE L.PlanLineItemId IS NULL 
+		AND TX.ClientID = @ClientID
+		AND Tx.DateCreated > @LastDate
+
 	--First let's handle update   
 	UPDATE dbo.Plan_Campaign_Program_Tactic_LineItem_Actual 
 	SET		  Value = A.TotalAmount
@@ -90,3 +100,4 @@ BEGIN
 											FROM LineItemDetail 
 											WHERE ClientId = @ClientId )
 END
+GO
