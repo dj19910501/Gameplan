@@ -4920,7 +4920,7 @@ BEGIN
 			@Users INT = 0
 
 	--Get BudgetDetailId and User Count
-	SELECT @BudgetDetailId = BP.BudgetDetailId, @Users = ISNULL(COUNT(BP.UserId),0)
+	SELECT @BudgetDetailId = BP.BudgetDetailId, @Users = ISNULL(COUNT(DISTINCT BP.UserId),0)
 	FROM Budget_Permission BP
 	INNER JOIN INSERTED I ON BP.BudgetDetailId = I.BudgetDetailId
 	GROUP BY BP.BudgetDetailId 

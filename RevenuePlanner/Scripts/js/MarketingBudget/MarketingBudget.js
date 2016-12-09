@@ -326,7 +326,12 @@ function GetGridData(budgetId) {
         });
     }
 
-    //Function to manage dit event on main grid
+    //Function to manage edit event on main grid
+    // stage - to identidy the stage of the edit event.
+    //rId - row id
+    //cInd - column id
+    //nValue - new values
+    //oValue - old value.
     function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
                 var ColumnId = budgetgrid.getColumnId(cInd);            // Get column index.
                 var locked = budgetgrid.getUserData(rId, "lo");         // Get "lo"(i.e. row locked or not) property to identify that row is locked or not.
@@ -394,6 +399,10 @@ function GetGridData(budgetId) {
             $(".dhx_combo_edit").on('keydown', (
             budgetgrid.editor.obj.onkeypress = function (event) {
                 var text = this.value;
+                //8-backspace 	
+                //46-Delete
+                //37- left arrow
+                //39-down arrow
                 if (event.keyCode == 8 || event.keyCode == 46
                  || event.keyCode == 37 || event.keyCode == 39) {
 
@@ -408,7 +417,7 @@ function GetGridData(budgetId) {
         }
     }
     
-    if (nValue != oValue && stage.toString() == '2') {       
+    if (nValue != oValue && stage.toString() == '2') {   // checks if old value and new value are not same and if edit stage is 2.    
         var budgetDetailId = '', parentId = '';
             var itemIndex = -1;
             if (_row_parentId != null && _row_parentId.length > 0) {
@@ -430,7 +439,7 @@ function GetGridData(budgetId) {
                 parentId = splitRowParentIds[2];
             }
             }
-
+            //if the new value is null or empty or if new value is same as old value return false
             if (nValue == null || nValue == '' || nValue.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oValue) {
                 return false;
             }
@@ -467,7 +476,6 @@ function GetGridData(budgetId) {
         if (budgetgrid.cells(rId, cInd).grid.cell.original != undefined && budgetgrid.cells(rId, cInd).grid.cell.original == "=sum") {
             budgetgrid.cells(rId, cInd).grid.cell.original = "0";
         }
-    }
 
     if (dataNonPermissionIds != undefined && dataNonPermissionIds.length != 0) {
         for (var j = 0; j < dataNonPermissionIds.length; j++) {
@@ -476,7 +484,7 @@ function GetGridData(budgetId) {
             }
         }
     }
-
+    }
     return true;
 }
     //Added by - Komal rawal
@@ -810,13 +818,17 @@ function ApplyFormattingAndTooltip(idName) {
 }
 
 
-
+    //Function to open display menu and add row form it when we click on plus icon
+    // cntrl - paramter to access the control parameters .
     function AddRow(cntrl) {
         var attrRowId = $(cntrl).attr('row-id');
         var rowIndex = budgetgrid.getRowIndex(attrRowId);
-        DisplayPopUpMenu(cntrl, rowIndex);
+        DisplayPopUpMenu(cntrl, rowIndex); // function to display menu
     }
 
+    //Function to display popup menu on plus icon
+    // addControl - paramter to access the control parameters .
+    // row index - index of the particular row
     function DisplayPopUpMenu(addControl, rowIndex) {
         //Add 2 options in the poup menu i.e new item , new child item
         var ul, newItemList = '';
@@ -831,12 +843,12 @@ function ApplyFormattingAndTooltip(idName) {
 
         //Set position of the popup
         var left = $(addControl).position().left + 45;//e.pageX;
-        var targetOffset = $(addControl).offset().top;
-        var scrollPosition = $(window).scrollTop();
+        var targetOffset = $(addControl).offset().top; // get top position
+        var scrollPosition = $(window).scrollTop(); // get scroll position
 
         if ($('#popupType').css('display') != 'none') {
             if (scrollPosition <= targetOffset) {
-                $('#popupType').css({
+                $('#popupType').css({ // set the top and left position of the popup menu
                     'top': targetOffset,
                     'left': left,
                 });
@@ -853,8 +865,8 @@ function ApplyFormattingAndTooltip(idName) {
         }
         //end
 
-        $('.new-finance').click(function () {
-            var itemtype = $(this).attr('itemType');
+        $('.new-finance').click(function () { // click event of the options i.e add new item/child item
+            var itemtype = $(this).attr('itemType'); //gets the type of item if it is child or not
             AddNewRowbyType(itemtype, addControl); //adds new item at required position
             $('#popupType').css('display', 'none');
         });
@@ -870,7 +882,9 @@ function ApplyFormattingAndTooltip(idName) {
     });
 
 
-
+    // Function to add new row on clicking on add new item/new child item options
+    // itemType - checks if n=we need to add a child item or a parallel item
+    // cntrl - paramter to access the control parameters .
     function AddNewRowbyType(itemType, cntrl) {
 
         if (_isNewRowAdd == false) { // checks if an new item is already added then dont add another.
