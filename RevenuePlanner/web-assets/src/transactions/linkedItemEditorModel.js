@@ -9,6 +9,7 @@ import findIndex from 'lodash/findIndex';
 import createNewItemModel from './linkedItemEditorNewLinkModel';
 import css from './linkedItemEditor.scss';
 import uniqueId from 'lodash/uniqueId';
+import breadcrumb from 'util/breadcrumb';
 
 const columns = [
     { id: "title", value: "Name", width: 300, type: "rotxt", align: "left", sort: "na" },
@@ -25,7 +26,7 @@ function mapLinkedItems(result) {
         .map(lineItem => ({
             id: lineItem.LineItemMapping.TransactionLineItemMappingId,
             lineItemId: lineItem.LineItemId,
-            tacticName: `${lineItem.PlanTitle} > ${lineItem.CampaignTitle} > ${lineItem.ProgramTitle} > ${tactic.Title}`,
+            tacticName: breadcrumb(lineItem.PlanTitle, lineItem.CampaignTitle, lineItem.ProgramTitle, tactic.Title),
             mappedAmount: lineItem.LineItemMapping.Amount,
             lineItemCost: lineItem.Cost,
             lineItemActual: lineItem.Actual,
@@ -185,7 +186,7 @@ export default function createModel(transaction) {
                 // this is just a temporary id until we save the record and get a real id from the sever
                 id: uniqueId("mappedItem"),
                 lineItemId: lineItem.Id,
-                tacticName: `${plan.Title} > ${campaign.Title} > ${program.Title} > ${tactic.Title}`,
+                tacticName: breadcrumb(plan.Title, campaign.Title, program.Title, tactic.Title),
                 mappedAmount: lineItem.Cost || 0,
                 lineItemCost: lineItem.Cost,
                 lineItemActual: lineItem.Actual,
