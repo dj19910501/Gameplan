@@ -496,7 +496,7 @@ namespace RevenuePlanner.UnitTest.Service
             const int expectedMappedTransactions = 1;
 
             // Get transactions for a line item
-            List<Transaction> transactions = _transaction.GetTransactionsForLineItem(testClientId, testLineItemId);
+            List<LinkedTransaction> transactions = _transaction.GetTransactionsForLineItem(testClientId, testLineItemId);
             Assert.AreEqual(expectedMappedTransactions, transactions.Count);
             Assert.AreEqual(testTransactionId, transactions[0].TransactionId);
 

@@ -117,6 +117,19 @@ namespace RevenuePlanner.Services.Transactions
     }
 
     /// <summary>
+    /// Linked transactions used to capture the transactions for a line item
+    /// </summary>
+    public class LinkedTransaction
+    {
+        public int TransactionId { get; set; }
+        public string ClientTransactionId { get; set; }
+        public int LineItemId { get; set; }
+        public string PurchaseOrder { get; set; }
+        public double Amount { get; set; }
+        public double LinkedAmount { get; set; }
+    }
+
+    /// <summary>
     /// The format for the custom mapped fields, instead of specific css we are just categorizing them at the moment.
     /// I explicitly gave values to the enum because this information will likely be pulled from a DB some day.
     /// </summary>
@@ -191,7 +204,7 @@ namespace RevenuePlanner.Services.Transactions
         /// <param name="clientId">The clientId whose transactions we are retrieving</param>
         /// <param name="lineItemId">The ID of the line item whose mapped transactions we are retreiving</param>
         /// <returns>The list of transactions mapped to the specified line item</returns>
-        List<Transaction> GetTransactionsForLineItem(int clientId, int lineItemId);
+        List<LinkedTransaction> GetTransactionsForLineItem(int clientId, int lineItemId);
 
         /// <summary>
         /// Save a list of Transaction to Line Item mappings with the associated amounts. This includes new mappings as well as 

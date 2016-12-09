@@ -15,8 +15,7 @@ using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
 using RevenuePlanner.Services;
 using System.Data.SqlClient;
-
-
+using RevenuePlanner.Services.Transactions;
 
 namespace RevenuePlanner.Controllers
 {
@@ -34,8 +33,13 @@ namespace RevenuePlanner.Controllers
         List<BudgetCheckedItem> ListbudgetCheckedItem = new List<BudgetCheckedItem>(); // Add By Nishant Sheth #2325
         public double PlanExchangeRate = Sessions.PlanExchangeRate;
         IPlanTactic objPlanTactic = new PlanTactic();
+        private ITransaction _transaction;
         #endregion
 
+        public InspectController(ITransaction transaction)
+        {
+            _transaction = transaction;
+        }
         #region "Inspect Index"
         public ActionResult Index()
         {
@@ -7528,6 +7532,10 @@ namespace RevenuePlanner.Controllers
                     ViewBag.YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcptl.Plan_Campaign_Program_Tactic.EndDate.Year) - Convert.ToInt32(pcptl.Plan_Campaign_Program_Tactic.StartDate.Year));
                     ViewBag.StartYear = Convert.ToInt32(pcptl.Plan_Campaign_Program_Tactic.StartDate.Year);
                 }
+
+                ViewBag.HeaderMappings = _transaction.GetHeaderMappings(Sessions.User.CID);
+                // TODOWCR: Convert the currency
+                ViewBag.Transactions = _transaction.GetTransactionsForLineItem(Sessions.User.CID, id);
 
                 return PartialView("_ActualLineitem");
             }

@@ -355,41 +355,24 @@ namespace RevenuePlanner.Services.Transactions
             return transactions;
         }
 
-        public List<Transaction> GetTransactionsForLineItem(int clientId, int lineItemId)
+        public List<LinkedTransaction> GetTransactionsForLineItem(int clientId, int lineItemId)
         {
             Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
             Contract.Requires<ArgumentOutOfRangeException>(lineItemId > 0, "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
 
 
-            IQueryable<Transaction> sqlQuery =
+            IQueryable<LinkedTransaction> sqlQuery =
                 from tlim in _database.TransactionLineItemMappings
                 join transaction in _database.Transactions on tlim.TransactionId equals transaction.TransactionId
                 where tlim.LineItemId == lineItemId && transaction.ClientID == clientId
-                select new Transaction
+                select new LinkedTransaction
                 {
                     TransactionId = transaction.TransactionId,
                     ClientTransactionId = transaction.ClientTransactionID,
-                    TransactionDescription = transaction.TransactionDescription,
                     Amount = (double)transaction.Amount,
-                    Account = transaction.Account,
-                    AccountDescription = transaction.AccountDescription,
-                    SubAccount = transaction.SubAccount,
-                    Department = transaction.Department,
-                    TransactionDate = transaction.TransactionDate != null ? (DateTime)transaction.TransactionDate : DateTime.MinValue,
-                    AccountingDate = transaction.AccountingDate,
-                    Vendor = transaction.Vendor,
                     PurchaseOrder = transaction.PurchaseOrder,
-                    CustomField1 = transaction.CustomField1,
-                    CustomField2 = transaction.CustomField2,
-                    CustomField3 = transaction.CustomField3,
-                    CustomField4 = transaction.CustomField4,
-                    CustomField5 = transaction.CustomField5,
-                    CustomField6 = transaction.CustomField6,
-                    LineItemId = transaction.LineItemId != null ? (int)transaction.LineItemId : 0,
-                    DateCreated = transaction.DateCreated,
-                    AmountAttributed = transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0,
-                    AmountRemaining = (double)transaction.Amount - (transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0),
-                    LastProcessed = transaction.LastProcessed
+                    LineItemId = tlim.LineItemId,
+                    LinkedAmount = tlim.Amount != null ? (double)tlim.Amount : 0.0
                 };
 
             return sqlQuery.ToList();

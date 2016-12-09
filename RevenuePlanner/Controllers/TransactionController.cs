@@ -118,7 +118,6 @@ namespace RevenuePlanner.Controllers
             Contract.Requires<ArgumentOutOfRangeException>(take >= 0, "take must be a positive integer");
 
             return Trim(_transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take));
-            //return _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take);
         }
 
         /// <summary>
@@ -126,12 +125,11 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="lineItemId">The ID of the line item whose mapped transactions we are retreiving</param>
         /// <returns>The list of transactions mapped to the specified line item</returns>
-        public IEnumerable<LeanTransaction> GetTransactionsForLineItem(int lineItemId)
+        public IEnumerable<LinkedTransaction> GetTransactionsForLineItem(int lineItemId)
         {
             Contract.Requires<ArgumentOutOfRangeException>(lineItemId > 0, "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
 
-            return Trim(_transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId));
-            //return _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
+            return _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
         }
 
         #region trim transactions for a lean data structure

@@ -1,4 +1,6 @@
 ﻿@using RevenuePlanner.Helpers
+@using RevenuePlanner.Services.Transactions
+
 @{
     string TacticStatus = string.Empty;
     if (ViewBag.ParentTacticStatus != null)
@@ -12,6 +14,9 @@
     }
     int StartYear = Convert.ToInt32(ViewBag.StartYear);
     int YearDiffrence = Convert.ToInt32(ViewBag.YearDiffrence);
+
+    List<TransactionHeaderMapping> HeaderMappings = ViewBag.HeaderMappings;
+    List<LinkedTransaction> Transactions = ViewBag.Transactions;
 }
 <style type="text/css">
     .disabled-row > th {
@@ -38,6 +43,9 @@
         .actual_cancel:hover, .actual_cancel:focus {
             color: gray;
         }
+    .transaction_link {
+        color: #F8710E
+    }
 </style>
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
@@ -132,6 +140,41 @@
                     <button id="cancelLineitemActuals" class="close-form btn-link source-sans-proregular margin-top23 actual_cancel" type="button">Cancel</button>
                 </div>
             </div>*@
+    </div>
+
+    <div class="cf">
+        <div class="pull-left" style="float: left; width: 970px;">
+            <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
+                <li class="pull-left">
+                    <h3 class="modal-popup-innertitle source-sans-proregular">Transactions</h3>
+                </li>
+            </ul>
+            <div class="pull-right"><a class="transaction_link" href="/Finance/Transactions">Go to Transactions</a></div>
+            <table class="table table-striped3 mystats table-style">
+                <thead>
+                    <tr class="height42">
+                        <th class="font908D88 actual-popup-tile">@HeaderMappings.Find(item => item.Hive9Header == "ClientTransactionId").ClientHeader</th>
+                        <th class="font908D88 actual-popup-tile">@HeaderMappings.Find(item => item.Hive9Header == "PurchaseOrder").ClientHeader</th>
+                        <th class="font908D88 actual-popup-tile">@HeaderMappings.Find(item => item.Hive9Header == "Amount").ClientHeader</th>
+                        <th class="font908D88 actual-popup-tile">Linked Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int tableNdx=0; tableNdx < Transactions.Count; tableNdx++)
+                    {
+                        string amountId = "transactionTableAmount" + tableNdx;
+                        string linkedAmountId = "transactionTableLinkedAmount" + tableNdx;
+                        LinkedTransaction transaction = Transactions[tableNdx];
+                        <tr class="height42" id="trActualCost">
+                            <th class="font3F3F3F actual-popup-tile">@transaction.ClientTransactionId</th>
+                            <th class="font3F3F3F actual-popup-tile">@transaction.PurchaseOrder</th>
+                            <th class="font3F3F3F actual-popup-tile" id="@amountId">@transaction.Amount</th>
+                            <th class="font3F3F3F actual-popup-tile" id="@linkedAmountId">@transaction.LinkedAmount</th>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <!--end content-panel-tab-->
@@ -240,6 +283,17 @@
                 }
             });
         }
+
+        // Format the currency for the Transaction Table
+        var transactionTableSize = @Transactions.Count;
+        for (ndx=0; ndx < transactionTableSize; ndx++) {
+
+            var transactionTableId = "transactionTableAmount" + ndx;
+            var transactionTableLinkedAmountId = "transactionTableLinkedAmount" + ndx;
+            document.getElementById(transactionTableId).innerHTML = FormatCurrency(document.getElementById(transactionTableId).innerHTML, true);
+            document.getElementById(transactionTableLinkedAmountId).innerHTML = FormatCurrency(document.getElementById(transactionTableLinkedAmountId).innerHTML, true);
+        }
+
         $(".modal-backdrop.in").unbind('click');
         $(".modal-backdrop.in").bind('click', function () {
             displayConfirmCommon();
