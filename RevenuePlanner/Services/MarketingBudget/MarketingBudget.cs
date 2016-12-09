@@ -540,7 +540,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.width = 100;
                     headObj.align = aligncenter;
                     headObj.type = Readonly;
-                    headObj.id = columns;
+                    headObj.id = "Line Items";
                     ListAppendAtLast.Add(headObj);
                 }
                 else

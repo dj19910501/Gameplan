@@ -750,11 +750,19 @@ function HideShowColumns() {
     var Title = "";
     var Showcol = []; // this array contains the list of columns which needs to be displayed
     var ColumnsCheckBox = $("#multipleselect_budget-select label[class^=ui-corner-all] input:checked"); // get list of columns that are checked in the dropdown
-
+    var TaskName = "Task Name";
+    var LineItems = "Line Items";
+    var TimeFrame = $("#ddlMainGridTimeFrame").val();
     for (var i = 0; i < budgetgrid.getColumnsNum() ; i++) { // loop through the columns
-        columnid = budgetgrid.getColumnId(i);
-        if (columnid != Id && columnid != Name
-                     && columnid != "Add Row" && columnid != Lineitems) {
+        if (TimeFrame == Yearly)
+        {
+            columnid = budgetgrid.getColumnLabel(i);
+        }
+        else {
+            columnid = budgetgrid.getColumnLabel(i, 1);
+        }
+        if (columnid != Id && columnid != TaskName
+                     && columnid != "" && columnid != LineItems) {
             $.each(ColumnsCheckBox, function () { // loop through the checked columns 
                 Title = $(this).parent().find('span').attr('title');
                 if (standardcolumns.indexOf(Title) >= 0) {
