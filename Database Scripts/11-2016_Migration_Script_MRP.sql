@@ -1184,8 +1184,11 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[dbo].[TransactionCostToLineItemAttribution]'))
+DROP PROCEDURE [dbo].[GetLinkedLineItemsForTransaction];
+GO 
 
-ALTER TRIGGER [dbo].[TransactionCostToLineItemAttribution] 
+CREATE TRIGGER [dbo].[TransactionCostToLineItemAttribution] 
    ON  [dbo].[TransactionLineItemMapping] 
    AFTER INSERT,UPDATE, DELETE
 AS 
