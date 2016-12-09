@@ -7,7 +7,7 @@ import mapHive9Column from 'util/mapHive9Column';
 import css from './transactions.scss';
 import createLinkedItemSubGrid from './createLinkedItemSubGrid';
 
-const LINKED_ITEM_RENDERER_PROPERTY = "linkedItemRenderer";
+export const LINKED_ITEM_RENDERER_PROPERTY = "linkedItemRenderer";
 const EDIT_LINKED_ITEMS = "editLinkedItems";
 
 function getGridColumns() {
@@ -45,6 +45,25 @@ function getGridColumns() {
         });
 }
 
+function transformRecord(record) {
+    // convert anything whose name ends in Date to a date
+    for (const propertyName in record) {
+        if (typeof record[propertyName] === "string" && /Date$/.test(propertyName)) {
+            // note DHX needs to have the dates wrapped in an object like this otherwise it can't "see" them due to a bug
+            record[propertyName] = { value: new Date(record[propertyName]) };
+        }
+    }
+
+    // DHTMLX requires every record have an "id" property
+    record.id = record.TransactionId;
+
+    // Add the function to load and render the linked items
+    record[LINKED_ITEM_RENDERER_PROPERTY] = createLinkedItemSubGrid;
+
+    // Add the button to open the popup editor
+    record[EDIT_LINKED_ITEMS] = `<i class='fa fa-plus-circle ${css.editLineItems}' title='Add/Remove Linked Items'></i>`;
+}
+
 function getGridData(filter, paging) {
     const params = {
         start: filter.startDate.format("YYYY-MM-DD"),
@@ -58,22 +77,7 @@ function getGridData(filter, paging) {
     return $.getJSON(GET_TRANSACTIONS_URI, params).then(records => {
         // doctor the records a bit
         for (const record of records) {
-            // convert anything whose name ends in Date to a date
-            for (const propertyName in record) {
-                if (typeof record[propertyName] === "string" && /Date$/.test(propertyName)) {
-                    // note DHX needs to have the dates wrapped in an object like this otherwise it can't "see" them due to a bug
-                    record[propertyName] = { value: new Date(record[propertyName]) };
-                }
-            }
-
-            // DHTMLX requires every record have an "id" property
-            record.id = record.TransactionId;
-
-            // Add the function to load and render the linked items
-            record[LINKED_ITEM_RENDERER_PROPERTY] = createLinkedItemSubGrid;
-
-            // Add the button to open the popup editor
-            record[EDIT_LINKED_ITEMS] = `<i class='fa fa-plus-circle ${css.editLineItems}' title='Add/Remove Linked Items'></i>`;
+            transformRecord(record);
         }
 
         return records;
@@ -156,6 +160,11 @@ export default function transactionGridDataSource() {
 
     // listen for filter/paging changes and request new data
     bindDataSourceToServer(dataSource);
+
+    dataSource.updateTransaction = transaction => {
+        transformRecord(transaction);
+        dataSource.updateRecord(transaction);
+    };
 
     // return the dataSource
     return dataSource;

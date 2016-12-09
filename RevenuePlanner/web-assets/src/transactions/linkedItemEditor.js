@@ -210,7 +210,6 @@ function bindModelToEditor(transactionId, model, view) {
 
         if (model.updatedData) {
             $window.trigger($.Event("linkedItemsChanged", { transactionId, records: model.updatedData }));
-
         }
     });
 

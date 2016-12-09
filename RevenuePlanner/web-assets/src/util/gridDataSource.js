@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import findIndex from 'lodash/findIndex';
 
 const DEFAULT_PAGING = {
     skip: 0,
@@ -11,6 +12,16 @@ function propstring(columns, prop, defValue) {
 
 function headerAlign(columns) {
     return columns.map(c => `text-align:${c.align}`);
+}
+
+function convertToJsonRecord(state, jsRecord) {
+    return {
+        id: jsRecord.id,
+        data: state.columns.map(c => jsRecord[c.id]),
+        class: jsRecord.class,
+        bgColor: jsRecord.bgColor,
+        style: jsRecord.style,
+    };
 }
 
 class GridDataSource {
@@ -73,19 +84,19 @@ class GridDataSource {
 
                     grid.init();
                 }
-                else if (ev && ev.which.append) {
+                else if (ev && (ev.which.append || ev.which.update)) {
                     // convert to "json" format
                     const rows = [];
-                    for (let i = 0; i < ev.which.append; ++i) {
-                        const record = records[records.length - i - 1];
-                        const row = {
-                            id: record.id,
-                            data: this.state.columns.map(c => record[c.id]),
-                            class: record.class,
-                            bgColor: record.bgColor,
-                            style: record.style,
-                        };
-                        rows.unshift(row);
+                    if (ev.which.append) {
+                        for (let i = 0; i < ev.which.append; ++i) {
+                            const record = records[records.length - i - 1];
+                            rows.unshift(convertToJsonRecord(this.state, record));
+                        }
+                    }
+                    else {
+                        for (const i of ev.which.update) {
+                            rows.push(convertToJsonRecord(this.state, records[i]));
+                        }
                     }
                     grid._refresh_mode = [true, true, false];
                     grid.parse({rows}, "json");
@@ -135,6 +146,14 @@ class GridDataSource {
         }
         else {
             this.updateRecords([record]);
+        }
+    }
+
+    updateRecord(record) {
+        const index = findIndex(this.state.records, {id: record.id});
+        if (index !== -1) {
+            this.state.records[index] = record;
+            this._notify({records: true, update: [index]});
         }
     }
 

@@ -3,7 +3,7 @@ import css from './transactions.scss';
 import Grid from 'dhtmlXGridObject';
 import uniqueId from 'lodash/uniqueId';
 import resolveAppUri from 'util/resolveAppUri';
-import transactionGridDataSource from './transactionGridDataSource';
+import transactionGridDataSource, {LINKED_ITEM_RENDERER_PROPERTY} from './transactionGridDataSource';
 import linkedItemEditor from './linkedItemEditor';
 import find from 'lodash/find';
 import "third-party/jquery.simplePagination";
@@ -44,14 +44,23 @@ function createGrid($gridContainer, dataSource, filteredView) {
                 else {
                     const popup = linkedItemEditor(transaction);
 
-                    // if the linked items subgrid is open, then register an event so we can update it
-                    // with any changes the user makes
-                    const subGridDataSource = row.data("linkedItemsDataSource");
-                    if (subGridDataSource) {
-                        popup.on("linkedItemsChanged", ev => {
-                            subGridDataSource.assignRawData(ev.records);
-                        });
-                    }
+                    // if the popup changes any values, update our transaction and also
+                    // update the subgrid if it is open
+                    popup.on("linkedItemsChanged", ev => {
+                        const subGridDataSource = row.data("linkedItemsDataSource");
+                        if (subGridDataSource) {
+                            subGridDataSource.assignRawData(ev.records.links);
+                        }
+
+                        // when we update the transaction, it will close the subgrid.
+                        // so we need to check if it is open and re-open it after the update
+                        const subgridCell = grid.cellById(transactionId, grid.getColIndexById(LINKED_ITEM_RENDERER_PROPERTY));
+                        const isOpen = subgridCell && subgridCell.isOpen();
+                        dataSource.updateTransaction(ev.records.transaction);
+                        if (isOpen && !subgridCell.isOpen()) {
+                            subgridCell.open();
+                        }
+                    });
                 }
             });
     });
