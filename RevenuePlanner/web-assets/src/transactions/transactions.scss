@@ -2,6 +2,44 @@
 
 $GRID_PADDING: 5px;
 
+:global {
+  div.gridbox.gridbox_dhx_skyblue {
+    table.obj {
+      tr.ev_dhx_skyblue {
+        background-color: $GRID_EVEN_ROW_BG;
+
+        &.rowselected {
+          background-color: $GRID_SELECTED_ROW_BG !important;
+
+          td {
+            background-color: $GRID_SELECTED_ROW_BG !important;
+          }
+        }
+
+        td.cellselected {
+          background-color: $GRID_SELECTED_CELL_BG !important;
+        }
+      }
+
+      tr.odd_dhx_skyblue {
+        background-color: $GRID_ODD_ROW_BG;
+
+        &.rowselected {
+          background-color: $GRID_SELECTED_ROW_BG !important;
+
+          td {
+            background-color: $GRID_SELECTED_ROW_BG !important;
+          }
+        }
+
+        td.cellselected {
+          background-color: $GRID_SELECTED_CELL_BG !important;
+        }
+      }
+    }
+  }
+}
+
 .header {
   padding-top: 38px;
   padding-left: $GRID_PADDING;
