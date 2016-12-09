@@ -27,16 +27,21 @@ div.gridbox table.obj td {
     max-height: 210px;
     height: auto;
 }
-
 .tblheader {
     margin: 5px 0 5px /*by bheur 14-9-2015*/;
     font-size: 16px;
     font-family: 'ProximaNova-Bold';
     font-weight: normal;
     margin-bottom: 14px;
+    text-align:left;
 }
-
-
 .closeiconheight {
     height:15px;
+}
+.currentdata div.gridbox_dhx_web.gridbox table.hdr td div.hdrcell {
+    text-align:left;
+}
+#navtab .nav
+{
+    margin:0px;
 }

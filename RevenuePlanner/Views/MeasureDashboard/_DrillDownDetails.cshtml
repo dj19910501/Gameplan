@@ -54,7 +54,7 @@
                                     <div class="col2 clearfix">
                                         <div class="box">
                                             <p style="" class="dimenetion-value" title='@Model.DimensionValueName'>@WebUtility.HtmlDecode(Model.DimensionValueName) </p>
-                                            <p id="keyvalue" class="col keydatabox-value">@Model.DimensionActualValueCount</p>
+                                            <p id="keyvalue" class="keydatabox-value">@Model.DimensionActualValueCount</p>
                                         </div>
                                         @if (Model.CustomQuery == "0")
                                         {
@@ -157,6 +157,7 @@
         $('#DivDrillDownPopup').css("display", "none");
         $('#DivBackgroundDrillDown').remove();
         $('#DivDrillDownPopup').remove();
+        $('.IconResize').css("width", "20px");
     }
 
     function UpdateDrillDownTableData(DatableSortSettigs) {
@@ -226,7 +227,7 @@
             async: false,
             dataType: 'json',
             data: $.param(params, true),
-            success: function (data) {
+            success: function (data) {               
                 if (data.isSuccess != 'undefined' && typeof data.isSuccess != undefined && data.isSuccess == true) {
                     ShowHideLabels(data);
                     if (typeof data.TotalRecords != undefined && data.TotalRecords != 'undefined' && data.DrillDownConfigExists != false) {
@@ -465,7 +466,7 @@
         params.DisplayName = displayname;
         params.Customquery = customquery;
         params.Charttype = charttype;
-
+    
         $("#div_ViewAllReport").empty();
         $.ajax({
             url: url,
@@ -473,6 +474,7 @@
             data: $.param(params, true),
             success: function (data) {
                 $("#div_ViewAllReport").html(data);
+                $('.IconResize').css("width", "20px");
             },
             error: function (err) {
                 $("divChart" + DashboardContentId).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
