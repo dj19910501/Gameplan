@@ -23,7 +23,7 @@ namespace RevenuePlanner.Models
         public int ClientID { get; set; }
         public string ClientTransactionID { get; set; }
         public string TransactionDescription { get; set; }
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
         public string Account { get; set; }
         public string AccountDescription { get; set; }
         public string SubAccount { get; set; }
@@ -38,6 +38,7 @@ namespace RevenuePlanner.Models
         public string CustomField4 { get; set; }
         public string CustomField5 { get; set; }
         public string CustomField6 { get; set; }
+        public string Error { get; set; }
         public Nullable<int> LineItemId { get; set; }
         public System.DateTime DateCreated { get; set; }
         public Nullable<double> AmountAttributed { get; set; }

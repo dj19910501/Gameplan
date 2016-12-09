@@ -1058,7 +1058,7 @@ CREATE TABLE [dbo].[Transactions](
 	[ClientID] [int] NOT NULL,
 	[ClientTransactionID] [varchar](150) NOT NULL,
 	[TransactionDescription] [varchar](250) NULL,
-	[Amount] [numeric](18, 0) NOT NULL,
+	[Amount] [float] NOT NULL,
 	[Account] [varchar](150) NULL,
 	[AccountDescription] [varchar](150) NULL,
 	[SubAccount] [varchar](150) NULL,

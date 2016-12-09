@@ -2191,13 +2191,17 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spGetPlanCalendarData_Result>("spGetPlanCalendarData", planIdsParameter, ownerIdsParameter, tactictypeIdsParameter, statusIdsParameter, timeframeParameter, planYearParameter, viewByParameter);
         }
     
-        public virtual ObjectResult<GetLinkedLineItemsForTransaction_Result> GetLinkedLineItemsForTransaction(Nullable<int> transactionId)
+        public virtual ObjectResult<GetLinkedLineItemsForTransaction_Result> GetLinkedLineItemsForTransaction(Nullable<int> clientID, Nullable<int> transactionId)
         {
+            var clientIDParameter = clientID.HasValue ?
+                new ObjectParameter("ClientID", clientID) :
+                new ObjectParameter("ClientID", typeof(int));
+    
             var transactionIdParameter = transactionId.HasValue ?
                 new ObjectParameter("TransactionId", transactionId) :
                 new ObjectParameter("TransactionId", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetLinkedLineItemsForTransaction_Result>("GetLinkedLineItemsForTransaction", transactionIdParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetLinkedLineItemsForTransaction_Result>("GetLinkedLineItemsForTransaction", clientIDParameter, transactionIdParameter);
         }
     }
 }

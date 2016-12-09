@@ -1828,7 +1828,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="ClientID" Type="int" Nullable="false" />
           <Property Name="ClientTransactionID" Type="varchar" MaxLength="150" Nullable="false" />
           <Property Name="TransactionDescription" Type="varchar" MaxLength="250" />
-          <Property Name="Amount" Type="numeric" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Amount" Type="float" Nullable="false" />
           <Property Name="Account" Type="varchar" MaxLength="150" />
           <Property Name="AccountDescription" Type="varchar" MaxLength="150" />
           <Property Name="SubAccount" Type="varchar" MaxLength="150" />
@@ -1843,6 +1843,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="CustomField4" Type="varchar" MaxLength="150" />
           <Property Name="CustomField5" Type="varchar" MaxLength="150" />
           <Property Name="CustomField6" Type="varchar" MaxLength="150" />
+          <Property Name="Error" Type="varchar" MaxLength="250" />
           <Property Name="LineItemId" Type="int" />
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
           <Property Name="AmountAttributed" Type="float" />
@@ -4262,6 +4263,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
           <Parameter Name="PlanId" Type="nvarchar(max)" Mode="In" />
         </Function>
         <Function Name="GetLinkedLineItemsForTransaction" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ClientID" Type="int" Mode="In" />
           <Parameter Name="TransactionId" Type="int" Mode="In" />
         </Function>
         <Function Name="GetListPlanCampaignProgramTactic" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -6921,18 +6923,19 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Model" EntitySet="Models" />
           </AssociationSet>
           <EntitySet Name="TransactionLineItemMappings" EntityType="MRPModel.TransactionLineItemMapping" />
-          <EntitySet Name="Transactions" EntityType="MRPModel.Transaction" />
           <AssociationSet Name="FK_TransactionLineItemMapping_Plan_Campaign_Program_Tactic_LineItem" Association="MRPModel.FK_TransactionLineItemMapping_Plan_Campaign_Program_Tactic_LineItem">
             <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
             <End Role="TransactionLineItemMapping" EntitySet="TransactionLineItemMappings" />
           </AssociationSet>
+          <FunctionImport Name="GetLinkedLineItemsForTransaction" ReturnType="Collection(MRPModel.GetLinkedLineItemsForTransaction_Result)">
+            <Parameter Name="ClientID" Mode="In" Type="Int32" />
+            <Parameter Name="TransactionId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="Transactions" EntityType="MRPModel.Transaction" />
           <AssociationSet Name="FK_TransactionLineItemMapping_Transactions" Association="MRPModel.FK_TransactionLineItemMapping_Transactions">
             <End Role="Transaction" EntitySet="Transactions" />
             <End Role="TransactionLineItemMapping" EntitySet="TransactionLineItemMappings" />
           </AssociationSet>
-          <FunctionImport Name="GetLinkedLineItemsForTransaction" ReturnType="Collection(MRPModel.GetLinkedLineItemsForTransaction_Result)">
-          <Parameter Name="TransactionId" Mode="In" Type="Int32" />
-          </FunctionImport>
           </EntityContainer>
         <EntityType Name="Dimension">
           <Key>
@@ -11316,6 +11319,25 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem" Relationship="MRPModel.FK_TransactionLineItemMapping_Plan_Campaign_Program_Tactic_LineItem" FromRole="TransactionLineItemMapping" ToRole="Plan_Campaign_Program_Tactic_LineItem" />
           <NavigationProperty Name="Transaction" Relationship="MRPModel.FK_TransactionLineItemMapping_Transactions" FromRole="TransactionLineItemMapping" ToRole="Transaction" />
         </EntityType>
+        <Association Name="FK_TransactionLineItemMapping_Plan_Campaign_Program_Tactic_LineItem">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Role="Plan_Campaign_Program_Tactic_LineItem" Multiplicity="1" />
+          <End Type="MRPModel.TransactionLineItemMapping" Role="TransactionLineItemMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="PlanLineItemId" />
+            </Principal>
+            <Dependent Role="TransactionLineItemMapping">
+              <PropertyRef Name="LineItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="GetLinkedLineItemsForTransaction_Result">
+          <Property Type="Int32" Name="TacticId" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" />
+          <Property Type="Double" Name="PlannedCost" Nullable="false" />
+          <Property Type="Double" Name="TotalLinkedCost" Nullable="true" />
+          <Property Type="Double" Name="TotalActual" Nullable="true" />
+        </ComplexType>
         <EntityType Name="Transaction">
           <Key>
             <PropertyRef Name="TransactionId" />
@@ -11324,7 +11346,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="ClientID" Type="Int32" Nullable="false" />
           <Property Name="ClientTransactionID" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="TransactionDescription" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="Amount" Type="Double" Nullable="false" />
           <Property Name="Account" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="AccountDescription" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="SubAccount" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
@@ -11339,24 +11361,13 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="CustomField4" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="CustomField5" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="CustomField6" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Error" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <Property Name="LineItemId" Type="Int32" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="AmountAttributed" Type="Double" />
           <Property Name="LastProcessed" Type="DateTime" Precision="3" />
           <NavigationProperty Name="TransactionLineItemMappings" Relationship="MRPModel.FK_TransactionLineItemMapping_Transactions" FromRole="Transaction" ToRole="TransactionLineItemMapping" />
         </EntityType>
-        <Association Name="FK_TransactionLineItemMapping_Plan_Campaign_Program_Tactic_LineItem">
-          <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Role="Plan_Campaign_Program_Tactic_LineItem" Multiplicity="1" />
-          <End Type="MRPModel.TransactionLineItemMapping" Role="TransactionLineItemMapping" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Campaign_Program_Tactic_LineItem">
-              <PropertyRef Name="PlanLineItemId" />
-            </Principal>
-            <Dependent Role="TransactionLineItemMapping">
-              <PropertyRef Name="LineItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_TransactionLineItemMapping_Transactions">
           <End Type="MRPModel.Transaction" Role="Transaction" Multiplicity="1" />
           <End Type="MRPModel.TransactionLineItemMapping" Role="TransactionLineItemMapping" Multiplicity="*" />
@@ -11369,13 +11380,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <ComplexType Name="GetLinkedLineItemsForTransaction_Result">
-          <Property Type="Int32" Name="TacticId" Nullable="false" />
-          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" />
-          <Property Type="Double" Name="PlannedCost" Nullable="false" />
-          <Property Type="Double" Name="TotalLinkedCost" Nullable="true" />
-          <Property Type="Double" Name="TotalActual" Nullable="true" />
-        </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -13917,6 +13921,17 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetLinkedLineItemsForTransaction" FunctionName="MRPModel.Store.GetLinkedLineItemsForTransaction">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="MRPModel.GetLinkedLineItemsForTransaction_Result">
+                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="PlannedCost" ColumnName="PlannedCost" />
+                <ScalarProperty Name="TotalLinkedCost" ColumnName="TotalLinkedCost" />
+                <ScalarProperty Name="TotalActual" ColumnName="TotalActual" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           <EntitySetMapping Name="Transactions">
             <EntityTypeMapping TypeName="MRPModel.Transaction">
               <MappingFragment StoreEntitySet="Transactions">
@@ -13924,6 +13939,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
                 <ScalarProperty Name="AmountAttributed" ColumnName="AmountAttributed" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
                 <ScalarProperty Name="LineItemId" ColumnName="LineItemId" />
+                <ScalarProperty Name="Error" ColumnName="Error" />
                 <ScalarProperty Name="CustomField6" ColumnName="CustomField6" />
                 <ScalarProperty Name="CustomField5" ColumnName="CustomField5" />
                 <ScalarProperty Name="CustomField4" ColumnName="CustomField4" />
@@ -13946,17 +13962,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="GetLinkedLineItemsForTransaction" FunctionName="MRPModel.Store.GetLinkedLineItemsForTransaction">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="MRPModel.GetLinkedLineItemsForTransaction_Result">
-                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="PlannedCost" ColumnName="PlannedCost" />
-                <ScalarProperty Name="TotalLinkedCost" ColumnName="TotalLinkedCost" />
-                <ScalarProperty Name="TotalActual" ColumnName="TotalActual" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
