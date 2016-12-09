@@ -108,6 +108,11 @@ var config = {
                 loader: extractCSS("css?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!sass?sourceMap")
             },
             {
+                test: /\.css$/,
+                include: /./,
+                loader: extractCSS("css?sourceMap")
+            },
+            {
                 test: /\.ejs$/,
                 loader: "underscore-template-loader",
                 exclude: /\/build\//,

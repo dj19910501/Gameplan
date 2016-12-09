@@ -15,16 +15,19 @@ function createView($container) {
     $container.html(html);
 
     return {
+        public: {
+            $filterPanel: $container.find(`.${css.filterContent}`),
+            $content: $container.find(`.${css.content}`),
+        },
         $filteredContent: $container.find(`.${css.filteredContent}`),
         $filterPanel: $container.find(`.${css.filterPanel}`),
         $toggle: $container.find(`.${css.toggle}`),
-        $content: $container.find(`.${css.content}`),
     };
 }
 
 function bindToggle(view) {
     view.$toggle.on("click", () => {
-        onTransitionEnd(view.$content, SLIDE_TOTAL_TIME, () => $(view).trigger("filterToggled"));
+        onTransitionEnd(view.public.$content, SLIDE_TOTAL_TIME, () => $(view.public).trigger("filterToggled"));
         view.$filteredContent.toggleClass(css.hideFilter)
     });
 }
@@ -32,5 +35,7 @@ function bindToggle(view) {
 export default function createPanel($container) {
     const view = createView($container);
     bindToggle(view);
-    return view;
+
+    // return only *some* of the view
+    return view.public;
 }

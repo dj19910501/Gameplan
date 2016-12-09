@@ -4,6 +4,9 @@ $BG_LIGHT: #f0f0f0;
 $BG_MEDIUM: #e6e6e6;
 $BG_DARK: #ccc;
 
+$ICON_COLOR: #999;
+$ICON_COLOR_HOVER: #000;
+
 @mixin primary-button-color {
   background-color: #89cede;
   color: white;

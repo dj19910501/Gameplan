@@ -18,16 +18,21 @@ $SLIDE_EASING: ease-in-out;
     @include fill-parent(0, null, 0, 0);
     width: $FILTER_PANEL_WIDTH;
 
-    background-color: $BG_LIGHT;
+    background-color: $BG_MEDIUM;
     border-right: solid 1px $BORDER_COLOR;
     padding: $FILTER_PADDING_TOP $FILTER_PADDING_RIGHT $FILTER_PADDING_BOTTOM $FILTER_PADDING_LEFT;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: visible;
 
     transition: left $SLIDE_DURATION $SLIDE_EASING $SLIDE_DELAY;
 
     .header {
       font-size: 24px;
+      padding-bottom: 10px;
+    }
+
+    .filterContent {
+      padding: 0;
     }
   }
 

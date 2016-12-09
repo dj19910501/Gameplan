@@ -9,6 +9,7 @@ import find from 'lodash/find';
 import "third-party/jquery.simplePagination";
 import "third-party/jquery.simplePagination.scss";
 import createFilteredContentView from 'components/filteredContent/filteredContent';
+import createFilterView from './filter';
 
 function createGrid($gridContainer, dataSource, filteredView) {
     const $grid = $gridContainer.find(`.${css.grid}`);
@@ -140,6 +141,8 @@ export default function main($rootElement) {
         viewByValue: "all",
     };
 
+    filteredView.$filterPanel
+
     filteredView.$content
         .addClass("header-content-footer-layout")
         .html(mainView(viewOptions));
@@ -149,6 +152,7 @@ export default function main($rootElement) {
     const $viewBy = filteredView.$content.find(`#${viewOptions.viewById}`);
 
     const dataSource = transactionGridDataSource();
+    const filterPanel = createFilterView(filteredView.$filterPanel, dataSource);
     bindViewBy($viewBy, dataSource);
     createPager($pager, dataSource);
     createGrid($gridContainer, dataSource, filteredView);
