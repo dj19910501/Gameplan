@@ -179,6 +179,10 @@ namespace RevenuePlanner.Services.MarketingBudget
             List<string> Data = new List<string>(); // list to bind all each row data.
             UserData objuserData = new UserData();
             List<string> BindColumnDataatend = new List<string>(); //list will bind data of user owner and lineitems as we have to bind these data at the end.
+            ////call recursively untill there are no childs
+            List<BudgetGridRowModel> children = new List<BudgetGridRowModel>();
+            IEnumerable<DataRow> lstChildren = null;
+            lstChildren = GetChildren(DataSet, id);
 
             #region Bind Standard Columns
             foreach (var ColumnName in StandardColumnNames)
@@ -201,7 +205,21 @@ namespace RevenuePlanner.Services.MarketingBudget
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.LineItems.ToString())
                 {
-                    BindColumnDataatend.Add(row[ColumnName].ToString());
+                    if (Permission == "None" || Permission == "View" )
+                    {
+                        BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
+                    }
+                    else
+                    {
+                        if (lstChildren.Count() == 0)
+                        {
+                            string strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id, row[ColumnName.ToString()].ToString());
+                            BindColumnDataatend.Add(strLineItemLink);
+                        }
+                        else
+                            BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
+                    }
+
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.Users.ToString())
                 {
@@ -278,10 +296,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             Data.AddRange(BindColumnDataatend);
 
-            ////call recursively untill there are no childs
-            List<BudgetGridRowModel> children = new List<BudgetGridRowModel>();
-            IEnumerable<DataRow> lstChildren = null;
-            lstChildren = GetChildren(DataSet, id);
+         
 
             #region Handle Permissions in grid
             if (Permission == Enums.Permission.None.ToString())
