@@ -93,6 +93,14 @@ $INDICATOR_WIDTH: 4px;
               .objbox {
                 background-color: transparent;
 
+                tr:not(.rowselected) {
+                  background-color: transparent;
+
+                  td {
+                    background-color: transparent;
+                  }
+                }
+
                 tr:local(.deleted) {
                   td:not(:last-child) {
                     opacity: 0.5;
@@ -105,7 +113,7 @@ $INDICATOR_WIDTH: 4px;
 
                   // Color the text entry column white
                   &:nth-last-child(2) {
-                    background-color: white;
+                    background-color: white !important;
                     cursor: text;
                   }
 
