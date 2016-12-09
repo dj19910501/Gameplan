@@ -83,8 +83,15 @@ namespace RevenuePlanner.Services.MarketingBudget
         public string type { get; set; }
         public string id { get; set; }
         public string sort { get; set; }
+        public List<Options> options { get; set; }  // bind options for dropdown list
     }
 
+    // options for dropdown list
+    public class Options
+    {
+        public int id { get; set; }
+        public string value { get; set; }
+    }
     public class BudgetGridModel
     {
         public List<GridDataStyle> GridDataStyleList { get; set; }
@@ -278,7 +285,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         DataSet GetBudgetDefaultData(int budgetId, string timeframe, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate);
         BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, int ClientID, int UserID, double Exchangerate, string CurSymbol,List<BDSService.User> lstUser);
 
-        MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate,List<BDSService.User> lstUser,bool IsLineItem); // Header values
+        MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate,List<BDSService.User> lstUser,bool IsLineItem=false); // Header values
         List<BDSService.User> GetUserListByClientId(int ClientID); // List of users for specific client
         List<PlanOptions> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers); // Owner list for current client
         /// <summary>

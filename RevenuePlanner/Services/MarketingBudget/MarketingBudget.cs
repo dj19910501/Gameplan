@@ -105,16 +105,26 @@ namespace RevenuePlanner.Services.MarketingBudget
             List<int> lstUserId = lstUser.Select(a => a.ID).ToList();
             string CommaSeparatedUserIds = String.Join(",", lstUserId);  //comma separated ids
             List<string> CustomColumnNames = new List<string>();
+            List<CustomFieldOption> lstCustomFieldOptions = new List<CustomFieldOption>();
             //Call Sp to get data.
             DataSet BudgetGridData = GetBudgetDefaultData(budgetId, TimeFrame, ClientID, UserID, CommaSeparatedUserIds, Exchangerate);
             if (BudgetGridData != null) // checks if data set returned is not null
             {
-                if (BudgetGridData.Tables.Count > 1) // checks if custom column table exists
+                if (BudgetGridData.Tables.Count > 2) // checks if custom column table exists
                 {
                     DataTable CustomColumnsTable = BudgetGridData.Tables[1];
                     CustomColumnNames = CustomColumnsTable.Columns.Cast<DataColumn>() //list to get custom column names
                       .Select(x => x.ToString())
                       .ToList();
+
+                    // Get all custom field options list
+                    lstCustomFieldOptions = (from cfo in BudgetGridData.Tables[2].AsEnumerable()
+                                             select new CustomFieldOption
+                                             {
+                                                 CustomFieldId = cfo.Field<int>("CustomFieldId"),
+                                                 CustomFieldOptionId = cfo.Field<int>("CustomFieldOptionId"),
+                                                 Value = cfo.Field<string>("Value")
+                                             }).ToList();
                 }
                 DataTable StandardColumnTable = BudgetGridData.Tables[0];
                 //list to get standard column names
@@ -124,7 +134,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                   .ToList();
 
                 //Set Header Object.
-                SetHeaderObject(CustomColumnNames, StandardColumnNames, TimeFrame, objBudgetGridModel);
+                SetHeaderObject(CustomColumnNames, StandardColumnNames, TimeFrame, objBudgetGridModel, lstCustomFieldOptions);
                 List<string> NonePermissionIds = new List<string>(); //Get rowid of non permisson rows to show three dash in rollup columns 
                 NonePermissionIds = BudgetGridData.Tables[0].AsEnumerable().Where(p => p.Field<string>(Enums.DefaultGridColumn.Permission.ToString()).ToLower() == "none").Select(p => Regex.Replace((p[Enums.DefaultGridColumn.Name.ToString()].ToString() == null ? "" : p[Enums.DefaultGridColumn.Name.ToString().Trim().Replace("_", "")]).ToString(), @"[^0-9a-zA-Z]+", "") + "_" + Convert.ToInt32(p[Enums.DefaultGridColumn.BudgetDetailId.ToString()]) + "_" + (p[Enums.DefaultGridColumn.ParentId.ToString()].ToString() == "" ? "0" : p[Enums.DefaultGridColumn.ParentId.ToString()])).ToList();
                 //Call recursive function to bind the hierarchy.
@@ -403,7 +413,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="CustomColumnNames">List of names of custom column</param>
         /// <param name="StandardColumnNames">List of names of standard column</param>
         /// <param name="TimeFrame">Selected Time Frame</param>
-        private BudgetGridModel SetHeaderObject(List<string> CustomColumnNames, List<string> StandardColumnNames, string timeframe, BudgetGridModel mdlGridHeader)
+        /// <param name="mdlGridHeader">Model grid header</param>
+        /// <param name="lstCustomFieldOptions">List of custom field options</param>
+        private BudgetGridModel SetHeaderObject(List<string> CustomColumnNames, List<string> StandardColumnNames, string timeframe, BudgetGridModel mdlGridHeader, List<CustomFieldOption> lstCustomFieldOptions)
         {
             List<GridDataStyle> ListHead = new List<GridDataStyle>(); //list to bind all header data
             StringBuilder sbAttachedHeaders = new StringBuilder(); //used to get comma separated values to attach 2 headers
@@ -416,8 +428,8 @@ namespace RevenuePlanner.Services.MarketingBudget
             string TaskName = "Task Name";
             string aligncenter = "center";
             string sort = "na";
-			List<int> colIndexes = new List<int>(); //List index of column used for given numberformat to rollup columns and also used in aggregation in unallocated columns
-           
+            List<int> colIndexes = new List<int>(); //List index of column used for given numberformat to rollup columns and also used in aggregation in unallocated columns
+
             int colindex = 0;//find the index of column used for given numberformat to rollup columns and also used in aggregation in unallocated columns  
             StringBuilder Allocatedforcastcolums = new StringBuilder(); ;//store indexes of all forcast columns used to create unallocated column foumula
             StringBuilder Allocatedbudgetcolums = new StringBuilder();//store indexes of all Budget columns used to create unallocated column foumula
@@ -425,7 +437,8 @@ namespace RevenuePlanner.Services.MarketingBudget
             string totalbudgetcolumns = string.Empty;////store indexe of total Budget columns used to create unallocated column foumula
             char plus = '+';
             string c = "c";
-
+            string customFieldName = string.Empty; 
+            int customFieldId = 0;
 
             #region Bind Standard Columns
             foreach (var columns in StandardColumnNames)
@@ -640,25 +653,42 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
 
             #region Bind Header for custom columns
-            foreach (var columns in CustomColumnNames)
+            foreach (string column in CustomColumnNames)
             {
-                if (columns != Enums.DefaultGridColumn.BudgetDetailId.ToString())
+                // Split column name with "_" to get name and id. e.g. EMA_123 -> Name:EMA and ID:123
+                string[] arrColumn = column.Split('_');
+                if (arrColumn != null && arrColumn.Count() > 0)
+                {
+                    customFieldName = arrColumn.First();
+                    int.TryParse(arrColumn.Last(), out customFieldId);
+                }
+
+                if (customFieldName != Enums.DefaultGridColumn.BudgetDetailId.ToString())
                 {
                     headObj = new GridDataStyle();
                     if (timeframe == Enums.QuarterFinance.Yearly.ToString())
                     {
-                        headObj.value = columns;
+                        headObj.value = customFieldName;
                     }
                     else
                     {
                         headObj.value = string.Empty;
-                        sbAttachedHeaders.Append(columns + ",");
+                        sbAttachedHeaders.Append(customFieldName + ",");
                     }
                     headObj.sort = sort;
                     headObj.width = 100;
                     headObj.align = aligncenter;
-                    headObj.type = Editable;
-                    headObj.id = columns;
+                    // Bind custom field options into header
+                    if (lstCustomFieldOptions.Where(cf => cf.CustomFieldId == customFieldId).Any())
+                    {
+                        headObj.type = Combo;
+                        headObj.options = lstCustomFieldOptions.Where(cf => cf.CustomFieldId == customFieldId).Select(x => new Options { id = x.CustomFieldOptionId, value = x.Value }).ToList();
+                    }
+                    else
+                    {
+                        headObj.type = Editable;
+                    }
+                    headObj.id = string.Format("Cust_{0}",customFieldId);
                     ListHead.Add(headObj);
                 }
             }

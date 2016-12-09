@@ -3128,20 +3128,22 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-		-- Insert statements for procedure here
-		Declare @query varchar(max)=''
+	-- Insert statements for procedure here
+	DECLARE @query VARCHAR(MAX)=''
 		
-		Declare @columns varchar(max)
-		Declare @drpdCustomType varchar(50)='DropDownList'
+	DECLARE @columns VARCHAR(MAX)
+	DECLARE @drpdCustomType VARCHAR(50)='DropDownList'
 		
-		SELECT @columns= COALESCE(@columns+', ' ,'')+C.Name
-		FROM Budget_ColumnSet(NOLOCK) A
-		INNER JOIN Budget_Columns(NOLOCK) B ON A.Id= B.Column_SetId
-		INNER JOIN CustomField(NOLOCK) C ON B.CustomFieldId = C.CustomFieldId and C.EntityType='Budget'
-		WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND A.ClientId = @clientID AND MapTableName = 'CustomField_Entity'
+	SELECT @columns= COALESCE(@columns+', ' ,'') + C.Name+ '_'+CAST(C.CustomFieldId AS NVARCHAR(30))
+	FROM Budget_ColumnSet(NOLOCK) A
+	INNER JOIN Budget_Columns(NOLOCK) B ON A.Id= B.Column_SetId
+	INNER JOIN CustomField(NOLOCK) C ON B.CustomFieldId = C.CustomFieldId and C.EntityType='Budget'
+	WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND A.ClientId = @clientID AND MapTableName = 'CustomField_Entity'
 		
+	IF(ISNULL(@columns,'')!='')
+	BEGIN
 		SET @query = '
-		SELECT *
+		SELECT * 
 		FROM (
 		     SELECT C.Name as Name,CF.EntityId as BudgetDetailId, 
 			 		CASE 
@@ -3151,18 +3153,29 @@ BEGIN
 			INNER JOIN Budget_Columns(NOLOCK) B ON A.Id= B.Column_SetId
 			INNER JOIN CustomField(NOLOCK) C ON B.CustomFieldId = C.CustomFieldId and C.EntityType=''Budget''
 			INNER JOIN CustomFieldType(NOLOCK) CT ON C.CustomFieldTypeId = CT.CustomFieldTypeId
-			LEFT JOIN CustomField_Entity(NOLOCK) CF ON C.CustomFieldId = CF.CustomFieldId and EntityID IN (select Id FROM Budget_Detail where BudgetId = '+Cast(@budgetID as varchar(20)) +' and IsDeleted=0) 
-			--INNER JOIN Budget_Detail BD ON CF.EntityId = BD.Id and BD.IsDeleted=0 and BD.BudgetId ='+Cast(@budgetID as varchar(20)) +'
+			LEFT JOIN CustomField_Entity(NOLOCK) CF ON C.CustomFieldId = CF.CustomFieldId and EntityID IN (select Id FROM Budget_Detail where BudgetId = '+CAST(@budgetID AS VARCHAR(20)) +' AND IsDeleted=0) 
+			--INNER JOIN Budget_Detail BD ON CF.EntityId = BD.Id and BD.IsDeleted=0 and BD.BudgetId ='+CAST(@budgetID AS VARCHAR(20)) +'
 			LEFT JOIN CustomFieldOption(NOLOCK) CFO ON CF.Value = CAST(CFO.CustomFieldOptionId AS nvarchar(30)) and CT.Name='''+@drpdCustomType+''' AND CFO.IsDeleted = 0 
 			WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND 
-			A.ClientId = '+Cast(@clientID as varchar(20))+' AND MapTableName = ''CustomField_Entity'' and IsNUll(CF.EntityId,'''') <> ''''
+			A.ClientId = '+CAST(@clientID AS VARCHAR(20))+' AND MapTableName = ''CustomField_Entity'' and IsNUll(CF.EntityId,'''') <> ''''
 		) as s
 		PIVOT
 		(
 		    MIN(Value)
 		    FOR [Name] IN ('+@columns+')
 		)AS pvt'
-	EXEC (@query)
+		EXEC (@query)
+
+		-- Get custom field list with options to bind drop downs
+		SELECT CF.CustomFieldId, CFO.CustomFieldOptionId, CFO.Value 
+		FROM Budget_Columns(NOLOCK) Col 
+		INNER JOIN Budget_ColumnSet(NOLOCK) CS ON Col.Column_SetId = CS.Id
+		INNER JOIN CustomField(NOLOCK) CF ON Col.CustomFieldId = CF.CustomFieldId AND CF.EntityType='Budget'
+		INNER JOIN CustomFieldType(NOLOCK) CFT ON CF.CustomFieldTypeId = CFT.CustomFieldTypeId AND CFT.Name = @drpdCustomType
+		INNER JOIN CustomFieldOption(NOLOCK) CFO ON CF.CustomFieldId = CFO.CustomFieldId AND CFO.IsDeleted = 0
+		WHERE Col.IsDeleted = 0 AND CS.IsDeleted = 0 AND CF.IsDeleted = 0 
+			  	AND CS.ClientId = @clientID AND MapTableName = 'CustomField_Entity'
+	END
 END
 GO
 
