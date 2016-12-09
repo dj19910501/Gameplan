@@ -17,9 +17,8 @@
 <style>
     
 </style>
-<div style="" class="finance-header user-per_wrapper">
-    <div style="" id="DivFilterPer" class="finance-header-inner">
-        <div style="" class="fin-head-left">
+
+        <div style="" class="fin-head-left fin-innerpage-title">
             <div style="float: left;" id="drpUserParentMain">
                 <div id="nl-formUserChildFinance" class="nl-form-plan-title without-margin plantitle financetitle">
                     @Html.DropDownList("ddlUserChildFinance", new SelectList((System.Collections.IEnumerable)ViewBag.childbudgetlist, "Value", "Text"))
@@ -27,9 +26,8 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="fin-permission">
+    
+<div class="fin-permission clearfix">
     <div class="permission-inner">
         <div class="user-list">
             <p>Add user to list</p>

@@ -3650,6 +3650,7 @@ a.link-gray {
 	padding: 20px;
 	clear: both;
 }
+.fin-permission{padding-top:0}
 .user-per_wrapper {
 	padding-top: 0;
 	padding-bottom: 0;
@@ -11288,7 +11289,7 @@ li.accordion-inner.close-list {
 	width: 24px;
 }
 
-.full-width-header .financetitle .nl-field-toggle{
+.full-width-header .financetitle .nl-field-toggle, .fin-innerpage-title .financetitle .nl-field-toggle{
     font-family: source_sans_proregular;
 	padding-right: 18px;
     background: url(../images/drop-down-logo-black.png) right center no-repeat;
@@ -11300,6 +11301,7 @@ li.accordion-inner.close-list {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.fin-innerpage-title .financetitle .nl-field-toggle{max-width: 250px;}
 .financetitle .nl-field-toggle, .financetitle .nl-field-toggle:hover {
 	color: #3e3f37; /* Edited for #2219 - Bhumika */
 }
@@ -13812,7 +13814,12 @@ table .lblCustomCheckbox label{width:70%}
     height: 30px;
     padding-left: 24px;
 }
-
+.fin-head-checkbox{
+    float: left;
+    padding-top: 20px;
+    text-align: left;
+}
+.plancart-box.finance-cart{margin-top: 10px;}
 /* =========================== Measure Report CSS =========================== */
          
 .report-wrap .tab-content {

@@ -44,8 +44,14 @@
 
 <div class="light-blue-chart cf full-width-header" id="financeHeader">
     <div style="" class="fin-head-left">
-        <div class="finance-main-title">
+        <div class="finance-main-title clearfix">
             <h2 id="lblfinanceTitle" style="display:block;">Marketing Budget</h2>
+            <div id="divFinanceBack" style="width:120px;float:left;display:block;">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:50%;height: 30px !important;" id="btnFinanceback" onclick="javascript:FinanceBack()">
+                    < Back
+                </button>
+            </div>
+
         </div>
         <div style="float:left;" id="drpParentMain">
             <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
@@ -93,12 +99,12 @@
             <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>
         </div>
       
-        <div style="text-align: right; float: right;">
+        <div class="fin-head-checkbox">
             <div id="divCheckbox" style=" float: left; line-height: 22px;">
-               
+
                 <div id="divforecast" style="float: left; margin-right: 10px;">
                     <input type="checkbox" value="ForeCast" id="chkForeCast" onchange=" ShowHideLineItemsColumns(this) " checked="checked" style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Forecast</label>
-    </div>
+                </div>
                 <div id="divPlan" style="float: left; margin-right: 10px;">
                     <input type="checkbox" value="Plan" id="chkPlan" onchange=" ShowHideLineItemsColumns(this) " style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Planned</label>
                 </div>
@@ -108,7 +114,7 @@
             </div>
         </div>
     </div>
-    <div class="light-blue-chart cf full-width-header" id="planHeader">
+    
     <div class="plancart-box finance-cart">
         <div class="white-chart">
             <p class="source-sans-probold" title="Actual">Actual</p>
@@ -126,20 +132,12 @@
             <p class="source-sans-probold" id="budgetLabel" title="Budget">Budget</p>
             <p class="value source-sans-prolight" id="budgetID" data-original-title="0" title="">0</p>
         </div>
-    </div>
-        <div style="margin-top: 27px; width:30% ; margin-left: 22px;">
-            <h2 id="lblfinanceTitle" style="display:block;"></h2>
-            <div id="divFinanceBack" style="width:120px;float:left;display:block;">
-                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:50%;height: 30px !important;" id="btnFinanceback" onclick="javascript:FinanceBack()">
-                    < Back
-                </button>
-</div>
-        </div>
+    
+        
 
     </div>
 </div>
-<div class="row-fluid calc-height">
-    <div class="span12">
+
         <div id="divDeletePopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div>
                 <form>
@@ -158,8 +156,7 @@
                 </form>
             </div>
         </div>
-    </div>
-</div>
+
 
 <div id="divGridView" class="MarketingBudget-tbl" >
     <div id="gridbox" style="width:100%; height:100%;background-color:white;"></div>
