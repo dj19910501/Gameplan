@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Data.OleDb;
 using System.Linq;
 using System;
+using RevenuePlanner.Models;
+
 
 namespace RevenuePlanner.UnitTest.Service
 {
@@ -25,6 +27,8 @@ namespace RevenuePlanner.UnitTest.Service
         private const string Importviewby = "Yearly";//TimeFrame for import budget
         private const string ImportXLSFileLocation = "\\ImportTest_Data\\grid_MarketingBudget.xls"; // xls file location for import marketing budget
         private const string ImportXLSX_FileLocation = "\\ImportTest_Data\\grid_MarketingBudgetXLSXFile.xlsx"; // xlsx file location for import marketing budget
+        private Guid ApplicationId =  new Guid("1c10d4b9-7931-4a7c-99e9-a158ce158951");
+        private const int UserId = 627;
         #endregion Test Data
 
         public MarketingBudgetTest()
@@ -207,6 +211,62 @@ namespace RevenuePlanner.UnitTest.Service
 
         }
 
+        
+        [TestMethod]
+        public void Test_MarketingBudget_GetUserList()
+        {
+            Console.WriteLine("To get particular budget's user list.\n");
+
+            List<Budget_Permission> Data = _marketingBudget.GetUserList(BudgetId);
+            Assert.IsNotNull(Data);
+            Assert.IsTrue(Data.Count > 0);
+        }
+        [TestMethod]
+        public void Test_MarketingBudget_EditPermission()
+        {
+            Console.WriteLine("To get User permission detail for budget.\n");
+            List<Budget_Permission> UserData = _marketingBudget.GetUserList(BudgetId);
+            RevenuePlanner.Services.MarketingBudget.FinanceModel Data = _marketingBudget.EditPermission(BudgetId, ApplicationId, UserData,UserId);
+            Assert.IsNotNull(Data);
+            Assert.IsTrue(Data.Userpermission.Count > 0);
+        }
+        [TestMethod]
+        public void Test_MarketingBudget_CheckUserPermission()
+        {
+            Console.WriteLine("To Check user permission for budget.\n");
+            string Data = _marketingBudget.CheckUserPermission(BudgetId, ClientId, UserId);
+            Assert.IsNotNull(Data);
+        }
+        [TestMethod]
+        public void Test_MarketingBudget_FilterByBudget()
+        {
+            Console.WriteLine("To get user as per filter budget.\n");
+            List<RevenuePlanner.Services.MarketingBudget.UserPermission> Data = _marketingBudget.FilterByBudget(BudgetId, ApplicationId);
+            Assert.IsNotNull(Data);
+            Assert.IsTrue(Data.Count > 0);
+        }
+        [TestMethod]
+        public void Test_MarketingBudget_GetuserRecord()
+        {
+            Console.WriteLine("To get user record.\n");
+            UserModel Data = _marketingBudget.GetuserRecord(0,UserId, ApplicationId);
+            Assert.IsNotNull(Data);
+            Assert.IsNotNull(Data.Email);
+        }
+        
+        [TestMethod]
+        public void Test_MarketingBudget_GetParentLineItemBudgetDetailslist()
+        {
+            Console.WriteLine("To get parent Line item detail for budget to bind dropdown.\n");
+            RevenuePlanner.Services.MarketingBudget.LineItemDropdownModel Data = _marketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId);
+            Assert.IsNotNull(Data);
+            Assert.IsNotNull(Data.parentId);
+        }
+        public void Test_MarketingBudget_GetBudgetColumn()
+        {
+            var res = _marketingBudget.GetBudgetColumn(ClientId);
+            Assert.IsTrue(res.Count > 0);
+        }
     }
     
 

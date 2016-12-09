@@ -8824,6 +8824,29 @@ namespace RevenuePlanner.Helpers
             }
             return taskids.Distinct().ToList();
         }
+
+
+        /// <summary>
+        /// This is owner list (client wise), and it will be bind into dropdown at the time of editing
+        /// </summary>
+        /// <param name="ClientId">Client Id</param>
+        /// <param name="ApplicationId">Application Id</param>
+        /// <param name="lstUsers">List of users for current client</param>
+        /// <returns>Returns list of PlanOptions contains user ids and names</returns>
+        public static List<PlanOptions> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers)
+        {
+            IBDSService objAuthService = new BDSServiceClient();
+
+            List<int> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(ClientId, lstUsers.Where(i => i.IsDeleted == false).ToList());
+            // Following method is called to match user with user application table and 
+            // also checked Deleted user should not be return in this list.   
+            lstClientUsers = objAuthService.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, ApplicationId).Select(w => w.ID).ToList();
+            return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new PlanOptions
+            {
+                id = owner.ID,
+                value = string.Format("{0} {1}", owner.FirstName, owner.LastName)
+            }).OrderBy(tactype => tactype.value).ToList();
+        }
     }
 
     /// <summary>
@@ -8861,6 +8884,7 @@ namespace RevenuePlanner.Helpers
             return secondIsNumber ? 1 : first != null ? first.CompareTo(second) : 0;
             // End
         }
+
 
 
     }

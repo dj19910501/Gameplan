@@ -39,15 +39,35 @@
     body{overflow-y:hidden}/* Specially added for #2805 to hide body scroll only for this purticular page */
     
 </style>
+@Html.Hidden("hdn_BudgetDetailId", "", new { id = "hdn_BudgetDetailId", name = "hdn_BudgetDetailId", value = "" })
+@Html.Hidden("hdn_BudgetId", "", new { id = "hdn_BudgetId", name = "hdn_BudgetId", value = "" })
 
 <div class="light-blue-chart cf full-width-header" id="financeHeader">
     <div style="" class="fin-head-left">
-        <div class="finance-main-title">
+        <div class="finance-main-title clearfix">
             <h2 id="lblfinanceTitle" style="display:block;">Marketing Budget</h2>
+            <div id="divFinanceBack" style="width:120px;float:left;display:block;">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:50%;height: 30px !important;" id="btnFinanceback" onclick="javascript:FinanceBack()">
+                    < Back
+                </button>
+            </div>
+
         </div>
         <div style="float:left;" id="drpParentMain">
             <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
                 @Html.DropDownList("ddlParentFinanceMain", new SelectList(Model.ListofBudgets, "Value", "Text"))
+                <div class="nl-overlay"></div>
+            </div>
+        </div>
+        <div style="float:left;" id="drpParent">
+            <div id="nl-formParentFinance" class="nl-form-plan-title without-margin plantitle financetitle">
+                @Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.parentbudgetlist, "Value", "Text"))
+                <div class="nl-overlay"></div>
+            </div>
+        </div>
+        <div style="float:left;margin-left:15px;margin-right:15px;" id="drpChild">
+            <div id="nl-formChildFinance" class="nl-form-plan-title without-margin plantitle financetitle">
+                @Html.DropDownList("ddlChildFinance", new SelectList((System.Collections.IEnumerable)ViewBag.childbudgetlist, "Value", "Text"))
                 <div class="nl-overlay"></div>
             </div>
         </div>
@@ -78,9 +98,23 @@
             <label id="" for="Filter Columns:">Filter Columns:</label>
             <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>
         </div>
+      
+        <div class="fin-head-checkbox">
+            <div id="divCheckbox" style=" float: left; line-height: 22px;">
 
+                <div id="divforecast" style="float: left; margin-right: 10px;">
+                    <input type="checkbox" value="ForeCast" id="chkForeCast" onchange=" ShowHideLineItemsColumns(this) " checked="checked" style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Forecast</label>
+                </div>
+                <div id="divPlan" style="float: left; margin-right: 10px;">
+                    <input type="checkbox" value="Plan" id="chkPlan" onchange=" ShowHideLineItemsColumns(this) " style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Planned</label>
+                </div>
+                <div id="divActual" style="float: left; margin-right: 10px;">
+                    <input type="checkbox" value="Actual" id="chkActual" onchange=" ShowHideLineItemsColumns(this) " style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Actual</label>
+                </div>
+            </div>
+        </div>
     </div>
-
+    
     <div class="plancart-box finance-cart">
         <div class="white-chart">
             <p class="source-sans-probold" title="Actual">Actual</p>
@@ -98,10 +132,11 @@
             <p class="source-sans-probold" id="budgetLabel" title="Budget">Budget</p>
             <p class="value source-sans-prolight" id="budgetID" data-original-title="0" title="">0</p>
         </div>
+    
+        
+
     </div>
-
 </div>
-
 
         <div id="divDeletePopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div>
@@ -122,8 +157,12 @@
             </div>
         </div>
 
+
 <div id="divGridView" class="MarketingBudget-tbl" >
     <div id="gridbox" style="width:100%; height:100%;background-color:white;"></div>
+</div>
+<div id="dvNoData" style="" class="no-data">
+    No data found.
 </div>
 @* Design for import modal pop up *@
 <div id="ImportModal" class="modal hide fade import-popover">
@@ -136,7 +175,7 @@
             <li>
                 <strong>Download file <a onclick="return ExportToExcel();">here</a></strong>
                 <br />
-                <span>Note: Here is sample file in month format with some specific columns. You can import this file or can import from (Edit Foreacast/Edit Budget) screen export fromat.</span>
+                <span>Note: Here is sample file in month format with some specific columns. You can import this file or can import from Marketing Budget screen export fromat.</span>
             </li>
             <li>
                 <strong>Make any necessary changes</strong><br />
@@ -144,7 +183,7 @@
             </li>
             <li>
                 <strong>Import the file</strong><br />
-                <span>Note:The file format must match with Finance(Budget)/Finance(Forecast) export format.</span>
+                <span>Note:The file format must match with Marketing Budget export format.</span>
             </li>
         </ul>
         <input id="input-43" name="input43[]" type="file" class="file-loading select-file">
@@ -178,11 +217,16 @@
     var Yearly='@Enums.QuarterFinance.Yearly.ToString()';
     var Id = "@Enums.DefaultGridColumn.Id";
     var Name = "@Enums.DefaultGridColumn.Name";
+    var OwnerColName = "@Enums.DefaultGridColumn.Owner.ToString()";
     var Lineitems = "@Enums.DefaultGridColumn.LineItems";
     var BudgetColumn = "@Enums.FinanceHeader_Label.Budget.ToString()";
     var ForecastColumn = "@Enums.FinanceHeader_Label.Forecast.ToString()";
+    // Set ViewBag value into Ownerlist variable to use into js file
+    var Ownerlist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.OwnerList))');
+
     var CurrencySymbol='@CurrencySymbol';
     var dataNonPermissionIds = ''; //get Nonpermissionid at edit level to show threedash
+var gridpage="MainGrid";
     $(document).ready(function () {
 
         var Columnsetval = $("#ddlColumnSet").val();
@@ -190,8 +234,16 @@
         $("#errorMsg").css("display", "none");
         $("#SuccessMsg").css("display", "none");
         $("#content_wraper").css("width", "100%");
+        var budgetid='@Sessions.BudgetDetailId';
+        if(budgetid!='0' )
+        {
+            budgetid='@Sessions.BudgetDetailId';
+            $('#ddlParentFinanceMain').val(budgetid);
+            GetGridData(budgetid);                      // Bind Budget Grid.
+        }
+        else
+            GetGridData();
         UpdateFinanceHeaderValues(); // Update header values
-        GetGridData();                      // Bind Budget Grid.
 
 
         var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');
@@ -242,6 +294,8 @@
             noneSelectedText: "Please Select",
             selectedList: 1
         });
-
+        ShowHideControls("MainGrid");
     });
+   
+
 </script>

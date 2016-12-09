@@ -324,35 +324,45 @@ namespace RevenuePlanner.Services.Transactions
             List<Transaction> transactions = new List<Transaction>();
             foreach (Models.Transaction transaction in modelTransactions)
             {
-                transactions.Add(new Transaction
-                {
-                    TransactionId = transaction.TransactionId,
-                    ClientTransactionId = transaction.ClientTransactionID,
-                    TransactionDescription = transaction.TransactionDescription,
-                    Amount = (double)transaction.Amount,
-                    Account = transaction.Account,
-                    AccountDescription = transaction.AccountDescription,
-                    SubAccount = transaction.SubAccount,
-                    Department = transaction.Department,
-                    TransactionDate = transaction.TransactionDate != null ? (DateTime)transaction.TransactionDate : DateTime.MinValue,
-                    AccountingDate = transaction.AccountingDate,
-                    Vendor = transaction.Vendor,
-                    PurchaseOrder = transaction.PurchaseOrder,
-                    CustomField1 = transaction.CustomField1,
-                    CustomField2 = transaction.CustomField2,
-                    CustomField3 = transaction.CustomField3,
-                    CustomField4 = transaction.CustomField4,
-                    CustomField5 = transaction.CustomField5,
-                    CustomField6 = transaction.CustomField6,
-                    LineItemId = transaction.LineItemId != null ? (int)transaction.LineItemId : 0,
-                    DateCreated = transaction.DateCreated,
-                    AmountAttributed = transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0,
-                    AmountRemaining = (double)transaction.Amount - (transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0),
-                    LastProcessed = transaction.LastProcessed
-                });
+                transactions.Add(BuildTransaction(transaction));
             }
 
             return transactions;
+        }
+
+        /// <summary>
+        /// Translate a db transaction model to a DTO transaction model
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
+        private static Transaction BuildTransaction(Models.Transaction transaction)
+        {
+            return new Transaction
+            {
+                TransactionId = transaction.TransactionId,
+                ClientTransactionId = transaction.ClientTransactionID,
+                TransactionDescription = transaction.TransactionDescription,
+                Amount = (double)transaction.Amount,
+                Account = transaction.Account,
+                AccountDescription = transaction.AccountDescription,
+                SubAccount = transaction.SubAccount,
+                Department = transaction.Department,
+                TransactionDate = transaction.TransactionDate != null ? (DateTime)transaction.TransactionDate : DateTime.MinValue,
+                AccountingDate = transaction.AccountingDate,
+                Vendor = transaction.Vendor,
+                PurchaseOrder = transaction.PurchaseOrder,
+                CustomField1 = transaction.CustomField1,
+                CustomField2 = transaction.CustomField2,
+                CustomField3 = transaction.CustomField3,
+                CustomField4 = transaction.CustomField4,
+                CustomField5 = transaction.CustomField5,
+                CustomField6 = transaction.CustomField6,
+                LineItemId = transaction.LineItemId != null ? (int)transaction.LineItemId : 0,
+                DateCreated = transaction.DateCreated,
+                AmountAttributed = transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0,
+                AmountRemaining = (double)transaction.Amount - (transaction.AmountAttributed != null ? (double)transaction.AmountAttributed : 0.0),
+                LastProcessed = transaction.LastProcessed
+            };
         }
 
         public List<LinkedTransaction> GetTransactionsForLineItem(int clientId, int lineItemId)
@@ -378,6 +388,22 @@ namespace RevenuePlanner.Services.Transactions
             return sqlQuery.ToList();
         }
 
+        public Transaction GetTransaction(int clientId, int transactionId)
+        {
+            Contract.Requires<ArgumentOutOfRangeException>(clientId > 0, "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
+            Contract.Requires<ArgumentOutOfRangeException>(transactionId > 0, "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
+
+            String sqlQuery = null;
+
+            SqlParameter[] parameters = new SqlParameter[2];
+            parameters[0] = new SqlParameter { ParameterName = "@ClientId", Value = clientId };
+            parameters[1] = new SqlParameter { ParameterName = "@TransactionId", Value = transactionId };
+            sqlQuery = @"SELECT * FROM Transactions WHERE ClientId = @ClientId AND TransactionId = @TransactionId";
+
+            Models.Transaction transaction = _database.Database.SqlQuery<Models.Transaction>(sqlQuery, parameters).FirstOrDefault();
+            return BuildTransaction(transaction);
+        }
+
         #region Internal Implementation 
         private static List<TransactionHeaderMapping> _defaultHeaderMapping = 
             new List<TransactionHeaderMapping>() {
@@ -389,7 +415,7 @@ namespace RevenuePlanner.Services.Transactions
                 new TransactionHeaderMapping() { ClientHeader = "Remaining", Hive9Header = "AmountRemaining", HeaderFormat = HeaderMappingFormat.Currency, precision = 2, ExpectedCharacterLength = 10 },
                 new TransactionHeaderMapping() { ClientHeader = "Description", Hive9Header = "TransactionDescription", HeaderFormat = HeaderMappingFormat.Text, precision = 0, ExpectedCharacterLength = 30 },
                 new TransactionHeaderMapping() { ClientHeader = "Account", Hive9Header = "Account", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 7 },
-                new TransactionHeaderMapping() { ClientHeader = "Date", Hive9Header = "TransactionDate", HeaderFormat = HeaderMappingFormat.Date, precision = 0, ExpectedCharacterLength = 10 },
+                new TransactionHeaderMapping() { ClientHeader = "Date", Hive9Header = "AccountingDate", HeaderFormat = HeaderMappingFormat.Date, precision = 0, ExpectedCharacterLength = 10 },
                 new TransactionHeaderMapping() { ClientHeader = "Department", Hive9Header = "Department", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 10 },
             };
         #endregion Internal Implementation 

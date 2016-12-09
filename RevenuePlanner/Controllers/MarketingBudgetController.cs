@@ -9,6 +9,7 @@ using System.Linq;
 using Excel;
 using System.Xml;
 using System.Data;
+//using RevenuePlanner.Models;
 
 namespace RevenuePlanner.Controllers
 {
@@ -19,19 +20,42 @@ namespace RevenuePlanner.Controllers
         {
             _MarketingBudget = MarketingBudget;
         }
-
-        [AuthorizeUser(Enums.ApplicationActivity.BudgetCreateEdit | Enums.ApplicationActivity.ForecastCreateEdit | Enums.ApplicationActivity.ForecastView)]
+        #region Declartion
+        private bool _IsBudgetCreate_Edit = true;
+        private bool _IsForecastCreate_Edit = true;
+        #endregion
+        
         public ActionResult Index()
         {
             MarketingActivities MarketingActivities = new MarketingActivities();
+            #region Check Permissions
+            bool IsBudgetCreateEdit, IsBudgetView, IsForecastCreateEdit, IsForecastView;
+            IsBudgetCreateEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
+            IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
+            IsForecastCreateEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
+            IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
+            if (IsBudgetCreateEdit == false && IsBudgetView == false && IsForecastCreateEdit == false && IsForecastView == false)
+            {
+
+                return RedirectToAction("Index", "NoAccess");
+            }
+            #endregion
 
             #region Set session for current client users
             // Set list of users for the current client into session
             Sessions.ClientUsers = _MarketingBudget.GetUserListByClientId(Sessions.User.CID);
             #endregion
+            // Add owner list to the ViewBag to bind into drop down in the grid
+            ViewBag.OwnerList = _MarketingBudget.GetOwnerListForDropdown(Sessions.User.CID, Sessions.ApplicationId, Sessions.ClientUsers);
 
             #region Bind Budget dropdown on grid
             MarketingActivities.ListofBudgets = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
+            //method to get  parent and child budget list
+            var lstparnetbudget = Common.GetParentBudgetlist();
+            var lstchildbudget = Common.GetChildBudgetlist(0);
+            ViewBag.parentbudgetlist = lstparnetbudget;
+            ViewBag.childbudgetlist = lstchildbudget;
+            //end
             #endregion
 
             #region "Bind TimeFrame Dropdown"
@@ -160,7 +184,7 @@ namespace RevenuePlanner.Controllers
         {
             if (SelectedBudgetId <= 0 || BudgetId <= 0)
             {
-                return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetData }, JsonRequestBehavior.AllowGet);
+                return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetId }, JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -300,10 +324,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="BudgetId">Id of the Budget</param>
         /// <returns>Returns values in json format</returns>
-        public JsonResult GetFinanceHeaderValues(int BudgetId)
+        public JsonResult GetFinanceHeaderValues(int BudgetId, bool IsLineItem=false)
         {
             // Call function to get header values 
-            MarketingBudgetHeadsUp objHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate,Sessions.ClientUsers);
+            MarketingBudgetHeadsUp objHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate, Sessions.ClientUsers,IsLineItem);
 
             string Budget, Forecast, Planned, Actual;
             Budget = Forecast = Planned = Actual = string.Empty;
@@ -389,54 +413,331 @@ namespace RevenuePlanner.Controllers
         /// <param name="AllocationType">Allocation Type.</param>       
         /// <param name="Period">Perido (i.e Jan,Feb..etc).</param>       
 
+        /// <summary>
+        /// Function to Updating budget data.
+        /// Added By: Rahul Shah on 12/07/2016.
+        /// </summary>
+        /// <param name="BudgetId">Budget Id.</param>        
+        /// <param name="BudgetDetailId">Budget Detail Id.</param>
+        /// <param name="ParentId">Parent Budget Detail Id.</param>       
+        /// <param name="nValue">new Value.</param>       
+        /// <param name="ChildItemIds">Child Budget Detail Ids.</param>       
+        /// <param name="ColumnName">Column Name.</param>       
+        /// <param name="AllocationType">Allocation Type.</param>       
+        /// <param name="Period">Perido (i.e Jan,Feb..etc).</param>       
+
         public JsonResult UpdateMarketingBudget(int BudgetId, int BudgetDetailId, int ParentId, string nValue, string ChildItemIds, string ColumnName, string AllocationType, string Period)
         {
             //Check budget Id and budget detaild id is valid or not.
             if (BudgetId <= 0 || BudgetDetailId <= 0)
             {
-                return Json(new { IsSuccess = false, ErrorMessage = "A BudgetId less than or equal to zero is invalid, and likely indicates the BudgetId was not set properly" }, JsonRequestBehavior.AllowGet);
+                return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetId }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                List<string> ListItems = new List<string>();
-
-                //Check Child budget items are exist or not 
-                if (!string.IsNullOrEmpty(ChildItemIds))
+                try
                 {
-                    ListItems = ChildItemIds.Split(',').ToList();
+                    List<string> ListItems = new List<string>();
+                    List<RevenuePlanner.Models.Budget_Columns> objColumns = _MarketingBudget.GetBudgetColumn(Sessions.User.CID); // get budget column of the client.
+                    bool isForecast = false;
 
-                }
-                ListItems.Add(Convert.ToString(BudgetDetailId));
-
-
-                if (string.Compare(ColumnName, Enums.DefaultGridColumn.Owner.ToString(), true) == 0)
-                {
-                    int OwnerId = 0;
-                    int.TryParse(nValue, out OwnerId);
-                    if (OwnerId <= 0)
+                    //Check Child budget items are exist or not 
+                    if (!string.IsNullOrEmpty(ChildItemIds))
                     {
-                        return Json(new { IsSuccess = false, ErrorMsg = "Owner is not valid" }, JsonRequestBehavior.AllowGet);
+                        ListItems = ChildItemIds.Split(',').ToList();
+
                     }
-                    //TODO : here we need to call update owner name function.
+                    ListItems.Add(Convert.ToString(BudgetDetailId));
+
+
+                    if (string.Compare(ColumnName, Enums.DefaultGridColumn.Owner.ToString(), true) == 0)
+                    {
+                        int OwnerId = 0;
+                        int.TryParse(nValue, out OwnerId);
+                        if (OwnerId <= 0)
+                        {
+                            return Json(new { IsSuccess = false, ErrorMsg = "Owner is not valid" }, JsonRequestBehavior.AllowGet);
+                        }
+                        _MarketingBudget.UpdateOwnerName(BudgetDetailId, ListItems, OwnerId);
+                    }
+                    else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Name.ToString(), true) == 0)
+                    {
+                        _MarketingBudget.UpdateTaskName(BudgetId, BudgetDetailId, ParentId, Sessions.User.CID, nValue);
+                    }
+                    else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Budget.ToString(), true) == 0 ||
+                             string.Compare(ColumnName, Enums.DefaultGridColumn.Forecast.ToString(), true) == 0 ||
+                             string.Compare(ColumnName, Enums.DefaultGridColumn.Total_Budget.ToString(), true) == 0 ||
+                             string.Compare(ColumnName, Enums.DefaultGridColumn.Total_Forecast.ToString(), true) == 0)
+                    {
+
+                        _MarketingBudget.UpdateTotalAmount(BudgetDetailId, nValue, ColumnName, Sessions.PlanExchangeRate);
+                    }
+                    else if (string.Compare(ColumnName.Split('_')[0], "cust", true) == 0)
+                    {
+                        if (objColumns != null && objColumns.Count > 0)
+                        {
+                            //here we get customfield column name Like 'cust_' + 'customfieldId' so we need to split and convert 'cusmfieldid' from string to int.
+                            int CustomfieldId = 0;
+                            if (ColumnName.Split('_').Length > 1) {
+                                int.TryParse(ColumnName.Split('_')[1].ToString(),out CustomfieldId);
+                            }
+                          
+                            RevenuePlanner.Models.Budget_Columns objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false && a.CustomField.CustomFieldId == CustomfieldId).Select(a => a).FirstOrDefault();
+
+                            if (objCustomColumns != null)
+                            {
+                                _MarketingBudget.SaveCustomColumnValues(CustomfieldId, objCustomColumns, BudgetDetailId, nValue, Sessions.User.ID, Sessions.PlanExchangeRate);//Call SaveBudgetorForecast method to save customfield cell value.
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (objColumns != null && objColumns.Count > 0)
+                        {
+                            //Get Name of the budget column             
+                            string BudgetColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && a.IsDeleted == false && a.IsTimeFrame == true
+                                                    && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
+                            //Get Name of the Forecast column
+                            string ForecastColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && a.IsDeleted == false && a.IsTimeFrame == true
+                                                        && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
+
+                            //here monthly/quarterly column name with Y1/Q1 prefix so we need to split and check column is forecast or budget then perform the updation logic.
+                            if (!string.IsNullOrEmpty(ColumnName))
+                            {
+                                if (ColumnName.Split('_').Length > 0)
+                                {
+                                    ColumnName = ColumnName.Split('_')[1];
+                                }
+
+                                if (ColumnName == BudgetColName)
+                                {
+                                    isForecast = false;
+                                }
+                                else
+                                {
+                                    isForecast = true;
+                                }
+                                //Call SaveBudgetorForecast method to save budget or forecast cell value.
+                                _MarketingBudget.SaveBudgetorForecast(BudgetDetailId, nValue, isForecast, AllocationType, Period, Sessions.PlanExchangeRate);
+                            }
+                        }
+                    }
+                    return Json(new { IsSuccess = true }, JsonRequestBehavior.AllowGet);
                 }
-                else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Name.ToString(), true) == 0)
+                catch (Exception ex)
                 {
-                    _MarketingBudget.UpdateTaskName(BudgetId, BudgetDetailId, ParentId, Sessions.User.CID, ListItems, nValue);
+                    return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetId }, JsonRequestBehavior.AllowGet);
                 }
-                else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Budget.ToString(), true) == 0 ||
-                         string.Compare(ColumnName, Enums.DefaultGridColumn.Forecast.ToString(), true) == 0 ||
-                         string.Compare(ColumnName, "Total_Forecast", true) == 0 ||
-                         string.Compare(ColumnName, "Total_Budget", true) == 0)
+            }
+        }
+        #region method to get line items list
+        /// <summary>
+        /// Method to get budget parent list item
+        /// </summary>
+        /// <param name="BudgetDetailId">for which budget want get parent list item</param>
+        public JsonResult GetParentLineItemList(int BudgetDetailId = 0)
+        {
+            LineItemDropdownModel objParentDDLModel = new LineItemDropdownModel();
+            objParentDDLModel = _MarketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId, Sessions.User.CID);
+            return Json(objParentDDLModel, JsonRequestBehavior.AllowGet);
+        }
+        //Method to get all child items for budget
+        public JsonResult GetChildLineItemList(int BudgetDetailId = 0)
+        {
+            var lstchildbudget = _MarketingBudget.GetChildLineItemBudgetDetailslist(BudgetDetailId, Sessions.User.CID);
+            return Json(lstchildbudget, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Method to get all lineitem list foe budget as per time frame
+        /// </summary>
+        /// <param name="BudgetDetailId"></param>
+        /// <param name="IsQuaterly"></param>
+        /// <returns></returns>
+        public ActionResult GetFinanceLineItemData(int BudgetDetailId = 0, string IsQuaterly = "quarters")
+        {
+            LineItemDetail AlllineItemdetail = new LineItemDetail();
+            #region "Set Create/Edit or View permission for Budget and Forecast to Global varialble."
+            _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
+            _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
+            #endregion
+            AlllineItemdetail = _MarketingBudget.GetLineItemGrid(BudgetDetailId, IsQuaterly,Sessions.PlanExchangeRate);
+            TempData["FinanceHeader"] = new FinanceModelHeaders();
+            ViewBag.HasLineItems = AlllineItemdetail.childLineItemCount;
+            return PartialView("_LineItem", AlllineItemdetail.LineItemGridData);
+        }
+
+        #endregion
+
+        #region Method to get user permission for budget
+        /// <summary>
+        /// method to get list of user permission for selected budget
+        /// </summary>
+        public ActionResult EditPermission(int BudgetId = 0, string level = "", string FlagCondition = "", string rowid = "")
+        {
+            try
+            {
+                ViewBag.EditLevel = level;
+                ViewBag.GridRowID = rowid;
+
+                ViewBag.childbudgetlist = _MarketingBudget.GetChildBudget(BudgetId);
+
+                if (string.Compare(FlagCondition, "Edit", true) == 0)
                 {
-                    _MarketingBudget.UpdateTotalAmount(ListItems, BudgetDetailId, nValue, ColumnName, Sessions.PlanExchangeRate);
+                    ViewBag.FlagCondition = "Edit";
                 }
                 else
                 {
-                    _MarketingBudget.UpdateBudgetorForecast(BudgetDetailId, Sessions.User.ID, nValue, ColumnName, AllocationType, Period, Sessions.PlanExchangeRate);
+                    ViewBag.FlagCondition = "View";
                 }
-                return Json(new { IsSuccess = false }, JsonRequestBehavior.AllowGet);
+
+                List<RevenuePlanner.Models.Budget_Permission> UserList = _MarketingBudget.GetUserList(BudgetId);
+                if (UserList.Count == 0)
+                {
+                    ViewBag.NoRecord = "NoRecord";
+                }
+
+                #region bindUser List for search
+                List<BDSService.User> lstUserDetail = new List<BDSService.User>();
+                lstUserDetail = _MarketingBudget.GetAllUserList(Sessions.User.CID, Sessions.User.ID, Sessions.ApplicationId);
+
+                lstUserDetail.Add(new BDSService.User
+                {
+                    UserId = Sessions.User.UserId,
+                    ID = Sessions.User.ID,
+                    FirstName = Sessions.User.FirstName,
+                    LastName = Sessions.User.LastName,
+                    JobTitle = Sessions.User.JobTitle
+                });
+                TempData["Userlist"] = lstUserDetail;
+                #endregion
+                FinanceModel objFinanceModel = _MarketingBudget.EditPermission(BudgetId, Sessions.ApplicationId, UserList, Sessions.User.ID);
+
+                return PartialView("_UserPermission", objFinanceModel);
             }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return PartialView("_UserPermission", null);
         }
 
+        /// <summary>
+        /// Added by Nandish Shah
+        /// Get specific record based on dropdown selection value of budgetdetail id
+        /// </summary>
+        public JsonResult DrpFilterByBudget(int BudgetId = 0, string level = "", string FlagCondition = "")
+        {
+            // Sessions.BudgetDetailId = BudgetId;
+            string strUserPermission = _MarketingBudget.CheckUserPermission(BudgetId, Sessions.User.CID, Sessions.User.ID);
+            if (strUserPermission == "Edit")
+            {
+                ViewBag.FlagCondition = "Edit";
+            }
+            else
+            {
+                ViewBag.FlagCondition = "View";
+            }
+            List<UserPermission> _user = _MarketingBudget.FilterByBudget(BudgetId, Sessions.ApplicationId);
+            return Json(new { _user = _user, Flag = ViewBag.FlagCondition }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Nandish Shah
+        /// Get list of user records when typing letter on textbox 
+        /// </summary>
+        public JsonResult getData(string term, string UserIds)
+        {
+            List<RevenuePlanner.Models.UserModel> Getvalue = new List<RevenuePlanner.Models.UserModel>();
+            try
+            {
+                List<BDSService.User> lstUserDetail = new List<BDSService.User>();
+                if (TempData["Userlist"] != null)
+                {
+                    lstUserDetail = TempData["Userlist"] as List<BDSService.User>;
+                    if (lstUserDetail.Count > 0)
+                    {
+                        lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+
+                        Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || user.JobTitle.ToLower().Contains(term.ToLower())).Select(user => new RevenuePlanner.Models.UserModel { UserId = user.ID, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+
+                        string[] keepList = UserIds.Split(',');
+                        Getvalue = Getvalue.Where(i => !keepList.Contains(i.UserId.ToString())).ToList();
+                        TempData["Userlist"] = lstUserDetail;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(Getvalue, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Nandish Shah
+        /// Get specific of user record on selection of dropdown list
+        /// </summary>
+        public JsonResult GetuserRecord(int Id)
+        {
+            RevenuePlanner.Models.UserModel objUserModel = new RevenuePlanner.Models.UserModel();
+            try
+            {
+                objUserModel = _MarketingBudget.GetuserRecord(Id, Sessions.User.ID, Sessions.ApplicationId);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return Json(objUserModel, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Delete record from Budget_Permission table
+        /// </summary>
+        /// <param name="id">contains user's Id</param>
+        /// <returns>If success than return true</returns>
+        [HttpPost]
+        public JsonResult DeleteUser(int id, int budgetId, string ChildItems)
+        {
+            List<string> ListItems = new List<string>();
+            List<int> BudgetDetailIds = new List<int>();
+            if (ChildItems != "" && ChildItems != null)
+            {
+                ListItems = ChildItems.Split(',').ToList();
+
+            }
+            for (int i = 0; i < ListItems.Count; i++)
+            {
+                if (ListItems[i].Contains("_"))
+                {
+                    BudgetDetailIds.Add(Convert.ToInt32(ListItems[i].Split('_')[1]));
+                }
+            }
+            BudgetDetailIds.Add(budgetId);
+            _MarketingBudget.DeleteUserForBudget(BudgetDetailIds, Sessions.User.ID);
+            return Json(new { Flag = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Dashrath Prajapati for PL ticket #1679
+        /// Save record in Budget_Permission table
+        /// </summary>
+        /// <param name="UserData">contains user's UserId,permission code,dropdown selection id</param>
+        /// <param name="ID">contains user's id</param>
+        /// <returns>if sucess then return true else false</returns>
+        [HttpPost]
+        public JsonResult SaveDetail(List<UserBudgetPermissionDetail> UserData, string ParentID, int[] CreatedBy, string ChildItems)
+        {
+            //Modified by Komal Rawal for #2242 change child item permission on change of parent item
+            if (UserData != null)
+            {
+               _MarketingBudget.SaveUSerPermission(UserData,ChildItems,ParentID, Sessions.User.ID);
+
+                //End
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }

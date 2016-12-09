@@ -1261,8 +1261,8 @@
 	</Field>
 	<!--Check Parameter BudgetId Should not be Zero or Equal to Zero-->
 	<Field>
-		<Name>InvalidBudgetData</Name>
-		<value>You don't have permission to delete this budget.</value>
+		<Name>InvalidBudgetId</Name>
+		<value>A BudgetId less than or equal to zero is invalid, and likely indicates the BudgetId was not set properly.</value>
 	</Field>
 	<!--End for #2801 Message-->
 </Messages>

@@ -1507,7 +1507,9 @@ namespace RevenuePlanner.Helpers
             TotalBudget = 19,
             TotalForecast = 20,
             TotalPlanned=21,
-            TotalActual=22
+            TotalActual=22,
+            Total_Budget = 23,
+            Total_Forecast = 24,
         }
 
         public static Dictionary<string, string> DefaultGridColumnValues = new Dictionary<string, string>()

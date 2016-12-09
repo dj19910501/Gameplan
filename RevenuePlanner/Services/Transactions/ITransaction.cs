@@ -187,6 +187,14 @@ namespace RevenuePlanner.Services.Transactions
         List<Transaction> GetTransactions(int clientId, DateTime start, DateTime end, bool unprocessedOnly = true, int skip = 0, int take = 10000);
 
         /// <summary>
+        /// Get a single transaction by transaction ID
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="transactionId"></param>
+        /// <returns></returns>
+        Transaction GetTransaction(int clientId, int transactionId);
+
+        /// <summary>
         /// Gets the line items that are mapped to the specified transaction. 
         /// The results are grouped by tactic, so if a transaction has line items mapped to multiple tactics, the returned list
         /// will be a list that contains tactic information and itself contains a list of all the line items associated with that

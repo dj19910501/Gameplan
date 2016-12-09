@@ -23,14 +23,12 @@ namespace RevenuePlanner.Services.MarketingBudget
         private MRPEntities _database;
         string TripleDash = "---";
         private const string formatThousand = "#,#0.##";
+        private const string PeriodPrefix = "Y";
         private IBDSService _ServiceDatabase;
         private ICurrency _ObjCurrency = new Currency();
 
-        public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
-        string[] DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString(), Enums.ColumnValidation.ValidNumeric.ToString() };
         List<string> QuaterPeriod = new List<string>();
         public string dataPeriod = "";
-        private const string PeriodPrefix = "Y";
         public MarketingBudget(MRPEntities database, IBDSService ServiceDatabase)
         {
             _database = database;
@@ -107,16 +105,26 @@ namespace RevenuePlanner.Services.MarketingBudget
             List<int> lstUserId = lstUser.Select(a => a.ID).ToList();
             string CommaSeparatedUserIds = String.Join(",", lstUserId);  //comma separated ids
             List<string> CustomColumnNames = new List<string>();
+            List<CustomFieldOption> lstCustomFieldOptions = new List<CustomFieldOption>();
             //Call Sp to get data.
             DataSet BudgetGridData = GetBudgetDefaultData(budgetId, TimeFrame, ClientID, UserID, CommaSeparatedUserIds, Exchangerate);
             if (BudgetGridData != null) // checks if data set returned is not null
             {
-                if (BudgetGridData.Tables.Count > 1) // checks if custom column table exists
+                if (BudgetGridData.Tables.Count > 2) // checks if custom column table exists
                 {
                     DataTable CustomColumnsTable = BudgetGridData.Tables[1];
                     CustomColumnNames = CustomColumnsTable.Columns.Cast<DataColumn>() //list to get custom column names
                       .Select(x => x.ToString())
                       .ToList();
+
+                    // Get all custom field options list
+                    lstCustomFieldOptions = (from cfo in BudgetGridData.Tables[2].AsEnumerable()
+                                             select new CustomFieldOption
+                                             {
+                                                 CustomFieldId = cfo.Field<int>("CustomFieldId"),
+                                                 CustomFieldOptionId = cfo.Field<int>("CustomFieldOptionId"),
+                                                 Value = cfo.Field<string>("Value")
+                                             }).ToList();
                 }
                 DataTable StandardColumnTable = BudgetGridData.Tables[0];
                 //list to get standard column names
@@ -126,13 +134,13 @@ namespace RevenuePlanner.Services.MarketingBudget
                   .ToList();
 
                 //Set Header Object.
-                SetHeaderObject(CustomColumnNames, StandardColumnNames, TimeFrame, objBudgetGridModel);
+                SetHeaderObject(CustomColumnNames, StandardColumnNames, TimeFrame, objBudgetGridModel, lstCustomFieldOptions);
                 List<string> NonePermissionIds = new List<string>(); //Get rowid of non permisson rows to show three dash in rollup columns 
                 NonePermissionIds = BudgetGridData.Tables[0].AsEnumerable().Where(p => p.Field<string>(Enums.DefaultGridColumn.Permission.ToString()).ToLower() == "none").Select(p => Regex.Replace((p[Enums.DefaultGridColumn.Name.ToString()].ToString() == null ? "" : p[Enums.DefaultGridColumn.Name.ToString().Trim().Replace("_", "")]).ToString(), @"[^0-9a-zA-Z]+", "") + "_" + Convert.ToInt32(p[Enums.DefaultGridColumn.BudgetDetailId.ToString()]) + "_" + (p[Enums.DefaultGridColumn.ParentId.ToString()].ToString() == "" ? "0" : p[Enums.DefaultGridColumn.ParentId.ToString()])).ToList();
                 //Call recursive function to bind the hierarchy.
                 List<BudgetGridRowModel> lstData = new List<BudgetGridRowModel>();
                 lstData = GetTopLevelRows(StandardColumnTable)
-                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,NonePermissionIds,TimeFrame)).ToList();
+                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,TimeFrame)).ToList();
 
 
                 objBudgetGridDataModel.head = objBudgetGridModel.GridDataStyleList;
@@ -169,7 +177,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="StandardColumnNames">List of names of standard column</param>
         /// <param name="lstUser">List of users</param>
         /// <param name="CurSymbol">Preferred currency symbol by user</param>
-        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol, List<string> NonPermissonIds, string TimeFrame)
+        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol,string TimeFrame)
         {
             string istitleedit = "1";
             string stylecolorgray = string.Empty; // if no permission set style to gray
@@ -179,6 +187,10 @@ namespace RevenuePlanner.Services.MarketingBudget
             List<string> Data = new List<string>(); // list to bind all each row data.
             UserData objuserData = new UserData();
             List<string> BindColumnDataatend = new List<string>(); //list will bind data of user owner and lineitems as we have to bind these data at the end.
+            ////call recursively untill there are no childs
+            List<BudgetGridRowModel> children = new List<BudgetGridRowModel>();
+            IEnumerable<DataRow> lstChildren = null;
+            lstChildren = GetChildren(DataSet, id);
 
             #region Bind Standard Columns
             foreach (var ColumnName in StandardColumnNames)
@@ -201,7 +213,21 @@ namespace RevenuePlanner.Services.MarketingBudget
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.LineItems.ToString())
                 {
-                    BindColumnDataatend.Add(row[ColumnName].ToString());
+                    if (Permission == "None" || Permission == "View" )
+                    {
+                        BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
+                    }
+                    else
+                    {
+                        if (lstChildren.Count() == 0)
+                        {
+                            string strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id, row[ColumnName.ToString()].ToString());
+                            BindColumnDataatend.Add(strLineItemLink);
+                        }
+                        else
+                            BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
+                    }
+
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.Users.ToString())
                 {
@@ -278,10 +304,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             Data.AddRange(BindColumnDataatend);
 
-            ////call recursively untill there are no childs
-            List<BudgetGridRowModel> children = new List<BudgetGridRowModel>();
-            IEnumerable<DataRow> lstChildren = null;
-            lstChildren = GetChildren(DataSet, id);
+         
 
             #region Handle Permissions in grid
             if (Permission == Enums.Permission.None.ToString())
@@ -311,7 +334,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
 
             children = lstChildren
-                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,NonPermissonIds,TimeFrame))
+                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,TimeFrame))
                   .ToList();
 
             return new BudgetGridRowModel { id = rowId, data = Data, rows = children, style = stylecolorgray, Detailid = Convert.ToString(id), userdata = objuserData };
@@ -390,7 +413,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="CustomColumnNames">List of names of custom column</param>
         /// <param name="StandardColumnNames">List of names of standard column</param>
         /// <param name="TimeFrame">Selected Time Frame</param>
-        private BudgetGridModel SetHeaderObject(List<string> CustomColumnNames, List<string> StandardColumnNames, string timeframe, BudgetGridModel mdlGridHeader)
+        /// <param name="mdlGridHeader">Model grid header</param>
+        /// <param name="lstCustomFieldOptions">List of custom field options</param>
+        private BudgetGridModel SetHeaderObject(List<string> CustomColumnNames, List<string> StandardColumnNames, string timeframe, BudgetGridModel mdlGridHeader, List<CustomFieldOption> lstCustomFieldOptions)
         {
             List<GridDataStyle> ListHead = new List<GridDataStyle>(); //list to bind all header data
             StringBuilder sbAttachedHeaders = new StringBuilder(); //used to get comma separated values to attach 2 headers
@@ -398,12 +423,13 @@ namespace RevenuePlanner.Services.MarketingBudget
             GridDataStyle headObj = new GridDataStyle();
             string Readonly = "ro";
             string Editable = "ed";
+            string Combo = "coro"; // combo type in the grid
             string ColumnId = "Id";
             string TaskName = "Task Name";
             string aligncenter = "center";
             string sort = "na";
-			List<int> colIndexes = new List<int>(); //List index of column used for given numberformat to rollup columns and also used in aggregation in unallocated columns
-           
+            List<int> colIndexes = new List<int>(); //List index of column used for given numberformat to rollup columns and also used in aggregation in unallocated columns
+
             int colindex = 0;//find the index of column used for given numberformat to rollup columns and also used in aggregation in unallocated columns  
             StringBuilder Allocatedforcastcolums = new StringBuilder(); ;//store indexes of all forcast columns used to create unallocated column foumula
             StringBuilder Allocatedbudgetcolums = new StringBuilder();//store indexes of all Budget columns used to create unallocated column foumula
@@ -411,7 +437,8 @@ namespace RevenuePlanner.Services.MarketingBudget
             string totalbudgetcolumns = string.Empty;////store indexe of total Budget columns used to create unallocated column foumula
             char plus = '+';
             string c = "c";
-
+            string customFieldName = string.Empty; 
+            int customFieldId = 0;
 
             #region Bind Standard Columns
             foreach (var columns in StandardColumnNames)
@@ -486,7 +513,15 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.sort = sort;
                     headObj.width = 100;
                     headObj.align = aligncenter;
-                    headObj.type = Readonly;
+                    if(columns == Enums.DefaultGridColumn.Owner.ToString())
+                    {
+                        headObj.type = Combo; //set type for the drop down in the dhtmlxgrid
+                    }
+                    else
+                    {
+                        headObj.type = Readonly;
+                    }
+
                     headObj.id = columns;
                     ListAppendAtLast.Add(headObj);
                 }
@@ -505,7 +540,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.width = 100;
                     headObj.align = aligncenter;
                     headObj.type = Readonly;
-                    headObj.id = columns;
+                    headObj.id = "Line Items";
                     ListAppendAtLast.Add(headObj);
                 }
                 else
@@ -618,25 +653,42 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
 
             #region Bind Header for custom columns
-            foreach (var columns in CustomColumnNames)
+            foreach (string column in CustomColumnNames)
             {
-                if (columns != Enums.DefaultGridColumn.BudgetDetailId.ToString())
+                // Split column name with "_" to get name and id. e.g. EMA_123 -> Name:EMA and ID:123
+                string[] arrColumn = column.Split('_');
+                if (arrColumn != null && arrColumn.Count() > 0)
+                {
+                    customFieldName = arrColumn.First();
+                    int.TryParse(arrColumn.Last(), out customFieldId);
+                }
+
+                if (customFieldName != Enums.DefaultGridColumn.BudgetDetailId.ToString())
                 {
                     headObj = new GridDataStyle();
                     if (timeframe == Enums.QuarterFinance.Yearly.ToString())
                     {
-                        headObj.value = columns;
+                        headObj.value = customFieldName;
                     }
                     else
                     {
                         headObj.value = string.Empty;
-                        sbAttachedHeaders.Append(columns + ",");
+                        sbAttachedHeaders.Append(customFieldName + ",");
                     }
                     headObj.sort = sort;
                     headObj.width = 100;
                     headObj.align = aligncenter;
-                    headObj.type = Editable;
-                    headObj.id = columns;
+                    // Bind custom field options into header
+                    if (lstCustomFieldOptions.Where(cf => cf.CustomFieldId == customFieldId).Any())
+                    {
+                        headObj.type = Combo;
+                        headObj.options = lstCustomFieldOptions.Where(cf => cf.CustomFieldId == customFieldId).Select(x => new Options { id = x.CustomFieldOptionId, value = x.Value }).ToList();
+                    }
+                    else
+                    {
+                        headObj.type = Editable;
+                    }
+                    headObj.id = string.Format("Cust_{0}",customFieldId);
                     ListHead.Add(headObj);
                 }
             }
@@ -664,6 +716,18 @@ namespace RevenuePlanner.Services.MarketingBudget
         {
             List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(ClientID).ToList();
             return lstUser;
+        }
+
+        /// <summary>
+        /// This is owner list (client wise), and it will be bind into dropdown at the time of editing
+        /// </summary>
+        /// <param name="ClientId">Client Id</param>
+        /// <param name="ApplicationId">Application Id</param>
+        /// <param name="lstUsers">List of users for current client</param>
+        /// <returns>Returns list of PlanOptions contains user ids and names</returns>
+        public List<PlanOptions> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers)
+        {
+            return Common.GetOwnerListForDropdown(ClientId, ApplicationId, lstUsers);
         }
 
         #region Method to convert number format
@@ -1199,7 +1263,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetId">Id of the Budget</param>
         /// <param name="ExchangeRate">Currency exchange rate</param>
         /// <returns>Returns datatable having 4 values(Budget,Forecast,Planned,Actual)</returns>
-        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate, List<BDSService.User> lstUser)
+        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate, List<BDSService.User> lstUser,bool IsLineItem=false)
         {
             #region "Declare Variables"
             SqlParameter[] para = new SqlParameter[3];
@@ -1215,8 +1279,16 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
 
             #region "Get Data"
+            if (IsLineItem)
+            {
             calResultset = _database.Database
+                   .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinanceLineItems @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
+            }
+            else
+            {
+                calResultset = _database.Database
                 .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinance @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
+            }
             #endregion
 
             return calResultset; // Returns Model having 4 values(Budget, Forecast, Planned, Actual)
@@ -1337,7 +1409,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="ListItems">List of BudgetDetaildIds of the Budget and its child budget</param>
         /// <param name="nValue">new Value</param>
 
-        public void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int clientId, List<string> listItems, string nValue)
+        public void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int clientId, string nValue)
         {
             if (clientId <= 0)
             {
@@ -1345,14 +1417,10 @@ namespace RevenuePlanner.Services.MarketingBudget
             }
             else
             {
-
-                List<Budget_Detail> listobjBudgetDetail = GetBudgetDetailList(listItems); // get Budget Detail List
                 Budget_Detail objBudgetDetail = new Budget_Detail();
-                if (listobjBudgetDetail != null && listobjBudgetDetail.Count > 0)
+                objBudgetDetail  = _database.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
+                if (objBudgetDetail != null)
                 {
-
-                    objBudgetDetail = listobjBudgetDetail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
-                }
                 if (budgetDetailId > 0 && parentId > 0)
                 {
                     //check objBudgetDetail is not null.
@@ -1394,26 +1462,69 @@ namespace RevenuePlanner.Services.MarketingBudget
                 _database.SaveChanges();
             }
         }
+        }
+
+        /// <summary>
+        /// Added by Rahul Shah on 12/07/2016
+        /// Method to Update OwnerName Of the budget 
+        /// </summary>        
+        /// <param name="budgetDetailId">BudgetDetaildIds of the Budget</param>                 
+        /// <param name="ListItems">List of BudgetDetaildIds of the Budget and its child budget</param>
+        /// <param name="ownerId">new Owner Id</param>
+
+        public void UpdateOwnerName(int budgetDetailId, List<string> listItems, int ownerId)
+        {
+            List<Budget_Detail> listobjBudgetDetail = GetBudgetDetailList(listItems); // get Budget Detail List
+            if (listobjBudgetDetail != null && listobjBudgetDetail.Count > 0 && ownerId != 0)
+            {
+                //update budget detail with new owner id.
+                listobjBudgetDetail.Select(item =>
+                {
+                    if (item.CreatedBy != ownerId)
+                        item.CreatedBy = ownerId;
+
+                    return item;
+
+                }).ToList();
+                //get budget permission data for selected budget detailids.
+                List<Budget_Permission> BudgetPermissionData = _database.Budget_Permission.ToList().Where(item => listItems.Contains(item.BudgetDetailId.ToString())).ToList();
+                
+                //check permission is exist or not for new owner for selected budget detail if exist the delete that entry from budgetdetail_Permission table
+                List<Budget_Permission> BudgetPermissionDataExists = BudgetPermissionData.Where(item => item.UserId == ownerId && item.IsOwner == false).ToList();
+
+                if (BudgetPermissionDataExists.Count > 0)
+                {
+                    BudgetPermissionDataExists.ForEach(a => _database.Entry(a).State = EntityState.Deleted);
+                }
+
+                //add entry in budgetdetail_permission table to identify permission.
+                List<Budget_Permission> OwnerBudgetPermissionData = BudgetPermissionData.Where(item => item.IsOwner == true).ToList();
+                OwnerBudgetPermissionData.Select(id => { id.UserId = ownerId;
+                                                                    return id; }).ToList();
+            }
+            _database.SaveChanges();
+
+        }
 
 
         /// <summary>
         /// Added by Rahul Shah on 12/07/2016
         /// Method to Update Total Budget and Total Forecast Column data Of the budget 
         /// </summary>
-        /// <param name="ListItems">List of BudgetDetaildIds of the Budget and its child budget</param>        
         /// <param name="budgetDetailId">BudgetDetaildIds of the Budget</param> 
         /// <param name="nValue">new Value</param>
         /// <param name="columnName">Name of the Column (i.e Budget, Forecast, ..etc)</param> 
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
 
-        public void UpdateTotalAmount(List<string> listItems, int budgetDetailId, string nValue, string columnName = "", double planExchangeRate = 1.0)
+        public void UpdateTotalAmount(int budgetDetailId, string nValue, string columnName, double planExchangeRate = 1.0)
         {
 
             if (budgetDetailId > 0)
             {
-                List<Budget_Detail> listobjBudgetDetail = GetBudgetDetailList(listItems);
+
                 Budget_Detail objMainBudgetDetail = new Budget_Detail();
-                objMainBudgetDetail = listobjBudgetDetail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault(); //get budget detail
+                objMainBudgetDetail = _database.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault(); //get budget detail of selected budget.
+
                 if (objMainBudgetDetail != null)
                 {
                     double NewValue = 0;
@@ -1421,13 +1532,15 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                     if (!string.IsNullOrEmpty(nValue) && nValue != "undefined")
                     {
-                        if (string.Compare(columnName, Enums.DefaultGridColumn.Budget.ToString(), true) == 0)
+                        //check column is budget or forecast
+                        if ((string.Compare(columnName, Enums.DefaultGridColumn.Budget.ToString(), true) == 0)
+                            || (string.Compare(columnName, Enums.DefaultGridColumn.Total_Budget.ToString(), true) == 0))
                         {
-                            objMainBudgetDetail.TotalBudget = Convert.ToDouble(objCurrency.SetValueByExchangeRate(NewValue, planExchangeRate)); // apply currency rate and save new value
+                            objMainBudgetDetail.TotalBudget = Convert.ToDouble(_ObjCurrency.SetValueByExchangeRate(NewValue, planExchangeRate)); // apply currency rate and save new value
                         }
                         else
                         {
-                            objMainBudgetDetail.TotalForecast = Convert.ToDouble(objCurrency.SetValueByExchangeRate(NewValue, planExchangeRate)); // apply currency rate and save new value
+                            objMainBudgetDetail.TotalForecast = Convert.ToDouble(_ObjCurrency.SetValueByExchangeRate(NewValue, planExchangeRate)); // apply currency rate and save new value
                         }
                     }
                     _database.Entry(objMainBudgetDetail).State = EntityState.Modified;
@@ -1444,68 +1557,47 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// Method to Update Budget and Forecast Column data monthly or quaterly view and also update customfield data Of the budget 
         /// </summary>
         /// <param name="budgetDetailId">BudgetDetaildIds of the Budget</param> 
-        /// <param name="userId">User Id</param> 
         /// <param name="nValue">new Value</param>
-        /// <param name="columnName">Name of the Column (i.e Budget, Forecast, ..etc)</param>
+        /// <param name="isForecast">check editable field value is for forecast or budget</param>
         /// <param name="allocationType">Type of allocation i.e(quarter, monthly, yearly)</param>
         /// <param name="Period">period (i.e Jan, Feb.. etc)</param>
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
 
-        public void UpdateBudgetorForecast(int budgetDetailId, int userId, string nValue, string columnName = "", string allocationType = "", string period = "", double planExchangeRate = 1.0)
+        public void SaveBudgetorForecast(int budgetDetailId, string nValue, bool isForecast = false, string allocationType = "quarters", string period = "", double planExchangeRate = 1.0)
         {
-            List<Budget_Columns> objColumns = GetBudgetColumn(Sessions.User.CID);
-            List<Budget_Columns> objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a).ToList();
-            Budget_Columns CustomCol = objCustomColumns.Where(a => a.CustomField.Name == (columnName != null ? columnName.Trim() : "")).Select(a => a).FirstOrDefault();
-            string BudgetColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && a.IsDeleted == false && a.IsTimeFrame == true
-                   && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
-            string ForecastColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && a.IsDeleted == false && a.IsTimeFrame == true
-                    && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
-
-            // get budget amount according to budgetdetail and its period
+            // get budget amount according to budgetdetail id and its period
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
             objBudAmount = GetBudgetAmount(budgetDetailId, allocationType, period);
 
+            // check budget amount of the periticular period is exist or not. 
+            //If objBudAmount is null then add new budget amount data into Budget_DetailAmount table
             if (objBudAmount == null)
             {
-                if (CustomCol == null)
-                {
                     objBudAmount = new Budget_DetailAmount();
-                    if (string.Compare(columnName, Enums.DefaultGridColumn.Name.ToString(), true) != 0
-                        && string.Compare(columnName, Enums.DefaultGridColumn.Owner.ToString(), true) != 0)
-                    {
-                        if (!string.IsNullOrEmpty(columnName))
-                        {
-                            if (columnName.Split('_').Length > 0)
-                            {
-                                columnName = columnName.Split('_')[1];
-                            }
-                            if (columnName == BudgetColName)
-                            {
-                                objBudAmount.Budget = Convert.ToDouble(objCurrency.SetValueByExchangeRate(double.Parse(nValue), planExchangeRate));
-                            }
-                            else if (columnName == ForecastColName)
-                            {
-                                objBudAmount.Forecast = Convert.ToDouble(objCurrency.SetValueByExchangeRate(double.Parse(nValue), planExchangeRate));
-                            }
                             if (budgetDetailId > 0)
                             {
+                    double newValue;
+                    bool isNumeric = double.TryParse(nValue, out newValue);
+                    if (isForecast)
+                    {
+                        //assign value to forecast field
+                        objBudAmount.Forecast = Convert.ToDouble(_ObjCurrency.SetValueByExchangeRate(newValue, planExchangeRate));
+                    }
+                    else
+                    {
+                        //assign value to budget field
+                        objBudAmount.Budget = Convert.ToDouble(_ObjCurrency.SetValueByExchangeRate(newValue, planExchangeRate));
+                    }
                                 objBudAmount.Period = dataPeriod;
                                 objBudAmount.BudgetDetailId = budgetDetailId;
                                 _database.Entry(objBudAmount).State = EntityState.Added;
                                 _database.SaveChanges();
                             }
                         }
-                    }
-                }
                 else
                 {
-                    SaveCustomColumnValues(columnName, CustomCol, budgetDetailId, nValue, userId, planExchangeRate);
-                }
-            }
-            else
-            {
-                SaveBudgetandForecast(budgetDetailId, allocationType, columnName, BudgetColName, ForecastColName, nValue, planExchangeRate);
-
+                // If not null then update budget amount data into Budget_DetailAmount table
+                UpdateBudgetorForecast(budgetDetailId, allocationType, nValue, isForecast, planExchangeRate);
             }
 
         }
@@ -1516,15 +1608,14 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// </summary>
         /// <param name="budgetDetailId">BudgetDetaildIds of the Budget</param> 
         /// <param name="allocationType">Type of allocation i.e(quarter, monthly, yearly)</param>
-        /// <param name="columnName">Name of the Column (i.e Budget, Forecast, ..etc)</param>
-        /// <param name="budgetColName">Name of the budget Column (i.e Budget, Forecast, ..etc)</param>
-        /// <param name="forecastColName">Name of the Forest Column (i.e Budget, Forecast, ..etc)</param>        
+        /// <param name="isForecast">check the field is forecast or not</param>
         /// <param name="nValue">new Value</param>        
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
-        public void SaveBudgetandForecast(int budgetDetailId, string allocationType, string columnName, string budgetColName, string forecastColName, string nValue, double planExchangeRate = 1.0)
+        private void UpdateBudgetorForecast(int budgetDetailId, string allocationType, string nValue, bool isForecast = false, double planExchangeRate = 1.0)
         {
             if (string.Compare(allocationType, Enums.PlanAllocatedBy.quarters.ToString(), true) == 0)
             {
+                // save budget and forecast value in quarterly case
                 List<Budget_DetailAmount> BudgetAmountList = new List<Budget_DetailAmount>();
                 BudgetAmountList = _database.Budget_DetailAmount.Where(a => a.BudgetDetailId == budgetDetailId && QuaterPeriod.Contains(a.Period)).OrderBy(a => a.Period).ToList();
                 double? QuaterSum = 0;
@@ -1532,26 +1623,36 @@ namespace RevenuePlanner.Services.MarketingBudget
                 Budget_DetailAmount objBudgetDetailAmt;
                 if (BudgetAmountList.Count > 0)
                 {
-                    if (columnName.Split('_').Length > 0)
+                    if (isForecast)
                     {
-                        columnName = columnName.Split('_')[1];
+                        //here we perform sum of the forecast column and assign it to QuaterSum variable
+                        QuaterSum = Convert.ToDouble(BudgetAmountList.Select(a => a.Forecast).Sum());
                     }
-                    QuaterSum = (columnName == budgetColName ? Convert.ToDouble(BudgetAmountList.Select(a => a.Budget).Sum()) : Convert.ToDouble(BudgetAmountList.Select(a => a.Forecast).Sum()));
-                    nValue = Convert.ToString(objCurrency.SetValueByExchangeRate(Convert.ToDouble(nValue), planExchangeRate));
+                    else
+                    {
+                        //here we perform sum of the budget column and assign it to QuaterSum variable
+                        QuaterSum = Convert.ToDouble(BudgetAmountList.Select(a => a.Budget).Sum());
+                    }
+                    //apply Exchange rate on new value
+                    nValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(Convert.ToDouble(nValue), planExchangeRate));
+
+                    //here nValue is Grater than the sum of the quarter the add new value to first month of the quarter
                     if (Convert.ToDouble(nValue) > QuaterSum)
                     {
+                        // Add cost from first months of the quarter e.g. For Q1 -> Add cost in Y1 as per requirement
                         objBudgetDetailAmt = BudgetAmountList.FirstOrDefault();
                         Maindiff = Convert.ToDouble(nValue) - QuaterSum;
-                        if (string.Compare(columnName, budgetColName, true) == 0)
-                        {
-                            objBudgetDetailAmt.Budget += Maindiff;
-                        }
-                        else
+                        if (!isForecast)
                         {
                             objBudgetDetailAmt.Forecast += Maindiff;
                         }
+                        else
+                        {
+                            objBudgetDetailAmt.Budget += Maindiff;
+                        }
                         _database.Entry(objBudgetDetailAmt).State = EntityState.Modified;
                     }
+                    //here nValue is less than the sum of the quarter the subtrac new value from the last month to first month of the quarter
                     else if (Convert.ToDouble(nValue) < QuaterSum)
                     {
                         QuaterPeriod.Reverse(); // Reversed list to subtract from last months
@@ -1564,19 +1665,19 @@ namespace RevenuePlanner.Services.MarketingBudget
                             objBudgetDetailAmt = BudgetAmountList.Where(pcptc => pcptc.Period == quarter).FirstOrDefault();
                             if (objBudgetDetailAmt != null)
                             {
-                                if (string.Compare(columnName, budgetColName, true) == 0)
-                                {
-                                    curPeriodVal = objBudgetDetailAmt.Budget;
-                                    curPeriodVal = curPeriodVal - needToSubtract;
-                                    needToSubtract = -curPeriodVal;
-                                    objBudgetDetailAmt.Budget = curPeriodVal < 0 ? 0 : curPeriodVal;
-                                }
-                                else
+                                if (isForecast)
                                 {
                                     curPeriodVal = objBudgetDetailAmt.Forecast;
                                     curPeriodVal = curPeriodVal - needToSubtract;
                                     needToSubtract = -curPeriodVal;
                                     objBudgetDetailAmt.Forecast = curPeriodVal < 0 ? 0 : curPeriodVal;
+                                }
+                                else
+                                {
+                                    curPeriodVal = objBudgetDetailAmt.Budget;
+                                    curPeriodVal = curPeriodVal - needToSubtract;
+                                    needToSubtract = -curPeriodVal;
+                                    objBudgetDetailAmt.Budget = curPeriodVal < 0 ? 0 : curPeriodVal;
                                 }
                                 if (curPeriodVal >= 0)
                                 {
@@ -1596,24 +1697,19 @@ namespace RevenuePlanner.Services.MarketingBudget
                 Budget_DetailAmount objBudAmountUpdate = _database.Budget_DetailAmount.Where(a => a.BudgetDetailId == budgetDetailId && a.Period == dataPeriod).FirstOrDefault();
                 if (objBudAmountUpdate != null)
                 {
-                    if (!string.IsNullOrEmpty(columnName))
-                    {
-
-
-                        if (string.Compare(columnName, budgetColName, true) == 0)
-                        {
-                            objBudAmountUpdate.Budget = Convert.ToDouble(nValue);
-                        }
-                        else if (string.Compare(columnName, forecastColName, true) == 0)
+                    if (isForecast)
                         {
                             objBudAmountUpdate.Forecast = Convert.ToDouble(nValue);
                         }
+                    else
+                    {
+                        objBudAmountUpdate.Budget = Convert.ToDouble(nValue);
+                    }
                         _database.Entry(objBudAmountUpdate).State = EntityState.Modified;
                         _database.SaveChanges();
                     }
                 }
             }
-        }
 
 
         /// <summary>
@@ -1626,29 +1722,36 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="nValue">new Value</param>        
         /// <param name="userId">User Id</param>        
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
-        public void SaveCustomColumnValues(string columnName, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0)
+        public void SaveCustomColumnValues(int customfieldId, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0)
         {
-
-            if (string.Compare(columnName, customCol.CustomField.Name, true) == 0)
+            if (customfieldId == customCol.CustomField.CustomFieldId)
             {
+                string[] DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString(), Enums.ColumnValidation.ValidNumeric.ToString() };
                 CustomField_Entity objCustomFieldEnity = new CustomField_Entity();
+                //get Customfield value from CustomField_Entity table of perticular column.
+
                 objCustomFieldEnity = _database.CustomField_Entity.Where(a => a.EntityId == (budgetDetailId != 0 ? budgetDetailId : 0) && a.CustomFieldId == customCol.CustomFieldId).FirstOrDefault();
+
                 if (DoubleColumnValidation.Contains(customCol.ValidationType))
                 {
-                    double n;
-                    bool isNumeric = double.TryParse(nValue, out n);
+                    double newValue;
+                    bool isNumeric = double.TryParse(nValue, out newValue);
+                    //if customfield is numeric the apply multi currency ExchangeRate.
                     if (isNumeric)
                     {
-                        nValue = Convert.ToString(objCurrency.SetValueByExchangeRate(double.Parse(nValue), planExchangeRate));
+                        nValue = Convert.ToString(_ObjCurrency.SetValueByExchangeRate(newValue, planExchangeRate));
                     }
                 }
+                //here we need to check customfied value is exist or not in Customfield_Entity Table
                 if (objCustomFieldEnity != null)
                 {
+                    //customfied value is exist so we need to update the value in Customfield_Entity Table
                     objCustomFieldEnity.Value = nValue;
                     _database.Entry(objCustomFieldEnity).State = EntityState.Modified;
                 }
                 else
                 {
+                    //customfied value is not exist so we need to add the value in Customfield_Entity Table
                     objCustomFieldEnity = new CustomField_Entity();
                     objCustomFieldEnity.CustomFieldId = customCol.CustomFieldId;
                     objCustomFieldEnity.EntityId = budgetDetailId;
@@ -1667,10 +1770,12 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// Method to Get Budget Column List.
         /// </summary>                
         /// <param name="clientId">Client Id</param>                
-        private List<Budget_Columns> GetBudgetColumn(int clientId)
+        /// <returns>Return Budget Column List.</returns>
+        public List<Budget_Columns> GetBudgetColumn(int clientId)
         {
-
-            List<Budget_Columns> objColumns = (from ColumnSet in _database.Budget_ColumnSet
+            //get column of the Marketing budget.
+            List<Budget_Columns> objColumns = new List<Budget_Columns>();
+            objColumns = (from ColumnSet in _database.Budget_ColumnSet
                                                join Columns in _database.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
                                                where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
                                                && ColumnSet.ClientId == clientId
@@ -1684,7 +1789,8 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="budgetDetailId">budget detail Id</param>
         /// <param name="allocationType">Type of allocation i.e(quarter, monthly, yearly)</param>
         ///  <param name="Period">period (i.e Jan, Feb.. etc)</param>
-        public Budget_DetailAmount GetBudgetAmount(int budgetDetailId, string allocationType, string period)
+        ///  <returns>Return Budget amount object.</returns>
+        private Budget_DetailAmount GetBudgetAmount(int budgetDetailId, string allocationType, string period)
         {
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
 
@@ -1723,12 +1829,670 @@ namespace RevenuePlanner.Services.MarketingBudget
             else
             {
                 period = Enums.ReportMonthDisplayValuesWithPeriod.Where(a => a.Key == period).Select(a => a.Value).FirstOrDefault();
-                //period = s;
                 dataPeriod = period;
                 objBudAmount = _database.Budget_DetailAmount.Where(a => a.BudgetDetailId == budgetDetailId && a.Period == period).FirstOrDefault();
             }
 
             return objBudAmount;
         }
+
+        #region methods to bind  line items for budget
+        #region "Finance: Get Parent & Child dropdown list for LineItem page "
+        /// <summary>
+        /// Get the list of Parent dropdown for LineItem screen
+        /// </summary>
+        /// <returns>Return the list of Budget Details list</returns>
+        public LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0, int ClientID=0)
+        {
+
+            List<Budget_Detail> tblBudgetDetails = new List<Budget_Detail>();
+            tblBudgetDetails = _database.Budget_Detail.Where(a => a.Budget.ClientId == ClientID && a.IsDeleted == false).ToList();
+            List<ViewByModel> lstParentItems = new List<ViewByModel>();
+            LineItemDropdownModel objParentListModel = new LineItemDropdownModel();
+            int? ParentId = 0, mostParentId = 0;
+            ParentId = tblBudgetDetails.Where(dtl => dtl.Id == BudgetDetailId).Select(dtl => dtl.ParentId).FirstOrDefault();
+            mostParentId = tblBudgetDetails.Where(dtl => dtl.Id == ParentId).Select(dtl => dtl.ParentId).FirstOrDefault();
+            var filterParentList = (from detail1 in tblBudgetDetails
+                                    where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
+                                    select new { detail1.Name, detail1.Id }).Distinct().ToList();
+            lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+
+            objParentListModel.list = lstParentItems;
+            objParentListModel.parentId = ParentId.HasValue ? ParentId.Value : 0;
+            return objParentListModel;
+        }
+        #endregion
+        /// <summary>
+        /// Get the list of Child dropdown for LineItem screen
+        /// </summary>
+        /// <returns>Return the list of Budget Details list</returns>
+        public List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0, int ClientId=0)
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstChildItems = new List<ViewByModel>();
+            var filterChildList = (from detail1 in _database.Budget_Detail
+                                   where detail1.ParentId == ParentBudgetDetailId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name) && detail1.Budget.ClientId == ClientId
+                                   select new { detail1.Name, detail1.Id }).Distinct().ToList();
+            lstChildItems = filterChildList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+            return lstChildItems;
+        }
+        //Method to get line item grid for budget and time frame
+        public LineItemDetail GetLineItemGrid(int BudgetDetailId, string IsQuaterly = "quarters", double PlanExchangeRate=0)
+        {
+            LineItemDetail AllLineItemDetail = new LineItemDetail();
+            BudgetGridModel lineItemGridData = new BudgetGridModel();
+
+            BudgetGridDataModel objLineItemGridDataModel = new BudgetGridDataModel();
+            Budget_Detail objBudgetDetail = _database.Budget_Detail.Where(a => a.Id == (BudgetDetailId > 0 ? BudgetDetailId : a.BudgetId) && a.IsDeleted == false).FirstOrDefault();
+            List<LineItem_Budget> LineItemidBudgetList = new List<LineItem_Budget>();
+            if (objBudgetDetail == null)
+                objBudgetDetail = new Budget_Detail();
+
+            LineItemidBudgetList = _database.LineItem_Budget.Where(a => objBudgetDetail.Id == a.BudgetDetailId).Select(a => a).ToList();
+            if (LineItemidBudgetList.Count() > 0)
+            {
+                LineItem_Budget LinkedTactic;
+                for (int i = 0; i < LineItemidBudgetList.Count(); i++)
+                {
+                    LinkedTactic = new LineItem_Budget();
+                    LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
+                    if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                    {
+                        if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                        {
+                            LineItemidBudgetList.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                }
+            }
+            List<int> PlanLineItemBudgetDetail = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+            List<Plan_Campaign_Program_Tactic_LineItem> lstPlanLineItems = _database.Plan_Campaign_Program_Tactic_LineItem.Where(a => PlanLineItemBudgetDetail.Contains(a.PlanLineItemId) && a.IsDeleted == false).ToList();
+            List<int> LineItemids = lstPlanLineItems != null ? lstPlanLineItems.Select(line => line.PlanLineItemId).ToList() : new List<int>();
+
+            List<string> tacticStatus = Common.GetStatusListAfterApproved();
+
+            List<Budget_DetailAmount> BudgetDetailAmount = _database.Budget_DetailAmount.Where(a => objBudgetDetail.Id == a.BudgetDetailId).Select(a => a).ToList();
+
+            List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in _database.Plan_Campaign_Program_Tactic_LineItem_Cost
+                                                                                 where LineItemids.Contains(Cost.PlanLineItemId)
+                                                                                 select Cost).ToList();
+
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in _database.Plan_Campaign_Program_Tactic_LineItem_Actual
+                                                                                     join TacticLineItem in _database.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                     join Tactic in _database.Plan_Campaign_Program_Tactic on TacticLineItem.PlanTacticId equals Tactic.PlanTacticId
+                                                                                     where LineItemids.Contains(Actual.PlanLineItemId)
+                                                                                     && tacticStatus.Contains(Tactic.Status)
+                                                                                     select Actual).ToList();
+
+            #region "Create Child Data Model"
+
+            #region "Declare local variables"
+            List<BudgetGridRowModel> childModelList = new List<BudgetGridRowModel>();
+            BudgetGridRowModel childModel = new BudgetGridRowModel();
+            List<string> childData = new List<string>();
+            BudgetAmount objBudgetAmount;
+            List<Plan_Campaign_Program_Tactic_LineItem_Cost> lstPlannedValue;
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstActualValue;
+            List<LineItem_Budget> lstLineItemBudget;
+            double planVal = 0, actualVal = 0, forecstVal = 0, totalPlanned = 0, totalActual = 0;
+            string strlineItemPopupUrl;
+            int planId;
+            #endregion
+
+            #region "Foreach LineItem list to set Value into Model"
+            foreach (Plan_Campaign_Program_Tactic_LineItem lineitem in lstPlanLineItems)
+            {
+                totalPlanned = totalActual = 0;
+                childModel = new BudgetGridRowModel();
+                childData = new List<string>();
+                planId = 0;
+                strlineItemPopupUrl = string.Empty;
+                // Name,View,Forecast,Planned,Actual
+                childData.Add(HttpUtility.HtmlDecode(lineitem.Title));
+                planId = lineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId;
+                childData.Add(string.Format("#SEARCHHTML#_{0}_{1}", lineitem.PlanLineItemId, planId));
+                //strlineItemPopupUrl = GetNotificationURLbyStatus(planId, lineitem.PlanLineItemId, Enums.Section.LineItem.ToString());
+                //childData.Add(string.Format("<div id='{0}' onclick=OpenLineItemPopup('{1}') title='View' class='grid_Search'></div>", lineitem.PlanLineItemId, HttpUtility.HtmlDecode(strlineItemPopupUrl)));
+
+                #region "Filter Planned Value"
+                lstPlannedValue = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
+                lstPlannedValue = PlanDetailAmount.Where(plan => plan.PlanLineItemId == lineitem.PlanLineItemId).ToList();
+                #endregion
+
+                #region "Filter Actual Value"
+                lstActualValue = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                lstActualValue = ActualDetailAmount.Where(actual => actual.PlanLineItemId == lineitem.PlanLineItemId).ToList();
+                #endregion
+
+                #region "Filter LineItem_Budget List"
+                lstLineItemBudget = new List<LineItem_Budget>();
+                lstLineItemBudget = LineItemidBudgetList.Where(line => line.PlanLineItemId == lineitem.PlanLineItemId).ToList();
+                #endregion
+
+                #region "Get Planned & Actual value based on Timeframe selected value"
+                objBudgetAmount = new BudgetAmount();
+                objBudgetAmount = GetAmountValue(IsQuaterly, new List<Budget_DetailAmount>(), lstPlannedValue, lstActualValue, lstLineItemBudget,PlanExchangeRate);
+                #endregion
+
+                if (objBudgetAmount != null)
+                {
+                    #region "Insert data as per timeframe wise"
+                    int timeframeRowCount = objBudgetAmount.Plan != null ? objBudgetAmount.Plan.Count : 0;
+                    for (int row = 0; row < timeframeRowCount; row++)
+                    {
+                        planVal = objBudgetAmount.Plan[row] != null ? Convert.ToDouble(objBudgetAmount.Plan[row]) : 0;
+                        actualVal = objBudgetAmount.Actual[row] != null ? Convert.ToDouble(objBudgetAmount.Actual[row]) : 0;
+                        totalPlanned = totalPlanned + planVal;
+                        totalActual = totalActual + actualVal;
+                        childData.Add("<div style='color: gray;'>0</div>"); // Insert Forecast Column Value
+                        childData.Add(planVal.ToString(formatThousand));    // Insert Planned Column Value
+                        childData.Add(actualVal.ToString(formatThousand));  // Insert Actual Column Value
+                    }
+                    #endregion
+                }
+
+                #region "Add Child Items Total values to Model"
+                childData.Add("<div style='color: gray;'>0</div>");
+                childData.Add(totalPlanned.ToString(formatThousand));    // Insert Planned Column Total Value
+                childData.Add(totalActual.ToString(formatThousand));  // Insert Actual Column Total Value 
+                #endregion
+
+                #region "Set LinetItem Value in Model"
+                childModel.id = lineitem.PlanLineItemId.ToString();
+                childModel.data = childData;
+                childModelList.Add(childModel);
+                #endregion
+            }
+            #endregion
+
+            #endregion
+
+            #region "Create Parent Data Model"
+            List<BudgetGridRowModel> parentModelList = new List<BudgetGridRowModel>();
+            List<string> parentData = new List<string>();
+            BudgetGridRowModel parentDataModel = new BudgetGridRowModel();
+            double totalParentForecast = 0, totalParentPlanned = 0, totalParentActual = 0;
+            parentData.Add(HttpUtility.HtmlDecode(objBudgetDetail.Name));   // Set TaskName column value
+            parentData.Add(string.Empty);           // Set View column value
+            objBudgetAmount = new BudgetAmount();
+            objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList,PlanExchangeRate);
+
+            if (objBudgetAmount != null)
+            {
+                #region "Insert data as per timeframe wise"
+                int timeframeRowCount = objBudgetAmount.Plan != null ? objBudgetAmount.Plan.Count : 0;
+
+                for (int row = 0; row < timeframeRowCount; row++)
+                {
+                    forecstVal = objBudgetAmount.ForeCast[row] != null ? Convert.ToDouble(objBudgetAmount.ForeCast[row]) : 0;
+                    planVal = objBudgetAmount.Plan[row] != null ? Convert.ToDouble(objBudgetAmount.Plan[row]) : 0;
+                    actualVal = objBudgetAmount.Actual[row] != null ? Convert.ToDouble(objBudgetAmount.Actual[row]) : 0;
+
+                    totalParentForecast = totalParentForecast + forecstVal;
+                    totalParentPlanned = totalParentPlanned + planVal;
+                    totalParentActual = totalParentActual + actualVal;
+
+                    parentData.Add(forecstVal.ToString(formatThousand)); // Insert Forecast Column Value
+                    parentData.Add(planVal.ToString(formatThousand));    // Insert Planned Column Value
+                    parentData.Add(actualVal.ToString(formatThousand));  // Insert Actual Column Value
+                }
+                #endregion
+            }
+
+            #region "Add Child Items Total values to Model"
+            parentData.Add(totalParentForecast.ToString(formatThousand));   // Insert Forecast Column Total Value
+            parentData.Add(totalParentPlanned.ToString(formatThousand));    // Insert Planned Column Total Value
+            parentData.Add(totalParentActual.ToString(formatThousand));  // Insert Actual Column Total Value 
+            #endregion
+
+            parentDataModel.id = BudgetDetailId.ToString();
+            parentDataModel.data = parentData;
+            parentDataModel.rows = childModelList;
+            parentModelList.Add(parentDataModel);
+
+            //ViewBag.HasLineItems = childModelList != null && childModelList.Count > 0 ? true : false;
+            AllLineItemDetail.childLineItemCount = childModelList != null && childModelList.Count > 0 ? true : false;
+            #endregion
+            var temp = parentModelList.Where(a => a.id == Convert.ToString(BudgetDetailId)).Select(a => a.data).FirstOrDefault();
+            FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
+            if (temp != null)
+            {
+                objFinanceHeader.Budget = 0;
+                objFinanceHeader.Forecast = Convert.ToDouble(temp[temp.Count - 3]);
+                objFinanceHeader.Planned = Convert.ToDouble(temp[temp.Count - 2]);
+                objFinanceHeader.Actual = Convert.ToDouble(temp[temp.Count - 1]);
+            }
+            else
+            {
+                objFinanceHeader.Budget = objFinanceHeader.Forecast = objFinanceHeader.Planned = objFinanceHeader.Actual = 0;
+            }
+            objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+
+            objLineItemGridDataModel.rows = parentModelList;
+            objLineItemGridDataModel.FinanemodelheaderObj = objFinanceHeader;
+
+            lineItemGridData.objGridDataModel = objLineItemGridDataModel;
+            AllLineItemDetail.LineItemGridData = lineItemGridData;
+            return AllLineItemDetail;
+
+        }
+
+        
+        #region Get Budget/ForeCast/Plan/Actual Value
+        public BudgetAmount GetAmountValue(string isQuaterly, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount, List<LineItem_Budget> LineItemidBudgetList, double PlanExchangeRate)
+        {
+            #region Declartion
+            BudgetAmount objbudget = new BudgetAmount();
+            List<double?> _budgetlist = new List<double?>();
+            List<double?> _forecastlist = new List<double?>();
+            List<double?> _planlist = new List<double?>();
+            List<double?> _actuallist = new List<double?>();
+            int currentEndMonth = 12;
+            double? _Budget = 0, _ForeCast = 0, _Plan = 0, _Actual = 0;
+            #endregion
+
+            List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+            List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+            List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+            List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+
+            List<string> _curentBudget = new List<string>();
+            List<string> _curentForeCast = new List<string>();
+            List<string> _curentPlan = new List<string>();
+            List<string> _curentActual = new List<string>();
+
+            List<string> _commonQuarters = new List<string>();
+            if (LineItemidBudgetList != null)
+            {
+                List<int> LineItemIds = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+            }
+            if (isQuaterly == Enums.PlanAllocatedBy.quarters.ToString())
+            {
+                #region "Get Quarter list based on loop value"
+                for (int i = 1; i <= 4; i++)
+                {
+                    if (i == 1)
+                    {
+                        _curentBudget = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    else if (i == 2)
+                    {
+                        _curentBudget = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    else if (i == 3)
+                    {
+                        _curentBudget = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    else if (i == 4)
+                    {
+                        _curentBudget = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where _curentPlan.Contains(plandetail.Period)
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where _curentActual.Contains(actualdetail.Period)
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _Budget = Budget_DetailAmountList.Where(a => _curentBudget.Contains(a.Period)).Sum(a => a.Budget);
+                    _budgetlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+
+                    _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
+                    _forecastlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    _planlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
+                }
+                #endregion
+            }
+            else if (isQuaterly == Enums.PlanAllocatedBy.months.ToString())
+            {
+                for (int i = 1; i <= 12; i++)
+                {
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where plandetail.Period == PeriodPrefix + i.ToString()
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where actualdetail.Period == PeriodPrefix + i.ToString()
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _Budget = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Budget);
+                    _budgetlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+                    _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
+                    _forecastlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    _planlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
+                }
+            }
+            else
+            {
+                if (isQuaterly == Enums.QuarterWithSpace.Quarter1.ToString())
+                {
+                    _commonQuarters = Q1;
+                }
+                else if (isQuaterly == Enums.QuarterWithSpace.Quarter2.ToString())
+                {
+                    _commonQuarters = Q2;
+                }
+                else if (isQuaterly == Enums.QuarterWithSpace.Quarter3.ToString())
+                {
+                    _commonQuarters = Q3;
+                }
+                else if (isQuaterly == Enums.QuarterWithSpace.Quarter4.ToString())
+                {
+                    _commonQuarters = Q4;
+                }
+                foreach (var item in _commonQuarters)
+                {
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where plandetail.Period == item
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where actualdetail.Period == item
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+
+                    _Budget = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Budget);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _budgetlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+                    _ForeCast = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Forecast);
+                    _forecastlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    _planlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
+                }
+            }
+            objbudget.Budget = _budgetlist;
+            objbudget.ForeCast = _forecastlist;
+            objbudget.Plan = _planlist;
+            objbudget.Actual = _actuallist;
+            return objbudget;
+        }
+            #endregion
+        #endregion
+
+        #region method to bind User Permission for budget
+        public List<ViewByModel> GetChildBudget(int BudgetId = 0)
+        {
+            List<ViewByModel> lstchildbudget = Common.GetParentBudgetlist(BudgetId);
+            if (lstchildbudget.Count > 0)
+            {
+                return lstchildbudget;
+            }
+            else
+            {
+                lstchildbudget.Add(new ViewByModel { Text = "Please Select", Value = "0" });
+                return lstchildbudget;
+            }
+        }
+        //Method to get list of user for budget
+        public List<Budget_Permission> GetUserList(int BudgetId)
+        {
+            List<Budget_Permission> UserList = (from c in _database.Budget_Permission
+                                                where c.BudgetDetailId == BudgetId
+                                                orderby c.UserId
+                                                select c).GroupBy(g => g.UserId).Select(x => x.FirstOrDefault()).ToList();
+            return UserList;
+        }
+        //Method to get user permission list for budget
+        public FinanceModel EditPermission(int BudgetId, Guid ApplicationId, List<Budget_Permission> UserList, int UserId)
+        {
+            FinanceModel objFinanceModel = new FinanceModel();
+            BDSService.User objUser = new BDSService.User();
+
+            UserPermission user = new UserPermission();
+            List<BDSService.User> BDSuserList = _ServiceDatabase.GetMultipleTeamMemberDetailsEx(UserList.Select(x => x.UserId).ToList(), ApplicationId);
+            List<UserPermission> _user = new List<UserPermission>();
+            for (int i = 0; i < BDSuserList.Count; i++)
+            {
+                user = new UserPermission();
+                user.budgetID = BudgetId;
+                user.UserId = BDSuserList[i].ID;
+                user.FirstName = BDSuserList[i].FirstName;
+                user.LastName = BDSuserList[i].LastName;
+                user.Role = BDSuserList[i].RoleTitle;
+                user.Permission = UserList[i].PermisssionCode;
+                user.createdby = UserList[i].CreatedBy.ToString();
+                user.IsOwner = UserList[i].IsOwner;
+                _user.Add(user);
+            }
+            objFinanceModel.Userpermission = _user.OrderBy(i => i.FirstName, new AlphaNumericComparer()).ToList();
+            var index = _user.FindIndex(x => x.UserId == UserId);
+            if (index != -1)
+            {
+                var item = _user[index];
+                _user[index] = _user[0];
+                _user[0] = item;
+            }
+            objFinanceModel.Userpermission = _user.ToList();
+            return objFinanceModel;
+        }
+        //method to check permission for budget
+        public string CheckUserPermission(int BudgetId, int ClientId, int UserId)
+        {
+            List<BDSService.User> lstUser = new List<BDSService.User>();
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            lstUser = objBDSServiceClient.GetUserListByClientIdEx(ClientId).ToList();
+            List<int> lstUserId = lstUser.Select(a => a.ID).ToList();
+            List<Budget_Permission> ListOfUserPermission = _database.Budget_Permission.Where(a => lstUserId.Contains(a.UserId)).ToList();
+            List<Budget_Permission> CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)BudgetId && a.UserId == UserId).ToList();
+            string isEdit = "";
+            string strUserAction = string.Empty;
+            if (CheckUserPermission.Count > 0)
+            {
+                if (CheckUserPermission.First().PermisssionCode == 0)
+                {
+                    isEdit = "Edit";
+                }
+                else
+                {
+                    isEdit = "View";
+                }
+            }
+            else
+            {
+                isEdit = "View";
+            }
+            return isEdit;
+        }
+
+        public List<UserPermission> FilterByBudget(int BudgetId, Guid ApplicationId)
+        {
+            List<UserPermission> _user = new List<UserPermission>();
+            BDSService.User objUser = new BDSService.User();
+            var UserList = (from c in _database.Budget_Permission
+                            where c.BudgetDetailId == BudgetId
+                            orderby c.UserId
+                            select c).GroupBy(g => g.UserId).Select(x => x.FirstOrDefault()).ToList();
+
+            for (int i = 0; i < UserList.Count; i++)
+            {
+                UserPermission user = new UserPermission();
+                objUser = _ServiceDatabase.GetTeamMemberDetailsEx(UserList[i].UserId, ApplicationId);
+                user.budgetID = BudgetId;
+                user.UserId = objUser.ID;
+                user.FirstName = objUser.FirstName;
+                user.LastName = objUser.LastName;
+                user.Role = objUser.RoleTitle;
+                user.Permission = UserList[i].PermisssionCode;
+                user.createdby = Convert.ToString(UserList[i].CreatedBy);
+                user.IsOwner = UserList[i].IsOwner;
+                _user.Add(user);
+            }
+            return _user;
+        }
+        public UserModel GetuserRecord(int Id, int UserId, Guid ApplicationId)
+        {
+            int uId = 0;
+            if (Id == 0)
+            {
+                uId = UserId;
+            }
+            else
+            {
+                uId = Id;
+            }
+            BDSService.User objUser = new BDSService.User();
+            UserModel objUserModel = new UserModel();
+
+            objUser = _ServiceDatabase.GetTeamMemberDetailsEx(uId, ApplicationId);
+            if (objUser != null)
+            {
+                objUserModel.DisplayName = objUser.DisplayName;
+                objUserModel.Email = objUser.Email;
+                objUserModel.Phone = objUser.Phone;
+                objUserModel.FirstName = objUser.FirstName;
+                objUserModel.JobTitle = objUser.JobTitle;
+                objUserModel.LastName = objUser.LastName;
+                objUserModel.UserId = objUser.ID;
+                objUserModel.RoleTitle = objUser.RoleTitle;
+            }
+            return objUserModel;
+        }
+        //method to get all userlist for client for search in edit permission
+        public List<BDSService.User> GetAllUserList(int ClientId, int UserId, Guid ApplicationId)
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            List<BDSService.User> lstUserDetail = objBDSServiceClient.GetTeamMemberListEx(ClientId, ApplicationId, UserId, true).ToList();
+
+            return lstUserDetail;
+        }
+        //method to delete user for budget and its parent item
+        public void DeleteUserForBudget(List<int> BudgetDetailIds, int UserID)
+        {
+            List<Budget_Permission> BudgetDetailList = _database.Budget_Permission.Where(i => BudgetDetailIds.Contains(i.BudgetDetailId) && i.UserId == UserID).ToList();
+            //END
+            foreach (var BudgetDetail in BudgetDetailList)
+            {
+                _database.Entry(BudgetDetail).State = EntityState.Deleted;
+            }
+            _database.SaveChanges();
+        }
+        //method to save user permission
+        public void SaveUSerPermission(List<UserBudgetPermissionDetail> UserData, string ChildItems, string ParentID,  int UserId)
+        {
+            List<string> ListItems = new List<string>();
+            if (ChildItems != "" && ChildItems != null)
+            {
+                ListItems = ChildItems.Split(',').ToList();
+
+            }
+            if (ParentID != "" && ParentID != null)
+            {
+                ListItems.Add(ParentID);
+            }
+
+            string ItemID = string.Empty;
+
+            List<UserBudgetPermissionDetail> FinalUserData = new List<UserBudgetPermissionDetail>();
+            Budget_Permission objBudget_Permission = new Budget_Permission();
+            List<Budget_Permission> BudgetDetailList = _database.Budget_Permission.Select(list => list).ToList();
+            Budget_Permission CurrentobjBudget_Permission = new Budget_Permission();
+            List<UserBudgetPermissionDetail> TempUserData = new List<UserBudgetPermissionDetail>();
+
+            for (int i = 0; i < ListItems.Count; i++)
+            {
+               
+                if (ListItems[i].Contains("_"))
+                {
+                    ItemID = ListItems[i].Split('_')[1];
+                }
+                TempUserData = (from User in UserData
+                                select new UserBudgetPermissionDetail
+                                {
+                                    BudgetDetailId = Convert.ToInt32(ItemID),
+                                    PermisssionCode = User.PermisssionCode,
+                                    UserId = User.UserId
+                                }).ToList();
+                FinalUserData.AddRange(TempUserData);
+            }
+
+            try
+            {
+                for (int i = 0; i < FinalUserData.Count; i++)
+                {
+                    _database.Configuration.AutoDetectChangesEnabled = false;
+                    objBudget_Permission = new Budget_Permission();
+                    int id = FinalUserData[i].UserId;
+                    CurrentobjBudget_Permission = BudgetDetailList.Where(t => t.BudgetDetailId.Equals(FinalUserData[i].BudgetDetailId) && t.UserId.Equals(id)).FirstOrDefault();
+                    if (CurrentobjBudget_Permission == null)
+                    {
+                        objBudget_Permission.UserId = FinalUserData[i].UserId;
+                        objBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
+                        objBudget_Permission.CreatedBy = UserId;
+                        objBudget_Permission.CreatedDate = DateTime.Now;
+                        objBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
+                        _database.Entry(objBudget_Permission).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        if (!CurrentobjBudget_Permission.IsOwner)
+                        {
+                            CurrentobjBudget_Permission.UserId = FinalUserData[i].UserId;
+                            CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
+                            CurrentobjBudget_Permission.CreatedDate = DateTime.Now;
+                            CurrentobjBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
+                            _database.Entry(CurrentobjBudget_Permission).State = EntityState.Modified;
+                        }
+
+
+
+                    }
+
+                }
+            }
+            finally
+            {
+                _database.Configuration.AutoDetectChangesEnabled = true;
+            }
+            _database.SaveChanges();
+        }
+
+        #endregion
     }
 }

@@ -1,0 +1,688 @@
+﻿@using RevenuePlanner.Helpers;
+@model RevenuePlanner.Services.MarketingBudget.FinanceModel
+@{
+
+    string GridRowID = ViewBag.GridRowID;
+}
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+}
+
+<script src="@Url.Content("~/Scripts/js/jquery-ui-1.11.4.min.js")"></script>
+
+<link href="@Url.Content("~/Content/css/JquryUI/jquery-ui-1.8.21.custom.css")" rel="stylesheet" type="text/css" />
+<style>
+    
+</style>
+
+        <div style="" class="fin-head-left fin-innerpage-title">
+            <div style="float: left;" id="drpUserParentMain">
+                <div id="nl-formUserChildFinance" class="nl-form-plan-title without-margin plantitle financetitle">
+                    @Html.DropDownList("ddlUserChildFinance", new SelectList((System.Collections.IEnumerable)ViewBag.childbudgetlist, "Value", "Text"))
+                    <div class="nl-overlay"></div>
+                </div>
+            </div>
+        </div>
+    
+<div class="fin-permission clearfix">
+    <div class="permission-inner">
+        <div class="user-list">
+            <p>Add user to list</p>
+            <div class="search-user">
+                @Html.TextBox("Selectuser",null, new  { placeholder = "Search..." })
+            </div>
+              <div id="NoSearch" style="display:none;clear: both;font-weight: bold;">No data found.</div>
+        </div>
+       
+       
+      
+        <div class="user-table">
+            <div id="SaveMsg" class="alert alert-success" style="display:none">
+                <span class="x-icon pull-right" id="aclose">x</span>
+                <span>Changes Saved.</span>
+            </div>
+
+            <p>Users with permission</p>
+            <table id="userTable" class="table table-striped table-hover myteam" >
+                <thead>
+                    <tr>
+                        <th title="First Name">First Name
+                        </th>
+                        <th title="Last Name">Last Name
+                        </th>
+
+                        <th title="Role">Role
+                        </th>
+                        <th style="border-right:none">Permission</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @*Modified by Komal Rawal on 08-06-2016 for #2245 add none permission*@
+                    @if (ViewBag.FlagCondition == "View")
+                    {
+
+                        foreach (var item in Model.Userpermission)
+                        {
+                        <tr class="userrow">
+                            <td title="@item.UserId" class="selectrec" style="display: none">@Html.DisplayFor(model => item.UserId)</td>
+                            <td id="IsOwner" title="Owner" class="selectrec" style="display: none">@item.IsOwner</td>
+                            <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
+                            <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
+                            <td>@Html.DisplayFor(model => item.Role)</td>
+                              @if (item.Permission == 0)
+                              {
+                                     <td class="userDelete" >
+                                          
+                                    <p>
+                                        <input type="radio" id="vew-edit_@item.UserId" checked="checked" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="view-only_@item.UserId"  name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                    </p>
+                                         <p>
+                                             <input type="radio" id="None_@item.UserId" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                         </p>
+                                    <a href="#">
+                                        @*<span title="Delete Member" class="x-icon hide pull-right"></span>*@
+                                    </a>
+                                </td>
+                              }
+                              else if (item.Permission == 1)
+                              {
+                                 <td class="userDelete" >
+                                    <p>
+                                        <input type="radio" id="vew-edit_@item.UserId"  name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="view-only_@item.UserId" checked="checked" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserId" checked="checked" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                    </p>
+                                     <p>
+                                         <input type="radio" id="None_@item.UserId" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                     </p>
+                                    <a href="#">
+                                       @* <span title="Delete Member" class="x-icon hide pull-right"></span>*@
+                                    </a>
+
+                                </td>
+                              }
+                              else
+                              {
+                                <td class="userDelete">
+                                    <p>
+                                        <input type="radio" id="vew-edit_@item.UserId" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="view-only_@item.UserId" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="None_@item.UserId" checked="checked" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                    </p>
+                                    <a href="#">
+                                        @* <span title="Delete Member" class="x-icon hide pull-right"></span>*@
+                                    </a>
+
+                                </td>
+
+                              }
+                        </tr>
+                        }
+                    }
+                    @if (ViewBag.FlagCondition == "Edit")
+                    {
+                        foreach (var item in Model.Userpermission)
+                        {
+                        <tr class="userrow">
+                          
+                            <td title="UserID" class="selectrec" style="display: none">@Html.DisplayFor(model => item.UserId)</td>
+                            <td title="CreatedBy" class="selectrec" style="display: none">@Html.DisplayFor(model => item.createdby)</td>
+                            <td id="IsOwner" title="Owner" class="selectrec" style="display: none">@item.IsOwner</td>
+                            <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
+                            <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
+                            <td>@Html.DisplayFor(model => item.Role)</td>
+
+                            @if (item.Permission == 0)
+                            {
+                                <td class="userDelete" style="border-right:none">
+                                    <p>
+                                        <input type="radio" id="vew-edit_@item.UserId" class="redinput" checked="checked" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="view-only_@item.UserId" class="redinput" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="None_@item.UserId" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                    </p>
+                                    <a href="#" onclick="DeleteUsers('@item.UserId','@item.budgetID','@item.FirstName','@item.LastName');">
+                                        <span title="Delete Member" class="x-icon hide pull-right"></span>
+                                    </a>
+                                </td>
+                            }
+                            else if (item.Permission == 1)
+                            {
+                                
+                                <td class="userDelete" style="border-right:none">
+                                    <p>
+                                        <input type="radio" id="vew-edit_@item.UserId"  name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="view-only_@item.UserId" checked="checked" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="None_@item.UserId"  name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                    </p>
+                                    <a href="#" onclick="DeleteUsers('@item.UserId','@item.budgetID','@item.FirstName','@item.LastName');">
+                                        <span title="Delete Member" class="x-icon hide pull-right"></span>
+                                    </a>
+
+                                </td>
+                                
+                            }
+                            else
+                            {
+                            <td class="userDelete">
+                                <p>
+                                    <input type="radio" id="vew-edit_@item.UserId" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                </p>
+                                <p>
+                                    <input type="radio" id="view-only_@item.UserId" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                </p>
+                                <p>
+                                    <input type="radio" id="None_@item.UserId" checked="checked" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                </p>
+                                <a href="#" onclick="DeleteUsers('@item.UserId','@item.budgetID','@item.FirstName','@item.LastName');">
+                                    <span title="Delete Member" class="x-icon hide pull-right"></span>
+                                </a>
+
+                            </td>
+
+                            }
+
+                        </tr>
+                        }
+                    }
+
+
+                </tbody>
+            </table>
+            <input id="btnsave" type="submit" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" title="Save Changes" value="Save Changes">
+            <button id="btncancel" class="btn-link Cancel-button-center-popups" type="button">Cancel</button>
+        </div>
+         <div id="tableNoData" style="width: 100%; clear: both; display: none; font-weight: bold; text-align: center">
+            No data found.
+        </div>
+    </div>
+     
+</div>
+
+<div id="divDeleteUserPopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div>
+        <form>
+            <h2 class="primary-title source-sans-prosemibold resubmission_header">Deleting an item</h2>
+            <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to delete </label>
+            <label id="lblname" style="text-align: center; width: 100%;font-weight: bold;" class="resubmission_content"></label>
+            <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
+            <input type="hidden" id="hdnsourceid" />
+            <input type="hidden" id="hdndestid" />
+            <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="btnDeleteUser">Proceed</button>
+            <button id="cancelDeleteItem" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button" data-dismiss="modal">Cancel</button>
+        </form>
+    </div>
+</div>
+<div id="divCancelPopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div>
+        <form>
+            <label style="text-align: center; width: 100%;" class="resubmission_content">Error! You have unsaved changes. Do you wish to leave this page and lose your work?</label>
+            <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button_Continue">Continue</button>
+            <button id="cancel-button_Cancel" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button" data-dismiss="modal">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<style type="text/css">
+    .ui-state-focus
+    {
+        background: #F69C55!important;
+    }
+</style>
+
+
+<script type="text/javascript">
+    var nlformUserChildFinance;
+    var _isDatabase = '';
+    var isExist = false;
+    var _id = '';
+    var _budgetId = ''
+    var _changedata = '';
+    var userIDs = [];
+    var Owneruser = '';
+    $(function () {
+        pageName = "UserPermission";
+
+        var isView = '@ViewBag.FlagCondition';
+        if (isView == "View") {
+            $("#DivFilterPer").show();
+            $(".user-list").hide();
+            $("#btnsave").hide();
+            $("#btncancel").hide();
+            $(".user-table").css("width", "100%");
+            $(".user-table input[type=radio]").attr("disabled", true);
+            $("#divFinanceBack").show();
+        }
+        $("#lblfinanceTitle").text('Finance (Permissions)');
+        $('#SaveMsg').hide();
+        $("#DivFilter").css('display', 'none');
+        $('#divDeleteUserPopup').modal("hide");
+        $('.white-chart').hide();
+
+
+        nlformUserChildFinance = new NLForm(document.getElementById('nl-formUserChildFinance'));
+
+        GetIds();
+
+        var PrevSelectVal = $("#nl-formUserChildFinance option:selected");
+        $('#nl-formUserChildFinance').find('li').click(function (e) {
+
+            var $thisId = $(this).val();
+            $("#nl-formUserChildFinance li").each(function () {
+                if ($(this).val().toString() != $(PrevSelectVal).val()) {
+                    var tss = $(this).removeClass('nl-dd-checked');
+
+                }
+            });
+
+            $(this).addClass('nl-dd-checked');
+            $(this).parent().parent().find('a').text($(this).text());
+            Bindtable($thisId);
+            $("#divFinanceBack").show();
+
+        });
+        getselection();
+        InspectBudgetPermissionRow();
+        function Bindtable($thisId) {
+            $.ajax({
+                url: '@Url.Content("~/MarketingBudget/DrpFilterByBudget/")',
+                type: 'POST',
+                dataType: "json",
+                data: { BudgetId: $thisId, level: 0, FlagCondition: 'Edit' },
+                success: function (Data) {
+                    $("#userTable tbody").html("");
+                    if (Data._user.length == "0") {
+                        $("#userTable").hide();
+                        $("#btnsave").hide();
+                        $("#btncancel").hide();
+                        $("#tableNoData").show();
+                        return false;
+                    }
+                    else {
+                        var data = Data._user;
+                        var html = "";
+                        if (Data.Flag == "Edit") {
+                            var data = Data._user;
+                            var html = "";
+                            for (var i = 0; i < data.length; i++) {
+                                var html = "";
+                                if (data[i].Permission == 0) {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" checked="checked" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                }
+                                else if (data[i].Permission == 1) {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                }
+                                else
+                                {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput"  checked="checked" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                }
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].UserId + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="MarketingBudget/DeleteUser/' + data[i].UserId + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                            }
+                            $("#tableNoData").hide();
+                            $(".user-table").show();
+
+                            $("#userTable").show();
+                            $("#btnsave").show();
+                            $("#btncancel").show();
+                            $(".user-list").show();
+                            $(".user-table").css("width", "77%");
+                            InspectBudgetPermissionRow();
+                        }
+                        else {
+                            for (var i = 0; i < data.length; i++) {
+                                var html = "";
+                                if (data[i].Permission == 0) {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" checked="checked" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                }
+                                else if (data[i].Permission == 1) {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                }
+                                else
+                                {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput"  id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" checked="checked" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+
+                                }
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].UserId + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="MarketingBudget/DeleteUser/' + data[i].UserId + '")"></a></td></tr>');
+                            }
+                            $("#DivFilterPer").show();
+                            $(".user-list").hide();
+                            $("#btnsave").hide();
+                            $("#btncancel").hide();
+                            $(".user-table").css("width", "100%");
+                            $(".user-table input[type=radio]").attr("disabled", true);
+                            $("#divFinanceBack").show();
+                        }
+
+                    }
+                },
+                error: function () {
+                }
+            })
+        }
+
+
+        if ('@ViewBag.NoRecord' == "NoRecord") {
+            $("#userTable").hide();
+            $("#btnsave").hide();
+            $("#btncancel").hide();
+
+            $("#tableNoData").css('display', 'block');
+        }
+        $(".x-icon").click(function (e) {
+            $(this).closest(".alert").slideUp(300);
+        });
+
+        var row;
+        $('#userTable').on('click', '#deletemember', function () {
+            var Name = $(this).closest('tr').find('td').eq('2').text() + " " + $(this).closest('tr').find('td').eq(3).text() + ".";
+
+            $("#divDeleteUserPopup h2").text('Deleting a user');
+            $("#lblname").html(Name);
+            $("#divDeleteUserPopup").modal('show');
+            row = $(this).closest('tr');
+            return false;
+        });
+        //$('#cancelDeleteItem').on("click", function () {
+        //    $('#divDeleteUserPopup').modal("hide");
+        //    return false;
+        //});
+        $('#btnDeleteUser').on("click", function () {
+            if (_isDatabase == "Fromdatabase") {
+                Userdelete(_id, _budgetId);
+            }
+            else {
+
+                var y = $(row).remove();
+            }
+            GetIds();
+            $('#divDeleteUserPopup').modal("hide");
+            $("#SaveMsg").show();
+            $("#SaveMsg").find('span').last().text('User Deleted SuccessFully !');
+        });
+
+        $("#btncancel").click(function () {
+            if (_changedata == 'Change') {
+                $("#divCancelPopup").modal('show');
+            }
+            else {
+                FinanceBack();
+            }
+        })
+
+        $("#proceed-button_Continue").click(function () {
+            FinanceBack();
+            $("#divCancelPopup").modal('hide');
+        });
+
+     
+
+        var imageurl = '@Url.Content("~/Content/images/icon-plus_in_circle.png")';
+
+        var us = userIDs;
+        var typingTimer;                //timer identifier
+        var doneTypingInterval = 500;  //time in ms, 5 second for example
+        $("#Selectuser").keyup(function () {
+            if ($("#Selectuser").val().trim().length > 0) {
+                clearTimeout(typingTimer);
+                $('#Selectuser').autocomplete({
+                    source: function (request, response) {
+                        if ($('#Selectuser').val) {
+                            typingTimer = setTimeout(function () {
+                                var urlcontent = '@Url.Content("~/MarketingBudget/getData/")';
+                                //$.getJSON(urlcontent + "?term=" + request.term, function (data) {
+                                $.getJSON(urlcontent, { 'term': request.term, 'UserIds': userIDs.toString() }, function (data) {
+                                    var t = data;
+                                    if (data.length > 0) {
+                                        $("#NoSearch").hide();
+                                        myApp.hidePleaseWait();
+                                        response($.map(data, function (item) {
+                                            return { label: item.UserId, value: item.DisplayName, title: item.JobTitle };
+                                        }))
+                                    }
+                                    else {
+                                        $("#NoSearch").show();
+                                        $('.ui-autocomplete').html('');
+                                    }
+
+                                });
+                                myApp.hidePleaseWait();
+                            }, doneTypingInterval);
+                        }
+                    },
+                    minLength: 1,
+                    // delay: 50,
+                    select: function (event, ui) {
+
+                        $this = ui.item.label;
+                        getrecord($this);
+                    }
+
+                }).data('ui-autocomplete')._renderItem = function (ul, item) {
+                    return $("<li>")
+                  .append("<div><div class='add-interest'><div>" + item.value + "</div><div title='" + item.title + "'>" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
+                        .appendTo(ul.addClass('user_permission_list'));
+                };
+            }
+            else {
+                $("#NoSearch").hide();
+            }
+        });
+
+        ShowHideControls('UserPermission');
+
+        function getrecord(_userid) {
+            $('.user-table').show();
+            $("#userTable").show();
+            $("#btnsave").show();
+            $("#btncancel").show();
+            $('#tableNoData').hide();
+            checkExistingUser(_userid);
+            var t = _UserBudgetId;
+            _changedata = "Change";
+
+            if (isExist) {
+                return false;
+            }
+            else {
+                $.ajax({
+                    url: '@Url.Content("~/MarketingBudget//GetuserRecord/")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { Id: _userid },
+                    success: function (data) {
+                        $("#SaveMsg").hide();
+                        $("#Selectuser").val('');
+                        $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data.UserId + '</td><td titile="CreatedBy" class="selectrec" style="display:none">' + '@Sessions.User.UserId' + '</td><td title=' + data.FirstName + '>' + data.FirstName + '</td><td title=' + data.LastName + '>' + data.LastName + '</td><td>' + data.RoleTitle +
+                            '</td><td class="userDelete" style="border-right:none"> <p><input type="radio" id="vew-edit_' + data.UserId + '" class="redinput" checked="checked" name="permission' + "_" + data.UserId + '"  par=0><label for="vew-edit_' + data.UserId + '">View/Edit</label></p><p> <input type="radio"  class="redinput" id="view-only_' + data.UserId + '"  name="permission' + "_" + data.UserId + '" par=1 /><label for="view-only_' + data.UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data.UserId + '"  name="permission' + "_" + data.UserId + '" par=2 /><label for="None_' + data.UserId + '">None</label></p><a href="MarketingBudget/DeleteUser/' + data.UserId + '"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                        InspectBudgetPermissionRow();
+                        GetIds();
+
+                    }
+                })
+
+            }
+
+        }
+
+        function checkExistingUser(_userid) {
+            isExist = false;
+            $("#userTable tbody tr").each(function () {
+                var Id = $(this).find('td:first').text();
+                if (!isExist) {
+                    if (Id == _userid) {
+                        isExist = true;
+                    }
+                    else {
+                        isExist = false;
+                    }
+                }
+
+            })
+        }
+
+        function checklogedUser() {
+            $("#userTable tbody tr").each(function () {
+
+                var Id = $(this).find('td:first').text();
+                if (Id == '@Sessions.User.ID') {
+                    $(this).find('td,input,span,a').attr("disabled", "disabled");
+                    $(this).find('a').removeAttr("onclick");
+                    $(this).find('a').removeAttr('href', '')
+                    $(this).find('span').removeClass('x-icon');
+                }
+            })
+        }
+
+        $("#btnsave").click(function () {
+            var emp = [];
+            var _createdBy = [];
+            var table = $("#userTable tbody");
+            var DrpId = $("#nl-formUserChildFinance li.nl-dd-checked").val()
+
+            if ($("#userTable tbody tr").length > 0) {
+                $("#userTable tbody tr").each(function () {
+                    var _CodeFlag;
+                    var userid = $(this).find('td:first').text();
+                    var createdby = $(this).find('td').eq(1).text()
+                    _createdBy.push(createdby);
+                    $(this).find("input[type='radio']:checked").each(function () {
+                        _CodeFlag = $(this).attr("par");
+                    });
+                    emp.push({ UserId: userid.toString(), PermisssionCode: parseInt(_CodeFlag) });
+                });
+            }
+            else {
+                return false;
+            }
+            //Modified by Komal Rawal for #2242 change chil item permission on change of parent item
+            var ChildItems = budgetgrid.getAllSubItems('@GridRowID');
+            emp = JSON.stringify({ 'UserData': emp, 'ParentID': '@GridRowID', 'CreatedBy': _createdBy, 'ChildItems': ChildItems });
+            $.ajax({
+                url: '@Url.Action("SaveDetail", "MarketingBudget")',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                type: 'POST',
+                data: emp,
+                success: function (data) {
+                    if (data) {
+                        $("#SaveMsg").find('span').last().text('Changes Saved.');
+                        $('#SaveMsg').show();
+                    }
+                },
+                error: function () {
+                    $('#SaveMsg').hide();
+                }
+            });
+        })
+        checklogedUser();
+    })
+
+
+    function GetIds() {
+        userIDs = [];
+        $("#userTable tbody tr").each(function () {
+            var Id = $(this).find('td:first').text();
+            userIDs.push(Id);
+        });
+
+    }
+
+    $(document).on('click', '.redinput', function () {
+        _changedata = 'Change';
+    });
+
+    function InspectBudgetPermissionRow() {
+        $("#userTable tbody tr").each(function () {
+            var Id = $(this).find('td:first').text();
+            var CreatedbyId = $(this).find('td').eq(1).text();
+            var IsOwner = $(this).find('td#IsOwner').text();
+            if (Id == '@Sessions.User.ID') {
+                $(this).find('td,input,span,a').attr("disabled", "disabled");
+                $(this).find('a').removeAttr("onclick");
+                $(this).find('a').removeAttr('href', '')
+                $(this).find('span').removeClass('x-icon');
+            }
+            if (IsOwner.toString().toLowerCase() == "true") {
+                $(this).find('td').css('background-color', '#E2B22C');
+                $(this).find('td,input,span,a').attr("disabled", "disabled");
+                $(this).find('a').removeAttr("onclick");
+                $(this).find('span').removeClass('x-icon');
+            }
+            if (Id == Owneruser) {
+                $(this).find('td,input,span,a').attr("disabled", "disabled");
+                $(this).find('a').removeAttr("onclick");
+                $(this).find('span').removeClass('x-icon');
+            }
+
+        })
+    }
+
+    function getselection() {
+        $("#nl-formUserChildFinance li").each(function () {
+            var y = $(this).val();
+            if (_UserBudgetId == y) {
+                $(this).siblings().removeClass('nl-dd-checked')
+                $(this).addClass('nl-dd-checked');
+                $(this).parent().parent().find('a').text($(this).text());
+            }
+        });
+    }
+
+    function Userdelete(id, budgetID) {
+        //Modified by Komal Rawal for #2242 delete child item user permission on deletion of parent item user
+        var ChildItems = budgetgrid.getAllSubItems('@GridRowID');
+        $.ajax({
+            url: '@Url.Action("DeleteUser", "MarketingBudget")',
+            type: 'POST',
+            data: { id: id, budgetID: budgetID, ChildItems : ChildItems },
+            success: function (data) {
+                if (data.Flag) {
+                    $("#userTable tbody tr").each(function () {
+                        var Id = $(this).find('td:first').text();
+                        if (Id == id) {
+                            $this = $(this).closest('tr').remove();
+                        }
+                    });
+
+                }
+                GetIds();
+            },
+            error: function () {
+
+            }
+        });
+
+    }
+
+    function DeleteUsers(id, budgetID, firsname, lastname) {
+        _isDatabase = "Fromdatabase";
+        var name = firsname + " " + lastname + ".";
+        $("#divDeleteUserPopup h2").text('Deleting a user');
+        $("#lblname").html(name);
+        $("#divDeleteUserPopup").modal('show');
+        _id = id;
+        _budgetId = budgetID;
+    }
+
+</script>

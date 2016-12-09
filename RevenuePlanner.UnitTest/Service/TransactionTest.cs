@@ -641,6 +641,13 @@ namespace RevenuePlanner.UnitTest.Service
             Assert.AreEqual(0, lineItemMappings.Count);
         }
 
+        [TestMethod]
+        public void Test_Transaction_GetTransaction()
+        {
+            int testTransactionId = 120;
+            var trans = _transaction.GetTransaction(testClientId, testTransactionId);
+            Assert.AreEqual(testTransactionId, trans.TransactionId);
+        }
         /// <summary>
         /// We need to explicitly get the line item mapping from the database since our Service level routine properly checks 
         /// for clientId too and will not return any results even if a mapping was created by the save.

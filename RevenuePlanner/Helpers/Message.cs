@@ -3181,17 +3181,17 @@ namespace RevenuePlanner.Helpers
                 _ClientPermissionDeleteBudgetRestrictionMessage = value;
             }
         }
-        private string _InvalidBudgetData;
+        private string _InvalidBudgetId;
 
-        public string InvalidBudgetData
+        public string InvalidBudgetId
         {
             get
             {
-                return _InvalidBudgetData;
+                return _InvalidBudgetId;
             }
             set
             {
-                _InvalidBudgetData = value;
+                _InvalidBudgetId = value;
             }
         }
         #endregion
@@ -4197,8 +4197,8 @@ namespace RevenuePlanner.Helpers
                                         case "ClientPermissionDeleteBudgetRestrictionMessage":
                                             _ClientPermissionDeleteBudgetRestrictionMessage = strMsgValue;
                                             break;
-                                        case "InvalidBudgetData":
-                                            _InvalidBudgetData = strMsgValue;
+                                        case "InvalidBudgetId":
+                                            _InvalidBudgetId = strMsgValue;
                                             break;
                                         //End #2801
                                     }

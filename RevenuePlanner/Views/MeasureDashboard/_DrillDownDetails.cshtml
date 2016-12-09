@@ -31,7 +31,8 @@
 
                         <form class="ViewAllReportPopUp">
                             <div id="DrillDownDataModule" class="clearfix">
-                                <div class="tab-head" style="font-family: 'Source Sans Pro','Arial'; font-weight: 400;">@WebUtility.HtmlDecode(@Model.DisplayName)<a class="close-popup-btn">Close</a></div>
+                                <div class="tab-head" style="font-family: 'Source Sans Pro','Arial'; font-weight: 400;">@WebUtility.HtmlDecode(@Model.DisplayName)
+                                <a class="close-popup-btn"><img src="~/Content/images/close-x-big.png" class="img-popup-close closeiconheight">  Close</a></div>
 
                                 <div class="tab-content tab-content-scroll drilldown_popup clearfix" style="height: calc(90%-37px); border: none;">
                                     <div id="divAggregationMessage" class="error-box source-sans-probold">
@@ -50,11 +51,10 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="col2 clearfix">
                                         <div class="box">
                                             <p style="" class="dimenetion-value" title='@Model.DimensionValueName'>@WebUtility.HtmlDecode(Model.DimensionValueName) </p>
-                                            <p id="keyvalue" class="col keydatabox-value">@Model.DimensionActualValueCount</p>
+                                            <p id="keyvalue" class="keydatabox-value">@Model.DimensionActualValueCount</p>
                                         </div>
                                         @if (Model.CustomQuery == "0")
                                         {
@@ -73,7 +73,7 @@
                                         <div id="divTotalRecords" class="TotalRecords" style="display: none; padding-top: 10px; padding-right: 19px">
                                             <span>Total records : </span><span id="pTotalRecords"></span>
                                         </div>
-                                        <div class="col2" id="drillDownTable" style="min-height: 300px; max-height: 500px; overflow-y: auto; padding-bottom: 10px;">
+                                        <div class="col2 currentdata" id="drillDownTable" style="min-height: 300px; max-height: 500px; overflow-y: auto; padding-bottom: 10px;">
                                         </div>
                                         <div class="dataTables_paginate paging_full_numbers clearfix" id="drillDownTable_paginate" style="display: none;">
                                             <span id="pagingDetails"></span>
@@ -157,6 +157,7 @@
         $('#DivDrillDownPopup').css("display", "none");
         $('#DivBackgroundDrillDown').remove();
         $('#DivDrillDownPopup').remove();
+        $('.IconResize').css("width", "20px");
     }
 
     function UpdateDrillDownTableData(DatableSortSettigs) {
@@ -226,7 +227,7 @@
             async: false,
             dataType: 'json',
             data: $.param(params, true),
-            success: function (data) {
+            success: function (data) {               
                 if (data.isSuccess != 'undefined' && typeof data.isSuccess != undefined && data.isSuccess == true) {
                     ShowHideLabels(data);
                     if (typeof data.TotalRecords != undefined && data.TotalRecords != 'undefined' && data.DrillDownConfigExists != false) {
@@ -465,7 +466,7 @@
         params.DisplayName = displayname;
         params.Customquery = customquery;
         params.Charttype = charttype;
-
+    
         $("#div_ViewAllReport").empty();
         $.ajax({
             url: url,
@@ -473,6 +474,7 @@
             data: $.param(params, true),
             success: function (data) {
                 $("#div_ViewAllReport").html(data);
+                $('.IconResize').css("width", "20px");
             },
             error: function (err) {
                 $("divChart" + DashboardContentId).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");

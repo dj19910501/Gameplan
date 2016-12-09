@@ -54,6 +54,17 @@ function renameProperty(object, from, to) {
     object[from] = undefined;
 }
 
+// line item ids are only unique within a tactic but the grid requires every row id to be unique
+// so we must construct a composite id that includes the tactic id so that it is unique within the grid
+function constructLineItemRowId(tactic, lineItem) {
+    return `${tactic.TacticId}|${lineItem.LineItemId}`;
+}
+/*
+function getLineItemIdFromRowId(lineItemRowId) {
+    return lineItemRowId.split("|")[1];
+}
+*/
+
 function transformData(result) {
     // if there are no results, then we are done
     if (!result.length) {
@@ -75,7 +86,7 @@ function transformData(result) {
         tactic.Tree = escape(tactic.Title);
 
         for (const item of tactic.rows) {
-            item.id = item.LineItemId;
+            item.id = constructLineItemRowId(tactic, item);
 
             renameProperty(item, "Cost", "PlannedCost");
             renameProperty(item, "Actual", "ActualCost");
@@ -95,15 +106,7 @@ function transformData(result) {
         result[0].open = true;
     }
 
-    // Create a top-level node which contains the "Sys_Gen_Balance" row
-    const container = [{
-        id: "Sys_Gen_Balance",
-        Tree: "Sys_Gen_Balance",
-        rows: result,
-        open: true,
-    }];
-
-    return container;
+    return result;
 }
 
 function getData(filter) {
@@ -149,7 +152,6 @@ export default function linkedItemTreeGridDataSource(transactionId) {
 
     // listen for filter/paging changes and request new data
     bindDataSourceToServer(dataSource);
-
 
     // return the dataSource
     return dataSource;

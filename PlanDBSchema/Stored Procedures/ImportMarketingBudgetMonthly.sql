@@ -116,7 +116,7 @@ BEGIN TRY
 
 	 IF((@UpdateColumn='Budget' OR @UpdateColumn='Forecast'))
 	 BEGIN
-		IF(@Ismonth!='' AND @Ismonth!='Total')
+		IF(@Ismonth!='' AND @Ismonth!='Total' AND @Ismonth!='Unallocated')
 		BEGIN
 			SELECT  @MonthNumber = CAST(DATEPART(MM,''+@IsMonth+' 01 1990') AS varchar(2))
 			DECLARE @temp nvarchar(max)=''
@@ -164,7 +164,7 @@ BEGIN TRY
 			
 			 '
 		END
-		Else If(@Ismonth!='' AND @Ismonth='Total') -- Update total budget and Forecast for child items
+		Else If(@Ismonth!='' AND @Ismonth='Total' AND @Ismonth!='Unallocated') -- Update total budget and Forecast for child items
 		Begin
 			Declare @UpdateTotal NVARCHAR(max)
 			IF(@UpdateColumn='Budget')
@@ -192,7 +192,7 @@ BEGIN TRY
 	-- Custom Columns
 	 IF((@UpdateColumn!='Budget' OR @UpdateColumn!='Forecast'))
 	 BEGIN
-		IF(@Ismonth='' AND @Ismonth!='Total')
+		IF(@Ismonth='' AND @Ismonth!='Total' AND @Ismonth!='Unallocated')
 		BEGIN
 
 			SELECT @IsCutomFieldDrp = CASE WHEN CustomFieldType.Name='TextBox' THEN 0 ELSE 1 END FROM CustomField 
