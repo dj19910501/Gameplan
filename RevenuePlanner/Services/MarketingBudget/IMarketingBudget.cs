@@ -22,7 +22,12 @@ namespace RevenuePlanner.Services.MarketingBudget
         public bool IsOwner { get; set; }
     }
 
-
+    public class UserBudgetPermissionDetail
+    {
+        public int UserId { get; set; }
+        public int PermisssionCode { get; set; }
+        public int BudgetDetailId { get; set; }
+    }
 
     public class MarketingActivities
     {
@@ -49,6 +54,7 @@ namespace RevenuePlanner.Services.MarketingBudget
     {
         public List<BudgetGridRowModel> rows { get; set; }
         public List<GridDataStyle> head { get; set; }
+        public FinanceModelHeaders FinanemodelheaderObj { get; set; }
     }
 
     public class BudgetGridRowModel
@@ -212,7 +218,50 @@ namespace RevenuePlanner.Services.MarketingBudget
         public double Planned { get; set; }
         public double Actual { get; set; }
     }
+    // this model used for binding line item for budget
+    public class LineItemDropdownModel
+    {
+        public List<ViewByModel> list { get; set; }
+        public int parentId { get; set; }
+    }
+    //modle used for bind line item header
+    public class FinanceModelHeaders
+    {
+        public double Budget { get; set; }
+        public double Forecast { get; set; }
+        public double Planned { get; set; }
+        public double Actual { get; set; }
+        public string BudgetTitle { get; set; }
+        public string ForecastTitle { get; set; }
+        public string PlannedTitle { get; set; }
+        public string ActualTitle { get; set; }
 
+    }
+    public class FinanceModel
+    {
+        public FinanceModelHeaders FinanemodelheaderObj { get; set; }
+        public DhtmlXGridRowModel DhtmlXGridRowModelObj { get; set; }
+        public List<UserPermission> Userpermission { get; set; }
+
+    }
+    public class UserPermission
+    {
+        public int budgetID { get; set; }
+        public int UserId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Role { get; set; }
+        public string BusssinessUnit { get; set; }
+        public string Region { get; set; }
+        public int Permission { get; set; }
+        public string createdby { get; set; }
+        public bool IsOwner { get; set; }
+    }
+    public class LineItemDetail
+    {
+        public BudgetGridModel LineItemGridData { get; set; }
+        public bool childLineItemCount { get; set; }
+    }
     /// <summary>
     /// Operational interface for budget related data retrieval or manipulations 
     /// </summary>
@@ -258,5 +307,20 @@ namespace RevenuePlanner.Services.MarketingBudget
         void UpdateTotalAmount(List<string> ListItems, int budgetDetailId, string nValue, string ColumnName = "", double PlanExchangeRate = 1.0);
 
         void UpdateBudgetorForecast(int budgetDetailId, int UserId, string nValue, string ColumnName = "", string AllocationType = "", string Period = "", double PlanExchangeRate = 1.0);
+
+        //Methods for user permissiopn and lineitems for budget
+        LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0);
+        List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0);
+        LineItemDetail GetLineItemGrid(int BudgetDetailId, string IsQuaterly = "quarters");
+        List<Budget_Permission> GetUserList(int BudgetId);
+        List<UserPermission> FilterByBudget(int BudgetId, Guid ApplicationId);
+        string CheckUserPermission(int BudgetId, int ClientId, int UserId);
+        UserModel GetuserRecord(int Id, int UserId, Guid ApplicationId);
+        FinanceModel EditPermission(int BudgetId, Guid ApplicationId, List<Budget_Permission> UserList);
+        List<ViewByModel> GetChildBudget(int BudgetId);
+        List<BDSService.User> GetAllUserList(int ClientId, int UserId, Guid ApplicationId);
+        void DeleteUserForBudget(List<int> BudgetDetailIds, int UserID);
+        void SaveUSerPermission(List<UserBudgetPermissionDetail> UserData, string ChildItems, string ParentID);
+        //end
     }
 }

@@ -425,6 +425,8 @@
     <Content Include="Views\MarketingBudget\_newBudget.cshtml" />
     <Content Include="Views\MeasureDashboard\_DrillDownDetails.cshtml" />
     <Content Include="Views\Inspect\_InspectPopupPlan.cshtml" />
+    <Content Include="Views\MarketingBudget\_LineItem.cshtml" />
+    <Content Include="Views\MarketingBudget\_UserPermission.cshtml" />
     <None Include="web-assets\build\check-npm-install.js" />
     <None Include="web-assets\build\check-npm-version.js" />
     <Content Include="web-assets\build\include-css.htm" />
@@ -1127,8 +1129,6 @@
     <Content Include="Views\Finance\_MainGrid.cshtml" />
     <Content Include="Views\Finance\_newBudget.cshtml" />
     <Content Include="Views\Shared\_financeheader.cshtml" />
-    <Content Include="Views\Finance\_LineItem.cshtml" />
-    <Content Include="Views\Finance\_UserPermission.cshtml" />
     <Content Include="Views\Plan\_CopyEntity.cshtml" />
     <Content Include="Views\Shared\_DefaultViewFilters.cshtml" />
     <Content Include="Views\ExternalService\_PullSalesforceMQL.cshtml" />

@@ -1,0 +1,461 @@
+﻿@using RevenuePlanner.Helpers;
+@model RevenuePlanner.Services.MarketingBudget.BudgetGridModel
+
+
+@using Newtonsoft.Json;
+@{
+    var _lineItemGridData = Model != null ? JsonConvert.SerializeObject(Model.objGridDataModel) : string.Empty;
+    var _headerModel = Model != null && Model.objGridDataModel.FinanemodelheaderObj != null ? Model.objGridDataModel.FinanemodelheaderObj : new RevenuePlanner.Services.MarketingBudget.FinanceModelHeaders();
+
+    var _hdrForecast = _headerModel.Forecast;
+    var _hdrPlanned = _headerModel.Planned;
+    var _hdrActual = _headerModel.Actual;
+    var _hdrForecastTitle = _headerModel.ForecastTitle;
+    var _hdrPlannedTitle = _headerModel.PlannedTitle;
+    var _hdrActualTitle = _headerModel.ActualTitle;
+    var _hasLineItems = (bool)ViewBag.HasLineItems;
+    //var BudgetId = ViewBag.BudgetId != null ? (Int32)ViewBag.BudgetId : 0;
+    //var IsBudgetCreateEdit = ViewBag.IsBudgetCreateEdit;
+    //var IsBudgetView = ViewBag.IsBudgetView;
+    //var IsForecastView = ViewBag.IsForecastView;
+    //var IsForecastCreateEdit = ViewBag.IsForecastCreateEditView;
+}
+
+<style type="text/css">
+    div.xhdr {
+        height: auto !important;
+        width: 100.7% !important;
+    }
+
+    div.objbox {
+        width: 100.7% !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+        text-align: center;
+        padding-left: 0px !important;
+        padding-right: 7px !important;
+    }
+
+     div.objbox {
+        height: 100% !important;
+    }
+
+    div.gridbox {
+        height: 100% !important;
+    }
+    
+</style>
+<div id="gridbox" style="width:100%; background-color:white;"></div>
+<script type="text/javascript">
+    var RowIDs = {
+        IDs: []
+    }
+    var myTreeGrid;
+  //  var GlobalBudgetId = '';
+    //var GlobalEditLevel = '';
+    var IsAddNew = false;
+    var _isBudgetCreateEdit = '', _isForecastCreateEdit = '';
+
+    $(document).ready(function () {
+        GlobalBudgetId = '@Sessions.BudgetDetailId';
+        GlobalEditLevel = '@ViewBag.EditLevel';
+        pageName = "LineItemGrid";
+        var hasLineItems = '@_hasLineItems';
+        $("#divFinanceBack").css("display", "block");
+        $("#lblfinanceTitle").text("Finance (Plan Line Item)");
+        var GridData = "";
+        var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+        ConfigureLineItemGrid(AllocatedBy);
+        if (hasLineItems == null || hasLineItems == 'undefined' || hasLineItems.toLowerCase() == 'false') {
+            $("#divGridView").hide();
+            $("#dvNoData").show();
+        }
+        else {
+            $("#divGridView").show();
+            $("#dvNoData").hide();
+        }
+        
+        $('#chkPlan').attr('checked', true);
+        var ChkPlan = $("#chkPlan");
+        var ChkForeCast = $("#chkForeCast");
+        var ChkActual = $("#chkActual");
+        ShowHideLineItemsColumns(ChkPlan[0]);
+        ShowHideLineItemsColumns(ChkForeCast[0]);
+        ShowHideLineItemsColumns(ChkActual[0]);
+       // ShowHideControls("LineItemGrid");
+       UpdateFinanceHeader();
+
+
+        //Enable single click to trigger edit - zz
+        myTreeGrid.enableEditEvents(true, false, true);
+        
+    });
+    function UpdateFinanceHeader() {
+        var chkForecast = $("#chkForeCast");
+        var chkPlanned = $("#chkPlan");
+        var chkActual = $("#chkActual");
+        var IsForeCastChecked = chkForecast[0].checked;
+        var IsPlanChecked = chkPlanned[0].checked;
+        var IsActualChecked = chkActual[0].checked;
+        var hdrForecastVal = '0', hdrPlannedVal = '0', hdrActualVal = '0';
+        //if (IsForeCastChecked)
+        hdrForecastVal = '@_hdrForecast';
+        //if (IsPlanChecked)
+        hdrPlannedVal = '@_hdrPlanned';
+        //if (IsActualChecked)
+        hdrActualVal = '@_hdrActual';
+        $("#ForecastID").text(hdrForecastVal);
+        var forecasttitle = '@_hdrForecastTitle';
+        $("#forecastLabel").text(forecasttitle);
+        $("#forecastLabel").attr('title', forecasttitle);
+        formatActualValues("#ForecastID");
+
+        $("#PlannedID").text(hdrPlannedVal);
+        var plannedtitle = '@_hdrPlannedTitle';
+        $("#plannedLabel").text(plannedtitle);
+        $("#plannedLabel").attr('title', plannedtitle);
+        formatActualValues("#PlannedID");
+
+        $("#ActualID").text(hdrActualVal);
+        var actualtitle = '@_hdrActualTitle';
+        $("#actualLabel").text(actualtitle);
+        $("#actualLabel").attr('title', actualtitle);
+        formatActualValues("#ActualID");
+    }
+    function ConfigureLineItemGrid(AllocatedBy) {
+        myApp.showPleaseWait();
+        var GridWidth = $("#gridbox").width();
+
+        var Jan = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Jan.ToString()]";
+        var Feb = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Feb.ToString()]";
+        var Mar = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Mar.ToString()]";
+        var April = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.April.ToString()]";
+        var May = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.May.ToString()]";
+        var Jun = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Jun.ToString()]";
+        var July = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.July.ToString()]";
+        var Aug = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Aug.ToString()]";
+        var Sep = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Sep.ToString()]";
+        var Oct = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Oct.ToString()]";
+        var Nov = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Nov.ToString()]";
+        var Dec = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Dec.ToString()]";
+
+        myTreeGrid = new dhtmlXGridObject('gridbox');
+        myTreeGrid.setImagePath("@Url.Content("~/codebase/imgs/")");
+        //myTreeGrid.setImageSize(1, 1);
+       
+        @*$.ajax({
+            dataType: 'json',
+            async: false,
+            type: 'POST',
+            url: '@Url.Content("~/Finance/GetFinanceLineItemData/")',
+            data: {
+                BudgetId: GlobalBudgetId,
+                IsQuaterly: AllocatedBy
+            },
+            success: function (data) {
+
+                GridData = data;
+                //var mainGridData = $('<div/>').html(data).text(); // Decode Html content.
+                //GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
+                //alert(GridData);
+                //alert(Data1);
+
+                //myTreeGrid.enableCellIds(true);
+
+            }
+
+        });*@
+        var GridData = "@_lineItemGridData";
+        GridData = $('<div/>').html(GridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        GridData = (GridData.toString().replace(/&quot;/g, '"'));
+
+        if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
+            //myTreeGrid.setHeader(",,Q1,Q1,Q1,Q2,Q2,Q2,Q3,Q3,Q3,Q4,Q4,Q4,Total,Total,Total", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;", "text-align:center;"]);
+            myTreeGrid.setHeader(",,Q1,Q1,Q1,Q2,Q2,Q2,Q3,Q3,Q3,Q4,Q4,Q4,Total,Total,Total", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;"]);
+            //myTreeGrid.attachHeader("Task Name,,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual");
+            myTreeGrid.attachHeader("Task Name,,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual", ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;"]);
+            myTreeGrid.setColumnIds("Title,view,ForecastQ1,PlannedQ1,ActualQ1,ForecastQ2,PlannedQ2,ActualQ2,ForecastQ3,PlannedQ3,ActualQ3,ForecastQ4,PlannedQ4,ActualQ4,ForecastTotal,PlannedTotal,ActualTotal");
+            //for (var i = 4; i <= 23; i++) {
+            //    myTreeGrid.setNumberFormat("0,000.00", i, ".", ",");
+            //}
+
+            //myTreeGrid.setColValidators("NotEmpty,,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric");
+            myTreeGrid.setInitWidths("150,25,60,65,55,60,60,55,60,60,65,55,60,60,55,60,60");
+            myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
+            myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+            
+
+        } else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
+            myTreeGrid.setHeader(",," + Jan + "," + Jan + "," + Jan + "," + Feb + "," + Feb + "," + Feb + "," + Mar + "," + Mar + "," + Mar + "," + April + "," + April + "," + April + "," + May + "," + May + "," + May + "," + Jun + "," + Jun + "," + Jun + "," + July + "," + July + "," + July + "," + Aug + "," + Aug + "," + Aug + "," + Sep + "," + Sep + "," + Sep + "," + Oct + "," + Oct + "," + Oct + "," + Nov + "," + Nov + "," + Nov + "," + Dec + "," + Dec + "," + Dec + ",Total,Total,Total", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;"]);
+            myTreeGrid.attachHeader("Task Name,,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual",["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;"]);
+            myTreeGrid.setColumnIds("Title,,ForecastM1,PlannedM1,ActualM1,ForecastM2,PlannedM2,ActualM2,ForecastM3,PlannedM3,ActualM3,ForecastM4,PlannedM4,ActualM4,ForecastM5,PlannedM5,ActualM5,ForecastM6,PlannedM6,ActualM6,ForecastM7,PlannedM7,ActualM7,ForecastM8,PlannedM8,ActualM8,ForecastM9,PlannedM9,ActualM9,ForecastM10,PlannedM10,ActualM10,ForecastM11,PlannedM11,ActualM11,ForecastM12,PlannedM12,ActualM12,ForecastTotal,PlannedTotal,ActualTotal");
+            //for (var i = 4; i <= 55; i++) {
+            //    myTreeGrid.setNumberFormat("0,000.00", i, ".", ",");
+            //}
+            //myTreeGrid.setInitWidths("150,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65");
+            //myTreeGrid.setColValidators("NotEmpty,,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric");
+            myTreeGrid.setInitWidths("150,25,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60");
+            myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
+            myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+                
+        } else {
+
+            var startMonth = 0;
+            var endMonth = 0;
+            if (AllocatedBy == "@Enums.QuarterWithSpace.Quarter1.ToString()") {
+                startMonth = 1;
+                endMonth = 3;
+            }
+            if (AllocatedBy == "@Enums.QuarterWithSpace.Quarter2.ToString()") {
+                startMonth = 4;
+                endMonth = 6;
+            }
+            if (AllocatedBy == "@Enums.QuarterWithSpace.Quarter3.ToString()") {
+                startMonth = 7;
+                endMonth = 9;
+            }
+            if (AllocatedBy == "@Enums.QuarterWithSpace.Quarter4.ToString()") {
+                startMonth = 10;
+                endMonth = 12;
+            }
+
+           var columnames = ",,";
+            var attachHeader = "Task Name,,";
+            var colIds = "Title,,";
+           //var colvalidatiors = "NotEmpty,";
+            // var colWidths = "200,30,70,";
+
+            for (var i = startMonth; i <= endMonth; i++) {
+                var MonthName = "";
+                if (i == 1) {
+                    MonthName = Jan;
+                } else if (i == 2) {
+                    MonthName = Feb;
+                }
+                else if (i == 3) {
+                    MonthName = Mar
+                }
+                else if (i == 4) {
+                    MonthName = April;
+                }
+                else if (i == 5) {
+                    MonthName = May;
+                }
+                else if (i == 6) {
+                    MonthName = Jun
+                }
+                else if (i == 7) {
+                    MonthName = July;
+                }
+                else if (i == 8) {
+                    MonthName = Aug;
+                }
+                else if (i == 9) {
+                    MonthName = Sep;
+                }
+                else if (i == 10) {
+                    MonthName = Oct;
+                }
+                else if (i == 11) {
+                    MonthName = Nov;
+                }
+                else if (i == 12) {
+                    MonthName = Dec;
+                }
+                for (var j = 1; j <= 3; j++) {
+
+                    var headername = "";
+                    if (j == 1) {
+                        headername = "Forecast";
+                    }
+                    else if (j == 2) {
+                        headername = "Planned";
+                    }
+                    else if (j == 3) {
+                        headername = "Actual";
+                    }
+                    colIds += headername + i + j + ",";
+                    columnames += MonthName + ",";
+                    attachHeader += headername + ",";
+                    //colvalidatiors += "ValidNumeric" + ",";
+                }
+            }
+            columnames += "Total,Total,Total";
+            attachHeader += "Forecast,Planned,Actual";
+            //colvalidatiors = colvalidatiors.slice(0, -1);
+            colIds = colIds + "ForecastTotal,PlannedTotal,ActualTotal";
+            //colWidths = colWidths.slice(0, -1);
+
+            myTreeGrid.setHeader(columnames,null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;"]);
+            myTreeGrid.attachHeader(attachHeader, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;"]);
+             myTreeGrid.setInitWidths("150,25,60,65,60,65,60,65,60,65,60,65,60,65");
+            myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center");
+            myTreeGrid.setColumnIds(colIds);
+            myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+        }
+        myTreeGrid.enableTreeCellEdit(false);
+        myTreeGrid.init();
+        myTreeGrid.setImageSize(1, 1);
+        //myTreeGrid.setSkin("dhx_skyblue");
+        myTreeGrid.parse(GridData, "json");
+        myTreeGrid.forEachRow(function (rowid) {
+            var titleIndex = myTreeGrid.getColIndexById('Title');
+            myTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4;");
+        });
+        
+
+        var IsValid = true;
+
+        myTreeGrid.attachEvent("onResizeEnd", function (obj) {
+            $("#gridbox").find("table").css("width", GridWidth);
+        });
+
+        myTreeGrid.attachEvent("onResizeEnd", function (cInd, cWidth, obj) {
+            $("#gridbox").find("table").css("width", GridWidth);
+        });
+        
+        myTreeGrid.attachEvent("onOpenEnd", function () {
+
+            //$("#gridbox").find("table").css("width", "100%");
+            var tableheight = $(".objbox").find("table").height();
+
+            $("#gridbox").css("height", tableheight + 100);
+            myTreeGrid.setSizes();
+
+            $("#gridbox").find("table").css("width", GridWidth);
+            return true;
+        });
+
+        myTreeGrid.expandAll();
+        
+        var tableheight = $(".objbox").find("table").height();
+
+        $("#gridbox").css("height", tableheight + 100);
+        myTreeGrid.setSizes();
+
+
+        $("#gridbox").find("table").css("width", GridWidth);
+
+        $(".grid_add").attr("data-title", "Add Row");
+        CollapseExpand = true;
+        _isNewRowAdd = false;
+    }
+    
+    var _isNewRowAdd = false;
+    var _newrowid = '';
+    var _newParentId = '';
+    var _parentRowId = '';
+    var _row_parentId = '';
+
+    function CheckboxClick(checkbox) {
+        var LineItemCount = $(checkbox).attr('licount');
+        if (LineItemCount != 0) {
+            $('#LiWarning').css('display', 'block');
+
+        }
+        else {
+            $('#LiWarning').css('display', 'none');
+        }
+        RowIDs = {
+            IDs: []
+        }
+        var val = $(checkbox).attr('row-id');
+        var Name = $(checkbox).attr('name');
+            RowIDs.IDs.push(val);
+            $("#lipname").html(Name);
+            $("#divDeletePopup").modal('show');
+            $('#cancel-button_DeleteItem').on("click", function () {
+                var index = RowIDs.IDs.indexOf(val);
+                RowIDs.IDs.splice(index, 1);
+                $('#divDeletePopup').modal("hide");
+            });
+    }
+    
+    function ShowHideLineItemsColumns(chekbox) {
+        debugger;
+        $('#errorMsg').css('display', 'none');
+        $('#SuccessMsg').css('display', 'none');
+      //  var GridWidth = $("#gridbox").width();
+        var checkName = chekbox.value;
+        var IsChecked = chekbox.checked;
+        var Count = 0;
+        var LoopLength = 0;
+        var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+        if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
+            LoopLength = 5;
+        }
+        else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
+            LoopLength = 13;
+        }
+        else {
+            LoopLength = 4;
+        }
+        if (checkName == "ForeCast") {
+            Count = 2;
+        }
+        else if (checkName == "Plan") {
+            Count = 3;
+        }
+        else if (checkName == "Actual") {
+            Count = 4;
+        }
+        
+        if (IsChecked) {
+            for (var i = 0; i < LoopLength; i++) {
+                myTreeGrid.setColumnHidden(Count, false);
+                Count = Count + 3;
+            }
+        }
+
+        if (!IsChecked) {
+            for (var i = 0; i < LoopLength; i++) {
+                myTreeGrid.setColumnHidden(Count, true);
+                Count = Count + 3;
+            }
+        }
+        //UpdateFinanceHeader();
+        //visibility += visibility.slice(0, -1);
+        // myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
+       // $("#gridbox").find("table").css("width", "100%");
+    }
+    function UpdateFinanceHeader() {
+        debugger;
+        var chkForecast = $("#chkForeCast");
+        var chkPlanned = $("#chkPlan");
+        var chkActual = $("#chkActual");
+        var IsForeCastChecked = chkForecast[0].checked;
+        var IsPlanChecked = chkPlanned[0].checked;
+        var IsActualChecked = chkActual[0].checked;
+        var hdrForecastVal = '0', hdrPlannedVal = '0', hdrActualVal = '0';
+        //if (IsForeCastChecked)
+            hdrForecastVal = '@_hdrForecast';
+        //if (IsPlanChecked)
+            hdrPlannedVal = '@_hdrPlanned';
+        //if (IsActualChecked)
+            hdrActualVal = '@_hdrActual';
+        $("#ForecastID").text(hdrForecastVal);
+        var forecasttitle = '@_hdrForecastTitle';
+        $("#forecastLabel").text(forecasttitle);
+        $("#forecastLabel").attr('title', forecasttitle);
+        formatActualValues("#ForecastID");
+
+        $("#PlannedID").text(hdrPlannedVal);
+        var plannedtitle = '@_hdrPlannedTitle';
+        $("#plannedLabel").text(plannedtitle);
+        $("#plannedLabel").attr('title', plannedtitle);
+        formatActualValues("#PlannedID");
+
+        $("#ActualID").text(hdrActualVal);
+        var actualtitle = '@_hdrActualTitle';
+        $("#actualLabel").text(actualtitle);
+        $("#actualLabel").attr('title', actualtitle);
+        formatActualValues("#ActualID");
+    }
+    function OpenLineItemPopup(strUrl) {
+        //var lineItemPopupUrl = 'http://localhost:61513/Home?currentPlanId=14832&planLineItemId=41577&activeMenu=Plan';
+        if (strUrl != null && strUrl != 'undefined' && strUrl != '') {
+            window.open(strUrl, '_blank');
+        }
+    }
+</script>

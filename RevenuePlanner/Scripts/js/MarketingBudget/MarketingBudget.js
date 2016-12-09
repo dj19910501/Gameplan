@@ -86,7 +86,15 @@ $('#proceed-button_DeleteItem').on("click", function () {
 // Bind the Grid data on timeframe value change.
 $("#ddlMainGridTimeFrame").change(function () {
     ShowHideSuccessDiv();   // Hide "Success" message if it's already appeared on screen.
+    if (gridpage == "MainGrid") {
     GetGridData();          // Load data to Grid on timeframe value change
+    }
+    else if (gridpage == "LineItemGrid") // load line item grid as per time frame
+    {
+        var BudgetDetailid = $("#ddlChildFinance").val();
+        var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+        BindFinanceLineItmeData(BudgetDetailid, AllocatedBy)
+    }
 });
 
 // function to show hide success message
@@ -1020,3 +1028,39 @@ function ApplyFormattingAndTooltip(idName) {
         var Columnsetval = $("#ddlColumnSet").val();
         BindColumnsfilter(Columnsetval); // bind the columns dropdown as per column set selected
     });
+	  // function to show hide controls for marketing budget when move to user permission and lineitems
+    function ShowHideControls(Page) {
+        gridpage = Page;
+        if (Page == "MainGrid") {
+            $("#drpParentMain").css("display", "block");
+            $("#drpParent").css("display", "none");
+            $("#drpChild").css("display", "none");
+            $("#divFinanceBack").css("display", "none");
+            $("#divAddnew").css("display", "block");
+            $("#divCheckbox").css("display", "none");
+        }
+        if (Page == "LineItemGrid") {
+            $("#drpParentMain").css("display", "none");
+            $("#drpParent").css("display", "block");
+            $("#drpChild").css("display", "block");
+            $("#divFinanceBack").css("display", "block");
+            $("#divAddnew").css("display", "none");
+            $("#dvExportToExcel").css("display", "none");
+            $("#ddlColumnsFrameBox").css("display", "none");
+            $("#ddlColumnSetFrameBox").css("display", "none");
+            $("#divCheckbox").css("display", "block");
+        }
+        if(Page=="UserPermission")
+        {
+            $("#drpParentMain").css("display", "none");
+            $("#drpParent").css("display", "none");
+            $("#drpChild").css("display", "none");
+            $("#divFinanceBack").css("display", "block");
+            $("#divAddnew").css("display", "none");
+            $("#dvExportToExcel").css("display", "none");
+            $("#ddlMainTimeFrameSelectBox").css("display", "none");
+            $("#ddlColumnsFrameBox").css("display", "none");
+            $("#ddlColumnSetFrameBox").css("display", "none");
+            $("#divCheckbox").css("display", "none");
+        }
+    }

@@ -19,7 +19,10 @@ namespace RevenuePlanner.Controllers
         {
             _MarketingBudget = MarketingBudget;
         }
-
+        #region Declartion
+        private bool _IsBudgetCreate_Edit = true;
+        private bool _IsForecastCreate_Edit = true;
+        #endregion
         [AuthorizeUser(Enums.ApplicationActivity.BudgetCreateEdit | Enums.ApplicationActivity.ForecastCreateEdit | Enums.ApplicationActivity.ForecastView)]
         public ActionResult Index()
         {
@@ -32,6 +35,12 @@ namespace RevenuePlanner.Controllers
 
             #region Bind Budget dropdown on grid
             MarketingActivities.ListofBudgets = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
+            //method to get  parent and child budget list
+            var lstparnetbudget = Common.GetParentBudgetlist();
+            var lstchildbudget = Common.GetChildBudgetlist(0);
+            ViewBag.parentbudgetlist = lstparnetbudget;
+            ViewBag.childbudgetlist = lstchildbudget;
+            //end
             #endregion
 
             #region "Bind TimeFrame Dropdown"
@@ -438,5 +447,214 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        #region method to get line items list
+        /// <summary>
+        /// Method to get budget parent list item
+        /// </summary>
+        /// <param name="BudgetDetailId">for which budget want get parent list item</param>
+        public JsonResult GetParentLineItemList(int BudgetDetailId = 0)
+        {
+            LineItemDropdownModel objParentDDLModel = new LineItemDropdownModel();
+            objParentDDLModel = _MarketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId);
+            return Json(objParentDDLModel, JsonRequestBehavior.AllowGet);
+        }
+        //Method to get all child items for budget
+        public JsonResult GetChildLineItemList(int BudgetDetailId = 0)
+        {
+            var lstchildbudget = _MarketingBudget.GetChildLineItemBudgetDetailslist(BudgetDetailId);
+            return Json(lstchildbudget, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Method to get all lineitem list foe budget as per time frame
+        /// </summary>
+        /// <param name="BudgetDetailId"></param>
+        /// <param name="IsQuaterly"></param>
+        /// <returns></returns>
+        public ActionResult GetFinanceLineItemData(int BudgetDetailId = 0, string IsQuaterly = "quarters")
+        {
+            LineItemDetail AlllineItemdetail = new LineItemDetail();
+            #region "Set Create/Edit or View permission for Budget and Forecast to Global varialble."
+            _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
+            _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
+            #endregion
+            AlllineItemdetail = _MarketingBudget.GetLineItemGrid(BudgetDetailId, IsQuaterly);
+            TempData["FinanceHeader"] = new FinanceModelHeaders();
+            ViewBag.HasLineItems = AlllineItemdetail.childLineItemCount;
+            return PartialView("_LineItem", AlllineItemdetail.LineItemGridData);
+        }
+
+        #endregion
+
+        #region Method to get user permission for budget
+        /// <summary>
+        /// method to get list of user permission for selected budget
+        /// </summary>
+        public ActionResult EditPermission(int BudgetId = 0, string level = "", string FlagCondition = "", string rowid = "")
+        {
+            try
+            {
+                ViewBag.EditLevel = level;
+                ViewBag.GridRowID = rowid;
+
+                ViewBag.childbudgetlist = _MarketingBudget.GetChildBudget(BudgetId);
+
+                if (string.Compare(FlagCondition, "Edit", true) == 0)
+                {
+                    ViewBag.FlagCondition = "Edit";
+                }
+                else
+                {
+                    ViewBag.FlagCondition = "View";
+                }
+
+                List<RevenuePlanner.Models.Budget_Permission> UserList = _MarketingBudget.GetUserList(BudgetId);
+                if (UserList.Count == 0)
+                {
+                    ViewBag.NoRecord = "NoRecord";
+                }
+
+                #region bindUser List for search
+                List<BDSService.User> lstUserDetail = new List<BDSService.User>();
+                lstUserDetail = _MarketingBudget.GetAllUserList(Sessions.User.CID, Sessions.User.ID, Sessions.ApplicationId);
+
+                lstUserDetail.Add(new BDSService.User
+                {
+                    UserId = Sessions.User.UserId,
+                    ID = Sessions.User.ID,
+                    FirstName = Sessions.User.FirstName,
+                    LastName = Sessions.User.LastName,
+                    JobTitle = Sessions.User.JobTitle
+                });
+                TempData["Userlist"] = lstUserDetail;
+                #endregion
+                FinanceModel objFinanceModel = _MarketingBudget.EditPermission(BudgetId, Sessions.ApplicationId, UserList);
+
+                return PartialView("_UserPermission", objFinanceModel);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return PartialView("_UserPermission", null);
+        }
+
+        /// <summary>
+        /// Added by Nandish Shah
+        /// Get specific record based on dropdown selection value of budgetdetail id
+        /// </summary>
+        public JsonResult DrpFilterByBudget(int BudgetId = 0, string level = "", string FlagCondition = "")
+        {
+            // Sessions.BudgetDetailId = BudgetId;
+            string strUserPermission = _MarketingBudget.CheckUserPermission(BudgetId, Sessions.User.CID, Sessions.User.ID);
+            if (strUserPermission == "Edit")
+            {
+                ViewBag.FlagCondition = "Edit";
+            }
+            else
+            {
+                ViewBag.FlagCondition = "View";
+            }
+            List<UserPermission> _user = _MarketingBudget.FilterByBudget(BudgetId, Sessions.ApplicationId);
+            return Json(new { _user = _user, Flag = ViewBag.FlagCondition }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Nandish Shah
+        /// Get list of user records when typing letter on textbox 
+        /// </summary>
+        public JsonResult getData(string term, string UserIds)
+        {
+            List<RevenuePlanner.Models.UserModel> Getvalue = new List<RevenuePlanner.Models.UserModel>();
+            try
+            {
+                List<BDSService.User> lstUserDetail = new List<BDSService.User>();
+                if (TempData["Userlist"] != null)
+                {
+                    lstUserDetail = TempData["Userlist"] as List<BDSService.User>;
+                    if (lstUserDetail.Count > 0)
+                    {
+                        lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+
+                        Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || user.JobTitle.ToLower().Contains(term.ToLower())).Select(user => new RevenuePlanner.Models.UserModel { UserId = user.ID, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+
+                        string[] keepList = UserIds.Split(',');
+                        Getvalue = Getvalue.Where(i => !keepList.Contains(i.UserId.ToString())).ToList();
+                        TempData["Userlist"] = lstUserDetail;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(Getvalue, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Nandish Shah
+        /// Get specific of user record on selection of dropdown list
+        /// </summary>
+        public JsonResult GetuserRecord(int Id)
+        {
+            RevenuePlanner.Models.UserModel objUserModel = new RevenuePlanner.Models.UserModel();
+            try
+            {
+                objUserModel = _MarketingBudget.GetuserRecord(Id, Sessions.User.ID, Sessions.ApplicationId);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return Json(objUserModel, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Delete record from Budget_Permission table
+        /// </summary>
+        /// <param name="id">contains user's Id</param>
+        /// <returns>If success than return true</returns>
+        [HttpPost]
+        public JsonResult DeleteUser(int id, int budgetId, string ChildItems)
+        {
+            List<string> ListItems = new List<string>();
+            List<int> BudgetDetailIds = new List<int>();
+            if (ChildItems != "" && ChildItems != null)
+            {
+                ListItems = ChildItems.Split(',').ToList();
+
+            }
+            for (int i = 0; i < ListItems.Count; i++)
+            {
+                if (ListItems[i].Contains("_"))
+                {
+                    BudgetDetailIds.Add(Convert.ToInt32(ListItems[i].Split('_')[1]));
+                }
+            }
+            BudgetDetailIds.Add(budgetId);
+            _MarketingBudget.DeleteUserForBudget(BudgetDetailIds, Sessions.User.ID);
+            return Json(new { Flag = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Dashrath Prajapati for PL ticket #1679
+        /// Save record in Budget_Permission table
+        /// </summary>
+        /// <param name="UserData">contains user's UserId,permission code,dropdown selection id</param>
+        /// <param name="ID">contains user's id</param>
+        /// <returns>if sucess then return true else false</returns>
+        [HttpPost]
+        public JsonResult SaveDetail(List<UserBudgetPermissionDetail> UserData, string ParentID, int[] CreatedBy, string ChildItems)
+        {
+            //Modified by Komal Rawal for #2242 change child item permission on change of parent item
+            if (UserData != null)
+            {
+               _MarketingBudget.SaveUSerPermission(UserData,ChildItems,ParentID);
+
+                //End
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }

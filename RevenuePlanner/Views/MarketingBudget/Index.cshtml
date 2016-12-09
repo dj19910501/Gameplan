@@ -39,6 +39,8 @@
     body{overflow-y:hidden}/* Specially added for #2805 to hide body scroll only for this purticular page */
     
 </style>
+@Html.Hidden("hdn_BudgetDetailId", "", new { id = "hdn_BudgetDetailId", name = "hdn_BudgetDetailId", value = "" })
+@Html.Hidden("hdn_BudgetId", "", new { id = "hdn_BudgetId", name = "hdn_BudgetId", value = "" })
 
 <div class="light-blue-chart cf full-width-header" id="financeHeader">
     <div style="" class="fin-head-left">
@@ -48,6 +50,18 @@
         <div style="float:left;" id="drpParentMain">
             <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
                 @Html.DropDownList("ddlParentFinanceMain", new SelectList(Model.ListofBudgets, "Value", "Text"))
+                <div class="nl-overlay"></div>
+            </div>
+        </div>
+        <div style="float:left;" id="drpParent">
+            <div id="nl-formParentFinance" class="nl-form-plan-title without-margin plantitle financetitle">
+                @Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.parentbudgetlist, "Value", "Text"))
+                <div class="nl-overlay"></div>
+            </div>
+        </div>
+        <div style="float:left;margin-left:15px;margin-right:15px;" id="drpChild">
+            <div id="nl-formChildFinance" class="nl-form-plan-title without-margin plantitle financetitle">
+                @Html.DropDownList("ddlChildFinance", new SelectList((System.Collections.IEnumerable)ViewBag.childbudgetlist, "Value", "Text"))
                 <div class="nl-overlay"></div>
             </div>
         </div>
@@ -78,9 +92,23 @@
             <label id="" for="Filter Columns:">Filter Columns:</label>
             <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select"></select>
         </div>
-
+      
+        <div style="text-align: right; float: right;">
+            <div id="divCheckbox" style=" float: left; line-height: 22px;">
+               
+                <div id="divforecast" style="float: left; margin-right: 10px;">
+                    <input type="checkbox" value="ForeCast" id="chkForeCast" onchange=" ShowHideLineItemsColumns(this) " checked="checked" style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Forecast</label>
     </div>
-
+                <div id="divPlan" style="float: left; margin-right: 10px;">
+                    <input type="checkbox" value="Plan" id="chkPlan" onchange=" ShowHideLineItemsColumns(this) " style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Planned</label>
+                </div>
+                <div id="divActual" style="float: left; margin-right: 10px;">
+                    <input type="checkbox" value="Actual" id="chkActual" onchange=" ShowHideLineItemsColumns(this) " style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Actual</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="light-blue-chart cf full-width-header" id="planHeader">
     <div class="plancart-box finance-cart">
         <div class="white-chart">
             <p class="source-sans-probold" title="Actual">Actual</p>
@@ -99,10 +127,19 @@
             <p class="value source-sans-prolight" id="budgetID" data-original-title="0" title="">0</p>
         </div>
     </div>
-
+        <div style="margin-top: 27px; width:30% ; margin-left: 22px;">
+            <h2 id="lblfinanceTitle" style="display:block;"></h2>
+            <div id="divFinanceBack" style="width:120px;float:left;display:block;">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:50%;height: 30px !important;" id="btnFinanceback" onclick="javascript:FinanceBack()">
+                    < Back
+                </button>
 </div>
+        </div>
 
-
+    </div>
+</div>
+<div class="row-fluid calc-height">
+    <div class="span12">
         <div id="divDeletePopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div>
                 <form>
@@ -121,9 +158,14 @@
                 </form>
             </div>
         </div>
+    </div>
+</div>
 
 <div id="divGridView" class="MarketingBudget-tbl" >
     <div id="gridbox" style="width:100%; height:100%;background-color:white;"></div>
+</div>
+<div id="dvNoData" style="" class="no-data">
+    No data found.
 </div>
 @* Design for import modal pop up *@
 <div id="ImportModal" class="modal hide fade import-popover">
@@ -183,6 +225,7 @@
     var ForecastColumn = "@Enums.FinanceHeader_Label.Forecast.ToString()";
     var CurrencySymbol='@CurrencySymbol';
     var dataNonPermissionIds = ''; //get Nonpermissionid at edit level to show threedash
+var gridpage="MainGrid";
     $(document).ready(function () {
 
         var Columnsetval = $("#ddlColumnSet").val();
@@ -191,7 +234,15 @@
         $("#SuccessMsg").css("display", "none");
         $("#content_wraper").css("width", "100%");
         UpdateFinanceHeaderValues(); // Update header values
-        GetGridData();                      // Bind Budget Grid.
+        var budgetid='@Sessions.BudgetDetailId';
+        if(budgetid!='0' )
+        {
+            budgetid='@Sessions.BudgetDetailId';
+            $('#ddlParentFinanceMain').val(budgetid);
+            GetGridData(budgetid);                      // Bind Budget Grid.
+        }
+        else
+            GetGridData();
 
 
         var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');
@@ -242,6 +293,203 @@
             noneSelectedText: "Please Select",
             selectedList: 1
         });
-
+        ShowHideControls("MainGrid");
     });
+    //function to redirect to user permission
+    function Edit(BudgetId, childChange, level, RowID, e) {
+        var budgetIDMain = $("#ddlParentFinanceMain").val();
+        _UserBudgetId = BudgetId;
+        var _flagCondition;
+        var _text = e.lastChild.textContent.trim();
+        if (_text == "Edit") {
+            _flagCondition = "Edit";
+        }
+        else {
+            _flagCondition = "View";
+        }
+        budgetgrid.editStop();
+        $('#btnSettings').css('display', 'none')
+        $('#errorMsg').css('display', 'none');
+        $('#SuccessMsg').css('display', 'none');
+        myApp.showPleaseWait();
+        if (level != undefined && level != '') {
+            GlobalLevel = level;
+        }
+
+        var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+        //BindTimeFrameForChild(AllocatedBy);
+        valueTimeFrame = $("#ddlMainGridTimeFrame").val();
+        $("#ddlMainGridTimeFrame").val(valueTimeFrame);
+        var url = '@Url.Content("~/MarketingBudget/EditPermission/")';
+        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition + '&rowid=' + RowID);
+    }
+    //function to redirect back to finance main grid
+    function FinanceBack() {
+
+        $('#errorMsg').css('display', 'none');
+        $('#SuccessMsg').css('display', 'none');
+        window.location = '@Url.Content("~/MarketingBudget/Index")';
+
+    }
+    function BindFinanceLineItmeData(BudgetDetailid, AllocatedBy) {
+        var url = '@Url.Content("~/MarketingBudget/GetFinanceLineItemData/")';
+        $('#divGridView').load(url + '?BudgetDetailId=' + BudgetDetailid + '&IsQuaterly=' + AllocatedBy);
+    }
+    //function to bind line item grid
+    function LoadLineItemGrid(BudgetDetailid) {
+        $('#btnSettings').css('display', 'none')
+        $('#errorMsg').css('display', 'none');
+        $('#SuccessMsg').css('display', 'none');
+
+        BindParentLineItemDropdown(parseInt(BudgetDetailid));
+        //var parentBudgetDetailId = $("#ddlParentFinance").val();
+        //var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
+        $("#ddlChildFinance").val(BudgetDetailid);
+        if (BudgetDetailid > 0) {
+            $("#ddlChildFinance option[value='" + BudgetDetailid + "']").attr("selected", "selected");
+        }
+        var childBudgetDetailId = BudgetDetailid;
+        BindChildLineItemDropdown(childBudgetDetailId);
+
+        myApp.showPleaseWait();
+        //var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        //BindTimeFrameForChild(AllocatedBy);
+        ShowHideControls("LineItemGrid");
+        //BindFinanceLineItmeData(BudgetDetailid, AllocatedBy);
+
+    }
+    //function to bind parent line item dropdown
+    function BindParentLineItemDropdown(BudgetDetailId) {
+        var parentBudgetDetailId = 0;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/MarketingBudget/GetParentLineItemList/")',
+            dataType: "json",
+            async: false,
+            data: { BudgetDetailId: BudgetDetailId },
+            success: function (result) {
+                var data = result.list;
+                parentBudgetDetailId = result.parentId;
+                $("#ddlParentFinance").html("");
+                for (var i = 0; i < data.length; i++) {
+
+                    var opt = new Option(data[i].Text, data[i].Value);
+                    $('#ddlParentFinance').append(opt);
+                }
+            }
+        });
+
+        //var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
+        $("#ddlParentFinance").val(parentBudgetDetailId);
+        $("#hdn_BudgetDetailId").val(parentBudgetDetailId);
+        if (parentBudgetDetailId > 0) {
+            $("#ddlParentFinance option[value='" + parentBudgetDetailId + "']").attr("selected", "selected");
+        }
+
+        var liParentFinance = $('#ddlParentFinance').find('option');
+        if (liParentFinance != null && liParentFinance != 'undefined' && liParentFinance.length > 0) {
+
+            nlformParentFinance = new NLForm(document.getElementById('nl-formParentFinance'));
+
+            $('#nl-formParentFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                //
+                $('#errorMsg').css('display', 'none');
+                $('#SuccessMsg').css('display', 'none');
+                $("#divGridView").show();
+                $("#dvNoData").hide();
+                var parentbudgetDetailID = $(this).attr('value');
+                $("#hdn_BudgetDetailId").val(parentbudgetDetailID);
+                if (pageName == "LineItemGrid") {
+                    $("#ddlChildFinance").val(0);
+                    BindChildLineItemDropdown(0);
+                    //GetFinanceHeaderValue(0,false);
+                }
+
+            });
+            var a = $("#nl-formParentFinance .nl-field.nl-dd");
+        }
+
+
+    }
+    //function to bind child line item dropdown
+    function BindChildLineItemDropdown(childBudgetDetailId) {
+
+        var parentId = $("#hdn_BudgetDetailId").val();
+        var ChildID = 0;
+        var budgetDetailId = 0;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/MarketingBudget/GetChildLineItemList/")',
+            dataType: "json",
+            async: false,
+            data: { BudgetDetailId: parentId },
+            success: function (data) {
+                $("#ddlChildFinance").html("");
+
+                if (data == null || data.length == 0) {
+                    $('#ddlChildFinance').append($('<option></option>').attr('value', '0').text('Please Select'));
+
+                }
+                for (var i = 0; i < data.length; i++) {
+
+                    var opt = new Option(data[i].Text, data[i].Value);
+                    $('#ddlChildFinance').append(opt);
+
+
+                }
+                if (childBudgetDetailId > 0) {
+                    ChildID = childBudgetDetailId
+                }
+                else if (data.length > 0) {
+                    ChildID = data[0].Value; // Set first value
+                }
+                $("#ddlChildFinance").val(ChildID);
+                //var ChildID = $('#nl-formChildFinance .nl-dd-checked ').attr('value');
+
+                if (ChildID > 0) {
+                    budgetDetailId = ChildID;
+                    $("#ddlChildFinance option[value='" + ChildID + "']").attr("selected", "selected");
+                }
+                else {
+                    budgetDetailId = parentId;
+                }
+                var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+                BindFinanceLineItmeData(budgetDetailId, AllocatedBy);
+            }
+        });
+        var nlDivs = $('#nl-formChildFinance div');
+        if (nlDivs.length > 0) {
+            var overlay = $('#nl-formChildFinance .nl-overlay');
+            if (overlay.length > 0) {
+            } else {
+                $('#nl-formChildFinance div').first().remove();
+            }
+        }
+        nlformChildFinance = new NLForm(document.getElementById('nl-formChildFinance'));
+        var liChildFinance = $('#ddlChildFinance').find('option');
+        if (liChildFinance != null && liChildFinance != 'undefined' && liChildFinance.length > 0) {
+
+            $('#nl-formChildFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+               $('#errorMsg').css('display', 'none');
+                $('#SuccessMsg').css('display', 'none');
+                $("#divGridView").show();
+                $("#dvNoData").hide();
+
+                var ChildbudgetID = $(this).attr('value');
+                var parentid = $('#nl-formParentFinance .nl-dd-checked ').attr('value');
+
+                if (pageName == "LineItemGrid") {
+                    var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+                    if (ChildbudgetID > 0) {
+                        BindFinanceLineItmeData(ChildbudgetID, AllocatedBy);
+                    }
+                    else {
+                        BindFinanceLineItmeData(parentid, AllocatedBy);
+                    }
+                }
+            });
+        }
+
+    }
+
 </script>

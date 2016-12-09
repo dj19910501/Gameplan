@@ -23,6 +23,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         private MRPEntities _database;
         string TripleDash = "---";
         private const string formatThousand = "#,#0.##";
+        private const string PeriodPrefix = "Y";
         private IBDSService _ServiceDatabase;
         private ICurrency _ObjCurrency = new Currency();
 
@@ -30,7 +31,6 @@ namespace RevenuePlanner.Services.MarketingBudget
         string[] DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString(), Enums.ColumnValidation.ValidNumeric.ToString() };
         List<string> QuaterPeriod = new List<string>();
         public string dataPeriod = "";
-        private const string PeriodPrefix = "Y";
         public MarketingBudget(MRPEntities database, IBDSService ServiceDatabase)
         {
             _database = database;
@@ -1730,5 +1730,845 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             return objBudAmount;
         }
+
+        #region methods to bind  line items for budget
+        #region "Finance: Get Parent & Child dropdown list for LineItem page "
+        /// <summary>
+        /// Get the list of Parent dropdown for LineItem screen
+        /// </summary>
+        /// <returns>Return the list of Budget Details list</returns>
+        public LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0)
+        {
+
+            List<Budget_Detail> tblBudgetDetails = new List<Budget_Detail>();
+            tblBudgetDetails = _database.Budget_Detail.Where(a => a.Budget.ClientId == Sessions.User.CID && a.IsDeleted == false).ToList();
+            List<ViewByModel> lstParentItems = new List<ViewByModel>();
+            LineItemDropdownModel objParentListModel = new LineItemDropdownModel();
+            int? ParentId = 0, mostParentId = 0;
+            ParentId = tblBudgetDetails.Where(dtl => dtl.Id == BudgetDetailId).Select(dtl => dtl.ParentId).FirstOrDefault();
+            mostParentId = tblBudgetDetails.Where(dtl => dtl.Id == ParentId).Select(dtl => dtl.ParentId).FirstOrDefault();
+            var filterParentList = (from detail1 in tblBudgetDetails
+                                    where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
+                                    select new { detail1.Name, detail1.Id }).Distinct().ToList();
+            lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+
+            objParentListModel.list = lstParentItems;
+            objParentListModel.parentId = ParentId.HasValue ? ParentId.Value : 0;
+            return objParentListModel;
+        }
+        #endregion
+        /// <summary>
+        /// Get the list of Child dropdown for LineItem screen
+        /// </summary>
+        /// <returns>Return the list of Budget Details list</returns>
+        public List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0)
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstChildItems = new List<ViewByModel>();
+            var filterChildList = (from detail1 in _database.Budget_Detail
+                                   where detail1.ParentId == ParentBudgetDetailId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name) && detail1.Budget.ClientId == Sessions.User.CID
+                                   select new { detail1.Name, detail1.Id }).Distinct().ToList();
+            lstChildItems = filterChildList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+            return lstChildItems;
+        }
+        //Method to get line item grid for budget and time frame
+        public LineItemDetail GetLineItemGrid(int BudgetDetailId, string IsQuaterly = "quarters")
+        {
+            LineItemDetail AllLineItemDetail = new LineItemDetail();
+            BudgetGridModel lineItemGridData = new BudgetGridModel();
+
+            BudgetGridDataModel objLineItemGridDataModel = new BudgetGridDataModel();
+            Budget_Detail objBudgetDetail = _database.Budget_Detail.Where(a => a.Id == (BudgetDetailId > 0 ? BudgetDetailId : a.BudgetId) && a.IsDeleted == false).FirstOrDefault();
+            List<LineItem_Budget> LineItemidBudgetList = new List<LineItem_Budget>();
+            if (objBudgetDetail == null)
+                objBudgetDetail = new Budget_Detail();
+
+            LineItemidBudgetList = _database.LineItem_Budget.Where(a => objBudgetDetail.Id == a.BudgetDetailId).Select(a => a).ToList();
+            if (LineItemidBudgetList.Count() > 0)
+            {
+                LineItem_Budget LinkedTactic;
+                for (int i = 0; i < LineItemidBudgetList.Count(); i++)
+                {
+                    LinkedTactic = new LineItem_Budget();
+                    LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
+                    if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                    {
+                        if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                        {
+                            LineItemidBudgetList.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                }
+            }
+            List<int> PlanLineItemBudgetDetail = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+            List<Plan_Campaign_Program_Tactic_LineItem> lstPlanLineItems = _database.Plan_Campaign_Program_Tactic_LineItem.Where(a => PlanLineItemBudgetDetail.Contains(a.PlanLineItemId) && a.IsDeleted == false).ToList();
+            List<int> LineItemids = lstPlanLineItems != null ? lstPlanLineItems.Select(line => line.PlanLineItemId).ToList() : new List<int>();
+
+            List<string> tacticStatus = Common.GetStatusListAfterApproved();
+
+            List<Budget_DetailAmount> BudgetDetailAmount = _database.Budget_DetailAmount.Where(a => objBudgetDetail.Id == a.BudgetDetailId).Select(a => a).ToList();
+
+            List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in _database.Plan_Campaign_Program_Tactic_LineItem_Cost
+                                                                                 where LineItemids.Contains(Cost.PlanLineItemId)
+                                                                                 select Cost).ToList();
+
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in _database.Plan_Campaign_Program_Tactic_LineItem_Actual
+                                                                                     join TacticLineItem in _database.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                     join Tactic in _database.Plan_Campaign_Program_Tactic on TacticLineItem.PlanTacticId equals Tactic.PlanTacticId
+                                                                                     where LineItemids.Contains(Actual.PlanLineItemId)
+                                                                                     && tacticStatus.Contains(Tactic.Status)
+                                                                                     select Actual).ToList();
+
+            #region "Create Child Data Model"
+
+            #region "Declare local variables"
+            List<BudgetGridRowModel> childModelList = new List<BudgetGridRowModel>();
+            BudgetGridRowModel childModel = new BudgetGridRowModel();
+            List<string> childData = new List<string>();
+            BudgetAmount objBudgetAmount;
+            List<Plan_Campaign_Program_Tactic_LineItem_Cost> lstPlannedValue;
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstActualValue;
+            List<LineItem_Budget> lstLineItemBudget;
+            double planVal = 0, actualVal = 0, forecstVal = 0, totalPlanned = 0, totalActual = 0;
+            string strlineItemPopupUrl;
+            int planId;
+            #endregion
+
+            #region "Foreach LineItem list to set Value into Model"
+            foreach (Plan_Campaign_Program_Tactic_LineItem lineitem in lstPlanLineItems)
+            {
+                totalPlanned = totalActual = 0;
+                childModel = new BudgetGridRowModel();
+                childData = new List<string>();
+                planId = 0;
+                strlineItemPopupUrl = string.Empty;
+                // Name,View,Forecast,Planned,Actual
+                childData.Add(HttpUtility.HtmlDecode(lineitem.Title));
+                planId = lineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId;
+                strlineItemPopupUrl = GetNotificationURLbyStatus(planId, lineitem.PlanLineItemId, Enums.Section.LineItem.ToString());
+                childData.Add(string.Format("<div id='{0}' onclick=OpenLineItemPopup('{1}') title='View' class='grid_Search'></div>", lineitem.PlanLineItemId, HttpUtility.HtmlDecode(strlineItemPopupUrl)));
+
+                #region "Filter Planned Value"
+                lstPlannedValue = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
+                lstPlannedValue = PlanDetailAmount.Where(plan => plan.PlanLineItemId == lineitem.PlanLineItemId).ToList();
+                #endregion
+
+                #region "Filter Actual Value"
+                lstActualValue = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                lstActualValue = ActualDetailAmount.Where(actual => actual.PlanLineItemId == lineitem.PlanLineItemId).ToList();
+                #endregion
+
+                #region "Filter LineItem_Budget List"
+                lstLineItemBudget = new List<LineItem_Budget>();
+                lstLineItemBudget = LineItemidBudgetList.Where(line => line.PlanLineItemId == lineitem.PlanLineItemId).ToList();
+                #endregion
+
+                #region "Get Planned & Actual value based on Timeframe selected value"
+                objBudgetAmount = new BudgetAmount();
+                objBudgetAmount = GetAmountValue(IsQuaterly, new List<Budget_DetailAmount>(), lstPlannedValue, lstActualValue, lstLineItemBudget);
+                #endregion
+
+                if (objBudgetAmount != null)
+                {
+                    #region "Insert data as per timeframe wise"
+                    int timeframeRowCount = objBudgetAmount.Plan != null ? objBudgetAmount.Plan.Count : 0;
+                    for (int row = 0; row < timeframeRowCount; row++)
+                    {
+                        planVal = objBudgetAmount.Plan[row] != null ? Convert.ToDouble(objBudgetAmount.Plan[row]) : 0;
+                        actualVal = objBudgetAmount.Actual[row] != null ? Convert.ToDouble(objBudgetAmount.Actual[row]) : 0;
+                        totalPlanned = totalPlanned + planVal;
+                        totalActual = totalActual + actualVal;
+                        childData.Add("<div style='color: gray;'>0</div>"); // Insert Forecast Column Value
+                        childData.Add(planVal.ToString(formatThousand));    // Insert Planned Column Value
+                        childData.Add(actualVal.ToString(formatThousand));  // Insert Actual Column Value
+                    }
+                    #endregion
+                }
+
+                #region "Add Child Items Total values to Model"
+                childData.Add("<div style='color: gray;'>0</div>");
+                childData.Add(totalPlanned.ToString(formatThousand));    // Insert Planned Column Total Value
+                childData.Add(totalActual.ToString(formatThousand));  // Insert Actual Column Total Value 
+                #endregion
+
+                #region "Set LinetItem Value in Model"
+                childModel.id = lineitem.PlanLineItemId.ToString();
+                childModel.data = childData;
+                childModelList.Add(childModel);
+                #endregion
+            }
+            #endregion
+
+            #endregion
+
+            #region "Create Parent Data Model"
+            List<BudgetGridRowModel> parentModelList = new List<BudgetGridRowModel>();
+            List<string> parentData = new List<string>();
+            BudgetGridRowModel parentDataModel = new BudgetGridRowModel();
+            double totalParentForecast = 0, totalParentPlanned = 0, totalParentActual = 0;
+            parentData.Add(HttpUtility.HtmlDecode(objBudgetDetail.Name));   // Set TaskName column value
+            parentData.Add(string.Empty);           // Set View column value
+            objBudgetAmount = new BudgetAmount();
+            objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList);
+
+            if (objBudgetAmount != null)
+            {
+                #region "Insert data as per timeframe wise"
+                int timeframeRowCount = objBudgetAmount.Plan != null ? objBudgetAmount.Plan.Count : 0;
+
+                for (int row = 0; row < timeframeRowCount; row++)
+                {
+                    forecstVal = objBudgetAmount.ForeCast[row] != null ? Convert.ToDouble(objBudgetAmount.ForeCast[row]) : 0;
+                    planVal = objBudgetAmount.Plan[row] != null ? Convert.ToDouble(objBudgetAmount.Plan[row]) : 0;
+                    actualVal = objBudgetAmount.Actual[row] != null ? Convert.ToDouble(objBudgetAmount.Actual[row]) : 0;
+
+                    totalParentForecast = totalParentForecast + forecstVal;
+                    totalParentPlanned = totalParentPlanned + planVal;
+                    totalParentActual = totalParentActual + actualVal;
+
+                    parentData.Add(forecstVal.ToString(formatThousand)); // Insert Forecast Column Value
+                    parentData.Add(planVal.ToString(formatThousand));    // Insert Planned Column Value
+                    parentData.Add(actualVal.ToString(formatThousand));  // Insert Actual Column Value
+                }
+                #endregion
+            }
+
+            #region "Add Child Items Total values to Model"
+            parentData.Add(totalParentForecast.ToString(formatThousand));   // Insert Forecast Column Total Value
+            parentData.Add(totalParentPlanned.ToString(formatThousand));    // Insert Planned Column Total Value
+            parentData.Add(totalParentActual.ToString(formatThousand));  // Insert Actual Column Total Value 
+            #endregion
+
+            parentDataModel.id = BudgetDetailId.ToString();
+            parentDataModel.data = parentData;
+            parentDataModel.rows = childModelList;
+            parentModelList.Add(parentDataModel);
+
+            //ViewBag.HasLineItems = childModelList != null && childModelList.Count > 0 ? true : false;
+            AllLineItemDetail.childLineItemCount = childModelList != null && childModelList.Count > 0 ? true : false;
+            #endregion
+            var temp = parentModelList.Where(a => a.id == Convert.ToString(BudgetDetailId)).Select(a => a.data).FirstOrDefault();
+            FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
+            if (temp != null)
+            {
+                objFinanceHeader.Budget = 0;
+                objFinanceHeader.Forecast = Convert.ToDouble(temp[temp.Count - 3]);
+                objFinanceHeader.Planned = Convert.ToDouble(temp[temp.Count - 2]);
+                objFinanceHeader.Actual = Convert.ToDouble(temp[temp.Count - 1]);
+            }
+            else
+            {
+                objFinanceHeader.Budget = objFinanceHeader.Forecast = objFinanceHeader.Planned = objFinanceHeader.Actual = 0;
+            }
+            objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+
+            objLineItemGridDataModel.rows = parentModelList;
+            objLineItemGridDataModel.FinanemodelheaderObj = objFinanceHeader;
+
+            lineItemGridData.objGridDataModel = objLineItemGridDataModel;
+            AllLineItemDetail.LineItemGridData = lineItemGridData;
+            return AllLineItemDetail;
+
+        }
+
+        /// <summary>
+        /// Function to get Notification URL.
+        /// Added By: Viral Kadiya on 10/26/2015.
+        /// </summary>
+        /// <param name="planId">Plan Id.</param>
+        /// <param name="planTacticId">Plan Tactic Id.</param>
+        /// <param name="section">Section.</param>
+        /// <returns>Return NotificationURL.</returns>
+        public string GetNotificationURLbyStatus(int planId = 0, int entityId = 0, string section = "")
+        {
+            string strURL = string.Empty;
+            try
+            {
+                //if (section == Convert.ToString(Enums.Section.LineItem))
+                //    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planLineItemId = entityId, activeMenu = "Plan" }, Request.Url.Scheme);
+            }
+            catch (Exception e)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return strURL;
+        }
+        #region Get Budget/ForeCast/Plan/Actual Value
+        public BudgetAmount GetAmountValue(string isQuaterly, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount, List<LineItem_Budget> LineItemidBudgetList)
+        {
+            #region Declartion
+            BudgetAmount objbudget = new BudgetAmount();
+            List<double?> _budgetlist = new List<double?>();
+            List<double?> _forecastlist = new List<double?>();
+            List<double?> _planlist = new List<double?>();
+            List<double?> _actuallist = new List<double?>();
+            int currentEndMonth = 12;
+            double? _Budget = 0, _ForeCast = 0, _Plan = 0, _Actual = 0;
+            double PlanExchangeRate = Sessions.PlanExchangeRate;
+            #endregion
+
+            List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+            List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+            List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+            List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+
+            List<string> _curentBudget = new List<string>();
+            List<string> _curentForeCast = new List<string>();
+            List<string> _curentPlan = new List<string>();
+            List<string> _curentActual = new List<string>();
+
+            List<string> _commonQuarters = new List<string>();
+            if (LineItemidBudgetList != null)
+            {
+                List<int> LineItemIds = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+            }
+            if (isQuaterly == Enums.PlanAllocatedBy.quarters.ToString())
+            {
+                #region "Get Quarter list based on loop value"
+                for (int i = 1; i <= 4; i++)
+                {
+                    if (i == 1)
+                    {
+                        _curentBudget = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    else if (i == 2)
+                    {
+                        _curentBudget = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    else if (i == 3)
+                    {
+                        _curentBudget = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    else if (i == 4)
+                    {
+                        _curentBudget = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where _curentPlan.Contains(plandetail.Period)
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where _curentActual.Contains(actualdetail.Period)
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _Budget = Budget_DetailAmountList.Where(a => _curentBudget.Contains(a.Period)).Sum(a => a.Budget);
+                    _budgetlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+
+                    _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
+                    _forecastlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    _planlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
+                }
+                #endregion
+            }
+            else if (isQuaterly == Enums.PlanAllocatedBy.months.ToString())
+            {
+                for (int i = 1; i <= 12; i++)
+                {
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where plandetail.Period == PeriodPrefix + i.ToString()
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where actualdetail.Period == PeriodPrefix + i.ToString()
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _Budget = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Budget);
+                    _budgetlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+                    _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
+                    _forecastlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    _planlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
+                }
+            }
+            else
+            {
+                if (isQuaterly == Enums.QuarterWithSpace.Quarter1.ToString())
+                {
+                    _commonQuarters = Q1;
+                }
+                else if (isQuaterly == Enums.QuarterWithSpace.Quarter2.ToString())
+                {
+                    _commonQuarters = Q2;
+                }
+                else if (isQuaterly == Enums.QuarterWithSpace.Quarter3.ToString())
+                {
+                    _commonQuarters = Q3;
+                }
+                else if (isQuaterly == Enums.QuarterWithSpace.Quarter4.ToString())
+                {
+                    _commonQuarters = Q4;
+                }
+                foreach (var item in _commonQuarters)
+                {
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where plandetail.Period == item
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where actualdetail.Period == item
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+
+                    _Budget = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Budget);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _budgetlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+                    _ForeCast = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Forecast);
+                    _forecastlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    _planlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
+                }
+            }
+            objbudget.Budget = _budgetlist;
+            objbudget.ForeCast = _forecastlist;
+            objbudget.Plan = _planlist;
+            objbudget.Actual = _actuallist;
+            return objbudget;
+        }
+        public BudgetAmount GetMainGridAmountValue(bool isQuaterly, string strTimeFrame, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount, List<LineItem_Budget> LineItemidBudgetList)
+        {
+            #region Declartion
+            BudgetAmount objbudget = new BudgetAmount();
+            List<double?> _budgetlist = new List<double?>();
+            List<double?> _forecastlist = new List<double?>();
+            List<double?> _planlist = new List<double?>();
+            List<double?> _actuallist = new List<double?>();
+            int currentEndMonth = 12;
+            double? _Budget = 0, _ForeCast = 0, _Plan = 0, _Actual = 0;
+            double PlanExchangeRate = Sessions.PlanExchangeRate;
+            #endregion
+
+            if (isQuaterly)
+            {
+                List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+                List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+                List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+                List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+
+                List<string> _curentBudget = new List<string>();
+                List<string> _curentForeCast = new List<string>();
+                List<string> _curentPlan = new List<string>();
+                List<string> _curentActual = new List<string>();
+
+                int startIndex = 0, endIndex = 0;
+                if (!String.IsNullOrEmpty(strTimeFrame))
+                {
+                    if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter1.ToString()))
+                        startIndex = endIndex = 1;
+                    else if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter2.ToString()))
+                        startIndex = endIndex = 2;
+                    else if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter3.ToString()))
+                        startIndex = endIndex = 3;
+                    else if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter4.ToString()))
+                        startIndex = endIndex = 4;
+                    else
+                    {
+                        startIndex = 1; endIndex = 4;
+                    }
+                }
+                else
+                {
+                    startIndex = 1; endIndex = 4;
+                }
+
+                #region "Get Quarter list based on loop value"
+                for (int i = startIndex; i <= endIndex; i++)
+                {
+                    if (i == 1)
+                    {
+                        _curentBudget = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    else if (i == 2)
+                    {
+                        _curentBudget = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    else if (i == 3)
+                    {
+                        _curentBudget = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+                    else if (i == 4)
+                    {
+                        _curentBudget = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentForeCast = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentPlan = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                        _curentActual = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    }
+
+                    if (Budget_DetailAmountList != null)
+                    {
+                        _Budget = Budget_DetailAmountList.Where(a => _curentBudget.Contains(a.Period)).Sum(a => a.Budget);
+                        _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
+
+                    }
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _budgetlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+                    _forecastlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    if (PlanDetailAmount != null && LineItemidBudgetList != null)
+                    {
+                        _Plan = (from plandetail in PlanDetailAmount
+                                 join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                                 where _curentPlan.Contains(plandetail.Period)
+                                 from leftplanweightage in leftplan.DefaultIfEmpty()
+                                 select new
+                                 {
+                                     Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                                 }).ToList().Sum(a => a.Value);
+                    }
+                    if (ActualDetailAmount != null && LineItemidBudgetList != null)
+                    {
+                        _Actual = (from actualdetail in ActualDetailAmount
+                                   join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                                   where _curentActual.Contains(actualdetail.Period)
+                                   from leftactualweightage in leftactual.DefaultIfEmpty()
+                                   select new
+                                   {
+                                       Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                                   }).ToList().Sum(a => a.Value);
+                    }
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _planlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
+                }
+                #endregion
+            }
+            else
+            {
+                for (int i = 1; i <= 12; i++)
+                {
+                    if (Budget_DetailAmountList != null)
+                    {
+                        _Budget = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Budget);
+                        _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
+                    }
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _budgetlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+                    _forecastlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    if (PlanDetailAmount != null && LineItemidBudgetList != null)
+                    {
+                        _Plan = (from plandetail in PlanDetailAmount
+                                 join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                                 where plandetail.Period == PeriodPrefix + i.ToString()
+                                 from leftplanweightage in leftplan.DefaultIfEmpty()
+                                 select new
+                                 {
+                                     Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                                 }).ToList().Sum(a => a.Value);
+                    }
+                    if (ActualDetailAmount != null && LineItemidBudgetList != null)
+                    {
+                        _Actual = (from actualdetail in ActualDetailAmount
+                                   join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                                   where actualdetail.Period == PeriodPrefix + i.ToString()
+                                   from leftactualweightage in leftactual.DefaultIfEmpty()
+                                   select new
+                                   {
+                                       Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                                   }).ToList().Sum(a => a.Value);
+                    }
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _planlist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(_ObjCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
+                }
+            }
+            objbudget.Budget = _budgetlist;
+            objbudget.ForeCast = _forecastlist;
+            objbudget.Plan = _planlist;
+            objbudget.Actual = _actuallist;
+            return objbudget;
+        }
+        #endregion
+        #endregion
+
+        #region method to bind User Permission for budget
+        public List<ViewByModel> GetChildBudget(int BudgetId = 0)
+        {
+            List<ViewByModel> lstchildbudget = Common.GetParentBudgetlist(BudgetId);
+            if (lstchildbudget.Count > 0)
+            {
+                return lstchildbudget;
+            }
+            else
+            {
+                lstchildbudget.Add(new ViewByModel { Text = "Please Select", Value = "0" });
+                return lstchildbudget;
+            }
+        }
+        //Method to get list of user for budget
+        public List<Budget_Permission> GetUserList(int BudgetId)
+        {
+            List<Budget_Permission> UserList = (from c in _database.Budget_Permission
+                                                where c.BudgetDetailId == BudgetId
+                                                orderby c.UserId
+                                                select c).GroupBy(g => g.UserId).Select(x => x.FirstOrDefault()).ToList();
+            return UserList;
+        }
+        //Method to get user permission list for budget
+        public FinanceModel EditPermission(int BudgetId, Guid ApplicationId, List<Budget_Permission> UserList)
+        {
+            FinanceModel objFinanceModel = new FinanceModel();
+            BDSService.User objUser = new BDSService.User();
+
+            UserPermission user = new UserPermission();
+            List<BDSService.User> BDSuserList = _ServiceDatabase.GetMultipleTeamMemberDetailsEx(UserList.Select(x => x.UserId).ToList(), ApplicationId);
+            List<UserPermission> _user = new List<UserPermission>();
+            for (int i = 0; i < BDSuserList.Count; i++)
+            {
+                user = new UserPermission();
+                user.budgetID = BudgetId;
+                user.UserId = BDSuserList[i].ID;
+                user.FirstName = BDSuserList[i].FirstName;
+                user.LastName = BDSuserList[i].LastName;
+                user.Role = BDSuserList[i].RoleTitle;
+                user.Permission = UserList[i].PermisssionCode;
+                user.createdby = UserList[i].CreatedBy.ToString();
+                user.IsOwner = UserList[i].IsOwner;
+                _user.Add(user);
+            }
+            objFinanceModel.Userpermission = _user.OrderBy(i => i.FirstName, new AlphaNumericComparer()).ToList();
+            var index = _user.FindIndex(x => x.UserId == Sessions.User.ID);
+            if (index != -1)
+            {
+                var item = _user[index];
+                _user[index] = _user[0];
+                _user[0] = item;
+            }
+            objFinanceModel.Userpermission = _user.ToList();
+            return objFinanceModel;
+        }
+        //method to check permission for budget
+        public string CheckUserPermission(int BudgetId, int ClientId, int UserId)
+        {
+            List<BDSService.User> lstUser = new List<BDSService.User>();
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            lstUser = objBDSServiceClient.GetUserListByClientIdEx(ClientId).ToList();
+            List<int> lstUserId = lstUser.Select(a => a.ID).ToList();
+            List<Budget_Permission> ListOfUserPermission = _database.Budget_Permission.Where(a => lstUserId.Contains(a.UserId)).ToList();
+            List<Budget_Permission> CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)BudgetId && a.UserId == UserId).ToList();
+            string isEdit = "";
+            string strUserAction = string.Empty;
+            if (CheckUserPermission.Count > 0)
+            {
+                if (CheckUserPermission.First().PermisssionCode == 0)
+                {
+                    isEdit = "Edit";
+                }
+                else
+                {
+                    isEdit = "View";
+                }
+            }
+            else
+            {
+                isEdit = "View";
+            }
+            return isEdit;
+        }
+
+        public List<UserPermission> FilterByBudget(int BudgetId, Guid ApplicationId)
+        {
+            List<UserPermission> _user = new List<UserPermission>();
+            BDSService.User objUser = new BDSService.User();
+            var UserList = (from c in _database.Budget_Permission
+                            where c.BudgetDetailId == BudgetId
+                            orderby c.UserId
+                            select c).GroupBy(g => g.UserId).Select(x => x.FirstOrDefault()).ToList();
+
+            for (int i = 0; i < UserList.Count; i++)
+            {
+                UserPermission user = new UserPermission();
+                objUser = _ServiceDatabase.GetTeamMemberDetailsEx(UserList[i].UserId, ApplicationId);
+                user.budgetID = BudgetId;
+                user.UserId = objUser.ID;
+                user.FirstName = objUser.FirstName;
+                user.LastName = objUser.LastName;
+                user.Role = objUser.RoleTitle;
+                user.Permission = UserList[i].PermisssionCode;
+                user.createdby = Convert.ToString(UserList[i].CreatedBy);
+                user.IsOwner = UserList[i].IsOwner;
+                _user.Add(user);
+            }
+            return _user;
+        }
+        public UserModel GetuserRecord(int Id, int UserId, Guid ApplicationId)
+        {
+            int uId = 0;
+            if (Id == 0)
+            {
+                uId = UserId;
+            }
+            else
+            {
+                uId = Id;
+            }
+            BDSService.User objUser = new BDSService.User();
+            UserModel objUserModel = new UserModel();
+
+            objUser = _ServiceDatabase.GetTeamMemberDetailsEx(uId, ApplicationId);
+            if (objUser != null)
+            {
+                objUserModel.DisplayName = objUser.DisplayName;
+                objUserModel.Email = objUser.Email;
+                objUserModel.Phone = objUser.Phone;
+                objUserModel.FirstName = objUser.FirstName;
+                objUserModel.JobTitle = objUser.JobTitle;
+                objUserModel.LastName = objUser.LastName;
+                objUserModel.UserId = objUser.ID;
+                objUserModel.RoleTitle = objUser.RoleTitle;
+            }
+            return objUserModel;
+        }
+        //method to get all userlist for client for search in edit permission
+        public List<BDSService.User> GetAllUserList(int ClientId, int UserId, Guid ApplicationId)
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            List<BDSService.User> lstUserDetail = objBDSServiceClient.GetTeamMemberListEx(ClientId, ApplicationId, UserId, true).ToList();
+
+            return lstUserDetail;
+        }
+        //method to delete user for budget and its parent item
+        public void DeleteUserForBudget(List<int> BudgetDetailIds, int UserID)
+        {
+            List<Budget_Permission> BudgetDetailList = _database.Budget_Permission.Where(i => BudgetDetailIds.Contains(i.BudgetDetailId) && i.UserId == UserID).ToList();
+            //END
+            foreach (var BudgetDetail in BudgetDetailList)
+            {
+                _database.Entry(BudgetDetail).State = EntityState.Deleted;
+            }
+            _database.SaveChanges();
+        }
+        //method to save user permission
+        public void SaveUSerPermission(List<UserBudgetPermissionDetail> UserData, string ChildItems, string ParentID)
+        {
+            List<string> ListItems = new List<string>();
+            if (ChildItems != "" && ChildItems != null)
+            {
+                ListItems = ChildItems.Split(',').ToList();
+
+            }
+            if (ParentID != "" && ParentID != null)
+            {
+                ListItems.Add(ParentID);
+            }
+
+            string ItemID = string.Empty;
+
+            List<UserBudgetPermissionDetail> FinalUserData = new List<UserBudgetPermissionDetail>();
+            Budget_Permission objBudget_Permission = new Budget_Permission();
+            List<Budget_Permission> BudgetDetailList = _database.Budget_Permission.Select(list => list).ToList();
+            Budget_Permission CurrentobjBudget_Permission = new Budget_Permission();
+            List<UserBudgetPermissionDetail> TempUserData = new List<UserBudgetPermissionDetail>();
+
+            for (int i = 0; i < ListItems.Count; i++)
+            {
+               
+                if (ListItems[i].Contains("_"))
+                {
+                    ItemID = ListItems[i].Split('_')[1];
+                }
+                TempUserData = (from User in UserData
+                                select new UserBudgetPermissionDetail
+                                {
+                                    BudgetDetailId = Convert.ToInt32(ItemID),
+                                    PermisssionCode = User.PermisssionCode,
+                                    UserId = User.UserId
+                                }).ToList();
+                FinalUserData.AddRange(TempUserData);
+            }
+
+            try
+            {
+                for (int i = 0; i < FinalUserData.Count; i++)
+                {
+                    _database.Configuration.AutoDetectChangesEnabled = false;
+                    objBudget_Permission = new Budget_Permission();
+                    int id = FinalUserData[i].UserId;
+                    CurrentobjBudget_Permission = BudgetDetailList.Where(t => t.BudgetDetailId.Equals(FinalUserData[i].BudgetDetailId) && t.UserId.Equals(id)).FirstOrDefault();
+                    if (CurrentobjBudget_Permission == null)
+                    {
+                        objBudget_Permission.UserId = FinalUserData[i].UserId;
+                        objBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
+                        objBudget_Permission.CreatedBy = Sessions.User.ID;
+                        objBudget_Permission.CreatedDate = DateTime.Now;
+                        objBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
+                        _database.Entry(objBudget_Permission).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        if (!CurrentobjBudget_Permission.IsOwner)
+                        {
+                            CurrentobjBudget_Permission.UserId = FinalUserData[i].UserId;
+                            CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
+                            CurrentobjBudget_Permission.CreatedDate = DateTime.Now;
+                            CurrentobjBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
+                            _database.Entry(CurrentobjBudget_Permission).State = EntityState.Modified;
+                        }
+
+
+
+                    }
+
+                }
+            }
+            finally
+            {
+                _database.Configuration.AutoDetectChangesEnabled = true;
+            }
+            _database.SaveChanges();
+        }
+
+        #endregion
     }
 }
