@@ -108,15 +108,19 @@ DECLARE @OwnerCustomFieldId INT --fetch inserted CustomFieldId customfield table
 
 				SELECT @CustomeFieldTypeId = CustomFieldTypeId  FROM [dbo].CustomFieldType WHERE Name = 'TextBox'  --get client specific CustomFieldTypeId for TextBox to insert CustomFieldTypeId for User,Owner 
 				SELECT TOP 1 @ColumnSetId = [Id]  FROM [dbo].[Budget_ColumnSet] where ClientId = @ClientId and IsDeleted='0' and Name ='Finance'  --get client specific ColumnSetId from Budget_ColumnSet
- 
+				
+				DELETE FROM [dbo].[Budget_Columns] WHERE CustomFieldId IN 
+				(SELECT CustomFieldId FROM [dbo].[CustomField] WHERE Name = 'Users' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0)
 
-				  IF NOT EXISTS(SELECT CustomFieldid FROM [dbo].[CustomField] WHERE Name = 'User' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0) -- check client specific User name already exists in CustomField Table
+				DELETE FROM [dbo].[CustomField] WHERE Name = 'Users' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0
+
+				  IF NOT EXISTS(SELECT CustomFieldid FROM [dbo].[CustomField] WHERE Name = 'Users' and EntityType = 'Budget' and ClientId = @ClientId and IsDeleted = 0) -- check client specific User name already exists in CustomField Table
 					BEGIN
 					   INSERT INTO [dbo].[CustomField]
 						([Name] ,[CustomFieldTypeId],[Description] ,[IsRequired] ,[EntityType],[IsDeleted],[CreatedDate] ,[ModifiedDate] ,[IsDisplayForFilter] ,
 						[AbbreviationForMulti] ,[IsDefault] ,[IsGet],[ClientId],[CreatedBy],[ModifiedBy]) 
 
-							SELECT 'User', @CustomeFieldTypeId, null, 0, 'Budget', 0, GETDATE(), null, 0, 'MULTI', 0 , 0, @ClientId, @CreatedBy, 0  --insert new row in CustomField Table for User Name CustomField
+							SELECT 'Users', @CustomeFieldTypeId, null, 0, 'Budget', 0, GETDATE(), null, 0, 'MULTI', 0 , 0, @ClientId, @CreatedBy, 0  --insert new row in CustomField Table for User Name CustomField
 
 							 SELECT @UserCustomFieldId = SCOPE_IDENTITY() --get last inserted CustomFieldId  as UserCustomFieldId for further insert in Budget_Columns table
 							
@@ -2206,6 +2210,7 @@ END
 --Insertation End #2623 import multiple plan
 Go
 
+
 /* Start - Update existing Marketing Budget data for parent records to NULL for ROLL UP */
 
 -- 1. Back up Budget_Detail and Budget_DetailAmount tables
@@ -2245,7 +2250,43 @@ Go
 		WHERE ParentId IS NOT NULL AND IsDeleted = 0
 	END
 
--- 4. Remove Budget & Forecast values of Parent records from Budget_DetailAmount table
+-- 4. Update Budget_DetailAmount table to do '0' for child records those has null value.
+	BEGIN
+		Update BD1 
+		SET TotalBudget =
+			CASE 
+				WHEN  BD1.TotalBudget is NUll THEN 0 ELSE BD1.TotalBudget
+			END 
+			, 
+			TotalForecast =
+			CASE 
+				WHEN  BD1.TotalForecast is NUll THEN 0 ELSE BD1.TotalForecast
+			END
+		FROM Budget_Detail(NOLOCK) BD1
+		LEFT JOIN Budget_Detail(NOLOCK) BD2 on BD1.Id =BD2.ParentId
+		WHERE BD2.Id is null and BD1.IsDeleted='0' 
+	END
+
+-- 5. Update Budget_DetailAmount table to do '0' for child records those has null value.
+	BEGIN
+		Update BM 
+		SET Budget =
+			CASE 
+				WHEN  BM.Budget is NUll THEN 0 ELSE BM.Budget
+			END 
+			, 
+			Forecast =
+			CASE 
+				WHEN  BM.Forecast is NUll THEN 0 ELSE BM.Forecast
+			END
+		FROM Budget_DetailAmount(NOLOCK)BM
+		INNER JOIN Budget_Detail(NOLOCK) BD1 on BM.BudgetDetailId =BD1.Id 
+		LEFT JOIN Budget_Detail(NOLOCK) BD2 on BD1.Id =BD2.ParentId
+		WHERE BD2.Id is null and BD1.IsDeleted='0' 
+	END
+
+
+-- 6. Remove Budget & Forecast values of Parent records from Budget_DetailAmount table
 	BEGIN
 		DELETE FROM Budget_DetailAmount 
 		WHERE Id IN (
@@ -4947,12 +4988,6 @@ GO
 
 -- End - Added by Arpita Soni for Ticket #2788
 
--- Start - Added by Komal rawal on 12-08-2016
--- Update User Column name to Users for all existing data in custom field table for marketing budget
-
-update CustomField set Name = 'Users' where EntityType = 'Budget' and Name = 'User' 
-
---End - Added by Komal rawal on 12-08-2016
 --Added by devanshi for #2847: get heads up value for marketing budget line items
 
 /****** Object:  StoredProcedure [dbo].[GetHeaderValuesForFinanceLineItems]    Script Date: 12/09/2016 5:00:55 PM ******/
