@@ -9,6 +9,7 @@ using System.Linq;
 using Excel;
 using System.Xml;
 using System.Data;
+//using RevenuePlanner.Models;
 
 namespace RevenuePlanner.Controllers
 {
@@ -400,55 +401,117 @@ namespace RevenuePlanner.Controllers
         /// <param name="AllocationType">Allocation Type.</param>       
         /// <param name="Period">Perido (i.e Jan,Feb..etc).</param>       
 
+        /// <summary>
+        /// Function to Updating budget data.
+        /// Added By: Rahul Shah on 12/07/2016.
+        /// </summary>
+        /// <param name="BudgetId">Budget Id.</param>        
+        /// <param name="BudgetDetailId">Budget Detail Id.</param>
+        /// <param name="ParentId">Parent Budget Detail Id.</param>       
+        /// <param name="nValue">new Value.</param>       
+        /// <param name="ChildItemIds">Child Budget Detail Ids.</param>       
+        /// <param name="ColumnName">Column Name.</param>       
+        /// <param name="AllocationType">Allocation Type.</param>       
+        /// <param name="Period">Perido (i.e Jan,Feb..etc).</param>       
+
         public JsonResult UpdateMarketingBudget(int BudgetId, int BudgetDetailId, int ParentId, string nValue, string ChildItemIds, string ColumnName, string AllocationType, string Period)
         {
             //Check budget Id and budget detaild id is valid or not.
             if (BudgetId <= 0 || BudgetDetailId <= 0)
             {
-                return Json(new { IsSuccess = false, ErrorMessage = "A BudgetId less than or equal to zero is invalid, and likely indicates the BudgetId was not set properly" }, JsonRequestBehavior.AllowGet);
+                return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetData }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                List<string> ListItems = new List<string>();
-
-                //Check Child budget items are exist or not 
-                if (!string.IsNullOrEmpty(ChildItemIds))
+                try
                 {
-                    ListItems = ChildItemIds.Split(',').ToList();
+                    List<string> ListItems = new List<string>();
+                    List<RevenuePlanner.Models.Budget_Columns> objColumns = _MarketingBudget.GetBudgetColumn(Sessions.User.CID); // get budget column of the client.
+                    bool isForecast = false;
 
-                }
-                ListItems.Add(Convert.ToString(BudgetDetailId));
-
-
-                if (string.Compare(ColumnName, Enums.DefaultGridColumn.Owner.ToString(), true) == 0)
-                {
-                    int OwnerId = 0;
-                    int.TryParse(nValue, out OwnerId);
-                    if (OwnerId <= 0)
+                    //Check Child budget items are exist or not 
+                    if (!string.IsNullOrEmpty(ChildItemIds))
                     {
-                        return Json(new { IsSuccess = false, ErrorMsg = "Owner is not valid" }, JsonRequestBehavior.AllowGet);
+                        ListItems = ChildItemIds.Split(',').ToList();
+
                     }
-                    //TODO : here we need to call update owner name function.
+                    ListItems.Add(Convert.ToString(BudgetDetailId));
+
+
+                    if (string.Compare(ColumnName, Enums.DefaultGridColumn.Owner.ToString(), true) == 0)
+                    {
+                        int OwnerId = 0;
+                        int.TryParse(nValue, out OwnerId);
+                        if (OwnerId <= 0)
+                        {
+                            return Json(new { IsSuccess = false, ErrorMsg = "Owner is not valid" }, JsonRequestBehavior.AllowGet);
+                        }
+                        _MarketingBudget.UpdateOwnerName(BudgetDetailId, ListItems, OwnerId);
+                    }
+                    else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Name.ToString(), true) == 0)
+                    {
+                        _MarketingBudget.UpdateTaskName(BudgetId, BudgetDetailId, ParentId, Sessions.User.CID, ListItems, nValue);
+                    }
+                    else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Budget.ToString(), true) == 0 ||
+                             string.Compare(ColumnName, Enums.DefaultGridColumn.Forecast.ToString(), true) == 0 ||
+                             string.Compare(ColumnName, Enums.DefaultGridColumn.Total_Budget.ToString(), true) == 0 ||
+                             string.Compare(ColumnName, Enums.DefaultGridColumn.Total_Forecast.ToString(), true) == 0)
+                    {
+
+                        _MarketingBudget.UpdateTotalAmount(BudgetDetailId, nValue, ColumnName, Sessions.PlanExchangeRate);
+                    }
+                    else if (string.Compare(ColumnName.Split('_')[0], "cust") == 0)
+                    {
+                        if (objColumns != null && objColumns.Count > 0)
+                        {
+                            RevenuePlanner.Models.Budget_Columns objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false && a.CustomField.Name == (ColumnName != null ? ColumnName.Trim() : "")).Select(a => a).FirstOrDefault();
+
+                            if (objCustomColumns != null)
+                            {
+                                _MarketingBudget.SaveCustomColumnValues(ColumnName, objCustomColumns, BudgetDetailId, nValue, Sessions.User.ID, Sessions.PlanExchangeRate);//Call SaveBudgetorForecast method to save customfield cell value.
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (objColumns != null && objColumns.Count > 0)
+                        {
+                            //Get Name of the budget column             
+                            string BudgetColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && a.IsDeleted == false && a.IsTimeFrame == true
+                                                    && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
+                            //Get Name of the Forecast column
+                            string ForecastColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && a.IsDeleted == false && a.IsTimeFrame == true
+                                                        && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
+
+                            //here monthly/quarterly column name with Y1/Q1 prefix so we need to split and check column is forecast or budget then perform the updation logic.
+                            if (!string.IsNullOrEmpty(ColumnName))
+                            {
+                                if (ColumnName.Split('_').Length > 0)
+                                {
+                                    ColumnName = ColumnName.Split('_')[1];
+                                }
+
+                                if (ColumnName == BudgetColName)
+                                {
+                                    isForecast = false;
+                                }
+                                else
+                                {
+                                    isForecast = true;
+                                }
+                                //Call SaveBudgetorForecast method to save budget or forecast cell value.
+                                _MarketingBudget.SaveBudgetorForecast(BudgetDetailId, nValue, isForecast, AllocationType, Period, Sessions.PlanExchangeRate);
+                            }
+                        }
+                    }
+                    return Json(new { IsSuccess = true }, JsonRequestBehavior.AllowGet);
                 }
-                else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Name.ToString(), true) == 0)
+                catch (Exception ex)
                 {
-                    _MarketingBudget.UpdateTaskName(BudgetId, BudgetDetailId, ParentId, Sessions.User.CID, ListItems, nValue);
+                    return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.InvalidBudgetData }, JsonRequestBehavior.AllowGet);
                 }
-                else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Budget.ToString(), true) == 0 ||
-                         string.Compare(ColumnName, Enums.DefaultGridColumn.Forecast.ToString(), true) == 0 ||
-                         string.Compare(ColumnName, "Total_Forecast", true) == 0 ||
-                         string.Compare(ColumnName, "Total_Budget", true) == 0)
-                {
-                    _MarketingBudget.UpdateTotalAmount(ListItems, BudgetDetailId, nValue, ColumnName, Sessions.PlanExchangeRate);
-                }
-                else
-                {
-                    _MarketingBudget.UpdateBudgetorForecast(BudgetDetailId, Sessions.User.ID, nValue, ColumnName, AllocationType, Period, Sessions.PlanExchangeRate);
-                }
-                return Json(new { IsSuccess = false }, JsonRequestBehavior.AllowGet);
             }
         }
-
         #region method to get line items list
         /// <summary>
         /// Method to get budget parent list item

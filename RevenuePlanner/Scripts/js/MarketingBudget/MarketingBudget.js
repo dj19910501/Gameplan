@@ -384,7 +384,10 @@ function GetGridData(budgetId) {
 
             var psv = budgetgrid.cell;
             this.editor.obj.value = (psv.title.replace(/,/g, ""));
-            var actualcost = budgetgrid.cells(rId, cInd).getValue().replace(CurrencySybmol, '');
+            var actualcost = budgetgrid.cells(rId, cInd).getValue();
+            if (actualcost.toString().indexOf(CurrencySybmol) >= 0) {
+                actualcost = budgetgrid.cells(rId, cInd).getValue().replace(CurrencySybmol, '');
+            }
             this.editor.obj.value = (ReplaceCC(actualcost.toString()));
         } else if (ColumnId == "Name") {
 
@@ -441,8 +444,14 @@ function GetGridData(budgetId) {
             else {
                 if (rId != null && rId != 'undefined' && rId != '') {
                     var ownerId = budgetgrid.cells(rId, colOwnerNameIndex).getValue();
-                    var childItems = budgetgrid.getAllSubItems(rId);                    
-                    UpdateBudgetDetail(_budgetIdVal, budgetDetailId, parentId, nValue, childItems, ColumnId, Period);
+                    var childRowIds = budgetgrid.getAllSubItems(rId);
+                    var ChildItemIds = [];
+                    if (childRowIds != undefined && childRowIds != "") {
+                        for (var i = 0 ; i < childRowIds.split(',').length ; i++) {
+                            ChildItemIds.push(budgetgrid.cells(childRowIds.split(',')[i], colIdIndex).getValue());
+                        }
+                    }
+                    UpdateBudgetDetail(_budgetIdVal, budgetDetailId, parentId, nValue, ChildItemIds, ColumnId, Period);
 
 
                 }
@@ -500,7 +509,7 @@ function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childIte
             BudgetDetailId: budgetDetailId,
             ParentId: parentId,            
             nValue: nValue,
-            ChildItemIds: childItems,
+            ChildItemIds: childItems.toString(),
             ColumnName: columnId,
             AllocationType: mainTimeFrame,
             Period: period
@@ -509,9 +518,15 @@ function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childIte
             myApp.hidePleaseWait();
         },
         success: function (data) {
-            //TODO : grid is update only user change the owner.
-            //GetGridData(budgetId); //refresh grid once we update any new item
+            if (data.IsSuccess.toString().toLowerCase() == 'true') {
+                if (columnId.toString().toLowerCase() == OwnerColName.toLowerCase()) {
+                    GetGridData(budgetId); //refresh grid once we update any new item
+                }
             UpdateFinanceHeaderValues();
+        }
+            else {
+                ShowMessage(true, data.ErrorMessage);
+            }
         }
     });
 

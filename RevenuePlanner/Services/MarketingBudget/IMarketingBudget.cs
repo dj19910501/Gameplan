@@ -304,10 +304,12 @@ namespace RevenuePlanner.Services.MarketingBudget
         int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int UserID, int ClientID, int BudgetDetailId = 0);
         void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int ClientId, List<string> ListItems, string nValue);
 
-        void UpdateTotalAmount(List<string> ListItems, int budgetDetailId, string nValue, string ColumnName = "", double PlanExchangeRate = 1.0);
+        void UpdateOwnerName(int budgetDetailId, List<string> listItems, int ownerId);
+        void UpdateTotalAmount(int budgetDetailId, string nValue, string ColumnName = "", double PlanExchangeRate = 1.0);
 
-        void UpdateBudgetorForecast(int budgetDetailId, int UserId, string nValue, string ColumnName = "", string AllocationType = "", string Period = "", double PlanExchangeRate = 1.0);
-
+        void SaveBudgetorForecast(int budgetDetailId, string nValue, bool isForecast = false, string AllocationType = "", string Period = "", double PlanExchangeRate = 1.0);
+        void SaveCustomColumnValues(string columnName, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0);
+        List<Budget_Columns> GetBudgetColumn(int clientId);
         //Methods for user permissiopn and lineitems for budget
         LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0);
         List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0);
