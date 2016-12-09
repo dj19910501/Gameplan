@@ -305,6 +305,10 @@ namespace RevenuePlanner.Controllers
                     // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
                     if (Sessions.AppMenus != null)
                     {
+                        // Added by Jaymin Modi on 12/09/2016 for PL ticket #2798.
+                        bool isMarketingBudgetAuthorize, isTransactionAuthorize;
+                        isMarketingBudgetAuthorize = isTransactionAuthorize = true;
+
                         var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
                         var item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Model.ToString().ToUpper());
                         if (item != null && !isAuthorized)
@@ -331,25 +335,30 @@ namespace RevenuePlanner.Controllers
                         // Modified by Arpita Soni on 05/23/2016 for Ticket #2202
                         isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
                               AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView) ||
-                              AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
                               AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView));
 
                         item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.MarketingBudget.ToString().ToUpper());
                         if (item != null && !isAuthorized)
                         {
+                            isMarketingBudgetAuthorize = false;
                             Sessions.AppMenus.Remove(item);
                         }
 
-                        isAuthorized = Sessions.AppMenus.Select(x => x.Code.ToLower()).Contains(Enums.ActiveMenu.Plan.ToString().ToLower());
-                        item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
-                        if (item != null && !isAuthorized)
-                        {
-                            Sessions.AppMenus.Remove(item);
-                        }
-
+                       
                         if (!AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TransactionAttribution))
                         {
                             item = Sessions.AppMenus.Find(menuItem => menuItem.Code == "TRANSACTIONS");
+                            if (item != null)
+                            {
+                                isTransactionAuthorize = false;
+                                Sessions.AppMenus.Remove(item);
+                            }
+                        }
+
+                        // Remove "Finance" Menu tab when user doesn't have MarketingBudget & Transaction permission.
+                        if (!isMarketingBudgetAuthorize && !isTransactionAuthorize)
+                        {
+                            item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
                             if (item != null)
                             {
                                 Sessions.AppMenus.Remove(item);

@@ -24,10 +24,22 @@ namespace RevenuePlanner.Controllers
         private bool _IsBudgetCreate_Edit = true;
         private bool _IsForecastCreate_Edit = true;
         #endregion
-        [AuthorizeUser(Enums.ApplicationActivity.BudgetCreateEdit | Enums.ApplicationActivity.ForecastCreateEdit | Enums.ApplicationActivity.ForecastView)]
+        
         public ActionResult Index()
         {
             MarketingActivities MarketingActivities = new MarketingActivities();
+            #region Check Permissions
+            bool IsBudgetCreateEdit, IsBudgetView, IsForecastCreateEdit, IsForecastView;
+            IsBudgetCreateEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
+            IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
+            IsForecastCreateEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
+            IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
+            if (IsBudgetCreateEdit == false && IsBudgetView == false && IsForecastCreateEdit == false && IsForecastView == false)
+            {
+
+                return RedirectToAction("Index", "NoAccess");
+            }
+            #endregion
 
             #region Set session for current client users
             // Set list of users for the current client into session
