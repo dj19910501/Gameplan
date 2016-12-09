@@ -160,7 +160,7 @@ BEGIN TRY
 		 -- Insert/Update values for budget and forecast
 		 IF((@UpdateColumn='Budget' OR @UpdateColumn='Forecast'))
 		 BEGIN
-			IF(@Ismonth!='' AND @Ismonth!='Total')
+			IF(@Ismonth!='' AND @Ismonth!='Total' AND @Ismonth!='Unallocated')
 			BEGIN
 			
 				SET @GetBudgetAmoutData=' 
@@ -318,7 +318,7 @@ BEGIN TRY
 				EXECUTE sp_executesql @GetBudgetAmoutData
 				SET @GetBudgetAmoutData=''
 			END
-			Else If(@Ismonth!='' AND @Ismonth='Total') -- update total budget and Forecast for child items
+			Else If(@Ismonth!='' AND @Ismonth='Total' AND @Ismonth!='Unallocated') -- update total budget and Forecast for child items
 			Begin
 				Declare @UpdateTotal NVARCHAR(max)
 				IF(@UpdateColumn='Budget')
@@ -346,7 +346,7 @@ BEGIN TRY
 		-- Custom Columns
 		IF((@UpdateColumn!='Budget' OR @UpdateColumn!='Forecast'))
 		 BEGIN
-			IF(@Ismonth='' AND @Ismonth!='Total')
+			IF(@Ismonth='' AND @Ismonth!='Total' AND @Ismonth!='Unallocated')
 			BEGIN
 				SELECT @IsCutomFieldDrp = CASE WHEN CustomFieldType.Name='TextBox' THEN 0 ELSE 1 END FROM CustomField 
 				CROSS APPLY(SELECT CustomFieldType.Name,CustomFieldType.CustomFieldTypeId FROM CustomFieldType WHERE CustomFieldType.CustomFieldTypeId=CustomField.CustomFieldTypeId) CustomFieldType

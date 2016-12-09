@@ -12639,7 +12639,7 @@ a:focus, a:hover {
 	position: fixed;
 }
 #ImportModal ul {
-	list-style-type: number;
+	list-style-type:default;
 	margin-bottom: 5px;
 }
 #ImportModal ul li {
