@@ -95,15 +95,7 @@ function transformData(result) {
         result[0].open = true;
     }
 
-    // Create a top-level node which contains the "Sys_Gen_Balance" row
-    const container = [{
-        id: "Sys_Gen_Balance",
-        Tree: "Sys_Gen_Balance",
-        rows: result,
-        open: true,
-    }];
-
-    return container;
+    return result;
 }
 
 function getData(filter) {
