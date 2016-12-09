@@ -343,16 +343,28 @@ function GetGridData(budgetId) {
                     return false;
                 }
 
-                // Enable or disable to edit "Task Name" column to user by read "isTitleEdit" property.
-                if (cInd == ColTaskNameIndex) {
-                    var isTitleEdit = budgetgrid.getUserData(rId, "isTitleEdit");
-                    if (isTitleEdit == "0") {
-                        budgetgrid.cells(rId, ColTaskNameIndex).setDisabled(true);
-                        return false;
-                    }
-                }
-    if (stage == 1) {       
-        
+    // Enable or disable to edit "Task Name" column to user by read "isTitleEdit" property.
+    if (cInd == ColTaskNameIndex) {
+        var isTitleEdit = budgetgrid.getUserData(rId, "isTitleEdit");
+        if (isTitleEdit == "0") {
+            budgetgrid.cells(rId, ColTaskNameIndex).setDisabled(true);
+            return false;
+        }
+    }
+    if (stage == 0) {
+        // TODO: Update owner into database from the drop down
+        //ValidOldValue = budgetgrid.cells(rId, cInd).getValue();
+        if (colOwnerNameIndex == cInd) {
+            // Bind owner list into drop down list
+            var combo = budgetgrid.getCombo(colOwnerNameIndex);
+            combo.clear();
+            $.each(Ownerlist, function (i, item) {
+                combo.put(item.id, item.value);
+            });
+        }
+    }
+    if (stage == 1) {
+
         if (ColumnId.split('_').length > 1) {
             ColumnId = ColumnId.split('_')[1];
         }

@@ -398,6 +398,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             GridDataStyle headObj = new GridDataStyle();
             string Readonly = "ro";
             string Editable = "ed";
+            string Combo = "coro"; // combo type in the grid
             string ColumnId = "Id";
             string TaskName = "Task Name";
             string aligncenter = "center";
@@ -486,7 +487,15 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.sort = sort;
                     headObj.width = 100;
                     headObj.align = aligncenter;
-                    headObj.type = Readonly;
+                    if(columns == Enums.DefaultGridColumn.Owner.ToString())
+                    {
+                        headObj.type = Combo; //set type for the drop down in the dhtmlxgrid
+                    }
+                    else
+                    {
+                        headObj.type = Readonly;
+                    }
+
                     headObj.id = columns;
                     ListAppendAtLast.Add(headObj);
                 }
@@ -664,6 +673,18 @@ namespace RevenuePlanner.Services.MarketingBudget
         {
             List<BDSService.User> lstUser = _ServiceDatabase.GetUserListByClientIdEx(ClientID).ToList();
             return lstUser;
+        }
+
+        /// <summary>
+        /// This is owner list (client wise), and it will be bind into dropdown at the time of editing
+        /// </summary>
+        /// <param name="ClientId">Client Id</param>
+        /// <param name="ApplicationId">Application Id</param>
+        /// <param name="lstUsers">List of users for current client</param>
+        /// <returns>Returns list of PlanOptions contains user ids and names</returns>
+        public List<PlanOptions> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers)
+        {
+            return Common.GetOwnerListForDropdown(ClientId, ApplicationId, lstUsers);
         }
 
         #region Method to convert number format

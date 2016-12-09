@@ -223,6 +223,9 @@
     var Lineitems = "@Enums.DefaultGridColumn.LineItems";
     var BudgetColumn = "@Enums.FinanceHeader_Label.Budget.ToString()";
     var ForecastColumn = "@Enums.FinanceHeader_Label.Forecast.ToString()";
+    // Set ViewBag value into Ownerlist variable to use into js file
+    var Ownerlist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.OwnerList))');
+
     var CurrencySymbol='@CurrencySymbol';
     var dataNonPermissionIds = ''; //get Nonpermissionid at edit level to show threedash
 var gridpage="MainGrid";

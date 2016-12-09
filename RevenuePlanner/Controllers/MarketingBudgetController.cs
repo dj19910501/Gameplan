@@ -32,6 +32,8 @@ namespace RevenuePlanner.Controllers
             // Set list of users for the current client into session
             Sessions.ClientUsers = _MarketingBudget.GetUserListByClientId(Sessions.User.CID);
             #endregion
+            // Add owner list to the ViewBag to bind into drop down in the grid
+            ViewBag.OwnerList = _MarketingBudget.GetOwnerListForDropdown(Sessions.User.CID, Sessions.ApplicationId, Sessions.ClientUsers);
 
             #region Bind Budget dropdown on grid
             MarketingActivities.ListofBudgets = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
