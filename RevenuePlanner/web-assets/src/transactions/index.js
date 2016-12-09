@@ -8,15 +8,22 @@ import linkedItemEditor from './linkedItemEditor';
 import find from 'lodash/find';
 import "third-party/jquery.simplePagination";
 import "third-party/jquery.simplePagination.scss";
+import createFilteredContentView from 'components/filteredContent/filteredContent';
 
-function createGrid($gridContainer, dataSource) {
+function createGrid($gridContainer, dataSource, filteredView) {
     const $grid = $gridContainer.find(`.${css.grid}`);
     const grid = new Grid($grid.get(0));
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
-    grid.enableAutoHeight(true);
+    // grid.enableAutoHeight(true);
     grid.enableAutoWidth(true);
     grid.setDateFormat("%m/%d/%Y");
     dataSource.bindToGrid(grid);
+
+    // refresh the grid size whenever the filter panel is toggled
+    $(filteredView).on("filterToggled", () => {
+        grid.entBox.style.width = "auto";
+        grid.setSizes()
+    });
 
     // add click handler to grid editLineItems whenever the grid re-renders
     grid.attachEvent("onXLE", () => {
@@ -126,23 +133,24 @@ function bindNoRecordsMessage(dataSource, $pager, $gridContainer) {
 }
 
 export default function main($rootElement) {
+    const filteredView = createFilteredContentView($rootElement);
     const viewOptions = {
         css,
         viewById: uniqueId("viewBy"),
         viewByValue: "all",
     };
 
-    $rootElement
+    filteredView.$content
         .addClass("header-content-footer-layout")
         .html(mainView(viewOptions));
 
-    const $pager = $rootElement.find(`.${css.pager}`);
-    const $gridContainer = $rootElement.find(`.${css.gridContainer}`);
-    const $viewBy = $rootElement.find(`#${viewOptions.viewById}`);
+    const $pager = filteredView.$content.find(`.${css.pager}`);
+    const $gridContainer = filteredView.$content.find(`.${css.gridContainer}`);
+    const $viewBy = filteredView.$content.find(`#${viewOptions.viewById}`);
 
     const dataSource = transactionGridDataSource();
     bindViewBy($viewBy, dataSource);
     createPager($pager, dataSource);
-    createGrid($gridContainer, dataSource);
+    createGrid($gridContainer, dataSource, filteredView);
     bindNoRecordsMessage(dataSource, $pager, $gridContainer);
 }

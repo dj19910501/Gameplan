@@ -120,6 +120,9 @@ var config = {
             }
         ]
     },
+    sassLoader: {
+        includePaths: [path.resolve("src")]
+    },
     resolve: {
         root: path.resolve('src'),
         extensions: ['', '.js', '.jsx']
