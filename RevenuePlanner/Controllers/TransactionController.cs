@@ -134,6 +134,17 @@ namespace RevenuePlanner.Controllers
             //return _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
         }
 
+        public LeanTransaction GetTransaction(int transactionId)
+        {
+            Contract.Requires<ArgumentOutOfRangeException>(transactionId > 0, "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
+            var leanTransactions = Trim(new List<Transaction>()
+                                            {
+                                                _transaction.GetTransaction(Sessions.User.CID, transactionId)
+                                            } );
+
+            return leanTransactions.FirstOrDefault();
+        }
+
         #region trim transactions for a lean data structure
         /// <summary>
         /// A trimmed version of Transaction with only required fields 
