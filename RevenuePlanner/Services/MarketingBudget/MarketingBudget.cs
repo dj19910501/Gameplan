@@ -130,7 +130,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 //Call recursive function to bind the hierarchy.
                 List<BudgetGridRowModel> lstData = new List<BudgetGridRowModel>();
                 lstData = GetTopLevelRows(StandardColumnTable)
-                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,NonePermissionIds,TimeFrame)).ToList();
+                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,TimeFrame)).ToList();
 
 
                 objBudgetGridDataModel.head = objBudgetGridModel.GridDataStyleList;
@@ -167,7 +167,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="StandardColumnNames">List of names of standard column</param>
         /// <param name="lstUser">List of users</param>
         /// <param name="CurSymbol">Preferred currency symbol by user</param>
-        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol, List<string> NonPermissonIds, string TimeFrame)
+        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol,string TimeFrame)
         {
             string istitleedit = "1";
             string stylecolorgray = string.Empty; // if no permission set style to gray
@@ -324,7 +324,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
 
             children = lstChildren
-                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,NonPermissonIds,TimeFrame))
+                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,TimeFrame))
                   .ToList();
 
             return new BudgetGridRowModel { id = rowId, data = Data, rows = children, style = stylecolorgray, Detailid = Convert.ToString(id), userdata = objuserData };
