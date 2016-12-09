@@ -84,45 +84,16 @@
         ShowHideLineItemsColumns(ChkForeCast[0]);
         ShowHideLineItemsColumns(ChkActual[0]);
        // ShowHideControls("LineItemGrid");
-       UpdateFinanceHeader();
+        $("#dvBudgetHeader").css("display", "none");
+
+        UpdateFinanceHeaderValues();
 
 
         //Enable single click to trigger edit - zz
         myTreeGrid.enableEditEvents(true, false, true);
         
     });
-    function UpdateFinanceHeader() {
-        var chkForecast = $("#chkForeCast");
-        var chkPlanned = $("#chkPlan");
-        var chkActual = $("#chkActual");
-        var IsForeCastChecked = chkForecast[0].checked;
-        var IsPlanChecked = chkPlanned[0].checked;
-        var IsActualChecked = chkActual[0].checked;
-        var hdrForecastVal = '0', hdrPlannedVal = '0', hdrActualVal = '0';
-        //if (IsForeCastChecked)
-        hdrForecastVal = '@_hdrForecast';
-        //if (IsPlanChecked)
-        hdrPlannedVal = '@_hdrPlanned';
-        //if (IsActualChecked)
-        hdrActualVal = '@_hdrActual';
-        $("#ForecastID").text(hdrForecastVal);
-        var forecasttitle = '@_hdrForecastTitle';
-        $("#forecastLabel").text(forecasttitle);
-        $("#forecastLabel").attr('title', forecasttitle);
-        formatActualValues("#ForecastID");
-
-        $("#PlannedID").text(hdrPlannedVal);
-        var plannedtitle = '@_hdrPlannedTitle';
-        $("#plannedLabel").text(plannedtitle);
-        $("#plannedLabel").attr('title', plannedtitle);
-        formatActualValues("#PlannedID");
-
-        $("#ActualID").text(hdrActualVal);
-        var actualtitle = '@_hdrActualTitle';
-        $("#actualLabel").text(actualtitle);
-        $("#actualLabel").attr('title', actualtitle);
-        formatActualValues("#ActualID");
-    }
+   
     function ConfigureLineItemGrid(AllocatedBy) {
         myApp.showPleaseWait();
         var GridWidth = $("#gridbox").width();
@@ -340,6 +311,7 @@
         $(".grid_add").attr("data-title", "Add Row");
         CollapseExpand = true;
         _isNewRowAdd = false;
+        CreateSearchIcon();
     }
     
     var _isNewRowAdd = false;
@@ -373,7 +345,6 @@
     }
     
     function ShowHideLineItemsColumns(chekbox) {
-        debugger;
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
       //  var GridWidth = $("#gridbox").width();
@@ -419,43 +390,27 @@
         // myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
        // $("#gridbox").find("table").css("width", "100%");
     }
-    function UpdateFinanceHeader() {
-        debugger;
-        var chkForecast = $("#chkForeCast");
-        var chkPlanned = $("#chkPlan");
-        var chkActual = $("#chkActual");
-        var IsForeCastChecked = chkForecast[0].checked;
-        var IsPlanChecked = chkPlanned[0].checked;
-        var IsActualChecked = chkActual[0].checked;
-        var hdrForecastVal = '0', hdrPlannedVal = '0', hdrActualVal = '0';
-        //if (IsForeCastChecked)
-            hdrForecastVal = '@_hdrForecast';
-        //if (IsPlanChecked)
-            hdrPlannedVal = '@_hdrPlanned';
-        //if (IsActualChecked)
-            hdrActualVal = '@_hdrActual';
-        $("#ForecastID").text(hdrForecastVal);
-        var forecasttitle = '@_hdrForecastTitle';
-        $("#forecastLabel").text(forecasttitle);
-        $("#forecastLabel").attr('title', forecasttitle);
-        formatActualValues("#ForecastID");
-
-        $("#PlannedID").text(hdrPlannedVal);
-        var plannedtitle = '@_hdrPlannedTitle';
-        $("#plannedLabel").text(plannedtitle);
-        $("#plannedLabel").attr('title', plannedtitle);
-        formatActualValues("#PlannedID");
-
-        $("#ActualID").text(hdrActualVal);
-        var actualtitle = '@_hdrActualTitle';
-        $("#actualLabel").text(actualtitle);
-        $("#actualLabel").attr('title', actualtitle);
-        formatActualValues("#ActualID");
-    }
+   
     function OpenLineItemPopup(strUrl) {
         //var lineItemPopupUrl = 'http://localhost:61513/Home?currentPlanId=14832&planLineItemId=41577&activeMenu=Plan';
         if (strUrl != null && strUrl != 'undefined' && strUrl != '') {
             window.open(strUrl, '_blank');
         }
     }
+    function CreateSearchIcon() {
+        var arrTD = $('.MarketingBudget-tbl #gridbox .objbox').find('table tbody').find('tr').find("td:contains('#SEARCHHTML#')");
+        var imgSearchString, idCombined, idPlan, idLineItem;
+        $(arrTD).each(function (index, element) {
+            idCombined = $(this).text().replace("#SEARCHHTML#_", "");
+            var arrIdCombined = idCombined.split('_');
+            idLineItem = arrIdCombined[0];
+            idPlan = arrIdCombined[1];
+            var planURL = '@Url.Content("~/")' + "Home/?currentPlanId=" + idPlan + "&planLineItemId=" + idLineItem + "&activeMenu=Home"
+            imgSearchString = "<div id='" + idLineItem + "' onclick=OpenLineItemPopup('" + planURL + "')  class='grid_Search'></div>"
+            $(this).html(imgSearchString);
+
+        });
+    }
+
+
 </script>

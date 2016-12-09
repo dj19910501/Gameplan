@@ -237,7 +237,6 @@ var gridpage="MainGrid";
         $("#errorMsg").css("display", "none");
         $("#SuccessMsg").css("display", "none");
         $("#content_wraper").css("width", "100%");
-        UpdateFinanceHeaderValues(); // Update header values
         var budgetid='@Sessions.BudgetDetailId';
         if(budgetid!='0' )
         {
@@ -247,6 +246,7 @@ var gridpage="MainGrid";
         }
         else
             GetGridData();
+        UpdateFinanceHeaderValues(); // Update header values
 
 
         var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');

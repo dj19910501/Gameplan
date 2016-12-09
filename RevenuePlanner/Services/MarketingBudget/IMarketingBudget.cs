@@ -278,7 +278,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         DataSet GetBudgetDefaultData(int budgetId, string timeframe, int ClientID, int UserID, string CommaSeparatedUserIds, double Exchangerate);
         BudgetGridModel GetBudgetGridData(int budgetId, string viewByType, int ClientID, int UserID, double Exchangerate, string CurSymbol,List<BDSService.User> lstUser);
 
-        MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate,List<BDSService.User> lstUser); // Header values
+        MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate,List<BDSService.User> lstUser,bool IsLineItem); // Header values
         List<BDSService.User> GetUserListByClientId(int ClientID); // List of users for specific client
         List<PlanOptions> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers); // Owner list for current client
         /// <summary>

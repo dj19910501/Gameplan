@@ -1233,7 +1233,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetId">Id of the Budget</param>
         /// <param name="ExchangeRate">Currency exchange rate</param>
         /// <returns>Returns datatable having 4 values(Budget,Forecast,Planned,Actual)</returns>
-        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate, List<BDSService.User> lstUser)
+        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate, List<BDSService.User> lstUser,bool IsLineItem=false)
         {
             #region "Declare Variables"
             SqlParameter[] para = new SqlParameter[3];
@@ -1249,8 +1249,16 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
 
             #region "Get Data"
+            if (IsLineItem)
+            {
             calResultset = _database.Database
+                   .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinanceLineItems @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
+            }
+            else
+            {
+                calResultset = _database.Database
                 .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinance @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
+            }
             #endregion
 
             return calResultset; // Returns Model having 4 values(Budget, Forecast, Planned, Actual)
@@ -1916,8 +1924,9 @@ namespace RevenuePlanner.Services.MarketingBudget
                 // Name,View,Forecast,Planned,Actual
                 childData.Add(HttpUtility.HtmlDecode(lineitem.Title));
                 planId = lineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId;
-                strlineItemPopupUrl = GetNotificationURLbyStatus(planId, lineitem.PlanLineItemId, Enums.Section.LineItem.ToString());
-                childData.Add(string.Format("<div id='{0}' onclick=OpenLineItemPopup('{1}') title='View' class='grid_Search'></div>", lineitem.PlanLineItemId, HttpUtility.HtmlDecode(strlineItemPopupUrl)));
+                childData.Add(string.Format("#SEARCHHTML#_{0}_{1}", lineitem.PlanLineItemId, planId));
+                //strlineItemPopupUrl = GetNotificationURLbyStatus(planId, lineitem.PlanLineItemId, Enums.Section.LineItem.ToString());
+                //childData.Add(string.Format("<div id='{0}' onclick=OpenLineItemPopup('{1}') title='View' class='grid_Search'></div>", lineitem.PlanLineItemId, HttpUtility.HtmlDecode(strlineItemPopupUrl)));
 
                 #region "Filter Planned Value"
                 lstPlannedValue = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
@@ -2044,28 +2053,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         }
 
-        /// <summary>
-        /// Function to get Notification URL.
-        /// Added By: Viral Kadiya on 10/26/2015.
-        /// </summary>
-        /// <param name="planId">Plan Id.</param>
-        /// <param name="planTacticId">Plan Tactic Id.</param>
-        /// <param name="section">Section.</param>
-        /// <returns>Return NotificationURL.</returns>
-        public string GetNotificationURLbyStatus(int planId = 0, int entityId = 0, string section = "")
-        {
-            string strURL = string.Empty;
-            try
-            {
-                //if (section == Convert.ToString(Enums.Section.LineItem))
-                //    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planLineItemId = entityId, activeMenu = "Plan" }, Request.Url.Scheme);
-            }
-            catch (Exception e)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
-            }
-            return strURL;
-        }
+        
         #region Get Budget/ForeCast/Plan/Actual Value
         public BudgetAmount GetAmountValue(string isQuaterly, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount, List<LineItem_Budget> LineItemidBudgetList)
         {

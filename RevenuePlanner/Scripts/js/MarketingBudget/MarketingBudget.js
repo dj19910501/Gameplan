@@ -93,7 +93,9 @@ $("#ddlMainGridTimeFrame").change(function () {
     {
         var BudgetDetailid = $("#ddlChildFinance").val();
         var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
-        BindFinanceLineItmeData(BudgetDetailid, AllocatedBy)
+       
+        LoadLineItemGrid(BudgetDetailid);
+
     }
 });
 
@@ -782,13 +784,20 @@ function HideShowColumns() {
 
 // Function to update header values for finance
 function UpdateFinanceHeaderValues() {
+    var IsLineItem = false;
     // Get selected budget id
     var BudgetId = $('#ddlParentFinanceMain').val();
+    if (gridpage == "LineItemGrid")
+    {
+        BudgetId = $("#ddlChildFinance").val();
+        IsLineItem = true;
+    }
+
     $.ajax({
         type: 'GET',
         url: urlContent + "MarketingBudget/GetFinanceHeaderValues/",
         dataType: 'json',
-        data: { BudgetId: BudgetId },
+        data: { BudgetId: BudgetId, IsLineItem: IsLineItem },
         success: function (data) {
 
             // update header values with currency symbol(decoded symbol)
@@ -1150,7 +1159,8 @@ function ApplyFormattingAndTooltip(idName) {
         $('#btnSettings').css('display', 'none')
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
-
+        $("#ddlMainGridTimeFrame option[value='Yearly']").remove();
+        $('#ddlMainGridTimeFrame').multiselect('refresh');
         BindParentLineItemDropdown(parseInt(BudgetDetailid));
         //var parentBudgetDetailId = $("#ddlParentFinance").val();
         //var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
@@ -1195,7 +1205,14 @@ function ApplyFormattingAndTooltip(idName) {
         if (parentBudgetDetailId > 0) {
             $("#ddlParentFinance option[value='" + parentBudgetDetailId + "']").attr("selected", "selected");
         }
-
+        var nlDivs = $('#nl-formParentFinance div');
+        if (nlDivs.length > 0) {
+            var overlay = $('#nl-formParentFinance .nl-overlay');
+            if (overlay.length > 0) {
+            } else {
+                $('#nl-formParentFinance div').first().remove();
+            }
+        }
         var liParentFinance = $('#ddlParentFinance').find('option');
         if (liParentFinance != null && liParentFinance != 'undefined' && liParentFinance.length > 0) {
 
@@ -1216,7 +1233,12 @@ function ApplyFormattingAndTooltip(idName) {
                 }
 
             });
+        }
             var a = $("#nl-formParentFinance .nl-field.nl-dd");
+
+        for (var i = 0; i < a.length - 1 ; i++) {
+
+            $(a[i]).remove();
         }
 
 
@@ -1299,5 +1321,10 @@ function ApplyFormattingAndTooltip(idName) {
                 }
             });
         }
+        var a = $("#nl-formChildFinance .nl-field.nl-dd");
 
+        for (var i = 0; i < a.length - 1 ; i++) {
+
+            $(a[i]).remove();
+        }
     }

@@ -324,10 +324,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="BudgetId">Id of the Budget</param>
         /// <returns>Returns values in json format</returns>
-        public JsonResult GetFinanceHeaderValues(int BudgetId)
+        public JsonResult GetFinanceHeaderValues(int BudgetId, bool IsLineItem=false)
         {
             // Call function to get header values 
-            MarketingBudgetHeadsUp objHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate,Sessions.ClientUsers);
+            MarketingBudgetHeadsUp objHeader = _MarketingBudget.GetFinanceHeaderValues(BudgetId, Sessions.PlanExchangeRate, Sessions.ClientUsers,IsLineItem);
 
             string Budget, Forecast, Planned, Actual;
             Budget = Forecast = Planned = Actual = string.Empty;
