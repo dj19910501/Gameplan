@@ -14,6 +14,15 @@ BEGIN
 
 	--Make sure we have the correct line item IDs or else we will make them with error 
 	UPDATE TX
+	SET TX.Error = 'Deleted Line Item ID: ' + STR(TX.LineItemId), 
+		TX.LineItemId = NULL
+	FROM dbo.Transactions TX 
+		JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = TX.LineItemId
+	WHERE TX.ClientID = @ClientID
+		AND Tx.DateCreated > @LastDate
+		AND L.IsDeleted = 1
+
+	UPDATE TX
 	SET TX.Error = 'Invalid Line Item ID: ' + STR(TX.LineItemId), 
 		TX.LineItemId = NULL
 	FROM dbo.Transactions TX 
