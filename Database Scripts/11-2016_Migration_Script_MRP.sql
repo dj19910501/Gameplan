@@ -3151,8 +3151,12 @@ BEGIN
 	IF ((SELECT COUNT(*) FROM INSERTED) > 0)
 	BEGIN
 		-- Insert new record into pre calculate when new budget is generated
-		INSERT INTO [MV].[PreCalculatedMarketingBudget] (BudgetDetailId, [Year])
-		SELECT Id, YEAR(CreatedDate) FROM INSERTED
+		INSERT INTO [MV].[PreCalculatedMarketingBudget] (BudgetDetailId, [Year],Y1_Budget,Y2_Budget,Y3_Budget,Y4_Budget,Y5_Budget,Y6_Budget,Y7_Budget,Y8_Budget,Y9_Budget,Y10_Budget,Y11_Budget,Y12_Budget
+																				,Y1_Forecast,Y2_Forecast,Y3_Forecast,Y4_Forecast,Y5_Forecast,Y6_Forecast,Y7_Forecast,Y8_Forecast,Y9_Forecast,Y10_Forecast,Y11_Forecast,Y12_Forecast
+																				,Y1_Planned,Y2_Planned,Y3_Planned,Y4_Planned,Y5_Planned,Y6_Planned,Y7_Planned,Y8_Planned,Y9_Planned,Y10_Planned,Y11_Planned,Y12_Planned
+																				,Y1_Actual,Y2_Actual,Y3_Actual,Y4_Actual,Y5_Actual,Y6_Actual,Y7_Actual,Y8_Actual,Y9_Actual,Y10_Actual,Y11_Actual,Y12_Actual)
+		SELECT Id, YEAR(CreatedDate),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		FROM INSERTED
 	END
 	ELSE
 	BEGIN
@@ -3186,7 +3190,6 @@ CREATE PROCEDURE [dbo].[GetFinanceCustomfieldColumnsData]
 	@ClientId int 
 AS
 BEGIN
-
 	-- Exec GetFinanceCustomfieldColumnsData 2766,24
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
@@ -3198,7 +3201,7 @@ BEGIN
 	DECLARE @columns VARCHAR(MAX)
 	DECLARE @drpdCustomType VARCHAR(50)='DropDownList'
 		
-	SELECT @columns= COALESCE(@columns+', ' ,'') + C.Name+ '_'+CAST(C.CustomFieldId AS NVARCHAR(30))
+	SELECT @columns= COALESCE(@columns+', ' ,'') + C.Name + '_'+CAST(C.CustomFieldId AS NVARCHAR(30))
 	FROM Budget_ColumnSet(NOLOCK) A
 	INNER JOIN Budget_Columns(NOLOCK) B ON A.Id= B.Column_SetId
 	INNER JOIN CustomField(NOLOCK) C ON B.CustomFieldId = C.CustomFieldId and C.EntityType='Budget'
@@ -3209,7 +3212,8 @@ BEGIN
 		SET @query = '
 		SELECT * 
 		FROM (
-		     SELECT C.Name as Name,CF.EntityId as BudgetDetailId, 
+		     SELECT C.Name +''_''+ CAST(C.CustomFieldId AS NVARCHAR(30)) 
+			 as Name,CF.EntityId as BudgetDetailId, 
 			 		CASE 
 					WHEN CT.Name='''+@drpdCustomType+''' THEN CFO.Value ELSE CF.Value
 				END as Value
@@ -3228,7 +3232,7 @@ BEGIN
 		    MIN(Value)
 		    FOR [Name] IN ('+@columns+')
 		)AS pvt'
-		EXEC (@query)
+		exec (@query)
 
 		-- Get custom field list with options to bind drop downs
 		SELECT CF.CustomFieldId, CFO.CustomFieldOptionId, CFO.Value 
