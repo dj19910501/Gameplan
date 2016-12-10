@@ -4234,6 +4234,7 @@ AS
 -- Fill the table variable with the rows for your result set
 RETURN (
 	SELECT 
+			Distinct
 			F.Permission	
 			,F.BudgetDetailId
 			,F.ParentId
