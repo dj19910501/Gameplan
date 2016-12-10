@@ -449,7 +449,7 @@ namespace RevenuePlanner.Controllers
                     }
                     ListItems.Add(Convert.ToString(BudgetDetailId));
 
-
+                    //if user update owner name field, then following logic to update ownername will get executed
                     if (string.Compare(ColumnName, Enums.DefaultGridColumn.Owner.ToString(), true) == 0)
                     {
                         int OwnerId = 0;
@@ -472,6 +472,7 @@ namespace RevenuePlanner.Controllers
 
                         _MarketingBudget.UpdateTotalAmount(BudgetDetailId, nValue, ColumnName, Sessions.PlanExchangeRate);
                     }
+                    //processing of custom columns
                     else if (string.Compare(ColumnName.Split('_')[0], "cust", true) == 0)
                     {
                         if (objColumns != null && objColumns.Count > 0)

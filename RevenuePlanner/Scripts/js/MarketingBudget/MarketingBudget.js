@@ -19,7 +19,7 @@ function ManageBorderBoxClass() {
 
 //Added By Jaymin Modi at 01/Dec/2016. For Maintain States of Row.Ticket:-2806
 function createCookie(name, value, days) {
-    
+
     if (days) {
 
         var date = new Date();
@@ -87,13 +87,13 @@ $('#proceed-button_DeleteItem').on("click", function () {
 $("#ddlMainGridTimeFrame").change(function () {
     ShowHideSuccessDiv();   // Hide "Success" message if it's already appeared on screen.
     if (gridpage == "MainGrid") {
-    GetGridData();          // Load data to Grid on timeframe value change
+        GetGridData();          // Load data to Grid on timeframe value change
     }
     else if (gridpage == "LineItemGrid") // load line item grid as per time frame
     {
         var BudgetDetailid = $("#ddlChildFinance").val();
         var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
-       
+
         LoadLineItemGrid(BudgetDetailid);
 
     }
@@ -198,13 +198,13 @@ function BindFilterColumnsAndCheckUncheck(data) {
 // Created by Komal
 // Desc: Get Budget Grid data from server and bind it based on below parameters.
 // BudgetId: Get budget data based on user has selected from Budget dropdown list.
-   // TimeFrame: Render Budget Grid columns by timeframe value(i.e. Monthly, Quearterly, This Year etc. )
+// TimeFrame: Render Budget Grid columns by timeframe value(i.e. Monthly, Quearterly, This Year etc. )
 function GetGridData(budgetId) {
 
-        $('#ddlMainTimeFrameSelectBox').css('display', 'block');
-        $('#ddlColumnSetFrameBox').css('display', 'block');
-        $('#ddlColumnsFrameBox').css('display', 'block');
-        $('#dvExportToExcel').css('display', 'block');
+    $('#ddlMainTimeFrameSelectBox').css('display', 'block');
+    $('#ddlColumnSetFrameBox').css('display', 'block');
+    $('#ddlColumnsFrameBox').css('display', 'block');
+    $('#dvExportToExcel').css('display', 'block');
 
     var BudgetId = "";
 
@@ -233,7 +233,7 @@ function GetGridData(budgetId) {
         url: urlContent + "MarketingBudget/GetBudgetData/",
         data: {
             BudgetId: BudgetId,
-                TimeFrame: mainTimeFrame,
+            TimeFrame: mainTimeFrame,
         },
         success: function (data) {
 
@@ -260,8 +260,8 @@ function GetGridData(budgetId) {
             colIconIndex = budgetgrid.getColIndexById('Add Row');   // Get the index of "Add Row" column to refer it else to access this column.
             budgetgrid.setColumnHidden(colIdIndex, true)            // Hide the "Id" column by enable the DHTMLXTreeGrid property "setColumnHidden".
             HideShowColumns();  // Show/Hide the BudgetGrid columns to show default columns while load Grid 1st time.
-            
-            
+
+
             budgetgrid.enableMathEditing(true);//edit in rollup columns
             var sumcolumns = false;
             if (data.SumColumns != undefined && data.SumColumns.length != 0) //to set format of rollup columns
@@ -271,7 +271,7 @@ function GetGridData(budgetId) {
                     budgetgrid.setNumberFormat(CurrencySymbol + "0,000.00", data.SumColumns[i]);
                 }
             }
-           
+
             //Added By Jaymin Modi at 01/Dec/2016 For Saving Open and Close States.Ticket:-2806 
             var cookieBudgetgridState = dhtmlXGridObject.prototype.getCookie("budgetgridState", "gridOpen");
             if (cookieBudgetgridState == null) {
@@ -288,15 +288,15 @@ function GetGridData(budgetId) {
                 ManageBorderBoxClass();
                 return true;
             });
-            
+
             //Maintain State of Scroll Position
             if (scrollstate != null && scrollstate != undefined) {
                 budgetgrid.objBox.scrollTop = scrollstate.y;
             }
             //-----------------End--------------------------
             // Declare the "EditCell" event of DHTMLXTreeGrid.
-                budgetgrid.attachEvent("onEditCell", OnEditMainGridCell);
-            
+            budgetgrid.attachEvent("onEditCell", OnEditMainGridCell);
+
             //below code for set Three Dash to nonPermission rollup columns
             if (sumcolumns == true && dataNonPermissionIds != undefined && dataNonPermissionIds.length != 0) {
                 for (var i = 0; i < data.SumColumns.length; i++) {
@@ -310,45 +310,45 @@ function GetGridData(budgetId) {
             }
             SetTooltip();
             ManageBorderBoxClass();//For alignment of column line 
+        }
+    });
+
 }
-        });
+//function to set tool tip on add and delete icons
+function SetTooltip() {
+    $(".grid_Delete").tooltip({
+        'toggle': 'hover',
+        'container': 'body',
+        'placement': 'bottom'
+    });
+    $(".finance_grid_add").tooltip({
+        'toggle': 'hover',
+        'container': 'body',
+        'placement': 'bottom'
+    });
+}
 
+//Function to manage edit event on main grid
+// stage - to identidy the stage of the edit event.
+//rId - row id
+//cInd - column id
+//nValue - new values
+//oValue - old value.
+function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
+    var ColumnId = budgetgrid.getColumnId(cInd);            // Get column index.
+    var locked = budgetgrid.getUserData(rId, "lo");         // Get "lo"(i.e. row locked or not) property to identify that row is locked or not.
+    var Permission = budgetgrid.getUserData(rId, "per");    // Get user permission "per" property.
+    var Period = budgetgrid.getColLabel(cInd, 0);
+    // Doesn't allow the user to edit while cell is locked and doesn't have edit permission
+    if (locked == 1 && (Permission == "View" || Permission == "None")) {
+        budgetgrid.cells(rId, cInd).setDisabled(true);
+        return false;
     }
-    //function to set tool tip on add and delete icons
-    function SetTooltip() {
-        $(".grid_Delete").tooltip({
-            'toggle': 'hover',
-            'container': 'body',
-            'placement': 'bottom'
-        });
-        $(".finance_grid_add").tooltip({
-            'toggle': 'hover',
-            'container': 'body',
-            'placement': 'bottom'
-        });
+        // Doesn't allow the user to edit Planned and Actual coulumn value.
+    else if (locked == 1 && (ColumnId.indexOf(BudgetColumn) >= 0 || ColumnId.indexOf(ForecastColumn) >= 0)) {
+        budgetgrid.cells(rId, cInd).setDisabled(true);
+        return false;
     }
-
-    //Function to manage edit event on main grid
-    // stage - to identidy the stage of the edit event.
-    //rId - row id
-    //cInd - column id
-    //nValue - new values
-    //oValue - old value.
-    function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
-                var ColumnId = budgetgrid.getColumnId(cInd);            // Get column index.
-                var locked = budgetgrid.getUserData(rId, "lo");         // Get "lo"(i.e. row locked or not) property to identify that row is locked or not.
-                var Permission = budgetgrid.getUserData(rId, "per");    // Get user permission "per" property.
-                var Period = budgetgrid.getColLabel(cInd, 0);
-                // Doesn't allow the user to edit while cell is locked and doesn't have edit permission
-                if (locked == 1 && (Permission == "View" || Permission == "None")) {
-                    budgetgrid.cells(rId, cInd).setDisabled(true);
-                    return false;
-                }
-                    // Doesn't allow the user to edit Planned and Actual coulumn value.
-                else if (locked == 1 && (ColumnId.indexOf('Budget') >= 0 || ColumnId.indexOf('Forecast') >= 0)) {
-                    budgetgrid.cells(rId, cInd).setDisabled(true);
-                    return false;
-                }
 
     // Enable or disable to edit "Task Name" column to user by read "isTitleEdit" property.
     if (cInd == ColTaskNameIndex) {
@@ -358,6 +358,7 @@ function GetGridData(budgetId) {
             return false;
         }
     }
+    //stage 0 means clicked
     if (stage == 0) {
         // TODO: Update owner into database from the drop down
         //ValidOldValue = budgetgrid.cells(rId, cInd).getValue();
@@ -370,17 +371,19 @@ function GetGridData(budgetId) {
             });
         }
     }
+    //stage 1 means editable
     if (stage == 1) {
 
         if (ColumnId.split('_').length > 1) {
             ColumnId = ColumnId.split('_')[1];
         }
-       
+
         if (ColumnId == BudgetColumn || ColumnId == ForecastColumn) {
             $(".dhx_combo_edit").off("keydown");
             $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
             budgetgrid.editor.obj.onkeypress = function (e) {
                 e = e || window.event;
+                //avioding entry of alphabets using keycode
                 if ((e.keyCode >= 47) || (e.keyCode == 0)) {
                     var text = this.value;
                     if (text.length > 10) { //max length of the text
@@ -405,6 +408,7 @@ function GetGridData(budgetId) {
                 //46-Delete
                 //37- left arrow
                 //39-down arrow
+                //avioding entry of above keys using keycode
                 if (event.keyCode == 8 || event.keyCode == 46
                  || event.keyCode == 37 || event.keyCode == 39) {
 
@@ -418,20 +422,20 @@ function GetGridData(budgetId) {
             }));
         }
     }
-    
-    if (nValue != oValue && stage.toString() == '2') {   // checks if old value and new value are not same and if edit stage is 2.    
+    //stage 2 is to handle on focus out event after edit
+    if (nValue != oValue && stage.toString() == '2') {   // checks if old value and new value are not same and if edit stage is 2.            
         var budgetDetailId = '', parentId = '';
-            var itemIndex = -1;
-            if (_row_parentId != null && _row_parentId.length > 0) {
-                splitRowParentIds = _row_parentId.split(',');
-                $.each(splitRowParentIds, function (key, val) {
+        var itemIndex = -1;
+        if (_row_parentId != null && _row_parentId.length > 0) {
+            splitRowParentIds = _row_parentId.split(',');
+            $.each(splitRowParentIds, function (key, val) {
                 budgetDetailId = val.split('~')[0]; //get row id from the global id "_row_parentid"
-                    parentId = val.split('~')[1]; //get parent id from the global id "_row_parentid"
+                parentId = val.split('~')[1]; //get parent id from the global id "_row_parentid"
 
-                    itemIndex = key;
+                itemIndex = key;
                 if (budgetDetailId == rId) {
-                        return false;
-                    }
+                    return false;
+                }
             });
         }
         else {
@@ -440,18 +444,18 @@ function GetGridData(budgetId) {
                 budgetDetailId = splitRowParentIds[1];
                 parentId = splitRowParentIds[2];
             }
-            }
-            //if the new value is null or empty or if new value is same as old value return false
-            if (nValue == null || nValue == '' || nValue.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oValue) {
-                return false;
-            }
-            else {
-                    var _budgetIdVal = $("#ddlParentFinanceMain").val();
+        }
+        //if the new value is null or empty or if new value is same as old value return false
+        if (nValue == null || nValue == '' || nValue.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oValue) {
+            return false;
+        }
+        else {
+            var _budgetIdVal = $("#ddlParentFinanceMain").val();
             if (budgetDetailId == rId) {
-                
-                    SaveNewBudgetDetail(_budgetIdVal, nValue, parentId); // save data when we add new item/child item
-                    _isNewRowAdd = false;
-                }
+
+                SaveNewBudgetDetail(_budgetIdVal, nValue, parentId); // save data when we add new item/child item
+                _isNewRowAdd = false;
+            }
             else {
                 if (rId != null && rId != 'undefined' && rId != '') {
                     var ownerId = budgetgrid.cells(rId, colOwnerNameIndex).getValue();
@@ -469,46 +473,46 @@ function GetGridData(budgetId) {
             }
         }
     }
-       //---#2799----
+    //---#2799----
     if (ColumnId.indexOf('Planned') >= 0 || ColumnId.indexOf('Actual') >= 0 || ColumnId.indexOf('Unallocated') >= 0) {
         budgetgrid.cells(rId, cInd).setDisabled(true);
         return false;
     }
-    if (ColumnId.indexOf('Budget') >= 0 || ColumnId.indexOf('Forecast') >= 0) {
+    if (ColumnId.indexOf(BudgetColumn) >= 0 || ColumnId.indexOf(ForecastColumn) >= 0) {
         if (budgetgrid.cells(rId, cInd).grid.cell.original != undefined && budgetgrid.cells(rId, cInd).grid.cell.original == "=sum") {
             budgetgrid.cells(rId, cInd).grid.cell.original = "0";
         }
 
-    if (dataNonPermissionIds != undefined && dataNonPermissionIds.length != 0) {
-        for (var j = 0; j < dataNonPermissionIds.length; j++) {
-            if (budgetgrid.rowsAr[dataNonPermissionIds[j]] != undefined) {
-                budgetgrid.cells(dataNonPermissionIds[j], cInd).cell.innerHTML = "---";
+        if (dataNonPermissionIds != undefined && dataNonPermissionIds.length != 0) {
+            for (var j = 0; j < dataNonPermissionIds.length; j++) {
+                if (budgetgrid.rowsAr[dataNonPermissionIds[j]] != undefined) {
+                    budgetgrid.cells(dataNonPermissionIds[j], cInd).cell.innerHTML = "---";
+                }
             }
         }
     }
-    }
     return true;
 }
-    //Added by - Komal rawal
-    //To save budget detail when we add any new item/child item
-    function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId) {
-        var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
-        $.ajax({
-            url: urlContent + "MarketingBudget/SaveNewBudgetDetail/",
-            dataType: 'json',
-            data: {
-                BudgetId: budgetId,
-                BudgetDetailName:budgetDetailName,
-                ParentId: parentId,
-                mainTimeFrame: mainTimeFrame,
-            },
-            success: function (data) {
-                GetGridData(budgetId); //refresh grid once we add any new item
+//Added by - Komal rawal
+//To save budget detail when we add any new item/child item
+function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId) {
+    var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+    $.ajax({
+        url: urlContent + "MarketingBudget/SaveNewBudgetDetail/",
+        dataType: 'json',
+        data: {
+            BudgetId: budgetId,
+            BudgetDetailName:budgetDetailName,
+            ParentId: parentId,
+            mainTimeFrame: mainTimeFrame,
+        },
+        success: function (data) {
+            GetGridData(budgetId); //refresh grid once we add any new item
             _row_parentId = "";
         }
     });
 }
-function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childItems, columnId, period) {    
+function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childItems, columnId, period) {
     var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
     $.ajax({
         type: 'POST',
@@ -517,7 +521,7 @@ function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childIte
         data: {
             BudgetId: budgetId,
             BudgetDetailId: budgetDetailId,
-            ParentId: parentId,            
+            ParentId: parentId,
             nValue: nValue,
             ChildItemIds: childItems.toString(),
             ColumnName: columnId,
@@ -527,13 +531,16 @@ function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childIte
         beforeSend: function (x) {
             myApp.hidePleaseWait();
         },
-        success: function (data) {
+        success: function (data) {           
             if (data.IsSuccess.toString().toLowerCase() == 'true') {
                 if (columnId.toString().toLowerCase() == OwnerColName.toLowerCase()) {
                     GetGridData(budgetId); //refresh grid once we update any new item
                 }
-            UpdateFinanceHeaderValues();
-        }
+                else if (columnId.toString().toLowerCase() == Name.toString().toLowerCase()) {
+                    RefreshBudgetDropdown(budgetId);
+                }
+                UpdateFinanceHeaderValues();
+            }
             else {
                 ShowMessage(true, data.ErrorMessage);
             }
@@ -585,7 +592,7 @@ function DeleteBudget() {
             BudgetId: currentBudgetId,
         },
         success: function (data) {
- if (data.IsSuccess == false) {
+            if (data.IsSuccess == false) {
                 ShowMessage(true, data.ErrorMessage);
             }
             else {
@@ -603,7 +610,7 @@ function DeleteBudget() {
     });
 }
 
-function RefreshBudgetDropdown(BudgetId) {    
+function RefreshBudgetDropdown(BudgetId) {
     var _budgetId = "";
     if (BudgetId != undefined && BudgetId != "") {
         _budgetId = BudgetId.toString();
@@ -835,504 +842,504 @@ function ApplyFormattingAndTooltip(idName) {
 }
 
 
-    //Function to open display menu and add row form it when we click on plus icon
-    // cntrl - paramter to access the control parameters .
-    function AddRow(cntrl) {
-        var attrRowId = $(cntrl).attr('row-id');
-        var rowIndex = budgetgrid.getRowIndex(attrRowId);
-        DisplayPopUpMenu(cntrl, rowIndex); // function to display menu
+//Function to open display menu and add row form it when we click on plus icon
+// cntrl - paramter to access the control parameters .
+function AddRow(cntrl) {
+    var attrRowId = $(cntrl).attr('row-id');
+    var rowIndex = budgetgrid.getRowIndex(attrRowId);
+    DisplayPopUpMenu(cntrl, rowIndex); // function to display menu
+}
+
+//Function to display popup menu on plus icon
+// addControl - paramter to access the control parameters .
+// row index - index of the particular row
+function DisplayPopUpMenu(addControl, rowIndex) {
+    //Add 2 options in the poup menu i.e new item , new child item
+    var ul, newItemList = '';
+    if (rowIndex > 0) { // if parent item then there will be just one option i.2 new child item
+        newItemList = "<li class='new-finance new-prog' id='newFinanceItem' itemType='parallelitem'>New Item</li>";
     }
+    ul = "<ul style='margin: 0;'>  " + newItemList + " <li class='new-finance new-prog' id='newFinacneChildItem' itemType='childitem'>New Child Item</li>  </ul>";
 
-    //Function to display popup menu on plus icon
-    // addControl - paramter to access the control parameters .
-    // row index - index of the particular row
-    function DisplayPopUpMenu(addControl, rowIndex) {
-        //Add 2 options in the poup menu i.e new item , new child item
-        var ul, newItemList = '';
-        if (rowIndex > 0) { // if parent item then there will be just one option i.2 new child item
-            newItemList = "<li class='new-finance new-prog' id='newFinanceItem' itemType='parallelitem'>New Item</li>";
+
+    $('#popupType').css('display', 'block');
+    $('#popupType').html(ul);
+
+    //Set position of the popup
+    var left = $(addControl).position().left + 45;//e.pageX;
+    var targetOffset = $(addControl).offset().top; // get top position
+    var scrollPosition = $(window).scrollTop(); // get scroll position
+
+    if ($('#popupType').css('display') != 'none') {
+        if (scrollPosition <= targetOffset) {
+            $('#popupType').css({ // set the top and left position of the popup menu
+                'top': targetOffset,
+                'left': left,
+            });
         }
-        ul = "<ul style='margin: 0;'>  " + newItemList + " <li class='new-finance new-prog' id='newFinacneChildItem' itemType='childitem'>New Child Item</li>  </ul>";
-
-
-        $('#popupType').css('display', 'block');
-        $('#popupType').html(ul);
-
-        //Set position of the popup
-        var left = $(addControl).position().left + 45;//e.pageX;
-        var targetOffset = $(addControl).offset().top; // get top position
-        var scrollPosition = $(window).scrollTop(); // get scroll position
-
-        if ($('#popupType').css('display') != 'none') {
-            if (scrollPosition <= targetOffset) {
-                $('#popupType').css({ // set the top and left position of the popup menu
-                    'top': targetOffset,
-                    'left': left,
-                });
-            }
-            else {
-                var targetHeight = target.height();
-                var contentHeight = $('#popupType').outerHeight();
-                var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-                $('#popupType').css({
-                    'top': targetBottomOffset,
-                    'left': left,
-                });
-            }
+        else {
+            var targetHeight = target.height();
+            var contentHeight = $('#popupType').outerHeight();
+            var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+            $('#popupType').css({
+                'top': targetBottomOffset,
+                'left': left,
+            });
         }
-        //end
-
-        $('.new-finance').click(function () { // click event of the options i.e add new item/child item
-            var itemtype = $(this).attr('itemType'); //gets the type of item if it is child or not
-            AddNewRowbyType(itemtype, addControl); //adds new item at required position
-            $('#popupType').css('display', 'none');
-        });
-
     }
+    //end
 
-    $(document).click(function () {
+    $('.new-finance').click(function () { // click event of the options i.e add new item/child item
+        var itemtype = $(this).attr('itemType'); //gets the type of item if it is child or not
+        AddNewRowbyType(itemtype, addControl); //adds new item at required position
         $('#popupType').css('display', 'none');
     });
 
-    $(document).mouseup(function (e) {
-        $('#popupType').css("display", "none");
-    });
+}
+
+$(document).click(function () {
+    $('#popupType').css('display', 'none');
+});
+
+$(document).mouseup(function (e) {
+    $('#popupType').css("display", "none");
+});
 
 
-    // Function to add new row on clicking on add new item/new child item options
-    // itemType - checks if n=we need to add a child item or a parallel item
-    // cntrl - paramter to access the control parameters .
-    function AddNewRowbyType(itemType, cntrl) {
+// Function to add new row on clicking on add new item/new child item options
+// itemType - checks if n=we need to add a child item or a parallel item
+// cntrl - paramter to access the control parameters .
+function AddNewRowbyType(itemType, cntrl) {
 
-        if (_isNewRowAdd == false) { // checks if an new item is already added then dont add another.
-            var row_id = $(cntrl).attr('row-id');
-            var childrencount = budgetgrid.hasChildren(row_id); // Get Current Row Children count.
-            var insertrowindex = childrencount + 1; // get the index at which the new item is to be placed
-            /*Start: Get ParentId and BudgetDetailId from RowId */
-            var budgetDetailId = 0;
-            var isRootMostParent = IsRootMostParentId(row_id);
-            if (row_id !== null && row_id !== 'undefined' && row_id !== '') {
+    if (_isNewRowAdd == false) { // checks if an new item is already added then dont add another.
+        var row_id = $(cntrl).attr('row-id');
+        var childrencount = budgetgrid.hasChildren(row_id); // Get Current Row Children count.
+        var insertrowindex = childrencount + 1; // get the index at which the new item is to be placed
+        /*Start: Get ParentId and BudgetDetailId from RowId */
+        var budgetDetailId = 0;
+        var isRootMostParent = IsRootMostParentId(row_id);
+        if (row_id !== null && row_id !== 'undefined' && row_id !== '') {
 
-                if (itemType.toLowerCase() == 'parallelitem' && !isRootMostParent) {
-                    var curntRowParentId = budgetgrid.getParentId(row_id);
-                    var arr = curntRowParentId.split('_'); // split thecurrent row id and get the parent id for the new record to be inserted
-                    if (arr !== null && arr !== 'undefined' && arr.length > 0) {
-                        if (arr[1] != null && arr[1] != 'undefined') {
-                            _newParentId = budgetDetailId = arr[1];
-                        }
+            if (itemType.toLowerCase() == 'parallelitem' && !isRootMostParent) {
+                var curntRowParentId = budgetgrid.getParentId(row_id);
+                var arr = curntRowParentId.split('_'); // split thecurrent row id and get the parent id for the new record to be inserted
+                if (arr !== null && arr !== 'undefined' && arr.length > 0) {
+                    if (arr[1] != null && arr[1] != 'undefined') {
+                        _newParentId = budgetDetailId = arr[1];
                     }
                 }
-                else if (itemType.toLowerCase() == 'childitem') {
-                    var arr = row_id.split('_'); // split thecurrent row id and get the parent id for the new record to be inserted
-                    if (arr !== null && arr !== 'undefined' && arr.length > 0) {
-                        if (arr[1] != null && arr[1] != 'undefined') {
-                            _newParentId = budgetDetailId = arr[1];
-                        }
+            }
+            else if (itemType.toLowerCase() == 'childitem') {
+                var arr = row_id.split('_'); // split thecurrent row id and get the parent id for the new record to be inserted
+                if (arr !== null && arr !== 'undefined' && arr.length > 0) {
+                    if (arr[1] != null && arr[1] != 'undefined') {
+                        _newParentId = budgetDetailId = arr[1];
                     }
                 }
-                else {
-                    _newParentId = budgetDetailId = 0;
-                }
-            }
-            // Create RowId for newRecord.
-            _newrowid = "new" + insertrowindex.toString() + "_0_" + _newParentId;  // RowId format: NameofItem_BudgetDetailId_ParentId.
-            _row_parentId = _row_parentId + "," + _newrowid + "~" + _newParentId + "~" + row_id; // Store NewRowId & ParentRowId in global variable This variable use to save data in OnEditCell event.
-            _isNewRowAdd = true;
-
-            var TotalColumn = budgetgrid.getColumnCount();
-            var AddRowString = [];
-
-            //set properties for the newly created item i.e only task name will be editable rest all will be read only
-            var AddRowColTypes = "ro,tree,ro";
-            var ColumnsVisibility = "";
-            AddRowString.push("");
-            AddRowString.push("New item");
-            AddRowString.push("");
-            for (var k = 0; k < TotalColumn; k++) {
-                ColumnsVisibility += budgetgrid.isColumnHidden(k) + ",";
-                if (k > 2 && k < (TotalColumn - 3)) {
-                    AddRowString.push("0");
-                    AddRowColTypes += ",ro";
-                }
-            }
-            AddRowString.push("0 | Edit");
-            AddRowString.push("0");
-            AddRowString.push("User");
-            AddRowColTypes += ",ro,ro,ro";
-            ColumnsVisibility = ColumnsVisibility.slice(0, -1);
-            budgetgrid.setColTypes(AddRowColTypes);
-            budgetgrid.setColumnsVisibility(ColumnsVisibility); // set column visiblity
-            //end 
-
-            if (itemType.toLowerCase() == 'childitem') {
-                budgetgrid.addRow(_newrowid, AddRowString, -1, row_id);
-            }
-            else if (isRootMostParent) {
-                budgetgrid.addRow(_newrowid, AddRowString);
             }
             else {
-                // Insert record at Parallel Level.
-                var curntRowParentId = budgetgrid.getParentId(row_id);
-                budgetgrid.addRow(_newrowid, AddRowString, -1, curntRowParentId);
-            }
-
-            var titleIndex = budgetgrid.getColIndexById('title');
-            budgetgrid.setCellTextStyle(_newrowid, titleIndex, "border-right:0px solid #d4d4d4;");
-            budgetgrid.openItem(row_id);
-            var _newRowIndex = budgetgrid.getRowIndex(_newrowid.toString());
-            window.setTimeout(function () {
-                budgetgrid.selectCell(_newRowIndex, 0, false, false, true, true);
-                budgetgrid.editCell();
-            }, 1);
-        }
-    }
-
-    function IsRootMostParentId(curntRowid) {
-        var parentid = budgetgrid.getParentId(curntRowid);
-        var result = false;
-        if (parentid == null || parentid == 'undefined' || parentid <= 0) {
-            result = true;
-        }
-        return result;
-    }
-
-
-    $("#btnAddNewBudget").click(function () {
-        $('#errorMsg').css('display', 'none');
-        $('#SuccessMsg').css('display', 'none');
-        $("#divGridView").show();
-    
-       
-        //Append please slect to the budget dropdown list
-        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("li[class='nl-dd-checked']").removeClass('nl-dd-checked');
-        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("a[class='nl-field-toggle']").html('Please Select');
-        $('#ddlParentFinanceMain').prepend('<option value="0" selected="selected">Please Select</option>');
-        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('ul').prepend("<li class='nl-dd-checked' value='0' originalvalue='Please Select' textvalue='0'>Please Select</li>");
-        //end
-
-        UpdateFinanceHeaderValues(); //update header values
-
-        var url = urlContent + "MarketingBudget/LoadnewBudget/"; //Load add new budget screen
-        $('#divGridView').load(url);
-    });
-
-    function OnEditCell(stage, id, index, newVal, oldVal) {
-        ValidParentId = newTreeGrid.getParentId(id);
-        var ColumnName = budgetgrid.getColLabel(index, 0);
-
-        if (stage == 1) {
-
-            if (ColumnName == "Task Name") {
-                $(".dhx_combo_edit").off("keydown");
-                $(".dhx_combo_edit").on('keydown', (
-                newTreeGrid.editor.obj.onkeypress = function (event) {
-
-                    var text = this.value;
-                    if (event.keyCode == 8 || event.keyCode == 46
-                     || event.keyCode == 37 || event.keyCode == 39) {
-
-                        return true;
-                    }
-                    else if (text.length > 250) { //max length of the text
-                        return false;
-                    }
-                    else { return true; }
-
-                }));
+                _newParentId = budgetDetailId = 0;
             }
         }
+        // Create RowId for newRecord.
+        _newrowid = "new" + insertrowindex.toString() + "_0_" + _newParentId;  // RowId format: NameofItem_BudgetDetailId_ParentId.
+        _row_parentId = _row_parentId + "," + _newrowid + "~" + _newParentId + "~" + row_id; // Store NewRowId & ParentRowId in global variable This variable use to save data in OnEditCell event.
+        _isNewRowAdd = true;
 
-        if (stage.toString() == '0' || stage.toString() == '1') {
-            return true;
-        }
-        if (IsValid) { // checks if the name is valid then saves the data
-            if (stage.toString() == '2') {
-                if (newVal == null || newVal == '') {
-                    return false;
-                }
-                else {
-                    SaveNewBudget(htmlDecode(newVal));//method to save the data
-                    return true;
-                }
+        var TotalColumn = budgetgrid.getColumnCount();
+        var AddRowString = [];
+
+        //set properties for the newly created item i.e only task name will be editable rest all will be read only
+        var AddRowColTypes = "ro,tree,ro";
+        var ColumnsVisibility = "";
+        AddRowString.push("");
+        AddRowString.push("New item");
+        AddRowString.push("");
+        for (var k = 0; k < TotalColumn; k++) {
+            ColumnsVisibility += budgetgrid.isColumnHidden(k) + ",";
+            if (k > 2 && k < (TotalColumn - 3)) {
+                AddRowString.push("0");
+                AddRowColTypes += ",ro";
             }
         }
-    }
+        AddRowString.push("0 | Edit");
+        AddRowString.push("0");
+        AddRowString.push("User");
+        AddRowColTypes += ",ro,ro,ro";
+        ColumnsVisibility = ColumnsVisibility.slice(0, -1);
+        budgetgrid.setColTypes(AddRowColTypes);
+        budgetgrid.setColumnsVisibility(ColumnsVisibility); // set column visiblity
+        //end 
 
-
-    //Added by : Komal Rawal
-    // to save the details of new budget .
-    //Budget name : name of the new budget created
-    function SaveNewBudget(budgetName) {
-
-        $('#btnAddNewBudget').prop('disabled', false);
-
-        $.ajax({
-            url: urlContent + "MarketingBudget/SaveNewBudget/",
-            dataType: 'json',
-            data: {
-                budgetName: budgetName,
-            },
-            success: function (data) {
-                var BudgetId = data.budgetId;
-                RefreshBudgetDropdown(BudgetId);
-                GetGridData(BudgetId);
-            }
-        });
-    }
-
-    // Created by Komal
-    // Desc: Change event of column set dropdown.
-    $("#ddlColumnSet").change(function () {
-        var Columnsetval = $("#ddlColumnSet").val();
-        BindColumnsfilter(Columnsetval); // bind the columns dropdown as per column set selected
-    });
-	  // function to show hide controls for marketing budget when move to user permission and lineitems
-    function ShowHideControls(Page) {
-        gridpage = Page;
-        if (Page == "MainGrid") {
-            $("#drpParentMain").css("display", "block");
-            $("#drpParent").css("display", "none");
-            $("#drpChild").css("display", "none");
-            $("#divFinanceBack").css("display", "none");
-            $("#divAddnew").css("display", "block");
-            $("#divCheckbox").css("display", "none");
+        if (itemType.toLowerCase() == 'childitem') {
+            budgetgrid.addRow(_newrowid, AddRowString, -1, row_id);
         }
-        if (Page == "LineItemGrid") {
-            $("#drpParentMain").css("display", "none");
-            $("#drpParent").css("display", "block");
-            $("#drpChild").css("display", "block");
-            $("#divFinanceBack").css("display", "block");
-            $("#divAddnew").css("display", "none");
-            $("#dvExportToExcel").css("display", "none");
-            $("#ddlColumnsFrameBox").css("display", "none");
-            $("#ddlColumnSetFrameBox").css("display", "none");
-            $("#divCheckbox").css("display", "block");
-        }
-        if(Page=="UserPermission")
-        {
-            $("#drpParentMain").css("display", "none");
-            $("#drpParent").css("display", "none");
-            $("#drpChild").css("display", "none");
-            $("#divFinanceBack").css("display", "block");
-            $("#divAddnew").css("display", "none");
-            $("#dvExportToExcel").css("display", "none");
-            $("#ddlMainTimeFrameSelectBox").css("display", "none");
-            $("#ddlColumnsFrameBox").css("display", "none");
-            $("#ddlColumnSetFrameBox").css("display", "none");
-            $("#divCheckbox").css("display", "none");
-        }
-    }
-    //function to redirect to user permission
-    function Edit(BudgetId, childChange, level, RowID, e) {
-        var budgetIDMain = $("#ddlParentFinanceMain").val();
-        _UserBudgetId = BudgetId;
-        var _flagCondition;
-        var _text = e.lastChild.textContent.trim();
-        if (_text == "Edit") {
-            _flagCondition = "Edit";
+        else if (isRootMostParent) {
+            budgetgrid.addRow(_newrowid, AddRowString);
         }
         else {
-            _flagCondition = "View";
-        }
-        budgetgrid.editStop();
-        $('#btnSettings').css('display', 'none')
-        $('#errorMsg').css('display', 'none');
-        $('#SuccessMsg').css('display', 'none');
-        myApp.showPleaseWait();
-        if (level != undefined && level != '') {
-            GlobalLevel = level;
+            // Insert record at Parallel Level.
+            var curntRowParentId = budgetgrid.getParentId(row_id);
+            budgetgrid.addRow(_newrowid, AddRowString, -1, curntRowParentId);
         }
 
-        var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
-        //BindTimeFrameForChild(AllocatedBy);
-        valueTimeFrame = $("#ddlMainGridTimeFrame").val();
-        $("#ddlMainGridTimeFrame").val(valueTimeFrame);
-        var url = urlContent +"MarketingBudget/EditPermission/";
-        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition + '&rowid=' + RowID);
+        var titleIndex = budgetgrid.getColIndexById('title');
+        budgetgrid.setCellTextStyle(_newrowid, titleIndex, "border-right:0px solid #d4d4d4;");
+        budgetgrid.openItem(row_id);
+        var _newRowIndex = budgetgrid.getRowIndex(_newrowid.toString());
+        window.setTimeout(function () {
+            budgetgrid.selectCell(_newRowIndex, 0, false, false, true, true);
+            budgetgrid.editCell();
+        }, 1);
     }
-    //function to redirect back to finance main grid
-    function FinanceBack() {
+}
 
-        $('#errorMsg').css('display', 'none');
-        $('#SuccessMsg').css('display', 'none');
-        window.location = urlContent +"MarketingBudget/Index";
-
+function IsRootMostParentId(curntRowid) {
+    var parentid = budgetgrid.getParentId(curntRowid);
+    var result = false;
+    if (parentid == null || parentid == 'undefined' || parentid <= 0) {
+        result = true;
     }
-    function BindFinanceLineItmeData(BudgetDetailid, AllocatedBy) {
-        var url = urlContent +"MarketingBudget/GetFinanceLineItemData/";
-        $('#divGridView').load(url + '?BudgetDetailId=' + BudgetDetailid + '&IsQuaterly=' + AllocatedBy);
-    }
-    //function to bind line item grid
-    function LoadLineItemGrid(BudgetDetailid) {
-        $('#btnSettings').css('display', 'none')
-        $('#errorMsg').css('display', 'none');
-        $('#SuccessMsg').css('display', 'none');
-        $("#ddlMainGridTimeFrame option[value='Yearly']").remove();
-        $('#ddlMainGridTimeFrame').multiselect('refresh');
-        BindParentLineItemDropdown(parseInt(BudgetDetailid));
-        //var parentBudgetDetailId = $("#ddlParentFinance").val();
-        //var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
-        $("#ddlChildFinance").val(BudgetDetailid);
-        if (BudgetDetailid > 0) {
-            $("#ddlChildFinance option[value='" + BudgetDetailid + "']").attr("selected", "selected");
-        }
-        var childBudgetDetailId = BudgetDetailid;
-        BindChildLineItemDropdown(childBudgetDetailId);
+    return result;
+}
 
-        myApp.showPleaseWait();
-        //var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
-        //BindTimeFrameForChild(AllocatedBy);
-        ShowHideControls("LineItemGrid");
-        //BindFinanceLineItmeData(BudgetDetailid, AllocatedBy);
 
-    }
-    //function to bind parent line item dropdown
-    function BindParentLineItemDropdown(BudgetDetailId) {
-        var parentBudgetDetailId = 0;
-        $.ajax({
-            type: 'POST',
-            url: urlContent +"MarketingBudget/GetParentLineItemList/",
-            dataType: "json",
-            async: false,
-            data: { BudgetDetailId: BudgetDetailId },
-            success: function (result) {
-                var data = result.list;
-                parentBudgetDetailId = result.parentId;
-                $("#ddlParentFinance").html("");
-                for (var i = 0; i < data.length; i++) {
+$("#btnAddNewBudget").click(function () {
+    $('#errorMsg').css('display', 'none');
+    $('#SuccessMsg').css('display', 'none');
+    $("#divGridView").show();
 
-                    var opt = new Option(data[i].Text, data[i].Value);
-                    $('#ddlParentFinance').append(opt);
+
+    //Append please slect to the budget dropdown list
+    $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("li[class='nl-dd-checked']").removeClass('nl-dd-checked');
+    $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("a[class='nl-field-toggle']").html('Please Select');
+    $('#ddlParentFinanceMain').prepend('<option value="0" selected="selected">Please Select</option>');
+    $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('ul').prepend("<li class='nl-dd-checked' value='0' originalvalue='Please Select' textvalue='0'>Please Select</li>");
+    //end
+
+    UpdateFinanceHeaderValues(); //update header values
+
+    var url = urlContent + "MarketingBudget/LoadnewBudget/"; //Load add new budget screen
+    $('#divGridView').load(url);
+});
+
+function OnEditCell(stage, id, index, newVal, oldVal) {
+    ValidParentId = newTreeGrid.getParentId(id);
+    var ColumnName = budgetgrid.getColLabel(index, 0);
+
+    if (stage == 1) {
+
+        if (ColumnName == "Task Name") {
+            $(".dhx_combo_edit").off("keydown");
+            $(".dhx_combo_edit").on('keydown', (
+            newTreeGrid.editor.obj.onkeypress = function (event) {
+
+                var text = this.value;
+                if (event.keyCode == 8 || event.keyCode == 46
+                 || event.keyCode == 37 || event.keyCode == 39) {
+
+                    return true;
                 }
+                else if (text.length > 250) { //max length of the text
+                    return false;
+                }
+                else { return true; }
+
+            }));
+        }
+    }
+
+    if (stage.toString() == '0' || stage.toString() == '1') {
+        return true;
+    }
+    if (IsValid) { // checks if the name is valid then saves the data
+        if (stage.toString() == '2') {
+            if (newVal == null || newVal == '') {
+                return false;
             }
+            else {
+                SaveNewBudget(htmlDecode(newVal));//method to save the data
+                return true;
+            }
+        }
+    }
+}
+
+
+//Added by : Komal Rawal
+// to save the details of new budget .
+//Budget name : name of the new budget created
+function SaveNewBudget(budgetName) {
+
+    $('#btnAddNewBudget').prop('disabled', false);
+
+    $.ajax({
+        url: urlContent + "MarketingBudget/SaveNewBudget/",
+        dataType: 'json',
+        data: {
+            budgetName: budgetName,
+        },
+        success: function (data) {
+            var BudgetId = data.budgetId;
+            RefreshBudgetDropdown(BudgetId);
+            GetGridData(BudgetId);
+        }
+    });
+}
+
+// Created by Komal
+// Desc: Change event of column set dropdown.
+$("#ddlColumnSet").change(function () {
+    var Columnsetval = $("#ddlColumnSet").val();
+    BindColumnsfilter(Columnsetval); // bind the columns dropdown as per column set selected
+});
+// function to show hide controls for marketing budget when move to user permission and lineitems
+function ShowHideControls(Page) {
+    gridpage = Page;
+    if (Page == "MainGrid") {
+        $("#drpParentMain").css("display", "block");
+        $("#drpParent").css("display", "none");
+        $("#drpChild").css("display", "none");
+        $("#divFinanceBack").css("display", "none");
+        $("#divAddnew").css("display", "block");
+        $("#divCheckbox").css("display", "none");
+    }
+    if (Page == "LineItemGrid") {
+        $("#drpParentMain").css("display", "none");
+        $("#drpParent").css("display", "block");
+        $("#drpChild").css("display", "block");
+        $("#divFinanceBack").css("display", "block");
+        $("#divAddnew").css("display", "none");
+        $("#dvExportToExcel").css("display", "none");
+        $("#ddlColumnsFrameBox").css("display", "none");
+        $("#ddlColumnSetFrameBox").css("display", "none");
+        $("#divCheckbox").css("display", "block");
+    }
+    if(Page=="UserPermission")
+    {
+        $("#drpParentMain").css("display", "none");
+        $("#drpParent").css("display", "none");
+        $("#drpChild").css("display", "none");
+        $("#divFinanceBack").css("display", "block");
+        $("#divAddnew").css("display", "none");
+        $("#dvExportToExcel").css("display", "none");
+        $("#ddlMainTimeFrameSelectBox").css("display", "none");
+        $("#ddlColumnsFrameBox").css("display", "none");
+        $("#ddlColumnSetFrameBox").css("display", "none");
+        $("#divCheckbox").css("display", "none");
+    }
+}
+//function to redirect to user permission
+function Edit(BudgetId, childChange, level, RowID, e) {
+    var budgetIDMain = $("#ddlParentFinanceMain").val();
+    _UserBudgetId = BudgetId;
+    var _flagCondition;
+    var _text = e.lastChild.textContent.trim();
+    if (_text == "Edit") {
+        _flagCondition = "Edit";
+    }
+    else {
+        _flagCondition = "View";
+    }
+    budgetgrid.editStop();
+    $('#btnSettings').css('display', 'none')
+    $('#errorMsg').css('display', 'none');
+    $('#SuccessMsg').css('display', 'none');
+    myApp.showPleaseWait();
+    if (level != undefined && level != '') {
+        GlobalLevel = level;
+    }
+
+    var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+    //BindTimeFrameForChild(AllocatedBy);
+    valueTimeFrame = $("#ddlMainGridTimeFrame").val();
+    $("#ddlMainGridTimeFrame").val(valueTimeFrame);
+    var url = urlContent +"MarketingBudget/EditPermission/";
+    $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition + '&rowid=' + RowID);
+}
+//function to redirect back to finance main grid
+function FinanceBack() {
+
+    $('#errorMsg').css('display', 'none');
+    $('#SuccessMsg').css('display', 'none');
+    window.location = urlContent +"MarketingBudget/Index";
+
+}
+function BindFinanceLineItmeData(BudgetDetailid, AllocatedBy) {
+    var url = urlContent +"MarketingBudget/GetFinanceLineItemData/";
+    $('#divGridView').load(url + '?BudgetDetailId=' + BudgetDetailid + '&IsQuaterly=' + AllocatedBy);
+}
+//function to bind line item grid
+function LoadLineItemGrid(BudgetDetailid) {
+    $('#btnSettings').css('display', 'none')
+    $('#errorMsg').css('display', 'none');
+    $('#SuccessMsg').css('display', 'none');
+    $("#ddlMainGridTimeFrame option[value='Yearly']").remove();
+    $('#ddlMainGridTimeFrame').multiselect('refresh');
+    BindParentLineItemDropdown(parseInt(BudgetDetailid));
+    //var parentBudgetDetailId = $("#ddlParentFinance").val();
+    //var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
+    $("#ddlChildFinance").val(BudgetDetailid);
+    if (BudgetDetailid > 0) {
+        $("#ddlChildFinance option[value='" + BudgetDetailid + "']").attr("selected", "selected");
+    }
+    var childBudgetDetailId = BudgetDetailid;
+    BindChildLineItemDropdown(childBudgetDetailId);
+
+    myApp.showPleaseWait();
+    //var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+    //BindTimeFrameForChild(AllocatedBy);
+    ShowHideControls("LineItemGrid");
+    //BindFinanceLineItmeData(BudgetDetailid, AllocatedBy);
+
+}
+//function to bind parent line item dropdown
+function BindParentLineItemDropdown(BudgetDetailId) {
+    var parentBudgetDetailId = 0;
+    $.ajax({
+        type: 'POST',
+        url: urlContent +"MarketingBudget/GetParentLineItemList/",
+        dataType: "json",
+        async: false,
+        data: { BudgetDetailId: BudgetDetailId },
+        success: function (result) {
+            var data = result.list;
+            parentBudgetDetailId = result.parentId;
+            $("#ddlParentFinance").html("");
+            for (var i = 0; i < data.length; i++) {
+
+                var opt = new Option(data[i].Text, data[i].Value);
+                $('#ddlParentFinance').append(opt);
+            }
+        }
+    });
+
+    //var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
+    $("#ddlParentFinance").val(parentBudgetDetailId);
+    $("#hdn_BudgetDetailId").val(parentBudgetDetailId);
+    if (parentBudgetDetailId > 0) {
+        $("#ddlParentFinance option[value='" + parentBudgetDetailId + "']").attr("selected", "selected");
+    }
+    var nlDivs = $('#nl-formParentFinance div');
+    if (nlDivs.length > 0) {
+        var overlay = $('#nl-formParentFinance .nl-overlay');
+        if (overlay.length > 0) {
+        } else {
+            $('#nl-formParentFinance div').first().remove();
+        }
+    }
+    var liParentFinance = $('#ddlParentFinance').find('option');
+    if (liParentFinance != null && liParentFinance != 'undefined' && liParentFinance.length > 0) {
+
+        nlformParentFinance = new NLForm(document.getElementById('nl-formParentFinance'));
+
+        $('#nl-formParentFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            //
+            $('#errorMsg').css('display', 'none');
+            $('#SuccessMsg').css('display', 'none');
+            $("#divGridView").show();
+            $("#dvNoData").hide();
+            var parentbudgetDetailID = $(this).attr('value');
+            $("#hdn_BudgetDetailId").val(parentbudgetDetailID);
+            if (pageName == "LineItemGrid") {
+                $("#ddlChildFinance").val(0);
+                BindChildLineItemDropdown(0);
+                //GetFinanceHeaderValue(0,false);
+            }
+
         });
-
-        //var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
-        $("#ddlParentFinance").val(parentBudgetDetailId);
-        $("#hdn_BudgetDetailId").val(parentBudgetDetailId);
-        if (parentBudgetDetailId > 0) {
-            $("#ddlParentFinance option[value='" + parentBudgetDetailId + "']").attr("selected", "selected");
-        }
-        var nlDivs = $('#nl-formParentFinance div');
-        if (nlDivs.length > 0) {
-            var overlay = $('#nl-formParentFinance .nl-overlay');
-            if (overlay.length > 0) {
-            } else {
-                $('#nl-formParentFinance div').first().remove();
-            }
-        }
-        var liParentFinance = $('#ddlParentFinance').find('option');
-        if (liParentFinance != null && liParentFinance != 'undefined' && liParentFinance.length > 0) {
-
-            nlformParentFinance = new NLForm(document.getElementById('nl-formParentFinance'));
-
-            $('#nl-formParentFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-                //
-                $('#errorMsg').css('display', 'none');
-                $('#SuccessMsg').css('display', 'none');
-                $("#divGridView").show();
-                $("#dvNoData").hide();
-                var parentbudgetDetailID = $(this).attr('value');
-                $("#hdn_BudgetDetailId").val(parentbudgetDetailID);
-                if (pageName == "LineItemGrid") {
-                    $("#ddlChildFinance").val(0);
-                    BindChildLineItemDropdown(0);
-                    //GetFinanceHeaderValue(0,false);
-                }
-
-            });
-        }
-            var a = $("#nl-formParentFinance .nl-field.nl-dd");
-
-        for (var i = 0; i < a.length - 1 ; i++) {
-
-            $(a[i]).remove();
-        }
-
-
     }
-    //function to bind child line item dropdown
-    function BindChildLineItemDropdown(childBudgetDetailId) {
+    var a = $("#nl-formParentFinance .nl-field.nl-dd");
 
-        var parentId = $("#hdn_BudgetDetailId").val();
-        var ChildID = 0;
-        var budgetDetailId = 0;
-        $.ajax({
-            type: 'POST',
-            url: urlContent +"MarketingBudget/GetChildLineItemList/",
-            dataType: "json",
-            async: false,
-            data: { BudgetDetailId: parentId },
-            success: function (data) {
-                $("#ddlChildFinance").html("");
+    for (var i = 0; i < a.length - 1 ; i++) {
 
-                if (data == null || data.length == 0) {
-                    $('#ddlChildFinance').append($('<option></option>').attr('value', '0').text('Please Select'));
-
-                }
-                for (var i = 0; i < data.length; i++) {
-
-                    var opt = new Option(data[i].Text, data[i].Value);
-                    $('#ddlChildFinance').append(opt);
+        $(a[i]).remove();
+    }
 
 
-                }
-                if (childBudgetDetailId > 0) {
-                    ChildID = childBudgetDetailId
-                }
-                else if (data.length > 0) {
-                    ChildID = data[0].Value; // Set first value
-                }
-                $("#ddlChildFinance").val(ChildID);
-                //var ChildID = $('#nl-formChildFinance .nl-dd-checked ').attr('value');
+}
+//function to bind child line item dropdown
+function BindChildLineItemDropdown(childBudgetDetailId) {
 
-                if (ChildID > 0) {
-                    budgetDetailId = ChildID;
-                    $("#ddlChildFinance option[value='" + ChildID + "']").attr("selected", "selected");
+    var parentId = $("#hdn_BudgetDetailId").val();
+    var ChildID = 0;
+    var budgetDetailId = 0;
+    $.ajax({
+        type: 'POST',
+        url: urlContent +"MarketingBudget/GetChildLineItemList/",
+        dataType: "json",
+        async: false,
+        data: { BudgetDetailId: parentId },
+        success: function (data) {
+            $("#ddlChildFinance").html("");
+
+            if (data == null || data.length == 0) {
+                $('#ddlChildFinance').append($('<option></option>').attr('value', '0').text('Please Select'));
+
+            }
+            for (var i = 0; i < data.length; i++) {
+
+                var opt = new Option(data[i].Text, data[i].Value);
+                $('#ddlChildFinance').append(opt);
+
+
+            }
+            if (childBudgetDetailId > 0) {
+                ChildID = childBudgetDetailId
+            }
+            else if (data.length > 0) {
+                ChildID = data[0].Value; // Set first value
+            }
+            $("#ddlChildFinance").val(ChildID);
+            //var ChildID = $('#nl-formChildFinance .nl-dd-checked ').attr('value');
+
+            if (ChildID > 0) {
+                budgetDetailId = ChildID;
+                $("#ddlChildFinance option[value='" + ChildID + "']").attr("selected", "selected");
+            }
+            else {
+                budgetDetailId = parentId;
+            }
+            var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+            BindFinanceLineItmeData(budgetDetailId, AllocatedBy);
+        }
+    });
+    var nlDivs = $('#nl-formChildFinance div');
+    if (nlDivs.length > 0) {
+        var overlay = $('#nl-formChildFinance .nl-overlay');
+        if (overlay.length > 0) {
+        } else {
+            $('#nl-formChildFinance div').first().remove();
+        }
+    }
+    nlformChildFinance = new NLForm(document.getElementById('nl-formChildFinance'));
+    var liChildFinance = $('#ddlChildFinance').find('option');
+    if (liChildFinance != null && liChildFinance != 'undefined' && liChildFinance.length > 0) {
+
+        $('#nl-formChildFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            $('#errorMsg').css('display', 'none');
+            $('#SuccessMsg').css('display', 'none');
+            $("#divGridView").show();
+            $("#dvNoData").hide();
+
+            var ChildbudgetID = $(this).attr('value');
+            var parentid = $('#nl-formParentFinance .nl-dd-checked ').attr('value');
+
+            if (pageName == "LineItemGrid") {
+                var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+                if (ChildbudgetID > 0) {
+                    BindFinanceLineItmeData(ChildbudgetID, AllocatedBy);
                 }
                 else {
-                    budgetDetailId = parentId;
+                    BindFinanceLineItmeData(parentid, AllocatedBy);
                 }
-                var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
-                BindFinanceLineItmeData(budgetDetailId, AllocatedBy);
             }
         });
-        var nlDivs = $('#nl-formChildFinance div');
-        if (nlDivs.length > 0) {
-            var overlay = $('#nl-formChildFinance .nl-overlay');
-            if (overlay.length > 0) {
-            } else {
-                $('#nl-formChildFinance div').first().remove();
-            }
-        }
-        nlformChildFinance = new NLForm(document.getElementById('nl-formChildFinance'));
-        var liChildFinance = $('#ddlChildFinance').find('option');
-        if (liChildFinance != null && liChildFinance != 'undefined' && liChildFinance.length > 0) {
-
-            $('#nl-formChildFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-                $('#errorMsg').css('display', 'none');
-                $('#SuccessMsg').css('display', 'none');
-                $("#divGridView").show();
-                $("#dvNoData").hide();
-
-                var ChildbudgetID = $(this).attr('value');
-                var parentid = $('#nl-formParentFinance .nl-dd-checked ').attr('value');
-
-                if (pageName == "LineItemGrid") {
-                    var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
-                    if (ChildbudgetID > 0) {
-                        BindFinanceLineItmeData(ChildbudgetID, AllocatedBy);
-                    }
-                    else {
-                        BindFinanceLineItmeData(parentid, AllocatedBy);
-                    }
-                }
-            });
-        }
-        var a = $("#nl-formChildFinance .nl-field.nl-dd");
-
-        for (var i = 0; i < a.length - 1 ; i++) {
-
-            $(a[i]).remove();
-        }
     }
+    var a = $("#nl-formChildFinance .nl-field.nl-dd");
+
+    for (var i = 0; i < a.length - 1 ; i++) {
+
+        $(a[i]).remove();
+    }
+}

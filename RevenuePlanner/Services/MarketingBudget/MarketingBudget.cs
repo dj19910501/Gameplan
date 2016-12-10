@@ -112,7 +112,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             {
                 if (BudgetGridData.Tables.Count > 2) // checks if custom column table exists
                 {
-                    DataTable CustomColumnsTable = BudgetGridData.Tables[1];
+                    DataTable CustomColumnsTable = BudgetGridData.Tables[1]; // get list of custom fields
                     CustomColumnNames = CustomColumnsTable.Columns.Cast<DataColumn>() //list to get custom column names
                       .Select(x => x.ToString())
                       .ToList();
@@ -145,7 +145,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                 objBudgetGridDataModel.head = objBudgetGridModel.GridDataStyleList;
                 objBudgetGridDataModel.rows = lstData;
-			objBudgetGridModel.nonePermissonIDs = NonePermissionIds;
+                objBudgetGridModel.nonePermissonIDs = NonePermissionIds;
                 objBudgetGridModel.objGridDataModel = objBudgetGridDataModel;
 
             }
@@ -257,8 +257,8 @@ namespace RevenuePlanner.Services.MarketingBudget
                         string DisplayValue = string.Empty;
                         if (objValue != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(objValue)))
                         {
-                                DisplayValue = Convert.ToString(objValue);
-                            }
+                            DisplayValue = Convert.ToString(objValue);
+                        }
                         Data.Add(DisplayValue);
                     }
 
@@ -304,7 +304,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             Data.AddRange(BindColumnDataatend);
 
-         
+
 
             #region Handle Permissions in grid
             if (Permission == Enums.Permission.None.ToString())
@@ -437,7 +437,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             string totalbudgetcolumns = string.Empty;////store indexe of total Budget columns used to create unallocated column foumula
             char plus = '+';
             string c = "c";
-            string customFieldName = string.Empty; 
+            string customFieldName = string.Empty;
             int customFieldId = 0;
 
             #region Bind Standard Columns
@@ -462,7 +462,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.type = Readonly;
                     headObj.id = ColumnId;
                     ListHead.Add(headObj);
-					 colindex++;
+                    colindex++;
                 }
                 else if (columns == Enums.DefaultGridColumn.Name.ToString())
                 {
@@ -483,7 +483,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.type = "tree";
                     headObj.id = columns;
                     ListHead.Add(headObj);
-				    colindex++;
+                    colindex++;
 
                     //Add icons column after name
                     headObj = new GridDataStyle();
@@ -494,7 +494,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.type = Readonly;
                     headObj.id = "Add Row";
                     ListHead.Add(headObj);
-					 colindex++;
+                    colindex++;
 
                 }
                 else if (columns == Enums.DefaultGridColumn.Users.ToString() ||
@@ -758,7 +758,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             int NextBudgetId = 0; // 
 
             ///If connection is closed then it will be open
-            var Connection = _database.Database.Connection as SqlConnection;
+            SqlConnection Connection = _database.Database.Connection as SqlConnection;
             if (Connection.State == System.Data.ConnectionState.Closed)
             {
                 Connection.Open();
@@ -1221,7 +1221,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
 
             ///If connection is closed then it will be open
-            var Connection = _database.Database.Connection as SqlConnection;
+            SqlConnection Connection = _database.Database.Connection as SqlConnection;
             if (Connection.State == System.Data.ConnectionState.Closed)
             {
                 Connection.Open();
@@ -1281,8 +1281,8 @@ namespace RevenuePlanner.Services.MarketingBudget
             #region "Get Data"
             if (IsLineItem)
             {
-            calResultset = _database.Database
-                   .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinanceLineItems @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
+                calResultset = _database.Database
+                       .SqlQuery<MarketingBudgetHeadsUp>("GetHeaderValuesForFinanceLineItems @BudgetId,@lstUserIds,@CurrencyRate", para).FirstOrDefault();
             }
             else
             {
@@ -1421,47 +1421,46 @@ namespace RevenuePlanner.Services.MarketingBudget
                 objBudgetDetail  = _database.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
                 if (objBudgetDetail != null)
                 {
-                if (budgetDetailId > 0 && parentId > 0)
-                {
-                    //check objBudgetDetail is not null.
-                    if (objBudgetDetail != null)
+                    if (budgetDetailId > 0 && parentId > 0)
                     {
-                        if (!string.IsNullOrEmpty(nValue) && nValue != "undefined")
+                        //check objBudgetDetail is not null.
+                        if (objBudgetDetail != null)
                         {
-                            objBudgetDetail.Name = nValue.Trim(); // assign new budget name to objBudgetDetail.
+                            if (!string.IsNullOrEmpty(nValue))
+                            {
+                                objBudgetDetail.Name = nValue.Trim(); // assign new budget name to objBudgetDetail.
+                            }
+                            _database.Entry(objBudgetDetail).State = EntityState.Modified;
                         }
-                        _database.Entry(objBudgetDetail).State = EntityState.Modified;
                     }
+                    else if (budgetDetailId > 0 && parentId <= 0)
+                    {
+                        //Update name into Budget Table.
+                        RevenuePlanner.Models.Budget objBudget = new RevenuePlanner.Models.Budget();
+                        objBudget = _database.Budgets.Where(budgt => budgt.Id == budgetId && budgt.IsDeleted == false && budgt.ClientId == clientId).FirstOrDefault();
+                        if (objBudget != null)
+                        {
+                            if (!string.IsNullOrEmpty(nValue))
+                            {
+                                objBudget.Name = nValue.Trim(); // assign new budget name to objBudget.
+                            }
+                            _database.Entry(objBudget).State = EntityState.Modified;
+                        }
+
+                        //Update name into Budget Detail Table.
+                        if (objBudgetDetail != null)
+                        {
+                            if (!string.IsNullOrEmpty(nValue))
+                            {
+                                objBudgetDetail.Name = nValue.Trim(); // assign new budget name to objBudgetDetail.
+                            }
+                            _database.Entry(objBudgetDetail).State = EntityState.Modified;
+                        }
+
+                    }
+                    _database.SaveChanges();
                 }
-                else if (budgetDetailId > 0 && parentId <= 0)
-                {
-
-                    //Update name into Budget Table.
-                    RevenuePlanner.Models.Budget objBudget = new RevenuePlanner.Models.Budget();
-                    objBudget = _database.Budgets.Where(budgt => budgt.Id == parentId && budgt.IsDeleted == false && budgt.ClientId == clientId).FirstOrDefault();
-                    if (objBudget != null)
-                    {
-                        if (!string.IsNullOrEmpty(nValue) && nValue != "undefined")
-                        {
-                            objBudget.Name = nValue.Trim(); // assign new budget name to objBudget.
-                        }
-                        _database.Entry(objBudget).State = EntityState.Modified;
-                    }
-
-                    //Update name into Budget Detail Table.
-                    if (objBudgetDetail != null)
-                    {
-                        if (!string.IsNullOrEmpty(nValue) && nValue != "undefined")
-                        {
-                            objBudgetDetail.Name = nValue.Trim(); // assign new budget name to objBudgetDetail.
-                        }
-                        _database.Entry(objBudgetDetail).State = EntityState.Modified;
-                    }
-
-                }
-                _database.SaveChanges();
             }
-        }
         }
 
         /// <summary>
@@ -1488,7 +1487,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 }).ToList();
                 //get budget permission data for selected budget detailids.
                 List<Budget_Permission> BudgetPermissionData = _database.Budget_Permission.ToList().Where(item => listItems.Contains(item.BudgetDetailId.ToString())).ToList();
-                
+
                 //check permission is exist or not for new owner for selected budget detail if exist the delete that entry from budgetdetail_Permission table
                 List<Budget_Permission> BudgetPermissionDataExists = BudgetPermissionData.Where(item => item.UserId == ownerId && item.IsOwner == false).ToList();
 
@@ -1499,8 +1498,11 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                 //add entry in budgetdetail_permission table to identify permission.
                 List<Budget_Permission> OwnerBudgetPermissionData = BudgetPermissionData.Where(item => item.IsOwner == true).ToList();
-                OwnerBudgetPermissionData.Select(id => { id.UserId = ownerId;
-                                                                    return id; }).ToList();
+                OwnerBudgetPermissionData.Select(id =>
+                {
+                    id.UserId = ownerId;
+                    return id;
+                }).ToList();
             }
             _database.SaveChanges();
 
@@ -1530,7 +1532,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     double NewValue = 0;
                     double.TryParse(nValue, out NewValue);
 
-                    if (!string.IsNullOrEmpty(nValue) && nValue != "undefined")
+                    if (!string.IsNullOrEmpty(nValue))
                     {
                         //check column is budget or forecast
                         if ((string.Compare(columnName, Enums.DefaultGridColumn.Budget.ToString(), true) == 0)
@@ -1573,9 +1575,9 @@ namespace RevenuePlanner.Services.MarketingBudget
             //If objBudAmount is null then add new budget amount data into Budget_DetailAmount table
             if (objBudAmount == null)
             {
-                    objBudAmount = new Budget_DetailAmount();
-                            if (budgetDetailId > 0)
-                            {
+                objBudAmount = new Budget_DetailAmount();
+                if (budgetDetailId > 0)
+                {
                     double newValue;
                     bool isNumeric = double.TryParse(nValue, out newValue);
                     if (isForecast)
@@ -1588,14 +1590,14 @@ namespace RevenuePlanner.Services.MarketingBudget
                         //assign value to budget field
                         objBudAmount.Budget = Convert.ToDouble(_ObjCurrency.SetValueByExchangeRate(newValue, planExchangeRate));
                     }
-                                objBudAmount.Period = dataPeriod;
-                                objBudAmount.BudgetDetailId = budgetDetailId;
-                                _database.Entry(objBudAmount).State = EntityState.Added;
-                                _database.SaveChanges();
-                            }
-                        }
-                else
-                {
+                    objBudAmount.Period = dataPeriod;
+                    objBudAmount.BudgetDetailId = budgetDetailId;
+                    _database.Entry(objBudAmount).State = EntityState.Added;
+                    _database.SaveChanges();
+                }
+            }
+            else
+            {
                 // If not null then update budget amount data into Budget_DetailAmount table
                 UpdateBudgetorForecast(budgetDetailId, allocationType, nValue, isForecast, planExchangeRate);
             }
@@ -1644,7 +1646,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                         Maindiff = Convert.ToDouble(nValue) - QuaterSum;
                         if (!isForecast)
                         {
-                            objBudgetDetailAmt.Budget += Maindiff;                            
+                            objBudgetDetailAmt.Budget += Maindiff;
                         }
                         else
                         {
@@ -1699,18 +1701,18 @@ namespace RevenuePlanner.Services.MarketingBudget
                 if (objBudAmountUpdate != null)
                 {
                     if (isForecast)
-                        {
-                            objBudAmountUpdate.Forecast = Convert.ToDouble(nValue);
-                        }
+                    {
+                        objBudAmountUpdate.Forecast = Convert.ToDouble(nValue);
+                    }
                     else
                     {
                         objBudAmountUpdate.Budget = Convert.ToDouble(nValue);
                     }
-                        _database.Entry(objBudAmountUpdate).State = EntityState.Modified;
-                        _database.SaveChanges();
-                    }
+                    _database.Entry(objBudAmountUpdate).State = EntityState.Modified;
+                    _database.SaveChanges();
                 }
             }
+        }
 
 
         /// <summary>
@@ -1777,10 +1779,10 @@ namespace RevenuePlanner.Services.MarketingBudget
             //get column of the Marketing budget.
             List<Budget_Columns> objColumns = new List<Budget_Columns>();
             objColumns = (from ColumnSet in _database.Budget_ColumnSet
-                                               join Columns in _database.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
-                                               where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
-                                               && ColumnSet.ClientId == clientId
-                                               select Columns).ToList();
+                          join Columns in _database.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
+                          where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
+                          && ColumnSet.ClientId == clientId
+                          select Columns).ToList();
             return objColumns;
         }
         /// <summary>
@@ -2081,7 +2083,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         }
 
-        
+
         #region Get Budget/ForeCast/Plan/Actual Value
         public BudgetAmount GetAmountValue(string isQuaterly, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount, List<LineItem_Budget> LineItemidBudgetList, double PlanExchangeRate)
         {
@@ -2254,7 +2256,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             objbudget.Actual = _actuallist;
             return objbudget;
         }
-            #endregion
+        #endregion
         #endregion
 
         #region method to bind User Permission for budget
@@ -2438,7 +2440,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             for (int i = 0; i < ListItems.Count; i++)
             {
-               
+
                 if (ListItems[i].Contains("_"))
                 {
                     ItemID = ListItems[i].Split('_')[1];
