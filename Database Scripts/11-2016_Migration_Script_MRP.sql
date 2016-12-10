@@ -3196,56 +3196,82 @@ BEGIN
 	SET NOCOUNT ON;
 
 	-- Insert statements for procedure here
-	DECLARE @query VARCHAR(MAX)=''
-		
-	DECLARE @columns VARCHAR(MAX)
-	DECLARE @drpdCustomType VARCHAR(50)='DropDownList'
-		
-	SELECT @columns= COALESCE(@columns+', ' ,'') + C.Name + '_'+CAST(C.CustomFieldId AS NVARCHAR(30))
+	DECLARE @query VARCHAR(MAX) = '',
+			@columns VARCHAR(MAX),
+			@drpdCustomType VARCHAR(50)='DropDownList',
+			@txtCustomType VARCHAR(50)='TextBox',
+			@CFwithoutOptions NVARCHAR(MAX)
+	
+	CREATE TABLE #TblCustomFields (
+		CustomFieldId INT,
+		CustomFieldName NVARCHAR(255),
+		CustomFieldTypeName NVARCHAR(50)
+	)
+
+	INSERT INTO #TblCustomFields 
+	SELECT C.CustomFieldId,C.Name,CT.Name
 	FROM Budget_ColumnSet(NOLOCK) A
 	INNER JOIN Budget_Columns(NOLOCK) B ON A.Id= B.Column_SetId
 	INNER JOIN CustomField(NOLOCK) C ON B.CustomFieldId = C.CustomFieldId and C.EntityType='Budget'
+	INNER JOIN CustomFieldType(NOLOCK) CT ON C.CustomFieldTypeId = CT.CustomFieldTypeId
 	WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND A.ClientId = @clientID AND MapTableName = 'CustomField_Entity'
-		
-	IF(ISNULL(@columns,'')!='')
+
+	-- Remove custom fields having no options into CustomFieldOption table
+	SELECT @CFwithoutOptions = COALESCE(@CFwithoutOptions +', ' ,'') + CAST(CF.CustomFieldId AS NVARCHAR(30))
+	FROM #TblCustomFields CF
+	LEFT JOIN CustomFieldOption(NOLOCK) CFO ON CF.CustomFieldId = CFO.CustomFieldId
+	WHERE CF.CustomFieldTypeName = @drpdCustomType AND CFO.CustomFieldOptionId IS NULL
+
+	-- Get list of custom columns 
+	SELECT @columns= COALESCE(@columns+', ' ,'') + CustomFieldName+ '_'+ CAST(CustomFieldId AS NVARCHAR(30))
+	FROM #TblCustomFields
+	WHERE CustomFieldId NOT IN (SELECT VAL FROM dbo.comma_split(@CFwithoutOptions,','))
+
+	IF(ISNULL(@columns,'') != '')
 	BEGIN
 		SET @query = '
 		SELECT * 
 		FROM (
-		     SELECT C.Name +''_''+ CAST(C.CustomFieldId AS NVARCHAR(30)) 
-			 as Name,CF.EntityId as BudgetDetailId, 
-			 		CASE 
-					WHEN CT.Name='''+@drpdCustomType+''' THEN CFO.Value ELSE CF.Value
-				END as Value
-			FROM Budget_ColumnSet(NOLOCK) A
-			INNER JOIN Budget_Columns(NOLOCK) B ON A.Id= B.Column_SetId
-			INNER JOIN CustomField(NOLOCK) C ON B.CustomFieldId = C.CustomFieldId and C.EntityType=''Budget''
-			INNER JOIN CustomFieldType(NOLOCK) CT ON C.CustomFieldTypeId = CT.CustomFieldTypeId
-			LEFT JOIN CustomField_Entity(NOLOCK) CF ON C.CustomFieldId = CF.CustomFieldId and EntityID IN (select Id FROM Budget_Detail where BudgetId = '+CAST(@budgetID AS VARCHAR(20)) +' AND IsDeleted=0) 
-			--INNER JOIN Budget_Detail BD ON CF.EntityId = BD.Id and BD.IsDeleted=0 and BD.BudgetId ='+CAST(@budgetID AS VARCHAR(20)) +'
-			LEFT JOIN CustomFieldOption(NOLOCK) CFO ON CF.Value = CAST(CFO.CustomFieldOptionId AS nvarchar(30)) and CT.Name='''+@drpdCustomType+''' AND CFO.IsDeleted = 0 
-			WHERE A.IsDeleted = 0 AND B.IsDeleted = 0 AND C.IsDeleted = 0 AND 
-			A.ClientId = '+CAST(@clientID AS VARCHAR(20))+' AND MapTableName = ''CustomField_Entity'' and IsNUll(CF.EntityId,'''') <> ''''
+			  -- Get custom columns of type textbox
+		      SELECT C.CustomFieldName +''_''+ CAST(C.CustomFieldId AS NVARCHAR(30)) as Name,
+					 CF.EntityId as BudgetDetailId, 
+					 CF.Value
+			  FROM #TblCustomFields C
+			  LEFT JOIN CustomField_Entity(NOLOCK) CF ON C.CustomFieldId = CF.CustomFieldId AND 
+			  		  EntityID IN (SELECT Id FROM Budget_Detail WHERE BudgetId = '+CAST(@budgetID AS VARCHAR(20)) +' AND IsDeleted=0) 
+					  
+			  WHERE C.CustomFieldTypeName ='''+@txtCustomType+''' 
+			  AND IsNUll(CF.EntityId,'''') <> ''''
+			  
+			  UNION 
+			  -- Get custom columns of type drop down list
+			  SELECT C.CustomFieldName +''_''+ CAST(C.CustomFieldId AS NVARCHAR(30)) as Name,
+					 CF.EntityId as BudgetDetailId,
+			   		 CFO.Value
+			  FROM #TblCustomFields C
+			  LEFT JOIN CustomField_Entity(NOLOCK) CF ON C.CustomFieldId = CF.CustomFieldId AND 
+			  		    EntityID IN (SELECT Id FROM Budget_Detail WHERE BudgetId = '+CAST(@budgetID AS VARCHAR(20)) +' AND IsDeleted=0) 
+						
+			  LEFT JOIN CustomFieldOption(NOLOCK) CFO ON CF.Value = CAST(CFO.CustomFieldOptionId AS nvarchar(30)) AND CFO.IsDeleted = 0 
+			  WHERE C.CustomFieldTypeName ='''+@drpdCustomType+''' AND C.CustomFieldId NOT IN ('+ISNULL(@CFwithoutOptions,0)+')
+			  AND IsNUll(CF.EntityId,'''') <> ''''
+			  
 		) as s
 		PIVOT
 		(
 		    MIN(Value)
 		    FOR [Name] IN ('+@columns+')
 		)AS pvt'
-		exec (@query)
+		EXEC (@query)
 
 		-- Get custom field list with options to bind drop downs
 		SELECT CF.CustomFieldId, CFO.CustomFieldOptionId, CFO.Value 
-		FROM Budget_Columns(NOLOCK) Col 
-		INNER JOIN Budget_ColumnSet(NOLOCK) CS ON Col.Column_SetId = CS.Id
-		INNER JOIN CustomField(NOLOCK) CF ON Col.CustomFieldId = CF.CustomFieldId AND CF.EntityType='Budget'
-		INNER JOIN CustomFieldType(NOLOCK) CFT ON CF.CustomFieldTypeId = CFT.CustomFieldTypeId AND CFT.Name = @drpdCustomType
+		FROM #TblCustomFields CF
 		INNER JOIN CustomFieldOption(NOLOCK) CFO ON CF.CustomFieldId = CFO.CustomFieldId AND CFO.IsDeleted = 0
-		WHERE Col.IsDeleted = 0 AND CS.IsDeleted = 0 AND CF.IsDeleted = 0 
-			  	AND CS.ClientId = @clientID AND MapTableName = 'CustomField_Entity'
 	END
 END
 GO
+
 
 
 -- DROP AND CREATE STORED PROCEDURE [MV].[GetFinanceGridData]
