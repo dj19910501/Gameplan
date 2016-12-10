@@ -758,7 +758,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             int NextBudgetId = 0; // 
 
             ///If connection is closed then it will be open
-            SqlConnection Connection = _database.Database.Connection as SqlConnection;
+            var Connection = _database.Database.Connection as SqlConnection;
             if (Connection.State == System.Data.ConnectionState.Closed)
             {
                 Connection.Open();
@@ -793,6 +793,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <returns></returns>
         public BudgetImportData GetXLSXData(string viewByType, string fileLocation, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
+            ValidateBudget(BudgetDetailId, ClientId);
             BudgetImportData objImportData = new BudgetImportData();
             DataTable dtColumns = new DataTable();
             XmlDocument xmlDoc = new XmlDocument();
@@ -810,14 +811,14 @@ namespace RevenuePlanner.Services.MarketingBudget
                 Worksheet worksheet = (doc.WorkbookPart.GetPartById(sheet.Id.Value) as WorksheetPart).Worksheet;
                 //Fetch all the rows present in the Worksheet.
                 IEnumerable<Row> rowsData = worksheet.GetFirstChild<SheetData>().Descendants<Row>();
-                var RowsListData = rowsData.ToList();
+                List<Row> RowsListData = rowsData.ToList();
                 RowsListData.Remove(RowsListData.LastOrDefault());
 
                 if (viewByType == Enums.QuarterFinance.Yearly.ToString())
                 {
                     RowsListData.Insert(0, RowsListData[0]);
                 }
-                var rows = RowsListData;
+                List<Row> rows = RowsListData;
                 //Loop through the Worksheet rows.
                 XmlNode rootNode = xmlDoc.CreateElement("data");
                 xmlDoc.AppendChild(rootNode);
@@ -978,6 +979,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <returns></returns>
         public BudgetImportData GetXLSData(string viewByType, DataSet ds, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
+            ValidateBudget(BudgetDetailId, ClientId);
             List<XmlColumns> listColumnIndex = new List<XmlColumns>();
             DataTable dtExcel = new DataTable();
             BudgetImportData objImportData = new BudgetImportData();
@@ -1063,7 +1065,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                                         columnNameLower = columnName.ToLower();
                                         if (columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Planned).ToLower() && columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Actual).ToLower())
                                         {
-                                            var InnerColName = Convert.ToString(dtExcel.Rows[i][k]);
+                                            string InnerColName = Convert.ToString(dtExcel.Rows[i][k]);
                                             listColumnIndex.Add(new XmlColumns { ColumName = columnName, ColumnIndex = p });
                                             dtColumns.Rows.Add();
                                             dtColumns.Rows[j - 1]["Month"] = InnerColName;
@@ -1209,12 +1211,12 @@ namespace RevenuePlanner.Services.MarketingBudget
             // Check the file data is monthly or quarterly
             List<string> MonthList = new List<string>();
             List<string> DefaultMonthList = new List<string>();
-
+            ValidateBudget(BudgetDetailId, ClientID);
             MonthList = ImportBudgetCol.Rows.Cast<DataRow>().Select(x => x.Field<string>("Month").ToLower()).Distinct().ToList();
 
             DefaultMonthList = Enums.ReportMonthDisplayValuesWithPeriod.Select(a => a.Key.ToLower()).ToList();
 
-            var IsMonthly = (from dtMonth in MonthList
+            bool IsMonthly = (from dtMonth in MonthList
                              join defaultMonth in DefaultMonthList on dtMonth equals defaultMonth
                              select new { dtMonth }).Any();
             //end
@@ -1847,17 +1849,17 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <returns>Return the list of Budget Details list</returns>
         public LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0, int ClientID=0)
         {
-
-            List<Budget_Detail> tblBudgetDetails = new List<Budget_Detail>();
-            tblBudgetDetails = _database.Budget_Detail.Where(a => a.Budget.ClientId == ClientID && a.IsDeleted == false).ToList();
+            ValidateBudget(BudgetDetailId, ClientID);
+            List<Budget_Detail> lstBudgetDetails = new List<Budget_Detail>();
+            lstBudgetDetails = _database.Budget_Detail.Where(a => a.Budget.ClientId == ClientID && a.IsDeleted == false).ToList();
             List<ViewByModel> lstParentItems = new List<ViewByModel>();
             LineItemDropdownModel objParentListModel = new LineItemDropdownModel();
-            int? ParentId = 0, mostParentId = 0;
-            ParentId = tblBudgetDetails.Where(dtl => dtl.Id == BudgetDetailId).Select(dtl => dtl.ParentId).FirstOrDefault();
-            mostParentId = tblBudgetDetails.Where(dtl => dtl.Id == ParentId).Select(dtl => dtl.ParentId).FirstOrDefault();
-            var filterParentList = (from detail1 in tblBudgetDetails
-                                    where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
-                                    select new { detail1.Name, detail1.Id }).Distinct().ToList();
+            int? ParentId = 0, mostParentId = 0; // variable for parent and most parent for budget
+            ParentId = lstBudgetDetails.Where(dtl => dtl.Id == BudgetDetailId).Select(dtl => dtl.ParentId).FirstOrDefault();
+            mostParentId = lstBudgetDetails.Where(dtl => dtl.Id == ParentId).Select(dtl => dtl.ParentId).FirstOrDefault();
+            var filterParentList = (from BD in lstBudgetDetails
+                                    where BD.ParentId == mostParentId && BD.IsDeleted == false && !string.IsNullOrEmpty(BD.Name)
+                                    select new { BD.Name, BD.Id }).Distinct().ToList();
             lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
 
             objParentListModel.list = lstParentItems;
@@ -1871,7 +1873,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <returns>Return the list of Budget Details list</returns>
         public List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0, int ClientId=0)
         {
-            MRPEntities db = new MRPEntities();
+            ValidateBudget(ParentBudgetDetailId, ClientId);
             List<ViewByModel> lstChildItems = new List<ViewByModel>();
             var filterChildList = (from detail1 in _database.Budget_Detail
                                    where detail1.ParentId == ParentBudgetDetailId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name) && detail1.Budget.ClientId == ClientId
@@ -1880,8 +1882,9 @@ namespace RevenuePlanner.Services.MarketingBudget
             return lstChildItems;
         }
         //Method to get line item grid for budget and time frame
-        public LineItemDetail GetLineItemGrid(int BudgetDetailId, string IsQuaterly = "quarters", double PlanExchangeRate=0)
+        public LineItemDetail GetLineItemGrid(int BudgetDetailId,int ClientId, string IsQuaterly = "quarters", double PlanExchangeRate=1.0)
         {
+            ValidateBudget(BudgetDetailId, ClientId);
             LineItemDetail AllLineItemDetail = new LineItemDetail();
             BudgetGridModel lineItemGridData = new BudgetGridModel();
 
@@ -1901,11 +1904,9 @@ namespace RevenuePlanner.Services.MarketingBudget
                     LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
                     if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
                     {
-                        if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
-                        {
                             LineItemidBudgetList.RemoveAt(i);
                             i--;
-                        }
+                        
                     }
                 }
             }
@@ -2319,29 +2320,28 @@ namespace RevenuePlanner.Services.MarketingBudget
         public string CheckUserPermission(int BudgetId, int ClientId, int UserId)
         {
             List<BDSService.User> lstUser = new List<BDSService.User>();
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            lstUser = objBDSServiceClient.GetUserListByClientIdEx(ClientId).ToList();
+            lstUser = _ServiceDatabase.GetUserListByClientIdEx(ClientId).ToList();
             List<int> lstUserId = lstUser.Select(a => a.ID).ToList();
             List<Budget_Permission> ListOfUserPermission = _database.Budget_Permission.Where(a => lstUserId.Contains(a.UserId)).ToList();
             List<Budget_Permission> CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)BudgetId && a.UserId == UserId).ToList();
-            string isEdit = "";
+            string EditView = "";
             string strUserAction = string.Empty;
             if (CheckUserPermission.Count > 0)
             {
                 if (CheckUserPermission.First().PermisssionCode == 0)
                 {
-                    isEdit = "Edit";
+                    EditView = "Edit";
                 }
                 else
                 {
-                    isEdit = "View";
+                    EditView = "View";
                 }
             }
             else
             {
-                isEdit = "View";
+                EditView = "View";
             }
-            return isEdit;
+            return EditView;
         }
 
         public List<UserPermission> FilterByBudget(int BudgetId, Guid ApplicationId)
@@ -2497,5 +2497,13 @@ namespace RevenuePlanner.Services.MarketingBudget
         }
 
         #endregion
+
+//method to validate budget for cross client
+        private void ValidateBudget(int BudgetDetailId, int ClientID)
+        {
+           Budget_Detail BudgetDetail = _database.Budget_Detail.Where(a => a.Id == BudgetDetailId).SingleOrDefault();
+           if (BudgetDetail == null || BudgetDetail.Budget.ClientId != ClientID) throw new Exception(string.Format("BudgetDetailId: {0} not valid", BudgetDetailId));
+        }
+
     }
 }

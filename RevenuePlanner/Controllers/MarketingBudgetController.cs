@@ -51,10 +51,8 @@ namespace RevenuePlanner.Controllers
             #region Bind Budget dropdown on grid
             MarketingActivities.ListofBudgets = _MarketingBudget.GetBudgetlist(Sessions.User.CID);// Budget dropdown
             //method to get  parent and child budget list
-            var lstparnetbudget = Common.GetParentBudgetlist();
-            var lstchildbudget = Common.GetChildBudgetlist(0);
-            ViewBag.parentbudgetlist = lstparnetbudget;
-            ViewBag.childbudgetlist = lstchildbudget;
+            ViewBag.parentbudgetlist = Common.GetParentBudgetlist();
+            ViewBag.childbudgetlist = Common.GetChildBudgetlist(0);
             //end
             #endregion
 
@@ -449,7 +447,7 @@ namespace RevenuePlanner.Controllers
                     }
                     ListItems.Add(Convert.ToString(BudgetDetailId));
 
-                    //if user update owner name field, then following logic to update ownername will get executed
+
                     if (string.Compare(ColumnName, Enums.DefaultGridColumn.Owner.ToString(), true) == 0)
                     {
                         int OwnerId = 0;
@@ -472,7 +470,6 @@ namespace RevenuePlanner.Controllers
 
                         _MarketingBudget.UpdateTotalAmount(BudgetDetailId, nValue, ColumnName, Sessions.PlanExchangeRate);
                     }
-                    //processing of custom columns
                     else if (string.Compare(ColumnName.Split('_')[0], "cust", true) == 0)
                     {
                         if (objColumns != null && objColumns.Count > 0)
@@ -536,17 +533,26 @@ namespace RevenuePlanner.Controllers
         /// Method to get budget parent list item
         /// </summary>
         /// <param name="BudgetDetailId">for which budget want get parent list item</param>
-        public JsonResult GetParentLineItemList(int BudgetDetailId = 0)
+        public JsonResult GetParentLineItemList(int BudgetDetailId )
         {
             LineItemDropdownModel objParentDDLModel = new LineItemDropdownModel();
+
+            if (BudgetDetailId > 0)
+            {
             objParentDDLModel = _MarketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId, Sessions.User.CID);
+            }
             return Json(objParentDDLModel, JsonRequestBehavior.AllowGet);
         }
         //Method to get all child items for budget
-        public JsonResult GetChildLineItemList(int BudgetDetailId = 0)
+        public JsonResult GetChildLineItemList(int BudgetDetailId )
         {
-            var lstchildbudget = _MarketingBudget.GetChildLineItemBudgetDetailslist(BudgetDetailId, Sessions.User.CID);
-            return Json(lstchildbudget, JsonRequestBehavior.AllowGet);
+            if (BudgetDetailId > 0)
+            {
+                return Json(_MarketingBudget.GetChildLineItemBudgetDetailslist(BudgetDetailId, Sessions.User.CID), JsonRequestBehavior.AllowGet);
+            }
+            else
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+           
         }
         /// <summary>
         /// Method to get all lineitem list foe budget as per time frame
@@ -554,16 +560,18 @@ namespace RevenuePlanner.Controllers
         /// <param name="BudgetDetailId"></param>
         /// <param name="IsQuaterly"></param>
         /// <returns></returns>
-        public ActionResult GetFinanceLineItemData(int BudgetDetailId = 0, string IsQuaterly = "quarters")
+        public ActionResult GetFinanceLineItemData(int BudgetDetailId, string TimeFrame = "quarters")
         {
             LineItemDetail AlllineItemdetail = new LineItemDetail();
+            if (BudgetDetailId > 0)
+            {
             #region "Set Create/Edit or View permission for Budget and Forecast to Global varialble."
             _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
             _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
             #endregion
-            AlllineItemdetail = _MarketingBudget.GetLineItemGrid(BudgetDetailId, IsQuaterly,Sessions.PlanExchangeRate);
-            TempData["FinanceHeader"] = new FinanceModelHeaders();
+                AlllineItemdetail = _MarketingBudget.GetLineItemGrid(BudgetDetailId,Sessions.User.CID, TimeFrame, Sessions.PlanExchangeRate);
             ViewBag.HasLineItems = AlllineItemdetail.childLineItemCount;
+            }
             return PartialView("_LineItem", AlllineItemdetail.LineItemGridData);
         }
 
@@ -600,7 +608,8 @@ namespace RevenuePlanner.Controllers
                 #region bindUser List for search
                 List<BDSService.User> lstUserDetail = new List<BDSService.User>();
                 lstUserDetail = _MarketingBudget.GetAllUserList(Sessions.User.CID, Sessions.User.ID, Sessions.ApplicationId);
-
+                if (Sessions.User != null)
+                {
                 lstUserDetail.Add(new BDSService.User
                 {
                     UserId = Sessions.User.UserId,
@@ -609,6 +618,7 @@ namespace RevenuePlanner.Controllers
                     LastName = Sessions.User.LastName,
                     JobTitle = Sessions.User.JobTitle
                 });
+                }
                 TempData["Userlist"] = lstUserDetail;
                 #endregion
                 FinanceModel objFinanceModel = _MarketingBudget.EditPermission(BudgetId, Sessions.ApplicationId, UserList, Sessions.User.ID);
@@ -626,7 +636,7 @@ namespace RevenuePlanner.Controllers
         /// Added by Nandish Shah
         /// Get specific record based on dropdown selection value of budgetdetail id
         /// </summary>
-        public JsonResult DrpFilterByBudget(int BudgetId = 0, string level = "", string FlagCondition = "")
+        public JsonResult GetUserFilterByBudget(int BudgetId = 0, string level = "", string FlagCondition = "")
         {
             // Sessions.BudgetDetailId = BudgetId;
             string strUserPermission = _MarketingBudget.CheckUserPermission(BudgetId, Sessions.User.CID, Sessions.User.ID);
@@ -659,8 +669,11 @@ namespace RevenuePlanner.Controllers
                     {
                         lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
 
-                        Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || user.JobTitle.ToLower().Contains(term.ToLower())).Select(user => new RevenuePlanner.Models.UserModel { UserId = user.ID, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
-
+                        var searchresult=lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || (user.JobTitle!=null && user.JobTitle.ToLower().Contains(term.ToLower()))).ToList();
+                        if(searchresult!=null && searchresult.Count>0)
+                        {
+                            Getvalue = searchresult.Select(user => new RevenuePlanner.Models.UserModel { UserId = user.ID, JobTitle = Convert.ToString(user.JobTitle), DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        }
                         string[] keepList = UserIds.Split(',');
                         Getvalue = Getvalue.Where(i => !keepList.Contains(i.UserId.ToString())).ToList();
                         TempData["Userlist"] = lstUserDetail;

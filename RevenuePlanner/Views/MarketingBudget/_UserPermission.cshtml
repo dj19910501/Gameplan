@@ -304,7 +304,7 @@
         InspectBudgetPermissionRow();
         function Bindtable($thisId) {
             $.ajax({
-                url: '@Url.Content("~/MarketingBudget/DrpFilterByBudget/")',
+                url: '@Url.Content("~/MarketingBudget/GetUserFilterByBudget/")',
                 type: 'POST',
                 dataType: "json",
                 data: { BudgetId: $thisId, level: 0, FlagCondition: 'Edit' },

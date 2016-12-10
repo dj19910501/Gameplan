@@ -1167,7 +1167,7 @@ function FinanceBack() {
 }
 function BindFinanceLineItmeData(BudgetDetailid, AllocatedBy) {
     var url = urlContent +"MarketingBudget/GetFinanceLineItemData/";
-    $('#divGridView').load(url + '?BudgetDetailId=' + BudgetDetailid + '&IsQuaterly=' + AllocatedBy);
+        $('#divGridView').load(url + '?BudgetDetailId=' + BudgetDetailid + '&TimeFrame=' + AllocatedBy);
 }
 //function to bind line item grid
 function LoadLineItemGrid(BudgetDetailid) {

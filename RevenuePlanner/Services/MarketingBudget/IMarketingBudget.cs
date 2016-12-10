@@ -269,6 +269,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         public BudgetGridModel LineItemGridData { get; set; }
         public bool childLineItemCount { get; set; }
     }
+   
     /// <summary>
     /// Operational interface for budget related data retrieval or manipulations 
     /// </summary>
@@ -320,7 +321,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         //Methods for user permissiopn and lineitems for budget
         LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0, int ClientId=0);
         List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0, int ClientId=0);
-        LineItemDetail GetLineItemGrid(int BudgetDetailId, string IsQuaterly = "quarters", double PlanExchangeRate=1.0);
+        LineItemDetail GetLineItemGrid(int BudgetDetailId, int ClientId , string IsQuaterly = "quarters", double PlanExchangeRate=1.0);
         List<Budget_Permission> GetUserList(int BudgetId);
         List<UserPermission> FilterByBudget(int BudgetId, Guid ApplicationId);
         string CheckUserPermission(int BudgetId, int ClientId, int UserId);
