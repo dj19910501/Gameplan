@@ -92,14 +92,16 @@
     var requestedModule = $("#hdnRequestedModule").val();
     $(document).ready(function () {
         $('#EditForm').removeClass('SpanDisable');
-        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
 
         if ($("#hdnIsBudgetAllocated").val() == "True" && $("#lblTotalBudget").html() != '') {
             $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
         }
-        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true });
         $("#txtPlanBudget").attr('title', $("#txtPlanBudget").val());
 
         if ($("#hdnIsBudgetAllocated").val() == "True") {

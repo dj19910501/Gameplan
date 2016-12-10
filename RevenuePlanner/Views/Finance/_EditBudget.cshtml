@@ -388,7 +388,7 @@
             if (stage == 1) {
                 if (ColumnName != "Task Name") {
                     $(".dhx_combo_edit").off("keydown");
-                    $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+                    $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e,this,true); }));
                     myTreeGrid.editor.obj.onkeypress = function (e) {
                         e = e || window.event;
                         if ((e.keyCode >= 47) || (e.keyCode == 0)) {

@@ -40,7 +40,7 @@ else
     $(document).ready(function () {
         $('#liLine_Items').removeClass("pull-left");
         $('#liLine_Items').addClass("active pull-left");
-        
+
         $('.nav').addClass('no-bottom-border');
         // Added by Arpita Soni for Ticket #2237 on 06/13/2016
         if (@countrows > 0) {
@@ -58,7 +58,7 @@ else
         window.focus();
 
         pageIsScroll = false;
-   
+
         $(".grid_Search").off("click");
         $(".grid_Search").click(function (e) {
             inspectCloseFocus = $(this).position().top;
@@ -69,7 +69,7 @@ else
         });
         SetTooltip();
         $("#ddlAllocatedBySelectBox select").selectbox();
-        
+
         $(".sbSelector").click(function () {
             $(".ui-multiselect-menu").each(function () {
                 $(this).css("display", "none");
@@ -104,11 +104,11 @@ else
     $(".grid_ver_scroll").scroll(function () {
         $('#popupLineitemIP').css('display', 'none');
     });
-    
+
     $('#errorMessageInspectPopup .close').click(function () {
         $('#errorMessageInspectPopup').css("display", "none");
     });
-    
+
     var GridDataLineItemGrid;
     var ActivityIdColIndex;
     var PlannedCostColIndex;
@@ -120,11 +120,11 @@ else
         var mainGridData = JsonModel;
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         GridDataLineItemGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-        
+
         LineItemGrid = new dhtmlXGridObject('lineItemGrid');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         LineItemGrid.setImagePath(imgpath);
-        
+
         LineItemGrid.setImageSize(1, 1);
         LineItemGrid.attachEvent("onEditCell", doOnEditCell);
         LineItemGrid.setHeader('@Model.SetHeader');
@@ -133,7 +133,7 @@ else
         LineItemGrid.setInitWidths('@Model.Width');
         LineItemGrid.setColSorting('@Model.ColSorting');
         LineItemGrid.setColumnIds('@Model.ColumnIds');
-        
+
         LineItemGrid.init();
         LineItemGrid.enableAutoHeight(true);
         LineItemGrid.parse(GridDataLineItemGrid, "json");
@@ -141,7 +141,7 @@ else
         PlannedCostColIndex = LineItemGrid.getColIndexById("plannedcost");
         TaskNameColIndex = LineItemGrid.getColIndexById("taskname");
     }
-    
+
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         if (stage == 0) {   // Stage == 0 Means Click on Cell
             // Disable cells which has no permission to edit
@@ -149,10 +149,10 @@ else
             if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
                 return false;
         }
-        if (stage == 1) {   // Stage == 1 - Means Perform Event on Cell -  Keydown, etc. 
+        if (stage == 1) {   // Stage == 1 - Means Perform Event on Cell -  Keydown, etc.
             // Disable alphabets or special characters in input
             if(cellInd != TaskNameColIndex){
-                $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+                $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e,this,true); }));
                 LineItemGrid.editor.obj.onkeypress = function (e) {
                     e = e || window.event;
                     if ((e.keyCode >= 47) || (e.keyCode == 0)) {
@@ -166,7 +166,7 @@ else
         }
         if (stage == 2) {   // Stage == 2 - Means perform focus out event
             if (nValue != null && nValue.trim() != "") {
-                var entityId = LineItemGrid.cells(rowId, 0).getValue(); 
+                var entityId = LineItemGrid.cells(rowId, 0).getValue();
                 var section = "lineitem";
                 var isTotalCost = false;
                 var month = "";
@@ -194,7 +194,7 @@ else
                         month = LineItemGrid.getColLabel(cellInd);
                     }
                     var plannedcost = LineItemGrid.cells(rowId, cellInd).getValue(); // updated cell value
-                
+
                     var tab = 'Planned';
                     var isquarter = false;
                     if('@SelectedViewBy' == 'quarters') {
@@ -202,7 +202,7 @@ else
                     }
                     // Converting user preferred value to $ currency
                     var allocatedcost = SetValueByExchangeRate(plannedcost.replace(/,/g, ""))
-                    
+
                     $.ajax({
                         type: 'POST',
                         url: '@Url.Content("~/Inspect/SaveLineItemCostAllocation/")',
@@ -225,7 +225,7 @@ else
                                 // always first row is for tactic so get tactic cost value
                                 var first_rowid = LineItemGrid.getRowId(0);
                                 // get value of tactic planned cost by removing all commas
-                                var tac_cost = parseFloat(LineItemGrid.cells(first_rowid, cellInd).getValue().replace(/,/g, "")); 
+                                var tac_cost = parseFloat(LineItemGrid.cells(first_rowid, cellInd).getValue().replace(/,/g, ""));
                                 var lineitem_cost = 0;
                                 for(var i = 1 ; i < rows_count - 1; i++) { // sum of line item cost
                                     var row_id = LineItemGrid.getRowId(i);
@@ -235,9 +235,9 @@ else
                                 if(balance_cost % 1 != 0){
                                     decimal_points = 2;
                                 }
-                                // set balance line item cost 
+                                // set balance line item cost
                                 LineItemGrid.cells(balance_rowid, cellInd).setValue(number_format(balance_cost, decimal_points, '.', ','));
-                                // End - Update balance row value on edit 
+                                // End - Update balance row value on edit
 
                                 UpdateUnallocatedColumnValues(rowId);   // update unallocated cost column for edited row
                                 UpdateUnallocatedColumnValues(balance_rowid);   // update unallocated cost column for balance row
@@ -257,10 +257,10 @@ else
         return true;
     }
     function UpdateUnallocatedColumnValues(rowId) {
-        // Update Unallocated column value on edit 
+        // Update Unallocated column value on edit
         var cols_count = LineItemGrid.getColumnCount();
         // always first row is for tactic so get tactic cost value
-        var planned_cost = parseFloat(LineItemGrid.cells(rowId, PlannedCostColIndex).getValue().replace(/,/g, "")); 
+        var planned_cost = parseFloat(LineItemGrid.cells(rowId, PlannedCostColIndex).getValue().replace(/,/g, ""));
         var allocated_cost = 0;
         for (var j = PlannedCostColIndex + 1; j <= cols_count - 2; j++) { // sum of line item cost
             allocated_cost = allocated_cost + parseFloat(LineItemGrid.cells(rowId, j).getValue().replace(/,/g, ""));
@@ -271,7 +271,7 @@ else
             decimal_points = 2;
         }
 
-        // set balance line item cost 
+        // set balance line item cost
         LineItemGrid.cells(rowId, cols_count - 1).setValue(number_format(unallocated, decimal_points, '.', ','));
     }
     $("#ddlAllocateViewByLineItems").change(function () {
@@ -300,122 +300,122 @@ else
         }
         if (returnpara) {
             loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId, '');
-    }
+        }
     });
 
-$(document).on("click", '#CloneLineItemGrid', function (event) {
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-    var activeTab = "Line_Items";
-    var returnpara = true;
-    if (activeTab != null && activeTab != undefined && activeTab != '') {
-        returnpara = SaveAllData(activeTab);
-    }
-    if (returnpara) {
-        isDataModified = true;
-        var idPlanProgram = $("#hdnPlanLineItemID").val();
-        var Title = '';
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Inspect/Clone")',
-            data: {
-                CloneType: "@Enums.Section.LineItem",
-                Id: EntityId,
-                title: Title,
-                CalledFromBudget: '',
-                RequsetedModule: ''
-            },
-            success: function (data) {
-                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                    window.location = '@Url.Content("~/Login/Index")';
-                }
-                else if (data.IsSuccess) {
-                    var currentTab = "Line_Items";
-                    var lineItemId = data.Id;
-                    var expandplanLineItemId = data.expand;
-                    loadInspectPopup(tacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", 0, '');
-                       
-                    $("#successMessage").css("display", "block");
-                    $("#spanMessageSuccess").empty();
-                    $("#spanMessageSuccess").text(data.msg);
-                    $("#errorMessage").css("display", "none");
-                    return true;
-                }
-                else {
-                    $("#successMessageViewProgram").slideUp(50);
-                    $("#errorMessageEditProgram").slideDown(400);
-                    $("#spanMessageEditProgram").empty();
-                    $("#spanMessageEditProgram").val(data.msg);
-                    return false;
-                }
-            }
-        });
-    }
-});
-function OpenLineItemGridPopup(obj, e) {
-    var arrTacticAndLineItemIds = $(obj).attr('alt').replace('cpt_','').replace('cptl_','').split('_');
+    $(document).on("click", '#CloneLineItemGrid', function (event) {
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        var activeTab = "Line_Items";
+        var returnpara = true;
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            returnpara = SaveAllData(activeTab);
+        }
+        if (returnpara) {
+            isDataModified = true;
+            var idPlanProgram = $("#hdnPlanLineItemID").val();
+            var Title = '';
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Inspect/Clone")',
+                data: {
+                    CloneType: "@Enums.Section.LineItem",
+                    Id: EntityId,
+                    title: Title,
+                    CalledFromBudget: '',
+                    RequsetedModule: ''
+                },
+                success: function (data) {
+                    if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else if (data.IsSuccess) {
+                        var currentTab = "Line_Items";
+                        var lineItemId = data.Id;
+                        var expandplanLineItemId = data.expand;
+                        loadInspectPopup(tacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", 0, '');
 
-    ParentId = arrTacticAndLineItemIds[0];
-    EntityId = arrTacticAndLineItemIds[1];
-        
-    var lineItemType = $(obj).attr('lt');
-    Type = $(obj).attr('id');
-    var LinkTacticPermission = $(obj).attr('linktacticper');
-    var LinkedTacticId = $(obj).attr('linkedtacticid');
-        
-    if (lineItemType == "0") {
-        ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItemGrid'>New Line Item</li> </ul>";
-    }
-    else {
-        ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItemGrid'>New Line Item</li> <li class='new-prog' id='CloneLineItemGrid'>Copy Line Item</li>  </ul>";
-    }
-       
-    $('#popupLineitemIP').html(ul);
-
-    if ($('#popupLineitemIP').css('display') == 'none') {
-        $('#popupLineitemIP').css('display', 'block')
-    }
-    else {
-        $('#popupLineitemIP').css('display', 'none')
-    }
-    var left = e.pageX - 10;
-    var target = $(e.target);
-        
-    var targetOffset = 0;
-    targetOffset = target.offset().top - 35;
-    var scrollPosition = $(window).scrollTop();
-
-    if ($('#popupLineitemIP').css('display') != 'none') {
-        if (scrollPosition <= targetOffset) {
-            $('#popupLineitemIP').css({
-                //'display': 'block',
-                'top': targetOffset,
-                'left': left,
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessage").css("display", "none");
+                        return true;
+                    }
+                    else {
+                        $("#successMessageViewProgram").slideUp(50);
+                        $("#errorMessageEditProgram").slideDown(400);
+                        $("#spanMessageEditProgram").empty();
+                        $("#spanMessageEditProgram").val(data.msg);
+                        return false;
+                    }
+                }
             });
+        }
+    });
+    function OpenLineItemGridPopup(obj, e) {
+        var arrTacticAndLineItemIds = $(obj).attr('alt').replace('cpt_','').replace('cptl_','').split('_');
+
+        ParentId = arrTacticAndLineItemIds[0];
+        EntityId = arrTacticAndLineItemIds[1];
+
+        var lineItemType = $(obj).attr('lt');
+        Type = $(obj).attr('id');
+        var LinkTacticPermission = $(obj).attr('linktacticper');
+        var LinkedTacticId = $(obj).attr('linkedtacticid');
+
+        if (lineItemType == "0") {
+            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItemGrid'>New Line Item</li> </ul>";
         }
         else {
-            var targetHeight = target.height();
-            var targetBottomOffset =0;
-            if($('#IsGridView').val() == 'True'){
-                //var contentHeight = $('#popupLineitemIP').outerHeight();
-                targetBottomOffset = targetOffset + targetHeight; // - contentHeight;
+            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItemGrid'>New Line Item</li> <li class='new-prog' id='CloneLineItemGrid'>Copy Line Item</li>  </ul>";
+        }
+
+        $('#popupLineitemIP').html(ul);
+
+        if ($('#popupLineitemIP').css('display') == 'none') {
+            $('#popupLineitemIP').css('display', 'block')
+        }
+        else {
+            $('#popupLineitemIP').css('display', 'none')
+        }
+        var left = e.pageX - 10;
+        var target = $(e.target);
+
+        var targetOffset = 0;
+        targetOffset = target.offset().top - 35;
+        var scrollPosition = $(window).scrollTop();
+
+        if ($('#popupLineitemIP').css('display') != 'none') {
+            if (scrollPosition <= targetOffset) {
+                $('#popupLineitemIP').css({
+                    //'display': 'block',
+                    'top': targetOffset,
+                    'left': left,
+                });
             }
-            else{
-                var contentHeight = $('#popupLineitemIP').outerHeight();
-                targetBottomOffset = targetOffset + targetHeight - contentHeight;
+            else {
+                var targetHeight = target.height();
+                var targetBottomOffset =0;
+                if($('#IsGridView').val() == 'True'){
+                    //var contentHeight = $('#popupLineitemIP').outerHeight();
+                    targetBottomOffset = targetOffset + targetHeight; // - contentHeight;
+                }
+                else{
+                    var contentHeight = $('#popupLineitemIP').outerHeight();
+                    targetBottomOffset = targetOffset + targetHeight - contentHeight;
+                }
+                $('#popupLineitemIP').css({
+                    // 'display': 'block',
+                    'top': targetBottomOffset,
+                    'left': left,
+                });
             }
-            $('#popupLineitemIP').css({
-                // 'display': 'block',
-                'top': targetBottomOffset,
-                'left': left,
-            });
         }
     }
-}
-$(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
-    var $checkbox = $(this).find('input[type=checkbox]')
-    $checkbox.bootstrapToggle('toggle')
-    e.preventDefault()
-});    
+    $(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
+        var $checkbox = $(this).find('input[type=checkbox]')
+        $checkbox.bootstrapToggle('toggle')
+        e.preventDefault()
+    });
 </script>
 

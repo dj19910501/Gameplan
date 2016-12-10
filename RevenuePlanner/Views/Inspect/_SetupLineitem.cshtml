@@ -86,7 +86,8 @@
       function () {
           $('#btnEditlineItem').removeClass('SpanDisable');
           $('#InspectTab').removeClass('SpanDisable');
-          $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+          $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $(".simpleSelectBox select").selectbox();
           

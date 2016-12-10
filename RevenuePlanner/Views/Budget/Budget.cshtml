@@ -239,9 +239,9 @@
 
     function SetFlagTooltip() {
         var allRowIDs = HomeGrid.getAllRowIds(',').split(",");
-        var parent = ["plan", "campaign", "program"];
-        var parentUppercase = ["Plan", "Campaign", "Program"];
-        var child = ["Campaign", "Program", "Tactic"];
+        var parent = ["plan", "campaign", "program", "tactic"];
+        var parentUppercase = ["Plan", "Campaign", "Program", "Tactic"];
+        var child = ["Campaign", "Program", "Tactic", "Lineitem"];
         for (var i = 0; i < allRowIDs.length; i++) {
             for (var j = 0; j < HomeGrid.getColumnsNum() ; j++) {
                 if (HomeGrid.getColumnId(j) == "PlannedCost" || HomeGrid.getColumnId(j) == "Planned" || HomeGrid.getColumnId(j) == "BudgetCost" || HomeGrid.getColumnId(j) == "Budget")
@@ -297,6 +297,11 @@
             nValue = 0;
             HomeGrid.cells(rowId, cellInd).setValue(nValue);
         }
+        //Added by Preet Shah on 10/12/2016. If use just enter minus sign, value has been reset to old value. For #2850.
+        if (nValue == '-') {
+            nValue = oValue;
+            HomeGrid.cells(rowId, cellInd).setValue(nValue);
+        }
         if (stage == 0) { // Stage == 0 Means Click on Cell
             var newvalue = HomeGrid.cells(rowId, cellInd).getValue();
             if (cellInd == TaskNameId) {
@@ -327,7 +332,7 @@
         }
         if (stage == 1) {
             if (cellInd != TaskNameId) {
-                $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+                $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e, this, true); }));
                 HomeGrid.editor.obj.onkeypress = function (e) {
                     e = e || window.event;
                     if ((e.keyCode >= 47) || (e.keyCode == 0)) {
@@ -516,9 +521,9 @@
                     else {
                         HomeGrid.setCellTextStyle(GetParentId, cellInd, "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                     }
-                    var parent = ["plan", "campaign", "program"];
-                    var parentUppercase = ["Plan", "Campaign", "Program"];
-                    var child = ["Campaign", "Program", "Tactic"];
+                    var parent = ["plan", "campaign", "program", "tactic"];
+                    var parentUppercase = ["Plan", "Campaign", "Program", "Tactic"];
+                    var child = ["Campaign", "Program", "Tactic", "Lineitem"];
                     var TypeIndex = HomeGrid.getColIndexById("Type");
                     var Type = HomeGrid.cells(GetParentId, TypeIndex).getValue();
                     var p_ind = parent.indexOf(Type.toLowerCase());

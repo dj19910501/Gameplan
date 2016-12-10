@@ -167,8 +167,8 @@
         $("#successMessage").slideUp(10);
         $(".priceValue").keydown(function (e) { priceFormatKeydown(e); });
         $(".priceValue").change(function (e) { priceFormatChange(e) });
-
-        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
+        //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true }); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
 
     
         $('.close-form', this.$panel).click(function (e) {

@@ -100,7 +100,7 @@ $(document).ready(function () {
 });
 /*Added by Devanshi for #1430 do not allow text when user edit grid column value */
 /*function used at textbox which contains only numeric value*/
-function GridPriceFormatKeydown(e) {
+function GridPriceFormatKeydown(e, element, isNegative) {
     // Allow: backspace, delete, tab, escape, enter and .
     if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
         // Allow: Ctrl+A
@@ -110,7 +110,8 @@ function GridPriceFormatKeydown(e) {
         //allow period
          (e.key == ".") ||
         // allow minus sign /* Added by Preet Shah for allow negative sign */
-         (e.key == "-")) {
+        //check for minus sign is already available or not. allow minus at only first position
+         (isNegative && e.key == "-" && $(element).prop("selectionStart") == 0 && $(element).val().indexOf('-') == -1)) {
         // let it happen, don't do anything
         return;
     }

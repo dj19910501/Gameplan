@@ -243,6 +243,13 @@
                             issecondTime = true;
                         }
                     }
+
+                    var isNegativesecondTime = false;
+                    if (str.indexOf('-') > -1) {
+                        if ((code == 109 || code == 189)) {
+                            isNegativesecondTime = true;
+                        }
+                    }
                     // allow key numbers, 0 to 9
                     if ((code >= 48 && code <= 57) || (code >= 96 && code <= 105)) functional = true;
 
@@ -255,7 +262,7 @@
                     if (code == 39) functional = true;
 
                     // Minus Sign, Plus Sign
-                    if (allowNegative && (code == 189 || code == 109)) functional = true;
+                    if (!isNegativesecondTime && allowNegative && (code == 189 || code == 109)) functional = true;
                     if (insertPlusSign && (code == 187 || code == 107)) functional = true;
                     if (!issecondTime && isDouble && (code == 190 || code == 110)) functional = true;
                     if (!functional) {
@@ -287,6 +294,12 @@
                         issecondTime = true;
                     }
                 }
+                var isNegativesecondTime = false;
+                if (str.indexOf('-') > -1) {
+                    if ((code == 109 || code == 189)) {
+                        isNegativesecondTime = true;
+                    }
+                }
                 // allow key numbers, 0 to 9
                 if ((code >= 48 && code <= 57)) functional = true;
 
@@ -298,7 +311,7 @@
                 if (e.keyCode == 37) functional = true;
                 if (code == 39) functional = true;
                 // Minus Sign, Plus Sign
-                if (allowNegative && code == 45) functional = true;
+                if (!isNegativesecondTime && allowNegative && code == 45) functional = true;
                 if (insertPlusSign && code == 43) functional = true;
                 if (!issecondTime && isDouble && code == 46) functional = true;
                 if (!functional) {

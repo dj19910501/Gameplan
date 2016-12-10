@@ -742,7 +742,9 @@ namespace RevenuePlanner.Services
                     curPeriodVal = objLineItemCost.Value;
                     curPeriodVal = curPeriodVal - needToSubtract;
                     needToSubtract = -curPeriodVal;
-                    objLineItemCost.Value = curPeriodVal < 0 ? 0 : curPeriodVal;
+                    //Commented by Preet Shah on 09/12/2016. For allow negative values to be saved #2850
+                    //objLineItemCost.Value = curPeriodVal < 0 ? 0 : curPeriodVal;
+                    objLineItemCost.Value = curPeriodVal;
                     if (curPeriodVal >= 0)
                     {
                         objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Modified;
@@ -973,7 +975,9 @@ namespace RevenuePlanner.Services
                     curPeriodVal = objTacCost.Value;
                     curPeriodVal = curPeriodVal - costDiff;
                     costDiff = -curPeriodVal;
-                    objTacCost.Value = curPeriodVal < 0 ? 0 : curPeriodVal;
+                    //Commented by Preet Shah on 09/12/2016. For allow negative values to be saved #2850
+                    //objTacCost.Value = curPeriodVal < 0 ? 0 : curPeriodVal;
+                    objTacCost.Value = curPeriodVal;
                     if (curPeriodVal >= 0)
                     {
                         objDbMrpEntities.Entry(objTacCost).State = EntityState.Modified;

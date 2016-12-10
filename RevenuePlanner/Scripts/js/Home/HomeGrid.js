@@ -408,8 +408,21 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             }
         }
         $(".dhx_combo_edit").off("keydown");
-        if (UpdateColumn == PlannedCostId || UpdateColumn == TargetStageGoalId) {
-            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+        //if (UpdateColumn == PlannedCostId || UpdateColumn == TargetStageGoalId) {
+        //    debugger;
+        //    $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+        //    HomeGrid.editor.obj.onkeypress = function (e) {
+        //        e = e || window.event;
+        //        if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+        //            var text = this.value;
+        //            if (text.length > 10) {
+        //                return false;
+        //            }
+        //        }
+        //    }
+        //}
+        if (UpdateColumn == TargetStageGoalId) {
+            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e,this); }));
             HomeGrid.editor.obj.onkeypress = function (e) {
                 e = e || window.event;
                 if ((e.keyCode >= 47) || (e.keyCode == 0)) {
@@ -419,14 +432,22 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     }
                 }
             }
-        }
-        if (UpdateColumn == TargetStageGoalId) {
             var psv = HomeGrid.cells(rowId, TargetStageGoalColIndex).getValue().split(" ");
             //this.editor.obj.value = (psv[0].replace(/,/g, ""));
             this.editor.obj.value = (ReplaceCC(psv[0].toString()));
         }
 
         if (UpdateColumn == PlannedCostId) {
+            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e,this,true); }));
+            HomeGrid.editor.obj.onkeypress = function (e) {
+                e = e || window.event;
+                if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                    var text = this.value;
+                    if (text.length > 10) {
+                        return false;
+                    }
+                }
+            }
             var actualcost = HomeGrid.cells(rowId, PlannedCostColIndex).getValue().replace(CurrencySybmol,'');
             //this.editor.obj.value = (psv[0].replace(/,/g, ""));
             this.editor.obj.value = (ReplaceCC(actualcost.toString()));

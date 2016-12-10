@@ -121,8 +121,9 @@
           $('.advance_a').click(function () {
               $('.dropdown-wrapper').css('display', 'none');
           });
-	  $(this).scrollTop(0);
-	  $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $(this).scrollTop(0);
+          //Modified By Preet Shah on 06/12/2016. For Allowed Negative values. PL #2850
+	  $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, allowNegative: true  });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point to add title tooltip 2-7-2014
           $(".selectBox select").selectbox();
           $("#txtRevenue").val(CurrencySybmol + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
