@@ -3247,7 +3247,7 @@ BEGIN
 			  -- Get custom columns of type drop down list
 			  SELECT C.CustomFieldName +''_''+ CAST(C.CustomFieldId AS NVARCHAR(30)) as Name,
 					 CF.EntityId as BudgetDetailId,
-			   		 CFO.Value
+			   		 CAST(CFO.CustomFieldOptionId AS NVARCHAR(30)) 
 			  FROM #TblCustomFields C
 			  LEFT JOIN CustomField_Entity(NOLOCK) CF ON C.CustomFieldId = CF.CustomFieldId AND 
 			  		    EntityID IN (SELECT Id FROM Budget_Detail WHERE BudgetId = '+CAST(@budgetID AS VARCHAR(20)) +' AND IsDeleted=0) 
@@ -3271,6 +3271,7 @@ BEGIN
 	END
 END
 GO
+
 
 
 
