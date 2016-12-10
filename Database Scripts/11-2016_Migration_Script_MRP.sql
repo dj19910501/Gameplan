@@ -4999,6 +4999,11 @@ BEGIN
 	DECLARE @BudgetDetailId INT,
 			@Year INT,
 			@Users INT = 0
+	--Get BudgetDetailId and User Count
+	SELECT @BudgetDetailId = BP.BudgetDetailId, @Users = ISNULL(COUNT(DISTINCT BP.UserId),0)
+	FROM Budget_Permission BP
+	INNER JOIN DELETED I ON BP.BudgetDetailId = I.BudgetDetailId
+	GROUP BY BP.BudgetDetailId 
 
 	--Get BudgetDetailId and User Count
 	SELECT @BudgetDetailId = BP.BudgetDetailId, @Users = ISNULL(COUNT(DISTINCT BP.UserId),0)
