@@ -728,7 +728,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             BudgetDetailIds.Add(budgetId);
-            _MarketingBudget.DeleteUserForBudget(BudgetDetailIds, Sessions.User.ID);
+            _MarketingBudget.DeleteUserForBudget(BudgetDetailIds, id);
             return Json(new { Flag = true }, JsonRequestBehavior.AllowGet);
         }
 

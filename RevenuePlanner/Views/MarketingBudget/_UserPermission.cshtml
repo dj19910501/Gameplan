@@ -396,7 +396,6 @@
         var row;
         $('#userTable').on('click', '#deletemember', function () {
             var Name = $(this).closest('tr').find('td').eq('2').text() + " " + $(this).closest('tr').find('td').eq(3).text() + ".";
-
             $("#divDeleteUserPopup h2").text('Deleting a user');
             $("#lblname").html(Name);
             $("#divDeleteUserPopup").modal('show');
@@ -588,6 +587,8 @@
                     if (data) {
                         $("#SaveMsg").find('span').last().text('Changes Saved.');
                         $('#SaveMsg').show();
+                        _isDatabase = "Fromdatabase";
+
                     }
                 },
                 error: function () {

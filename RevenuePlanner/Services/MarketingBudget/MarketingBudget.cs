@@ -219,7 +219,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     }
                     else
                     {
-                        if (lstChildren.Count() == 0)
+                        if (lstChildren.Count() == 0 && row[Enums.DefaultGridColumn.ParentId.ToString()].ToString() != "")
                         {
                             string strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id, row[ColumnName.ToString()].ToString());
                             BindColumnDataatend.Add(strLineItemLink);
@@ -793,7 +793,6 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <returns></returns>
         public BudgetImportData GetXLSXData(string viewByType, string fileLocation, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
-            ValidateBudget(BudgetDetailId, ClientId);
             BudgetImportData objImportData = new BudgetImportData();
             DataTable dtColumns = new DataTable();
             XmlDocument xmlDoc = new XmlDocument();
@@ -801,6 +800,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             dtColumns.Columns.Add("ColumnName", typeof(string));
             dtColumns.Columns.Add("ColumnIndex", typeof(Int64));
             BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
+            ValidateBudget(BudgetDetailId, ClientId);
 
             using (SpreadsheetDocument doc = SpreadsheetDocument.Open(fileLocation, false))
             {
@@ -979,7 +979,6 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <returns></returns>
         public BudgetImportData GetXLSData(string viewByType, DataSet ds, int ClientId, int BudgetDetailId = 0, double PlanExchangeRate = 0, string CurrencySymbol = "$")
         {
-            ValidateBudget(BudgetDetailId, ClientId);
             List<XmlColumns> listColumnIndex = new List<XmlColumns>();
             DataTable dtExcel = new DataTable();
             BudgetImportData objImportData = new BudgetImportData();
@@ -992,6 +991,8 @@ namespace RevenuePlanner.Services.MarketingBudget
             string colName = string.Empty, colValue = string.Empty;
 
             BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
+            ValidateBudget(BudgetDetailId, ClientId);
+
             try
             {
                 List<CustomColumnModel> ListCustomCols = GetCustomColumns(ClientId);// Get List of Custom Columns 
@@ -1211,7 +1212,6 @@ namespace RevenuePlanner.Services.MarketingBudget
             // Check the file data is monthly or quarterly
             List<string> MonthList = new List<string>();
             List<string> DefaultMonthList = new List<string>();
-            ValidateBudget(BudgetDetailId, ClientID);
             MonthList = ImportBudgetCol.Rows.Cast<DataRow>().Select(x => x.Field<string>("Month").ToLower()).Distinct().ToList();
 
             DefaultMonthList = Enums.ReportMonthDisplayValuesWithPeriod.Select(a => a.Key.ToLower()).ToList();
@@ -1221,6 +1221,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                              select new { dtMonth }).Any();
             //end
             BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
+            ValidateBudget(BudgetDetailId, ClientID);
 
             ///If connection is closed then it will be open
             SqlConnection Connection = _database.Database.Connection as SqlConnection;
@@ -1860,7 +1861,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             var filterParentList = (from BD in lstBudgetDetails
                                     where BD.ParentId == mostParentId && BD.IsDeleted == false && !string.IsNullOrEmpty(BD.Name)
                                     select new { BD.Name, BD.Id }).Distinct().ToList();
-            lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+            lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlEncode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
 
             objParentListModel.list = lstParentItems;
             objParentListModel.parentId = ParentId.HasValue ? ParentId.Value : 0;
