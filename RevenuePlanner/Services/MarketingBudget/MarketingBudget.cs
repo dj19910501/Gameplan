@@ -1644,11 +1644,12 @@ namespace RevenuePlanner.Services.MarketingBudget
                         Maindiff = Convert.ToDouble(nValue) - QuaterSum;
                         if (!isForecast)
                         {
-                            objBudgetDetailAmt.Forecast += Maindiff;
+                            objBudgetDetailAmt.Budget += Maindiff;                            
                         }
                         else
                         {
-                            objBudgetDetailAmt.Budget += Maindiff;
+                            objBudgetDetailAmt.Forecast += Maindiff;
+
                         }
                         _database.Entry(objBudgetDetailAmt).State = EntityState.Modified;
                     }
