@@ -289,10 +289,21 @@ function GetGridData(budgetId) {
                 return true;
             });
 
-            //Maintain State of Scroll Position
-            if (scrollstate != null && scrollstate != undefined) {
+
+            //Check Wheather RowSelected Or Not
+
+            if (_NewGeneratedRowId != "" && _NewGeneratedRowId != null && _NewGeneratedRowId != 'undefined') {
+
+                budgetgrid.selectRow(budgetgrid.getRowIndex(_NewGeneratedRowId), false, true, true);
+            }
+            if (selectedTaskID != "" && selectedTaskID != null && selectedTaskID != 'undefined') {
+                budgetgrid.selectRow(budgetgrid.getRowIndex(selectedTaskID), false, true, true);
+            }
+            else if (scrollstate != "0" && scrollstate != null && scrollstate != undefined) {
                 budgetgrid.objBox.scrollTop = scrollstate.y;
             }
+            budgetgrid.attachEvent("onScroll", onMainGridScroll);
+            budgetgrid.attachEvent("onRowSelect", onGridRowSelect);
             //-----------------End--------------------------
             // Declare the "EditCell" event of DHTMLXTreeGrid.
             budgetgrid.attachEvent("onEditCell", OnEditMainGridCell);
@@ -493,6 +504,21 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
     }
     return true;
 }
+
+//Function for Maintain State of Scroll 
+//Added By Jaymin Modi As #2806
+function onMainGridScroll(sLeft, sTop) {
+    scrollstate = {
+        y: sTop,
+        x: sLeft,
+    }
+}
+//For When Click On Row of Grid
+function onGridRowSelect(id, ind) {
+    selectedTaskID = id;
+    _NewGeneratedRowId = "";
+}
+
 //Added by - Komal rawal
 //To save budget detail when we add any new item/child item
 function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId) {
@@ -507,6 +533,7 @@ function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId) {
             mainTimeFrame: mainTimeFrame,
         },
         success: function (data) {
+            _NewGeneratedRowId = budgetDetailName + '_' + data.BudgetDetailId + '_' + parentId;
             GetGridData(budgetId); //refresh grid once we add any new item
             _row_parentId = "";
         }

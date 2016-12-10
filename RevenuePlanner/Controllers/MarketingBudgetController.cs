@@ -382,16 +382,19 @@ namespace RevenuePlanner.Controllers
         /// <param name="BudgetDetailName">Name of the item</param>
         /// <param name="ParentId">ParentId of the Budget item</param>
         /// <param name="mainTimeFrame">Selected time frame value </param>
-        public void SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId, string mainTimeFrame = "Yearly")
+        public JsonResult SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId, string mainTimeFrame = "Yearly")
         {
+            int _BudgetDetailId = 0;
             try
             {
-                _MarketingBudget.SaveNewBudgetDetail(BudgetId, BudgetDetailName, ParentId, Sessions.User.CID, Sessions.User.ID, mainTimeFrame);
+                _BudgetDetailId = _MarketingBudget.SaveNewBudgetDetail(BudgetId, BudgetDetailName, ParentId, Sessions.User.CID, Sessions.User.ID, mainTimeFrame);
+
             }
             catch (Exception ex)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
+            return Json(new { BudgetDetailId = _BudgetDetailId }, JsonRequestBehavior.AllowGet);
         }
 
 

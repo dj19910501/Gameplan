@@ -478,7 +478,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                         sbAttachedHeaders.Append(string.Empty + ",");
                     }
                     headObj.sort = sort;
-                    headObj.width = 200;
+                    headObj.width = 400;
                     headObj.align = "left";
                     headObj.type = "tree";
                     headObj.id = columns;
@@ -1347,9 +1347,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetDetailName">Name of the item</param>
         /// <param name="ParentId">ParentId of the Budget item</param>
         /// <param name="mainTimeFrame">Selected time frame value </param>
-        public void SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId, int ClientId, int UserId, string mainTimeFrame = "Yearly")
+        public int SaveNewBudgetDetail(int BudgetId, string BudgetDetailName, int ParentId, int ClientId, int UserId, string mainTimeFrame = "Yearly")
         {
-
+            int _budgetid = 0;
             if (BudgetId != 0)
             {
                 //Save budget detail data for newly added item to database
@@ -1362,7 +1362,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 objBudgetDetail.IsDeleted = false;
                 _database.Entry(objBudgetDetail).State = EntityState.Added;
                 _database.SaveChanges();
-                int _budgetid = objBudgetDetail.Id;
+                _budgetid = objBudgetDetail.Id;
                 SaveUserBudgetpermission(_budgetid, UserId);
 
                 #region Update LineItem with child item
@@ -1376,6 +1376,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 _database.SaveChanges();
                 #endregion
             }
+            return _budgetid;
 
         }
         /// <summary>
