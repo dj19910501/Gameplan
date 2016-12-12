@@ -277,7 +277,9 @@ var gridpage="MainGrid";
                                 cookies.splice(i, 1);
                             }
                         }
-                        createCookie("gridOpenbudgetgridState", "", -1);
+                        setTimeout(function(){
+                            createCookie("gridOpenbudgetgridState", "", -1);
+                        },100);
                     }
                     //------------End-----------------
                     UpdateFinanceHeaderValues(); // Update header values

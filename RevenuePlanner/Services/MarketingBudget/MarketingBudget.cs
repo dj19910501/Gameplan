@@ -1333,8 +1333,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                 objBudgetDetail.BudgetId = budgetId;
                 objBudgetDetail.Name = BudgetName;
                 objBudgetDetail.IsDeleted = false;
-                objBudgetDetail.CreatedBy = UserId;
+                objBudgetDetail.CreatedBy = UserId;                
                 objBudgetDetail.CreatedDate = DateTime.Now;
+                objBudgetDetail.TotalForecast = 0;
+                objBudgetDetail.TotalBudget = 0;
                 _database.Entry(objBudgetDetail).State = EntityState.Added;
                 _database.SaveChanges();
                 int _budgetid = objBudgetDetail.Id;
@@ -1366,6 +1368,8 @@ namespace RevenuePlanner.Services.MarketingBudget
                 objBudgetDetail.CreatedBy = UserId;
                 objBudgetDetail.CreatedDate = DateTime.Now;
                 objBudgetDetail.IsDeleted = false;
+                objBudgetDetail.TotalForecast = 0;
+                objBudgetDetail.TotalBudget = 0;
                 _database.Entry(objBudgetDetail).State = EntityState.Added;
                 _database.SaveChanges();
                 _budgetid = objBudgetDetail.Id;
