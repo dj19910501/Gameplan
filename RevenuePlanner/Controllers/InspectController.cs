@@ -6687,8 +6687,12 @@ namespace RevenuePlanner.Controllers
                 }
                 if (LinkedTacticId != null && LinkedTacticId > 0)
                 {
+                   
                     ObjLinkedTactic = TblTactic.Where(id => id.PlanTacticId == LinkedTacticId).ToList().FirstOrDefault();
-                    yearDiff = ObjLinkedTactic.EndDate.Year - ObjLinkedTactic.StartDate.Year;
+                    if (ObjLinkedTactic != null)
+                    {
+                        yearDiff = ObjLinkedTactic.EndDate.Year - ObjLinkedTactic.StartDate.Year;
+                    }
                     isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
                     cntr = 12 * yearDiff;
                     for (int i = 1; i <= cntr; i++)
@@ -6968,7 +6972,11 @@ namespace RevenuePlanner.Controllers
                                     List<Plan_Campaign_Program_Tactic_LineItem_Cost> tblLineItemData = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(id => (id.PlanLineItemId == form.PlanLineItemId) || (id.PlanLineItemId == LinkedLineitemId)).ToList();
                                     List<Plan_Campaign_Program_Tactic_LineItem_Cost> lstLineItemData = tblLineItemData.Where(id => id.PlanLineItemId == form.PlanLineItemId).ToList();
                                     List<Plan_Campaign_Program_Tactic_Cost> linkedSrcTacticCostData = TblTactic.FirstOrDefault(id => id.PlanTacticId == form.PlanTacticId).Plan_Campaign_Program_Tactic_Cost.ToList();
-                                    List<Plan_Campaign_Program_Tactic_Cost> linkedTacticCostData = TblTactic.FirstOrDefault(id => id.PlanTacticId == LinkedTacticId).Plan_Campaign_Program_Tactic_Cost.ToList();
+                                    Plan_Campaign_Program_Tactic objTacticData = new Plan_Campaign_Program_Tactic();
+                                    objTacticData = TblTactic.FirstOrDefault(id => id.PlanTacticId == LinkedTacticId);
+                                    List<Plan_Campaign_Program_Tactic_Cost> linkedTacticCostData = new List<Plan_Campaign_Program_Tactic_Cost>();
+                                    if(objTacticData != null)
+                                        linkedTacticCostData= objTacticData.Plan_Campaign_Program_Tactic_Cost.ToList();
                                     //List<Plan_Campaign_Program_Tactic_Cost> tblTacticData = db.Plan_Campaign_Program_Tactic_Cost.Where(id => id.PlanTacticId == form.PlanTacticId || id.PlanTacticId == LinkedTacticId).ToList();
                                     //List<Plan_Campaign_Program_Tactic_Cost> TacticData = db.Plan_Campaign_Program_Tactic_Cost.Where(id => id.PlanTacticId == form.PlanTacticId).ToList();
 

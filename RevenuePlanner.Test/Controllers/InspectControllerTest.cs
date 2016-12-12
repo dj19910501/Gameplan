@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Moq;
 using System.Web;
 using System.Web.Routing;
+using RevenuePlanner.Services.Transactions;
 
 
 namespace RevenuePlanner.Test.Controllers
@@ -19,12 +20,13 @@ namespace RevenuePlanner.Test.Controllers
     public class InspectControllerTest //: CommonController
     {
         InspectController objInspectController;
+        private ITransaction _transaction;
         [TestInitialize]
         public void LoadCacheMessage()
         {
             HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            objInspectController = new InspectController();
+            objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
         }
@@ -97,7 +99,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             int UserID = Sessions.User.ID;
             int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
@@ -132,7 +134,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             int UserID = Sessions.User.ID;
             int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
@@ -165,7 +167,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             int PlanID = DataHelper.GetPlanId();
             Sessions.User.CID = DataHelper.GetClientId(PlanID);
             Sessions.User.ID = DataHelper.GetUserId(PlanID);
@@ -282,7 +284,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanID = DataHelper.GetPlanId();
@@ -321,7 +323,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             int PlanID = DataHelper.GetPlanId();
             Sessions.User.CID = DataHelper.GetClientId(PlanID);
             Sessions.User.ID = DataHelper.GetUserId(PlanID);
@@ -356,7 +358,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int PlanID = DataHelper.GetPlanId();
@@ -473,7 +475,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int UserID = Sessions.User.ID; ;
@@ -514,7 +516,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int UserID = Sessions.User.ID;
@@ -559,7 +561,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(i => i.IsDeleted == false).FirstOrDefault();
@@ -579,7 +581,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int planCampaignId = db.Plan_Campaign.Where(a => a.IsDeleted == false).Select(a => a.PlanCampaignId).FirstOrDefault();
@@ -596,7 +598,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int planProgramId = db.Plan_Campaign_Program.Where(a => a.IsDeleted == false).Select(a => a.PlanProgramId).FirstOrDefault();
@@ -627,7 +629,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int campignId = db.Plan_Campaign.Where(a => a.IsDeleted == false).Select(a => a.PlanCampaignId).FirstOrDefault();
@@ -644,7 +646,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int programId = db.Plan_Campaign_Program.Where(a => a.IsDeleted == false).Select(a => a.PlanProgramId).FirstOrDefault();
@@ -663,7 +665,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var planTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted == false && a.LinkedTacticId != null).FirstOrDefault();
@@ -679,7 +681,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var planProgram = db.Plan_Campaign_Program.Where(a => a.IsDeleted == false).FirstOrDefault();
@@ -695,7 +697,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var planCampign = db.Plan_Campaign.Where(a => a.IsDeleted == false).FirstOrDefault();
@@ -712,7 +714,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var Plan = db.Plans.Where(a => a.IsDeleted == false).FirstOrDefault();
@@ -737,7 +739,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             int UserID = Sessions.User.ID;
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
@@ -774,7 +776,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
@@ -898,7 +900,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             int UserID = Sessions.User.ID;
             int ModelId = DataHelper.GetModelId();
             int PlanID = DataHelper.GetPlanId();
@@ -944,7 +946,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
@@ -976,7 +978,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
@@ -1023,7 +1025,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
             int UserID = Sessions.User.ID;
@@ -1062,7 +1064,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
@@ -1549,7 +1551,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanID = DataHelper.GetPlanId();
             int ImprovementPlanCampaignId = db.Plan_Improvement_Campaign.Where(id => id.ImprovePlanId == PlanID).Select(id => id.ImprovementPlanCampaignId).FirstOrDefault();
@@ -1589,7 +1591,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
 
 
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
@@ -1628,7 +1630,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             int ImprovementPlanCampaignId = db.Plan_Improvement_Campaign.Where(id => id.ImprovePlanId == PlanID).Select(id => id.ImprovementPlanCampaignId).FirstOrDefault();
@@ -1720,7 +1722,7 @@ namespace RevenuePlanner.Test.Controllers
 
         public JsonResult Save_Comment(int Id, string section)
         {
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
@@ -1747,7 +1749,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int UserID = Sessions.User.ID;
@@ -1775,7 +1777,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
 
@@ -1833,7 +1835,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var listmediacode = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.CID).ToList();
@@ -1869,7 +1871,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var listmediacode = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.CID).ToList();
@@ -1898,7 +1900,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To load review tab of tactic.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             int planId = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == planId && c.IsDeleted == false).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId && id.IsDeleted == false).Select(program => program.PlanProgramId).FirstOrDefault();
@@ -1916,7 +1918,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To save tactic title.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int planId = DataHelper.GetPlanId();
@@ -1937,7 +1939,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To save campaign title.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int planId = DataHelper.GetPlanId();
@@ -1955,7 +1957,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To save program title.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int planId = DataHelper.GetPlanId();
@@ -1975,7 +1977,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To save lineitem title.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var LineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.IsDeleted == false && l.LineItemType != null).FirstOrDefault();
@@ -1995,7 +1997,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To open program view.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int campaignId = db.Plan_Campaign.Where(a => a.IsDeleted == false).Select(a => a.PlanCampaignId).FirstOrDefault();
@@ -2013,7 +2015,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To open setup line item.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int lineItemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted == false).Select(a => a.PlanLineItemId).FirstOrDefault();
@@ -2029,7 +2031,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To open setup line item.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController objInspectController = new InspectController();
+            InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int lineitemid = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted == false).Select(a => a.PlanLineItemId).FirstOrDefault();
