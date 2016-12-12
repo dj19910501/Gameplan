@@ -5776,6 +5776,197 @@ END
 GO
 
 
+/****** Object:  StoredProcedure [dbo].[UpdatePrecalculationPlannedValue]    Script Date: 12/12/2016 8:18:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdatePrecalculationPlannedValue]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[UpdatePrecalculationPlannedValue]
+GO
+/****** Object:  StoredProcedure [dbo].[UpdatePrecalculationActuals]    Script Date: 12/12/2016 8:18:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdatePrecalculationActuals]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[UpdatePrecalculationActuals]
+GO
+/****** Object:  StoredProcedure [dbo].[UpdatePrecalculationActuals]    Script Date: 12/12/2016 8:18:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdatePrecalculationActuals]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[UpdatePrecalculationActuals] AS' 
+END
+GO
+-- =============================================
+-- Author:		Viral
+-- Create date: 12/12/2016
+-- Description:	To update Actual values to Precalculation table
+-- =============================================
+ALTER PROCEDURE [dbo].[UpdatePrecalculationActuals]  
+	-- Add the parameters for the stored procedure here
+	@weightage float, -- lineitem budget weightage
+	@budgetDetailId int, -- lineitem budget detail id
+	@planLineItemId int,
+	@IsAdd bit
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    
+
+	IF(@IsAdd=0)
+	BEGIN
+			-- Update Actual values into [MV].[PreCalculatedMarketingBudget] table
+			-- Reduce the old budget detail value from PreCalcuation table.
+			UPDATE PreCal SET Y1_Actual = IsNull(Y1_Actual,0) - IsNull([Y1],0),Y2_Actual = IsNull(Y2_Actual,0) - IsNull([Y2],0),
+							  Y3_Actual = IsNull(Y3_Actual,0) - IsNull([Y3],0),Y4_Actual = IsNull(Y4_Actual,0) - IsNull([Y4],0),
+							  Y5_Actual = IsNull(Y5_Actual,0) - IsNull([Y5],0),Y6_Actual = IsNull(Y6_Actual,0) - IsNull([Y6],0),
+							  Y7_Actual = IsNull(Y7_Actual,0) - IsNull([Y7],0),Y8_Actual = IsNull(Y8_Actual,0) - IsNull([Y8],0),
+							  Y9_Actual = IsNull(Y9_Actual,0) - IsNull([Y9],0),Y10_Actual = IsNull(Y10_Actual,0) - IsNull([Y10],0),
+							  Y11_Actual = IsNull(Y11_Actual,0) - IsNull([Y11],0),Y12_Actual = IsNull(Y12_Actual,0) - IsNull([Y12],0)
+			FROM [MV].PreCalculatedMarketingBudget PreCal 
+			INNER JOIN 
+			(
+				-- Get monthly actuals amount with pivoting
+				-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
+				SELECT @budgetDetailId as BudgetDetailId, LA.Period, (Value * CAST(@weightage AS FLOAT)/100) AS Value 
+				FROM Plan_Campaign_Program_Tactic_LineItem L
+				JOIN Plan_Campaign_Program_Tactic_LineItem_Actual LA on L.PlanLineItemId = LA.PlanLineItemId
+				WHERE L.PlanLineItemId=@planLineItemId and L.IsDeleted=0 and L.LineItemTypeId IS NOT NULL
+				
+			) P
+			PIVOT
+			(
+				MIN(Value)
+				FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+			) AS Pvt
+			ON PreCal.BudgetDetailId = Pvt.BudgetDetailId and PreCal.BudgetDetailId =@budgetDetailId
+	END
+	ELSE
+	BEGIN
+			-- Update Actual values into [MV].[PreCalculatedMarketingBudget] table
+			-- Reduce the old budget detail value from PreCalcuation table.
+			UPDATE PreCal SET Y1_Actual = IsNull(Y1_Actual,0) + IsNull([Y1],0),Y2_Actual = IsNull(Y2_Actual,0) + IsNull([Y2],0),
+							  Y3_Actual = IsNull(Y3_Actual,0) + IsNull([Y3],0),Y4_Actual = IsNull(Y4_Actual,0) + IsNull([Y4],0),
+							  Y5_Actual = IsNull(Y5_Actual,0) + IsNull([Y5],0),Y6_Actual = IsNull(Y6_Actual,0) + IsNull([Y6],0),
+							  Y7_Actual = IsNull(Y7_Actual,0) + IsNull([Y7],0),Y8_Actual = IsNull(Y8_Actual,0) + IsNull([Y8],0),
+							  Y9_Actual = IsNull(Y9_Actual,0) + IsNull([Y9],0),Y10_Actual = IsNull(Y10_Actual,0) + IsNull([Y10],0),
+							  Y11_Actual = IsNull(Y11_Actual,0) + IsNull([Y11],0),Y12_Actual = IsNull(Y12_Actual,0) + IsNull([Y12],0)
+			FROM [MV].PreCalculatedMarketingBudget PreCal 
+			INNER JOIN 
+			(
+				-- Get monthly actuals amount with pivoting
+				-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
+				SELECT @budgetDetailId as BudgetDetailId, LA.Period, (Value * CAST(@weightage AS FLOAT)/100) AS Value 
+				FROM Plan_Campaign_Program_Tactic_LineItem L
+				JOIN Plan_Campaign_Program_Tactic_LineItem_Actual LA on L.PlanLineItemId = LA.PlanLineItemId
+				WHERE L.PlanLineItemId=@planLineItemId and L.IsDeleted=0 and L.LineItemTypeId IS NOT NULL
+				
+			) P
+			PIVOT
+			(
+				MIN(Value)
+				FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+			) AS Pvt
+			ON PreCal.BudgetDetailId = Pvt.BudgetDetailId and PreCal.BudgetDetailId =@budgetDetailId
+	END
+
+	
+END
+
+GO
+/****** Object:  StoredProcedure [dbo].[UpdatePrecalculationPlannedValue]    Script Date: 12/12/2016 8:18:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdatePrecalculationPlannedValue]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[UpdatePrecalculationPlannedValue] AS' 
+END
+GO
+-- =============================================
+-- Author:		Viral
+-- Create date: 12/12/2016
+-- Description:	To update Planned values to Precalculation table
+-- =============================================
+ALTER PROCEDURE [dbo].[UpdatePrecalculationPlannedValue]  
+	-- Add the parameters for the stored procedure here
+	@weightage float, -- lineitem budget weightage
+	@budgetDetailId int, -- lineitem budget detail id
+	@planLineItemId int,
+	@IsAdd bit
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	-- Update Planned values into [MV].[PreCalculatedMarketingBudget] table
+-- Reduce the old budget detail value from PreCalcuation table.
+	IF(@IsAdd=0)
+	BEGIN
+			-- Update Actual values into [MV].[PreCalculatedMarketingBudget] table
+			-- Reduce the old budget detail value from PreCalcuation table.
+			UPDATE PreCal SET Y1_Planned = IsNull(Y1_Planned,0) - IsNull([Y1],0),Y2_Planned = IsNull(Y2_Planned,0) - IsNull([Y2],0),
+							  Y3_Planned = IsNull(Y3_Planned,0) - IsNull([Y3],0),Y4_Planned = IsNull(Y4_Planned,0) - IsNull([Y4],0),
+							  Y5_Planned = IsNull(Y5_Planned,0) - IsNull([Y5],0),Y6_Planned = IsNull(Y6_Planned,0) - IsNull([Y6],0),
+							  Y7_Planned = IsNull(Y7_Planned,0) - IsNull([Y7],0),Y8_Planned = IsNull(Y8_Planned,0) - IsNull([Y8],0),
+							  Y9_Planned = IsNull(Y9_Planned,0) - IsNull([Y9],0),Y10_Planned = IsNull(Y10_Planned,0) - IsNull([Y10],0),
+							  Y11_Planned = IsNull(Y11_Planned,0) - IsNull([Y11],0),Y12_Planned = IsNull(Y12_Planned,0) - IsNull([Y12],0)
+			FROM [MV].PreCalculatedMarketingBudget PreCal 
+			INNER JOIN 
+			(
+				-- Get monthly actuals amount with pivoting
+				-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
+				SELECT @budgetDetailId as BudgetDetailId, LC.Period, (Value * CAST(@weightage AS FLOAT)/100) AS Value 
+				FROM Plan_Campaign_Program_Tactic_LineItem L
+				JOIN Plan_Campaign_Program_Tactic_LineItem_Cost LC on L.PlanLineItemId = LC.PlanLineItemId
+				WHERE L.PlanLineItemId=@planLineItemId and L.IsDeleted=0 and L.LineItemTypeId IS NOT NULL
+				
+			) P
+			PIVOT
+			(
+				MIN(Value)
+				FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+			) AS Pvt
+			ON PreCal.BudgetDetailId = Pvt.BudgetDetailId and PreCal.BudgetDetailId =@budgetDetailId
+	END
+	ELSE
+	BEGIN
+			-- Update Actual values into [MV].[PreCalculatedMarketingBudget] table
+			-- Reduce the old budget detail value from PreCalcuation table.
+			UPDATE PreCal SET Y1_Planned = IsNull(Y1_Planned,0) + IsNull([Y1],0),Y2_Planned = IsNull(Y2_Planned,0) + IsNull([Y2],0),
+							  Y3_Planned = IsNull(Y3_Planned,0) + IsNull([Y3],0),Y4_Planned = IsNull(Y4_Planned,0) + IsNull([Y4],0),
+							  Y5_Planned = IsNull(Y5_Planned,0) + IsNull([Y5],0),Y6_Planned = IsNull(Y6_Planned,0) + IsNull([Y6],0),
+							  Y7_Planned = IsNull(Y7_Planned,0) + IsNull([Y7],0),Y8_Planned = IsNull(Y8_Planned,0) + IsNull([Y8],0),
+							  Y9_Planned = IsNull(Y9_Planned,0) + IsNull([Y9],0),Y10_Planned = IsNull(Y10_Planned,0) + IsNull([Y10],0),
+							  Y11_Planned = IsNull(Y11_Planned,0) + IsNull([Y11],0),Y12_Planned = IsNull(Y12_Planned,0) + IsNull([Y12],0)
+			FROM [MV].PreCalculatedMarketingBudget PreCal 
+			INNER JOIN 
+			(
+				-- Get monthly actuals amount with pivoting
+				-- Apply weightage on actual and sum up actuals for all line items associated to the single budget 
+				SELECT @budgetDetailId as BudgetDetailId, LC.Period, (Value * CAST(@weightage AS FLOAT)/100) AS Value 
+				FROM Plan_Campaign_Program_Tactic_LineItem L
+				JOIN Plan_Campaign_Program_Tactic_LineItem_Cost LC on L.PlanLineItemId = LC.PlanLineItemId
+				WHERE L.PlanLineItemId=@planLineItemId and L.IsDeleted=0 and L.LineItemTypeId IS NOT NULL
+				
+			) P
+			PIVOT
+			(
+				MIN(Value)
+				FOR Period IN ([Y1],[Y2],[Y3],[Y4],[Y5],[Y6],[Y7],[Y8],[Y9],[Y10],[Y11],[Y12])
+			) AS Pvt
+			ON PreCal.BudgetDetailId = Pvt.BudgetDetailId and PreCal.BudgetDetailId =@budgetDetailId
+	END
+END
+
+GO
+
+
+
+
 IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalLineItemsMarketingBudget]'))
 BEGIN
 	DROP TRIGGER [dbo].[TrgPreCalLineItemsMarketingBudget]
@@ -5799,9 +5990,18 @@ BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-		
+
+	Declare @oldBudgetDetailId int 
+	Declare @newBudgetDetailId int 
+	Declare @oldWeightage float  
+	Declare @newWeightage float  
+	Declare @actualValue float 
+	Declare @period varchar(10) 
+	Declare @PlanLineItemId int
+
 	IF((SELECT COUNT(*) FROM INSERTED) > 0)
 	BEGIN
+
 		-- Update line items count into pre calculated table in case of INSERT/UPDATE 
 		UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
 		FROM [MV].[PreCalculatedMarketingBudget] PreCal
@@ -5814,9 +6014,66 @@ BEGIN
 			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
 			GROUP BY LB.BudgetDetailId
 		) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
+
+
+		-- Get values which are inserted/updated
+		SELECT @newBudgetDetailId = BudgetDetailId,
+				@newWeightage = Weightage,
+				@PlanLineItemId = PlanLineItemId
+		FROM INSERTED 
+
+		-- Update new budgetdetailId related Actual valus into [MV].[PreCalculatedMarketingBudget] table
+		IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @newBudgetDetailId) > 0)
+		BEGIN
+			-- Update record into pre-calculated table while LineItem - Budget mapping changed
+			EXEC [dbo].UpdatePrecalculationActuals @newWeightage,@newBudgetDetailId,@PlanLineItemId,1
+		END		
+		-- Update new budgetdetailId related Planned valus into [MV].[PreCalculatedMarketingBudget] table
+		IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @newBudgetDetailId) > 0)
+		BEGIN
+			-- Update record into pre-calculated table while LineItem - Budget mapping changed
+			EXEC [dbo].UpdatePrecalculationPlannedValue @newWeightage,@newBudgetDetailId,@PlanLineItemId,1
+		END
+
+		-- IF record updated
+		IF((SELECT COUNT(*) FROM DELETED) > 0)
+		BEGIN
+				-- Get old values 
+				SELECT @oldBudgetDetailId = BudgetDetailId,
+					   @oldWeightage = Weightage
+				FROM DELETED 
+
+				-- Update Actuals into [MV].[PreCalculatedMarketingBudget] table
+				BEGIN
+					-- Update old budgetdetailId related Actual valus into [MV].[PreCalculatedMarketingBudget] table
+					IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @oldBudgetDetailId) > 0)
+					BEGIN
+						-- Update record into pre-calculated table while LineItem - Budget mapping changed
+						EXEC [dbo].UpdatePrecalculationActuals @oldWeightage,@oldBudgetDetailId,@PlanLineItemId,0
+					END
+				END
+
+				-- Update Planned into [MV].[PreCalculatedMarketingBudget] table
+				BEGIN
+					-- Update old budgetdetailId related Planned valus into [MV].[PreCalculatedMarketingBudget] table
+					IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @oldBudgetDetailId) > 0)
+					BEGIN
+						-- Update record into pre-calculated table while LineItem - Budget mapping changed
+						EXEC [dbo].UpdatePrecalculationPlannedValue @oldWeightage,@oldBudgetDetailId,@PlanLineItemId,1
+					END
+				END
+
+		END
+
 	END
-	IF UPDATE(BudgetDetailId)
+	ELSE
 	BEGIN
+		-- Get old values 
+		SELECT @oldBudgetDetailId = BudgetDetailId,
+				@oldWeightage = Weightage,
+				@PlanLineItemId = PlanLineItemId
+		FROM DELETED 
+
 		-- Update line items count into pre calculated table in case of DELETE
 		UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
 		FROM [MV].[PreCalculatedMarketingBudget] PreCal
@@ -5829,6 +6086,20 @@ BEGIN
 			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
 			GROUP BY LB.BudgetDetailId
 		) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
+
+		-- Update old budgetdetailId related Actual valus into [MV].[PreCalculatedMarketingBudget] table
+		IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @oldBudgetDetailId) > 0)
+		BEGIN
+			-- Update record into pre-calculated table while LineItem - Budget mapping changed
+			EXEC [dbo].UpdatePrecalculationActuals @oldWeightage,@oldBudgetDetailId,@PlanLineItemId,0
+		END
+
+		-- Update old budgetdetailId related Planned valus into [MV].[PreCalculatedMarketingBudget] table
+		IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @oldBudgetDetailId) > 0)
+		BEGIN
+			-- Update record into pre-calculated table while LineItem - Budget mapping changed
+			EXEC [dbo].UpdatePrecalculationPlannedValue @oldWeightage,@oldBudgetDetailId,@PlanLineItemId,1
+		END
 	END
 
 END
