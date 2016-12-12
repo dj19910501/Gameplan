@@ -352,7 +352,7 @@ function GetGridData(budgetId) {
 
                 budgetgrid.selectRow(budgetgrid.getRowIndex(_NewGeneratedRowId), false, true, true);
             }
-            if (selectedTaskID != "" && selectedTaskID != null && selectedTaskID != 'undefined') {
+            if (selectedTaskID != "" && selectedTaskID != null && selectedTaskID != 'undefined' && IsDelete == false) {
                 budgetgrid.selectRow(budgetgrid.getRowIndex(selectedTaskID), false, true, true);
             }
             else if (scrollstate != "0" && scrollstate != null && scrollstate != undefined) {
@@ -496,7 +496,10 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
     if (IsValid) {
         _isNewRowAdd = false;
     //stage 2 is to handle on focus out event after edit
-    if (nValue != oValue && stage.toString() == '2') {   // checks if old value and new value are not same and if edit stage is 2.            
+        if (nValue != oValue && stage.toString() == '2') {   // checks if old value and new value are not same and if edit stage is 2.            
+            if (nValue == null) {
+                nValue = budgetgrid.cells(rId, cInd).grid.cell._orig_value;
+            }
         var budgetDetailId = '', parentId = '';
         var itemIndex = -1;
         if (_row_parentId != null && _row_parentId.length > 0) {
@@ -589,6 +592,7 @@ function onMainGridScroll(sLeft, sTop) {
 function onGridRowSelect(id, ind) {
     selectedTaskID = id;
     _NewGeneratedRowId = "";
+    IsDelete = false;
 }
 
 //Added by - Komal rawal
@@ -695,10 +699,12 @@ function DeleteBudget() {
                 ShowMessage(true, data.ErrorMessage);
             }
             else {
+                IsDelete = true;
                 var BudgetId = data.budgetId;
                 UpdateFinanceHeaderValues(); // Update header values
                 GetGridData(BudgetId);
                 RefreshBudgetDropdown(BudgetId);
+               
                 //TODO :  here we need to call Finance Header function to refresh the header after deleting budget data
             }
         },

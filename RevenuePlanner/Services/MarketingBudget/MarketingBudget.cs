@@ -1376,6 +1376,26 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     LineItem.BudgetDetailId = _budgetid;
                 }
+                //Update Parent Budget Detail to perform roll up calculation
+                if (ParentId > 0)
+                {
+                    //Update Parent Budget Detail assign null value to TotalBudget & TotalForecast to perform roll up calculation in case of new child is added
+                    Budget_Detail objParentBudgetDetail = new Budget_Detail();
+                    objParentBudgetDetail = _database.Budget_Detail.Where(bdj => bdj.Id == ParentId).FirstOrDefault();
+                    if (objParentBudgetDetail != null && (objParentBudgetDetail.TotalBudget != null || objParentBudgetDetail.TotalForecast != null))
+                    {
+                        objParentBudgetDetail.TotalBudget = null;
+                        objParentBudgetDetail.TotalForecast = null;
+                    }
+
+                    //delete Parent Budget Detail Amount to perform roll up calculation in case of new child is added
+                    List<Budget_DetailAmount> ListParentBudgetDetialAmount = new List<Budget_DetailAmount>();
+                    ListParentBudgetDetialAmount = _database.Budget_DetailAmount.Where(bamt => bamt.BudgetDetailId == ParentId).ToList();
+                    if (ListParentBudgetDetialAmount.Count > 0)
+                    {
+                        ListParentBudgetDetialAmount.ForEach(a => _database.Entry(a).State = EntityState.Deleted);
+                    }
+                }
                 _database.SaveChanges();
                 #endregion
             }
