@@ -2850,7 +2850,8 @@ RETURNS
 	[Owner]			INT,
 	TotalBudget		FLOAT,
 	TotalForecast	FLOAT,
-	TotalPlanned	FLOAT
+	TotalPlanned	FLOAT,
+	LineItems	INT
 )
 AS
 
@@ -2894,9 +2895,19 @@ BEGIN
 		WHERE BD.IsDeleted='0' AND BD.BudgetId = @BudgetId 
 	END
 	
-	INSERT INTO @ResultFinanceData(Permission,BudgetDetailId,ParentId,Name,[Owner],TotalBudget,TotalForecast,TotalPlanned)
-	SELECT DISTINCT R.Permission,R.BudgetDetailId,R.ParentId,R.Name,R.[Owner],R.TotalBudget,R.TotalForecast,LineItem.TotalPlanned
+	INSERT INTO @ResultFinanceData(Permission,BudgetDetailId,ParentId,Name,[Owner],TotalBudget,TotalForecast,TotalPlanned,LineItems)
+	SELECT DISTINCT R.Permission,R.BudgetDetailId,R.ParentId,R.Name,R.[Owner],R.TotalBudget,R.TotalForecast,LineItem.TotalPlanned,ISNULL(LC.LineItemCount,0) LineItems
 	FROM @tblResult R
+	LEFT JOIN 
+	(
+		-- Get line item counts
+		SELECT LB.BudgetDetailId, COUNT(LB.PlanLineItemId) AS LineItemCount 
+		FROM LineItem_Budget(NOLOCK) LB 
+		INNER JOIN Budget_Detail BD ON LB.BudgetDetailId = BD.Id AND BD.IsDeleted = 0
+		INNER JOIN Plan_Campaign_Program_Tactic_LineItem(NOLOCK) PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0 AND PL.LineItemTypeId IS NOT NULL 
+		WHERE BD.BudgetId = @BudgetId 
+		GROUP BY LB.BudgetDetailId
+	) LC ON R.BudgetDetailId = LC.BudgetDetailId
 	LEFT JOIN 
 	(	
 		-- Get Planned Cost values
@@ -3419,7 +3430,7 @@ BEGIN
 								ISNULL(Y7_Actual,0)+ISNULL(Y8_Actual,0)+ISNULL(Y9_Actual,0) +
 								ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate) as ''Total_Actual''
 						,P.[Users]
-						,P.LineItems
+						,F.LineItems
 						,F.[Owner]
 		
 				FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
@@ -3606,7 +3617,7 @@ RETURN (
 						ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate
 				END as ''Total_Actual''
 				,P.[Users]
-				,P.LineItems
+				,F.LineItems
 				,F.[Owner]
 		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
@@ -3745,7 +3756,7 @@ RETURN (
 						ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate
 				END as ''Total_Actual''
 				,P.[Users]
-				,P.LineItems
+				,F.LineItems
 				,F.[Owner]
 		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
@@ -3885,7 +3896,7 @@ RETURN (
 						ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate
 				END as ''Total_Actual''
 				,P.[Users]
-				,P.LineItems
+				,F.LineItems
 				,F.[Owner]
 		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
@@ -4024,7 +4035,7 @@ RETURN (
 						ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate
 				END as ''Total_Actual''
 				,P.[Users]
-				,P.LineItems
+				,F.LineItems
 				,F.[Owner]
 		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
@@ -4228,7 +4239,7 @@ RETURN (
 						ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate
 				END as ''Total_Actual''
 				,P.Users
-				,P.LineItems
+				,F.LineItems
 				,F.[Owner]
 				
 		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
@@ -4299,7 +4310,7 @@ RETURN (
 					ISNULL(Y10_Actual,0)+ISNULL(Y11_Actual,0)+ISNULL(Y12_Actual,0)) * @CurrencyRate
 			END as Actual
 			,P.Users
-			,P.LineItems
+			,F.LineItems
 			,F.[Owner]
 		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
@@ -6002,20 +6013,6 @@ BEGIN
 	IF((SELECT COUNT(*) FROM INSERTED) > 0)
 	BEGIN
 
-		-- Update line items count into pre calculated table in case of INSERT/UPDATE 
-		UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
-		FROM [MV].[PreCalculatedMarketingBudget] PreCal
-		INNER JOIN INSERTED I ON PreCal.BudgetDetailId = I.BudgetDetailId
-		LEFT JOIN
-		(
-			-- Get count of associated all line items to the budget with IsDeleted flag
-			SELECT LB.BudgetDetailId,COUNT(LB.PlanLineItemId) AS LineItemCount 
-			FROM LineItem_Budget LB 
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
-			GROUP BY LB.BudgetDetailId
-		) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
-
-
 		-- Get values which are inserted/updated
 		SELECT @newBudgetDetailId = BudgetDetailId,
 				@newWeightage = Weightage,
@@ -6073,19 +6070,6 @@ BEGIN
 				@oldWeightage = Weightage,
 				@PlanLineItemId = PlanLineItemId
 		FROM DELETED 
-
-		-- Update line items count into pre calculated table in case of DELETE
-		UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
-		FROM [MV].[PreCalculatedMarketingBudget] PreCal
-		INNER JOIN DELETED D ON PreCal.BudgetDetailId = D.BudgetDetailId
-		LEFT JOIN
-		(
-			-- Get count of associated all line items to the budget with IsDeleted flag
-			SELECT LB.BudgetDetailId,COUNT(LB.PlanLineItemId) AS LineItemCount 
-			FROM LineItem_Budget LB 
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
-			GROUP BY LB.BudgetDetailId
-		) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
 
 		-- Update old budgetdetailId related Actual valus into [MV].[PreCalculatedMarketingBudget] table
 		IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @oldBudgetDetailId) > 0)

@@ -33,20 +33,7 @@ BEGIN
 	IF((SELECT COUNT(*) FROM INSERTED) > 0)
 	BEGIN
 
-		-- Update line items count into pre calculated table in case of INSERT/UPDATE 
-		UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
-		FROM [MV].[PreCalculatedMarketingBudget] PreCal
-		INNER JOIN INSERTED I ON PreCal.BudgetDetailId = I.BudgetDetailId
-		LEFT JOIN
-		(
-			-- Get count of associated all line items to the budget with IsDeleted flag
-			SELECT LB.BudgetDetailId,COUNT(LB.PlanLineItemId) AS LineItemCount 
-			FROM LineItem_Budget LB 
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
-			GROUP BY LB.BudgetDetailId
-		) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
-
-
+	
 		-- Get values which are inserted/updated
 		SELECT @newBudgetDetailId = BudgetDetailId,
 				@newWeightage = Weightage,
@@ -105,19 +92,7 @@ BEGIN
 				@PlanLineItemId = PlanLineItemId
 		FROM DELETED 
 
-		-- Update line items count into pre calculated table in case of DELETE
-		UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
-		FROM [MV].[PreCalculatedMarketingBudget] PreCal
-		INNER JOIN DELETED D ON PreCal.BudgetDetailId = D.BudgetDetailId
-		LEFT JOIN
-		(
-			-- Get count of associated all line items to the budget with IsDeleted flag
-			SELECT LB.BudgetDetailId,COUNT(LB.PlanLineItemId) AS LineItemCount 
-			FROM LineItem_Budget LB 
-			INNER JOIN Plan_Campaign_Program_Tactic_LineItem PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
-			GROUP BY LB.BudgetDetailId
-		) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
-
+		
 		-- Update old budgetdetailId related Actual valus into [MV].[PreCalculatedMarketingBudget] table
 		IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @oldBudgetDetailId) > 0)
 		BEGIN
