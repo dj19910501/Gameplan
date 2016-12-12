@@ -5,6 +5,9 @@ using RevenuePlanner.Services.Transactions;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
+using System.Resources;
+using System.Reflection;
+using System.IO;
 
 namespace RevenuePlanner.UnitTest.Service
 {
@@ -26,6 +29,33 @@ namespace RevenuePlanner.UnitTest.Service
         {
             _transaction = ObjectFactory.GetInstance<ITransaction>();
             _database = ObjectFactory.GetInstance<Models.MRPEntities>();
+        }
+
+        [TestInitialize()]
+        public void Transaction_Test_Setup()
+        {
+            string resourceName = "PlanUnitTests.Service.TransactionTestData.1. transactions-test-data-geneated.sql";
+            RunSqlScriptFromResource(resourceName);
+
+            resourceName = "PlanUnitTests.Service.TransactionTestData.2. transactions-attribution-insert-test.sql";
+            RunSqlScriptFromResource(resourceName);
+        }
+
+        private void RunSqlScriptFromResource(string resourceName)
+        {
+            var me = Assembly.GetExecutingAssembly();
+            string sql;
+
+            using (Stream stream = me.GetManifestResourceStream(resourceName))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    sql = reader.ReadToEnd();
+                }
+            }
+
+            var database = ObjectFactory.GetInstance<Models.MRPEntities>();
+            database.Database.ExecuteSqlCommand(sql);
         }
 
         [TestMethod]
