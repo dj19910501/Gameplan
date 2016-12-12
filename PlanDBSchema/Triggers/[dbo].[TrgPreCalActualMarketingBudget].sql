@@ -51,8 +51,8 @@ BEGIN
 	ELSE 
 	BEGIN
 		-- Get values which are deleted
-		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate) FROM DELETED 
-
+		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId, @Year = YEAR(CreatedDate), @OldValue = Value FROM DELETED 
+		SET @NewValue = 0;
 		IF ((SELECT COUNT(id) FROM LineItem_Budget(NOLOCK) WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Delete/Update record into pre-calculated table while Cost entry is deleted

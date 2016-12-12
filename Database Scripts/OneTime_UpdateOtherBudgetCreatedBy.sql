@@ -1,7 +1,7 @@
 -- Start: Change below Auth & Plan DB name 
 
-Declare @authDBName varchar(1000)='Hive9ProdAuth'	
-Declare @planDBName varchar(1000)='Hive9ProdGP'
+Declare @authDBName varchar(1000)='Hive9Auth'	
+Declare @planDBName varchar(1000)='Hive9GamePlan'
 
 -- End: Change above Auth & Plan DB name 
 
@@ -43,7 +43,7 @@ FROM ['+@planDBName+'].[dbo].[Budget_Detail] BD
 JOIN @tblBudgetUserId cl on BD.BudgetId = cl.BudgetId
 
 -- Update BUdget_Permission table CreatedBy
-Update BD SET CreatedBy=cl.UserId
+Update BDP SET CreatedBy=cl.UserId,UserId=cl.UserId
 FROM ['+@planDBName+'].[dbo].[Budget_Detail] BD
 JOIN @tblBudgetUserId cl on BD.BudgetId = cl.BudgetId
 JOIN ['+@planDBName+'].[dbo].[Budget_Permission] BDP on BD.Id = BDP.BudgetDetailId
