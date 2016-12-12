@@ -221,7 +221,7 @@ namespace RevenuePlanner.UnitTest.Service
             const int testTransactionId = 30;
             const int expectedLineItemsGroupedByTactic = 5;
             const int testTacticId = 4671;
-            const int expectedLineItemsForTactic = 5;
+            const int expectedLineItemsForTactic = 4;
                
             // Test that we get line items by tactic
             List<LineItemsGroupedByTactic> ligbtList = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);           
