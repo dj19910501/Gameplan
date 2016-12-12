@@ -236,7 +236,6 @@ function GetGridData(budgetId) {
             TimeFrame: mainTimeFrame,
         },
         success: function (data) {
-
             budgetgrid = new dhtmlXGridObject('gridbox');   // Create object of DHTMLXTreeGrid.
             budgetgrid.setImagePath(urlContent + "codebase/imgs/");    // Get necessary images to DHTMLXTreeGrid from specific path.
             budgetgrid.setImageSize(1, 1);
@@ -248,6 +247,17 @@ function GetGridData(budgetId) {
             if (mainTimeFrame != Yearly) {
                 budgetgrid.attachHeader(data.AttacheHeader);
             }
+
+            budgetgrid.enableMathEditing(true);//edit in rollup columns
+            var sumcolumns = false;
+            if (data.SumColumns != undefined && data.SumColumns.length != 0) //to set format of rollup columns
+            {
+                sumcolumns = true;
+                for (var i = 0; i < data.SumColumns.length; i++) {
+                    budgetgrid.setNumberFormat(CurrencySymbol + "0,000.00", data.SumColumns[i]);
+                }
+            }
+
             budgetgrid.init();
             BudgetGridData = data.GridData;
             var rows = BudgetGridData.rows;
@@ -262,15 +272,7 @@ function GetGridData(budgetId) {
             HideShowColumns();  // Show/Hide the BudgetGrid columns to show default columns while load Grid 1st time.
 
 
-            budgetgrid.enableMathEditing(true);//edit in rollup columns
-            var sumcolumns = false;
-            if (data.SumColumns != undefined && data.SumColumns.length != 0) //to set format of rollup columns
-            {
-                sumcolumns = true;
-                for (var i = 0; i < data.SumColumns.length; i++) {
-                    budgetgrid.setNumberFormat(CurrencySymbol + "0,000.00", data.SumColumns[i]);
-                }
-            }
+            
 
             //Added By Jaymin Modi at 01/Dec/2016 For Saving Open and Close States.Ticket:-2806 
             var cookieBudgetgridState = dhtmlXGridObject.prototype.getCookie("budgetgridState", "gridOpen");
@@ -1097,7 +1099,6 @@ function OnEditCell(stage, id, index, newVal, oldVal) {
 // to save the details of new budget .
 //Budget name : name of the new budget created
 function SaveNewBudget(budgetName) {
-
     $('#btnAddNewBudget').prop('disabled', false);
 
     $.ajax({
