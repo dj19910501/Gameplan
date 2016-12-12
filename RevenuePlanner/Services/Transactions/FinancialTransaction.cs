@@ -188,26 +188,6 @@ namespace RevenuePlanner.Services.Transactions
                         LineItems = new List<LinkedLineItem>()
                     };
 
-                    //Add Sys_Gen_Balance "line item" to show the difference 
-                    //between all line item cost (total line item cost) for a tactic vs. the tactic's planned cost
-                    //NOTE: the Cost column is all we need!
-                    ligbt.LineItems.Add(new LinkedLineItem() {
-                                                                    Title = "Sys_Gen_Balance",
-                                                                    Cost = ligbt.PlannedCost - row.Field<double>("TotalLineItemCost"),
-                                                                    LineItemId = -1, //special indication to UI for a calculated line item
-                                                                                     //Actual = 0, 
-                                                                    CampaignTitle = "",
-                                                                    PlanTitle = "",
-                                                                    ProgramTitle = "",
-                                                                    TacticTitle = "",
-                                                                    LineItemMapping = new TransactionLineItemMapping() {
-                                                                                                                            Amount = 0.0,
-                                                                                                                            LineItemId = -1,
-                                                                                                                            TransactionId = -1,
-                                                                                                                            TransactionLineItemMappingId = -1
-                                                                                                                        } 
-                                                            }  );
-
                     lineItemsByTacticId.Add(ligbt.TacticId, ligbt);
                 }
             }
