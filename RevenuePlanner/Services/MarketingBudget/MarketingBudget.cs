@@ -1253,7 +1253,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                 command.CommandTimeout = 0;
                 ExecuteCommand = command.ExecuteNonQuery();
             }
+            if (Connection.State == System.Data.ConnectionState.Open)
+            {
             Connection.Close();
+            }
             return ExecuteCommand;
 
         }

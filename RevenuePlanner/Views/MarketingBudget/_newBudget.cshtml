@@ -4,11 +4,7 @@
 <script type="text/javascript">
 
     var newTreeGrid; // object to bind new tree grid
-    var ValidParentId = 0; // variable to get parent id 
-    var IsValid = true; // variable to check if the name entered is valid or not
-    var BudgetOptions = {
-        values: []
-    }
+  
     var gridWidth = $("#divGridView").width();
     $(document).ready(function () {
         $('#ddlMainTimeFrameSelectBox').css('display', 'none');
@@ -16,11 +12,7 @@
         $('#ddlColumnsFrameBox').css('display', 'none');
         $('#dvExportToExcel').css('display', 'none');
         
-        //Push All budget Names to array to check if budget with same name already exists
-        $.each($("#ddlParentFinanceMain").find("option"), function () {
-            BudgetOptions.values.push($(this).text().toLowerCase().trim())
-        });
-        //End
+       
 
         // Desc :: handle for same name or empty string
         dhtmlxValidation.isCustomNameValid = function (data) {
@@ -47,13 +39,13 @@
 
         //set properties for the new budget screen.
         //There will be 6 columns
-        newTreeGrid.setHeader("Task Name,Budget,Forecast,Planned,Actual,Line Items", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
-        newTreeGrid.setInitWidths("100,100,100,100,100,100");
-        newTreeGrid.setColAlign("left,center,center,center,center,center");
-        newTreeGrid.setColTypes("tree,ron,ron,ron,ron,ro");
+        newTreeGrid.setHeader("Task Name,Budget,Planned,Actual,Line Items", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;", "text-align:center", "text-align:center", "text-align:center;", "text-align:center"]);
+        newTreeGrid.setInitWidths("100,100,100,100,100");
+        newTreeGrid.setColAlign("left,center,center,center,center");
+        newTreeGrid.setColTypes("tree,ron,ron,ron,ro");
         newTreeGrid.enableValidation(true);
-        newTreeGrid.setColValidators("CustomNameValid,,,,,,");
-        newTreeGrid.setColumnIds("title,action,budget,forecast,planned,actual,lineitems");
+        newTreeGrid.setColValidators("CustomNameValid,,,,,");
+        newTreeGrid.setColumnIds("title,action,budget,planned,actual,lineitems");
         newTreeGrid.attachEvent("onEditCell", OnEditCell);
 
         newTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
@@ -66,7 +58,7 @@
         newTreeGrid.init();
 
         var newBudget = "newBudget";
-        newTreeGrid.addRow("newBudget", ["New Budget", "0", "0", "0", "0", "0"], 0); // default data of the new budget row
+        newTreeGrid.addRow("newBudget", ["New Budget", "0", "0", "0", "0"], 0); // default data of the new budget row
 
         newTreeGrid.selectRowById(newBudget);
         var rowindex = newTreeGrid.getRowIndex(newBudget);

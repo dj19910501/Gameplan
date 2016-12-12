@@ -221,6 +221,14 @@
     var Lineitems = "@Enums.DefaultGridColumn.LineItems";
     var BudgetColumn = "@Enums.FinanceHeader_Label.Budget.ToString()";
     var ForecastColumn = "@Enums.FinanceHeader_Label.Forecast.ToString()";
+    var ValidParentId = 0; // variable to get parent id 
+    var IsValid = true; // variable to check if the name entered is valid or not
+    var ValidColumnId = 0;
+    var ValidRowId = 0;
+    var ValidOldValue = "";
+    var BudgetOptions = {
+        values: []
+    }
     // Set ViewBag value into Ownerlist variable to use into js file
     var Ownerlist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.OwnerList))');
 
@@ -273,6 +281,14 @@ var gridpage="MainGrid";
                     //------------End-----------------
                     UpdateFinanceHeaderValues(); // Update header values
                     GetGridData();
+                    var CheckPleaseSelectOption = $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("#defaultselected");
+                    if(CheckPleaseSelectOption.length > 0)
+                    {
+                        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("#defaultselected").remove();
+                        $("#ddlParentFinanceMain  option[value='0']").remove();
+                    }
+                    $('#errorMsg').css('display', 'none');
+                    $('#SuccessMsg').css('display', 'none');
                 }
             });
         }
@@ -298,6 +314,12 @@ var gridpage="MainGrid";
             selectedList: 1
         });
         ShowHideControls("MainGrid");
+
+        //Push All budget Names to array to check if budget with same name already exists
+        $.each($("#ddlParentFinanceMain").find("option"), function () {
+            BudgetOptions.values.push($(this).text().toLowerCase().trim())
+        });
+        //End
     });
    
 

@@ -200,12 +200,14 @@ function BindFilterColumnsAndCheckUncheck(data) {
 // BudgetId: Get budget data based on user has selected from Budget dropdown list.
 // TimeFrame: Render Budget Grid columns by timeframe value(i.e. Monthly, Quearterly, This Year etc. )
 function GetGridData(budgetId) {
-
+    $('#btnAddNewBudget').prop('disabled', false); // enable new budget button when grid loaded again
+    $('#errorMsg').css('display', 'none'); // remove error/success message when grid loaded again
+    $('#SuccessMsg').css('display', 'none'); // remove error/success message when grid loaded again
+    _isNewRowAdd = false  //set add new row ariable to false once grid is reloaded.
     $('#ddlMainTimeFrameSelectBox').css('display', 'block');
     $('#ddlColumnSetFrameBox').css('display', 'block');
     $('#ddlColumnsFrameBox').css('display', 'block');
     $('#dvExportToExcel').css('display', 'block');
-
     var BudgetId = "";
 
     // Check that "budgetId" is null or not.
@@ -258,6 +260,58 @@ function GetGridData(budgetId) {
                 }
             }
 
+			// Custom validation on task name to not to allow blank values and same name at same level
+            // Desc :: handle for same name or empty string
+            dhtmlxValidation.isGridCustomNameValid = function (data) {
+              var isrepeat = true;
+              if (ValidParentId != 0) {
+                  var childitems = budgetgrid.getSubItems(ValidParentId).split(',');
+
+                  if (data.trim() == '' || data.trim() == null) { // checks if data entered is null or empty
+                      isrepeat = false;
+                      IsValid = false;
+                  } else {
+                      $.each(childitems, function () {
+
+                          if (this.toString() != ValidRowId.toString()) {
+                              var ColCurrentValue = budgetgrid.cells(this, ValidColumnId).getValue();
+                              if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
+                                  isrepeat = false;
+                                  IsValid = false;
+                              }
+                          }
+                      });
+                  }
+              }
+              else {
+                  if (data != ValidOldValue.trim()) {
+                      var BudgetIndex = BudgetOptions.values.indexOf(data.toLowerCase().trim());// checks if budget with same name already exists
+                      if (data.trim() == '' || data.trim() == null || BudgetIndex >= 0) {
+
+                          isrepeat = false;
+                          IsValid = false;
+                      }
+                  }
+              }
+               return isrepeat;
+             };
+
+            budgetgrid.enableValidation(true);
+
+            budgetgrid.attachEvent("onValidationError", function (id, ind, value) { // fires when there is error in validation
+                ValidOldValue = "";
+                IsValid = false;
+                return true;
+            });
+
+            budgetgrid.attachEvent("onValidationCorrect", function (id, index, value, rule) { // fires when there is no error in validation
+               
+                ValidOldValue = "";
+                IsValid = true;
+            });
+
+            budgetgrid.setColValidators(",GridCustomNameValid");//enable validator for task name column
+            //end
             budgetgrid.init();
             BudgetGridData = data.GridData;
             var rows = BudgetGridData.rows;
@@ -352,6 +406,9 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
     var locked = budgetgrid.getUserData(rId, "lo");         // Get "lo"(i.e. row locked or not) property to identify that row is locked or not.
     var Permission = budgetgrid.getUserData(rId, "per");    // Get user permission "per" property.
     var Period = budgetgrid.getColLabel(cInd, 0);
+    ValidParentId = budgetgrid.getParentId(rId); // get parent id as per row
+    ValidColumnId = cInd; // get column index
+    ValidRowId = rId; // get row id
     // Doesn't allow the user to edit while cell is locked and doesn't have edit permission
     if (locked == 1 && (Permission == "View" || Permission == "None")) {
         budgetgrid.cells(rId, cInd).setDisabled(true);
@@ -373,6 +430,7 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
     }
     //stage 0 means clicked
     if (stage == 0) {
+        ValidOldValue = budgetgrid.cells(rId, cInd).getValue();
         // TODO: Update owner into database from the drop down
         //ValidOldValue = budgetgrid.cells(rId, cInd).getValue();
         if (colOwnerNameIndex == cInd) {
@@ -435,6 +493,8 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
             }));
         }
     }
+    if (IsValid) {
+        _isNewRowAdd = false;
     //stage 2 is to handle on focus out event after edit
     if (nValue != oValue && stage.toString() == '2') {   // checks if old value and new value are not same and if edit stage is 2.            
         var budgetDetailId = '', parentId = '';
@@ -485,6 +545,12 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
                 }
             }
         }
+    }
+        return true;
+    }
+    else
+    {
+        _isNewRowAdd = true;
     }
     //---#2799----
     if (ColumnId.indexOf('Planned') >= 0 || ColumnId.indexOf('Actual') >= 0 || ColumnId.indexOf('Unallocated') >= 0) {
@@ -1049,13 +1115,12 @@ $("#btnAddNewBudget").click(function () {
     $('#errorMsg').css('display', 'none');
     $('#SuccessMsg').css('display', 'none');
     $("#divGridView").show();
-
-
+    $('#btnAddNewBudget').prop('disabled', 'disabled');
     //Append please slect to the budget dropdown list
     $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("li[class='nl-dd-checked']").removeClass('nl-dd-checked');
     $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find("a[class='nl-field-toggle']").html('Please Select');
-    $('#ddlParentFinanceMain').prepend('<option value="0" selected="selected">Please Select</option>');
-    $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('ul').prepend("<li class='nl-dd-checked' value='0' originalvalue='Please Select' textvalue='0'>Please Select</li>");
+    $('#ddlParentFinanceMain').prepend('<option value="0" id="defaultselected" selected="selected">Please Select</option>');
+    $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('ul').prepend("<li class='nl-dd-checked' id='defaultselected' value='0' originalvalue='Please Select' textvalue='0'>Please Select</li>");
     //end
 
     UpdateFinanceHeaderValues(); //update header values
