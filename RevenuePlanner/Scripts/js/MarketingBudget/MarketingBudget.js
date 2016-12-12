@@ -651,8 +651,7 @@ function UpdateBudgetDetail(budgetId, budgetDetailId, parentId, nValue, childIte
     });
 
 }
-function DeleteBudgetIconClick(data) {
-
+function DeleteBudgetIconClick(data) {  
     // Added By Jaymin Modi To get scroll set of selected row from grid
     scrollstate = {
         y: budgetgrid.objBox.scrollTop,
@@ -672,7 +671,8 @@ function DeleteBudgetIconClick(data) {
             $('#LiWarning').css('display', 'none');
         }
         var BudgetRowId = $(data).attr('row-id').split('_')[1];
-        var Name = $(data).attr('name');
+        //var Name = $(data).attr('name');
+        var Name = budgetgrid.cells($(data).attr('row-id'), 1).getValue()
         $("#lipname").html(Name);
         $("#divDeletePopup").modal('show');
         SelectedBudgetId = BudgetRowId;
