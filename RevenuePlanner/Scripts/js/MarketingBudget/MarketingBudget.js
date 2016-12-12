@@ -514,6 +514,10 @@ function onMainGridScroll(sLeft, sTop) {
         y: sTop,
         x: sLeft,
     }
+    $(".dhx_combo_select").css("display", "none");
+    $("#popupType").css("display", "none");
+    $(".tooltip").css("display", "none");
+
 }
 //For When Click On Row of Grid
 function onGridRowSelect(id, ind) {
@@ -797,6 +801,7 @@ function HideShowColumns() {
         else {
             columnid = budgetgrid.getColumnLabel(i, 1);
         }
+        columnid = columnid.trim();
         if (columnid != Id && columnid != TaskName
                      && columnid != "" && columnid != LineItems) {
             $.each(ColumnsCheckBox, function () { // loop through the checked columns 
@@ -928,10 +933,17 @@ function DisplayPopUpMenu(addControl, rowIndex) {
 
 $(document).click(function () {
     $('#popupType').css('display', 'none');
+    $(".dhx_combo_select").css("display", "none");
+    $(".tooltip").css("display", "none");
+
 });
 
 $(document).mouseup(function (e) {
     $('#popupType').css("display", "none");
+    $(".dhx_combo_select").css("display", "none");
+    $(".tooltip").css("display", "none");
+
+
 });
 
 

@@ -511,7 +511,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                         headObj.value = string.Empty;
                     }
                     headObj.sort = sort;
-                    headObj.width = 100;
+                    headObj.width = 180;
                     headObj.align = aligncenter;
                     if(columns == Enums.DefaultGridColumn.Owner.ToString())
                     {
