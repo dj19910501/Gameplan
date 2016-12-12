@@ -627,16 +627,6 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             if (timeframe != Enums.QuarterFinance.Yearly.ToString())
             {
-                headObj = new GridDataStyle();
-                headObj.value = "Unallocated";
-                headObj.sort = "";
-                headObj.width = 100;
-                headObj.align = "center";
-                headObj.type = "edn[=" + totalforcastcolumns + "-(" + Allocatedforcastcolums.ToString().TrimEnd(plus) + ")]";
-                headObj.id = "Unallocated_Forecast";
-                ListHead.Add(headObj);
-                colIndexes.Add(colindex);
-                sbAttachedHeaders.Append("Forecast" + ",");
 
                 headObj = new GridDataStyle();
                 headObj.value = "Unallocated";
@@ -646,8 +636,21 @@ namespace RevenuePlanner.Services.MarketingBudget
                 headObj.type = "edn[=" + totalbudgetcolumns + "-(" + Allocatedbudgetcolums.ToString().TrimEnd(plus) + ")]";
                 headObj.id = "Unallocated_Budget";
                 ListHead.Add(headObj);
-                colIndexes.Add(colindex + 1);
+                colIndexes.Add(colindex);
                 sbAttachedHeaders.Append("Budget" + ",");
+               
+
+                headObj = new GridDataStyle();
+                headObj.value = "Unallocated";
+                headObj.sort = "";
+                headObj.width = 100;
+                headObj.align = "center";
+                headObj.type = "edn[=" + totalforcastcolumns + "-(" + Allocatedforcastcolums.ToString().TrimEnd(plus) + ")]";
+                headObj.id = "Unallocated_Forecast";
+                ListHead.Add(headObj);
+                colIndexes.Add(colindex + 1);
+                sbAttachedHeaders.Append("Forecast" + ",");
+
             }
 
             #endregion
