@@ -3225,7 +3225,7 @@ BEGIN
 	-- Get list of custom columns 
 	SELECT @columns= COALESCE(@columns+', ' ,'') + CustomFieldName+ '_'+ CAST(CustomFieldId AS NVARCHAR(30))
 	FROM #TblCustomFields
-	WHERE CustomFieldId NOT IN (SELECT VAL FROM dbo.comma_split(@CFwithoutOptions,','))
+	WHERE CustomFieldId NOT IN (SELECT VAL FROM dbo.comma_split(ISNULL(@CFwithoutOptions,''),','))
 
 	IF(ISNULL(@columns,'') != '')
 	BEGIN
