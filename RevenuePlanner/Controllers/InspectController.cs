@@ -7542,8 +7542,17 @@ namespace RevenuePlanner.Controllers
                 }
 
                 ViewBag.HeaderMappings = _transaction.GetHeaderMappings(Sessions.User.CID);
-                // TODOWCR: Convert the currency
-                ViewBag.Transactions = _transaction.GetTransactionsForLineItem(Sessions.User.CID, id);
+                List<LinkedTransaction> linkedTransactions = _transaction.GetTransactionsForLineItem(Sessions.User.CID, id);
+
+                // Convert to user's currency
+                double exchangeRate = Sessions.PlanExchangeRate;
+
+                foreach (LinkedTransaction linkedTransaction in linkedTransactions)
+                {
+                    linkedTransaction.Amount = objCurrency.GetValueByExchangeRate(linkedTransaction.Amount, exchangeRate);
+                    linkedTransaction.LinkedAmount = objCurrency.GetValueByExchangeRate(linkedTransaction.LinkedAmount, exchangeRate);
+                }
+                ViewBag.Transactions = linkedTransactions;
 
                 return PartialView("_ActualLineitem");
             }

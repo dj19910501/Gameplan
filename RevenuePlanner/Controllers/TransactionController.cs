@@ -7,6 +7,7 @@ using RevenuePlanner.Services.Transactions;
 using RevenuePlanner.Controllers.Filters;
 using System.Linq;
 using System.Diagnostics.Contracts;
+using RevenuePlanner.Services;
 
 namespace RevenuePlanner.Controllers
 {
@@ -23,6 +24,7 @@ namespace RevenuePlanner.Controllers
     public class TransactionController : ApiController
     {
         private ITransaction _transaction;
+        private ICurrency _currency = new Currency();
 
         public TransactionController(ITransaction transaction)
         {
@@ -41,6 +43,12 @@ namespace RevenuePlanner.Controllers
         public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings)
         {
             Contract.Requires<ArgumentNullException>(transactionLineItemMappings != null, "transactionLineItemsMappings cannot be null");
+
+            // Convert to USD
+            foreach (TransactionLineItemMapping tlim in transactionLineItemMappings)
+            {
+                tlim.Amount = _currency.SetValueByExchangeRate(tlim.Amount, Sessions.PlanExchangeRate);
+            }
 
             _transaction.SaveTransactionToLineItemMapping(Sessions.User.CID, transactionLineItemMappings, Sessions.User.ID);
         }
@@ -85,7 +93,27 @@ namespace RevenuePlanner.Controllers
         {
             Contract.Requires<ArgumentOutOfRangeException>(transactionId > 0, "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
 
-            return _transaction.GetLinkedLineItemsForTransaction(Sessions.User.CID, transactionId);
+            IEnumerable<LineItemsGroupedByTactic> ligbtList = _transaction.GetLinkedLineItemsForTransaction(Sessions.User.CID, transactionId);
+
+            // Convert to user's currency
+            double exchangeRate = Sessions.PlanExchangeRate;
+
+            foreach (LineItemsGroupedByTactic ligbt in ligbtList)
+            {
+                ligbt.ActualCost = _currency.GetValueByExchangeRate(ligbt.ActualCost, exchangeRate);
+                ligbt.PlannedCost = _currency.GetValueByExchangeRate(ligbt.PlannedCost, exchangeRate);
+                ligbt.TotalLinkedCost = _currency.GetValueByExchangeRate(ligbt.TotalLinkedCost, exchangeRate);
+
+                foreach (LinkedLineItem lineItem in ligbt.LineItems)
+                {
+                    lineItem.Actual = _currency.GetValueByExchangeRate(lineItem.Actual, exchangeRate);
+                    lineItem.Cost = _currency.GetValueByExchangeRate(lineItem.Cost, exchangeRate);
+                    lineItem.LineItemMapping.Amount = _currency.GetValueByExchangeRate(lineItem.LineItemMapping.Amount, exchangeRate);
+                }
+                
+            }
+
+            return ligbtList;
         }
 
         /// <summary>
@@ -117,7 +145,19 @@ namespace RevenuePlanner.Controllers
             Contract.Requires<ArgumentOutOfRangeException>(skip >= 0, "skip must be a postive integer");
             Contract.Requires<ArgumentOutOfRangeException>(take >= 0, "take must be a positive integer");
 
-            return Trim(_transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take));
+            List<Transaction> transactions = _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take);
+
+            // Convert to user's currency
+            double exchangeRate = Sessions.PlanExchangeRate;
+
+            foreach (Transaction transaction in transactions)
+            {
+                transaction.Amount = _currency.GetValueByExchangeRate(transaction.Amount, exchangeRate);
+                transaction.AmountAttributed = _currency.GetValueByExchangeRate(transaction.AmountAttributed, exchangeRate);
+                transaction.AmountRemaining = _currency.GetValueByExchangeRate(transaction.AmountRemaining, exchangeRate);
+            }
+
+            return Trim(transactions);
         }
 
         /// <summary>
@@ -129,15 +169,36 @@ namespace RevenuePlanner.Controllers
         {
             Contract.Requires<ArgumentOutOfRangeException>(lineItemId > 0, "A lineItemId less than or equal to zero is invalid, and likely indicates the lineItemId was not set properly");
 
-            return _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
+            List<LinkedTransaction> linkedTransactions = _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
+
+            // Convert to user's currency
+            double exchangeRate = Sessions.PlanExchangeRate;
+
+            foreach (LinkedTransaction linkedTransaction in linkedTransactions)
+            {
+                linkedTransaction.Amount = _currency.GetValueByExchangeRate(linkedTransaction.Amount, exchangeRate);
+                linkedTransaction.LinkedAmount = _currency.GetValueByExchangeRate(linkedTransaction.LinkedAmount, exchangeRate);
+            }
+
+            return linkedTransactions;
         }
 
         public LeanTransaction GetTransaction(int transactionId)
         {
             Contract.Requires<ArgumentOutOfRangeException>(transactionId > 0, "A transactionId less than or equal to zero is invalid, and likely indicates the transactionId was not set properly");
+
+            Transaction transaction = _transaction.GetTransaction(Sessions.User.CID, transactionId);
+
+            // Convert to user's currency
+            double exchangeRate = Sessions.PlanExchangeRate;
+
+            transaction.Amount = _currency.GetValueByExchangeRate(transaction.Amount, exchangeRate);
+            transaction.AmountAttributed = _currency.GetValueByExchangeRate(transaction.AmountAttributed, exchangeRate);
+            transaction.AmountRemaining = _currency.GetValueByExchangeRate(transaction.AmountRemaining, exchangeRate);
+
             var leanTransactions = Trim(new List<Transaction>()
                                             {
-                                                _transaction.GetTransaction(Sessions.User.CID, transactionId)
+                                                transaction
                                             } );
 
             return leanTransactions.FirstOrDefault();
