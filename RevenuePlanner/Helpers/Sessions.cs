@@ -199,6 +199,8 @@ namespace RevenuePlanner.Helpers
             Sessions.StartDate = null;
             Sessions.EndDate = null;            
             Sessions.ViewByValue = string.Empty;
+            Sessions.ImportTimeFrame = null;
+            Sessions.BudgetDetailId = 0;
         }
 
         /// <summary>
