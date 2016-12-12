@@ -62,14 +62,28 @@
        // ShowHideControls("LineItemGrid");
         $("#dvBudgetHeader").css("display", "none");
 
-        UpdateFinanceHeaderValues();
-
+        UpdateFinanceHeader();
 
         //Enable single click to trigger edit - zz
         myTreeGrid.enableEditEvents(true, false, true);
         
     });
-   
+    function UpdateFinanceHeader() {
+       
+        var hdrForecastVal = '0', hdrPlannedVal = '0', hdrActualVal = '0';
+        hdrForecastVal = '@_hdrForecast';
+        hdrPlannedVal = '@_hdrPlanned';
+        hdrActualVal = '@_hdrActual';
+        $("#ForecastID").text($('</div>').html(CurrencySymbol).text() + hdrForecastVal);
+        $("#PlannedID").text($('</div>').html(CurrencySymbol).text() + hdrPlannedVal);
+        $("#ActualID").text($('</div>').html(CurrencySymbol).text() + hdrActualVal);
+
+        // format values and apply bootstrap tooltip
+        ApplyFormattingAndTooltip("#budgetID");
+        ApplyFormattingAndTooltip("#ForecastID");
+        ApplyFormattingAndTooltip("#PlannedID");
+        ApplyFormattingAndTooltip("#ActualID");
+    }
     function ConfigureLineItemGrid(AllocatedBy) {
         myApp.showPleaseWait();
         var GridWidth = $("#gridbox").width();
@@ -142,7 +156,7 @@
             //}
             //myTreeGrid.setInitWidths("150,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65");
             //myTreeGrid.setColValidators("NotEmpty,,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric");
-            myTreeGrid.setInitWidths("150,25,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60");
+            myTreeGrid.setInitWidths("150,25,75,75,60,75,75,60,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75");
             myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
             myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
                 

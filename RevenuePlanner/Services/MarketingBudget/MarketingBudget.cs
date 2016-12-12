@@ -478,7 +478,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                         sbAttachedHeaders.Append(string.Empty + ",");
                     }
                     headObj.sort = sort;
-                    headObj.width = 400;
+                    headObj.width = 300;
                     headObj.align = "left";
                     headObj.type = "tree";
                     headObj.id = columns;
