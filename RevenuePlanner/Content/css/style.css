@@ -3651,6 +3651,7 @@ a.link-gray {
 	clear: both;
 }
 .fin-permission{padding-top:0}
+.MarketingBudget-tbl .fin-permission{padding-left:0}
 .user-per_wrapper {
 	padding-top: 0;
 	padding-bottom: 0;
@@ -3689,6 +3690,7 @@ a.link-gray {
 .user-list {
 	float: left;
 	width: 17%;
+    margin-right: 30px;
 }
 .user-info > table {
 	width: 100%;
@@ -3701,7 +3703,7 @@ a.link-gray {
 	background-color: #fff3a1; /* Edited for #2219 - Bhumika */
 }
 .user-table {
-	float: right;
+	float: left;
 	width: 77%;
 }
 .user-table table.myteam {
@@ -3717,7 +3719,7 @@ a.link-gray {
 .user-table .btn-blue {
 	margin: 27px 0 !important;
 	font-family: source_sans_prolight;
-	font-size: 18px;
+	/*font-size: 18px;*/
 	display: inline-block;
 }
 .user-table .Cancel-button-center-popups {
@@ -3737,7 +3739,6 @@ a.link-gray {
 	margin-left: 25px;
 	padding: 6px 38px;
 	font-family: source_sans_prolight;
-	font-size: 16px;
 	color: #6D6D6D;
 }
 .user-table .Cancel-button-center-popups:focus,  .user-table .Cancel-button-center-popups:hover {
@@ -11301,7 +11302,7 @@ li.accordion-inner.close-list {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.fin-innerpage-title .financetitle .nl-field-toggle{max-width: 250px;}
+.fin-innerpage-title .financetitle .nl-field-toggle{max-width: 250px;margin-top:0}
 .financetitle .nl-field-toggle, .financetitle .nl-field-toggle:hover {
 	color: #3e3f37; /* Edited for #2219 - Bhumika */
 }
@@ -14074,7 +14075,16 @@ div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
     background-color: #f0f0f0;
 }
 .MarketingBudget-tbl div.gridbox table td, div.gridbox table td .hdrcell{text-align:center}
-#gridbox.gridbox_dhx_skyblue.gridbox.border-box table.hdr{width:99.1% !important}
+
+#gridbox.gridbox_dhx_skyblue.gridbox.border-box table.hdr{width:99.2% !important}
+
+/* CSS hack for Chrome 29+ (Only) */
+@supports (-webkit-appearance:none) and (not (overflow:-webkit-marquee)) and (not (-ms-ime-align:auto)) and (not (-moz-appearance:none)) { 
+   .MarketingBudget-tbl div.gridbox table td, div.gridbox table td{position:static !important; }
+   /*.MarketingBudget-tbl div.gridbox .objbox*/
+   .MarketingBudget-tbl div.gridbox .objbox{-webkit-overflow: auto !important;}
+}
+
 /************************************************ Responsive css start here **********************************************************/
 
 @media (max-width: 1600px) {
