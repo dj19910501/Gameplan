@@ -393,7 +393,7 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
 
         if (ColumnId == BudgetColumn || ColumnId == ForecastColumn) {
             $(".dhx_combo_edit").off("keydown");
-            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e, this); }));
+            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e, this , true); }));
             budgetgrid.editor.obj.onkeypress = function (e) {
                 e = e || window.event;
                 //avioding entry of alphabets using keycode
