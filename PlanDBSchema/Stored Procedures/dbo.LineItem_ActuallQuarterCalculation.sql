@@ -5,7 +5,7 @@ END
 Go
 CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]	
 	@EntityId INT,
-	@Quater INT,
+	@Quarter INT,
 	@newValue FLOAT
 	AS
 	BEGIN
@@ -20,27 +20,27 @@ CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]
 				DROP TABLE #tempLineItemActual
 			END 
 			SELECT * INTO #tempLineItemActual FROM (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual where PlanLineItemId=@EntityId) a 
-			IF(@Quater=1)
+			IF(@Quarter=1)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y1','Y2','Y3')	
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
-            ELSE IF(@Quater=2)
+            ELSE IF(@Quarter=2)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
-			ELSE IF(@Quater=3)
+			ELSE IF(@Quarter=3)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y7','Y8','Y9')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
-			ELSE IF(@Quater=4)
+			ELSE IF(@Quarter=4)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y10','Y11','Y12')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
 			END
 
@@ -53,9 +53,9 @@ CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]
 			--Select * from #tempLineItemActual
 			IF EXISTS (SELECT * from #tempLineItemActual WHERE  PlanLineItemId= @EntityId AND Period = @ThirdMonthofQuarter)
 			BEGIN		
-	           print '1'
-			   print @UpdateValue
-			   print @DifferenceAmount
+	          
+			 
+			 
 				IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @ThirdMonthofQuarter)>@DifferenceAmount)
 				BEGIN
 				UPDATE Plan_Campaign_Program_Tactic_LineItem_Actual  SET Value = (Value-(@DifferenceAmount-@UpdateValue))  WHERE  PlanLineItemId = @EntityId AND Period = @ThirdMonthofQuarter
@@ -72,8 +72,8 @@ CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]
 			BEGIN
 			IF EXISTS (SELECT * from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @SecondMonthofQuarter)
 			BEGIN
-			  print @UpdateValue
-			   print @DifferenceAmount
+			 
+			 
 				IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @SecondMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
 				BEGIN
 				UPDATE Plan_Campaign_Program_Tactic_LineItem_Actual  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanLineItemId = @EntityId AND Period = @SecondMonthofQuarter
@@ -91,23 +91,21 @@ CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]
 			BEGIN
 			IF EXISTS (SELECT * from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter)
 			BEGIN
-			  print @UpdateValue
-			   print @DifferenceAmount
-				IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
-				BEGIN
+			 
+			  
+				--IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
+				--BEGIN
 				UPDATE Plan_Campaign_Program_Tactic_LineItem_Actual  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter
 				SET @UpdateValue+=@DifferenceAmount;
-				END
-				ELSE
-				BEGIN
-				SELECT @UpdateValue+=value from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE   PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter;
-				UPDATE Plan_Campaign_Program_Tactic_LineItem_Actual  SET Value = 0     WHERE   PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter				
-				END			
+				--END
+				--ELSE
+				--BEGIN
+				--SELECT @UpdateValue+=value from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE   PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter;
+				--UPDATE Plan_Campaign_Program_Tactic_LineItem_Actual  SET Value = 0     WHERE   PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter				
+				--END			
 		END
 		END			
 	END
 
 END
-
-
 Go

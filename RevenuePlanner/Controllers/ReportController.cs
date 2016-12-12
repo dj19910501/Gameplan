@@ -3244,19 +3244,20 @@ namespace RevenuePlanner.Controllers
                 AllocatedTotal = model.Where(m => m.ActivityType == ActivityType.ActivityMain).Select(m => m.MonthPlanned).FirstOrDefault();
                 MainTotalAllocated = AllocatedTotal.BudgetY1 + AllocatedTotal.BudgetY2 + AllocatedTotal.BudgetY3 + AllocatedTotal.BudgetY4 + AllocatedTotal.BudgetY5 + AllocatedTotal.BudgetY6 + AllocatedTotal.BudgetY7 + AllocatedTotal.BudgetY8 + AllocatedTotal.BudgetY9 + AllocatedTotal.BudgetY10 + AllocatedTotal.BudgetY11 + AllocatedTotal.BudgetY12;
             }
-
-            PercAllocated.BudgetY1 = (AllocatedTotal.BudgetY1 == 0 && ActualTotal.BudgetY1 == 0) ? 0 : (AllocatedTotal.BudgetY1 == 0 && ActualTotal.BudgetY1 > 0) ? 101 : ActualTotal.BudgetY1 / AllocatedTotal.BudgetY1 * 100;
-            PercAllocated.BudgetY2 = (AllocatedTotal.BudgetY2 == 0 && ActualTotal.BudgetY2 == 0) ? 0 : (AllocatedTotal.BudgetY2 == 0 && ActualTotal.BudgetY2 > 0) ? 101 : ActualTotal.BudgetY2 / AllocatedTotal.BudgetY2 * 100;
-            PercAllocated.BudgetY3 = (AllocatedTotal.BudgetY3 == 0 && ActualTotal.BudgetY3 == 0) ? 0 : (AllocatedTotal.BudgetY3 == 0 && ActualTotal.BudgetY3 > 0) ? 101 : ActualTotal.BudgetY3 / AllocatedTotal.BudgetY3 * 100;
-            PercAllocated.BudgetY4 = (AllocatedTotal.BudgetY4 == 0 && ActualTotal.BudgetY4 == 0) ? 0 : (AllocatedTotal.BudgetY4 == 0 && ActualTotal.BudgetY4 > 0) ? 101 : ActualTotal.BudgetY4 / AllocatedTotal.BudgetY4 * 100;
-            PercAllocated.BudgetY5 = (AllocatedTotal.BudgetY5 == 0 && ActualTotal.BudgetY5 == 0) ? 0 : (AllocatedTotal.BudgetY5 == 0 && ActualTotal.BudgetY5 > 0) ? 101 : ActualTotal.BudgetY5 / AllocatedTotal.BudgetY5 * 100;
-            PercAllocated.BudgetY6 = (AllocatedTotal.BudgetY6 == 0 && ActualTotal.BudgetY6 == 0) ? 0 : (AllocatedTotal.BudgetY6 == 0 && ActualTotal.BudgetY6 > 0) ? 101 : ActualTotal.BudgetY6 / AllocatedTotal.BudgetY6 * 100;
-            PercAllocated.BudgetY7 = (AllocatedTotal.BudgetY7 == 0 && ActualTotal.BudgetY7 == 0) ? 0 : (AllocatedTotal.BudgetY7 == 0 && ActualTotal.BudgetY7 > 0) ? 101 : ActualTotal.BudgetY7 / AllocatedTotal.BudgetY7 * 100;
-            PercAllocated.BudgetY8 = (AllocatedTotal.BudgetY8 == 0 && ActualTotal.BudgetY8 == 0) ? 0 : (AllocatedTotal.BudgetY8 == 0 && ActualTotal.BudgetY8 > 0) ? 101 : ActualTotal.BudgetY8 / AllocatedTotal.BudgetY8 * 100;
-            PercAllocated.BudgetY9 = (AllocatedTotal.BudgetY9 == 0 && ActualTotal.BudgetY9 == 0) ? 0 : (AllocatedTotal.BudgetY9 == 0 && ActualTotal.BudgetY9 > 0) ? 101 : ActualTotal.BudgetY9 / AllocatedTotal.BudgetY9 * 100;
-            PercAllocated.BudgetY10 = (AllocatedTotal.BudgetY10 == 0 && ActualTotal.BudgetY10 == 0) ? 0 : (AllocatedTotal.BudgetY10 == 0 && ActualTotal.BudgetY10 > 0) ? 101 : ActualTotal.BudgetY10 / AllocatedTotal.BudgetY10 * 100;
-            PercAllocated.BudgetY11 = (AllocatedTotal.BudgetY11 == 0 && ActualTotal.BudgetY11 == 0) ? 0 : (AllocatedTotal.BudgetY11 == 0 && ActualTotal.BudgetY11 > 0) ? 101 : ActualTotal.BudgetY11 / AllocatedTotal.BudgetY11 * 100;
-            PercAllocated.BudgetY12 = (AllocatedTotal.BudgetY12 == 0 && ActualTotal.BudgetY12 == 0) ? 0 : (AllocatedTotal.BudgetY12 == 0 && ActualTotal.BudgetY12 > 0) ? 101 : ActualTotal.BudgetY12 / AllocatedTotal.BudgetY12 * 100;
+            //To handle infinite value, set 101.
+            //Modified by Preet Shah on 12/12/2016. For allowed negative values. 
+            PercAllocated.BudgetY1 = (AllocatedTotal.BudgetY1 == 0 && ActualTotal.BudgetY1 == 0) ? 0 : (AllocatedTotal.BudgetY1 == 0 && ActualTotal.BudgetY1 != 0) ? 101 : ActualTotal.BudgetY1 / AllocatedTotal.BudgetY1 * 100;
+            PercAllocated.BudgetY2 = (AllocatedTotal.BudgetY2 == 0 && ActualTotal.BudgetY2 == 0) ? 0 : (AllocatedTotal.BudgetY2 == 0 && ActualTotal.BudgetY2 != 0) ? 101 : ActualTotal.BudgetY2 / AllocatedTotal.BudgetY2 * 100;
+            PercAllocated.BudgetY3 = (AllocatedTotal.BudgetY3 == 0 && ActualTotal.BudgetY3 == 0) ? 0 : (AllocatedTotal.BudgetY3 == 0 && ActualTotal.BudgetY3 != 0) ? 101 : ActualTotal.BudgetY3 / AllocatedTotal.BudgetY3 * 100;
+            PercAllocated.BudgetY4 = (AllocatedTotal.BudgetY4 == 0 && ActualTotal.BudgetY4 == 0) ? 0 : (AllocatedTotal.BudgetY4 == 0 && ActualTotal.BudgetY4 != 0) ? 101 : ActualTotal.BudgetY4 / AllocatedTotal.BudgetY4 * 100;
+            PercAllocated.BudgetY5 = (AllocatedTotal.BudgetY5 == 0 && ActualTotal.BudgetY5 == 0) ? 0 : (AllocatedTotal.BudgetY5 == 0 && ActualTotal.BudgetY5 != 0) ? 101 : ActualTotal.BudgetY5 / AllocatedTotal.BudgetY5 * 100;
+            PercAllocated.BudgetY6 = (AllocatedTotal.BudgetY6 == 0 && ActualTotal.BudgetY6 == 0) ? 0 : (AllocatedTotal.BudgetY6 == 0 && ActualTotal.BudgetY6 != 0) ? 101 : ActualTotal.BudgetY6 / AllocatedTotal.BudgetY6 * 100;
+            PercAllocated.BudgetY7 = (AllocatedTotal.BudgetY7 == 0 && ActualTotal.BudgetY7 == 0) ? 0 : (AllocatedTotal.BudgetY7 == 0 && ActualTotal.BudgetY7 != 0) ? 101 : ActualTotal.BudgetY7 / AllocatedTotal.BudgetY7 * 100;
+            PercAllocated.BudgetY8 = (AllocatedTotal.BudgetY8 == 0 && ActualTotal.BudgetY8 == 0) ? 0 : (AllocatedTotal.BudgetY8 == 0 && ActualTotal.BudgetY8 != 0) ? 101 : ActualTotal.BudgetY8 / AllocatedTotal.BudgetY8 * 100;
+            PercAllocated.BudgetY9 = (AllocatedTotal.BudgetY9 == 0 && ActualTotal.BudgetY9 == 0) ? 0 : (AllocatedTotal.BudgetY9 == 0 && ActualTotal.BudgetY9 != 0) ? 101 : ActualTotal.BudgetY9 / AllocatedTotal.BudgetY9 * 100;
+            PercAllocated.BudgetY10 = (AllocatedTotal.BudgetY10 == 0 && ActualTotal.BudgetY10 == 0) ? 0 : (AllocatedTotal.BudgetY10 == 0 && ActualTotal.BudgetY10 != 0) ? 101 : ActualTotal.BudgetY10 / AllocatedTotal.BudgetY10 * 100;
+            PercAllocated.BudgetY11 = (AllocatedTotal.BudgetY11 == 0 && ActualTotal.BudgetY11 == 0) ? 0 : (AllocatedTotal.BudgetY11 == 0 && ActualTotal.BudgetY11 != 0) ? 101 : ActualTotal.BudgetY11 / AllocatedTotal.BudgetY11 * 100;
+            PercAllocated.BudgetY12 = (AllocatedTotal.BudgetY12 == 0 && ActualTotal.BudgetY12 == 0) ? 0 : (AllocatedTotal.BudgetY12 == 0 && ActualTotal.BudgetY12 != 0) ? 101 : ActualTotal.BudgetY12 / AllocatedTotal.BudgetY12 * 100;
 
             ViewBag.PercAllocated = PercAllocated;
             ViewBag.MainTotalActual = MainTotalActual;
