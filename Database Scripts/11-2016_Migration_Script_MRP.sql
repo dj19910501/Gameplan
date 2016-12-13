@@ -3621,7 +3621,7 @@ RETURN (
 				,F.[Owner]
 		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
-		LEFT JOIN Budget_Detail(NOLOCK) BD2 on F.BudgetDetailId=BD2.ParentId
+		LEFT JOIN Budget_Detail(NOLOCK) BD2 on F.BudgetDetailId=BD2.ParentId AND BD2.IsDeleted = 0
 )
 ' 
 END
@@ -4314,7 +4314,7 @@ RETURN (
 			,F.[Owner]
 		FROM [dbo].GetFinanceBasicData(@BudgetId,@lstUserIds,@UserId) F
 		INNER JOIN [MV].[PreCalculatedMarketingBudget] P on F.BudgetDetailId = P.BudgetDetailId
-		LEFT JOIN Budget_Detail(NOLOCK) BD2 on F.BudgetDetailId=BD2.ParentId
+		LEFT JOIN Budget_Detail(NOLOCK) BD2 on F.BudgetDetailId=BD2.ParentId AND BD2.IsDeleted = 0
 )
 ' 
 END
