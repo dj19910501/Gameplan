@@ -460,7 +460,7 @@ namespace RevenuePlanner.Controllers
                         {
                             return Json(new { IsSuccess = false, ErrorMsg = "Owner is not valid" }, JsonRequestBehavior.AllowGet);
                         }
-                        _MarketingBudget.UpdateOwnerName(BudgetDetailId, ListItems, OwnerId);
+                        _MarketingBudget.UpdateOwnerName(BudgetDetailId, ListItems, OwnerId, Sessions.User.CID);
                     }
                     else if (string.Compare(ColumnName, Enums.DefaultGridColumn.Name.ToString(), true) == 0)
                     {
@@ -472,7 +472,7 @@ namespace RevenuePlanner.Controllers
                              string.Compare(ColumnName, Enums.DefaultGridColumn.Total_Forecast.ToString(), true) == 0)
                     {
 
-                        _MarketingBudget.UpdateTotalAmount(BudgetDetailId, nValue, ColumnName, Sessions.PlanExchangeRate);
+                        _MarketingBudget.UpdateTotalAmount(BudgetDetailId, nValue, ColumnName, Sessions.User.CID, Sessions.PlanExchangeRate);
                     }
                     else if (string.Compare(ColumnName.Split('_')[0], "cust", true) == 0)
                     {
@@ -488,7 +488,7 @@ namespace RevenuePlanner.Controllers
 
                             if (objCustomColumns != null)
                             {
-                                _MarketingBudget.SaveCustomColumnValues(CustomfieldId, objCustomColumns, BudgetDetailId, nValue, Sessions.User.ID, Sessions.PlanExchangeRate);//Call SaveBudgetorForecast method to save customfield cell value.
+                                _MarketingBudget.SaveCustomColumnValues(CustomfieldId, objCustomColumns, BudgetDetailId, nValue, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate);//Call SaveBudgetorForecast method to save customfield cell value.
                             }
                         }
                     }
@@ -520,7 +520,7 @@ namespace RevenuePlanner.Controllers
                                     isForecast = true;
                                 }
                                 //Call SaveBudgetorForecast method to save budget or forecast cell value.
-                                _MarketingBudget.SaveBudgetorForecast(BudgetDetailId, nValue, isForecast, AllocationType, Period, Sessions.PlanExchangeRate);
+                                _MarketingBudget.SaveBudgetorForecast(BudgetDetailId, nValue, Sessions.User.CID, isForecast, AllocationType, Period, Sessions.PlanExchangeRate);
                             }
                         }
                     }

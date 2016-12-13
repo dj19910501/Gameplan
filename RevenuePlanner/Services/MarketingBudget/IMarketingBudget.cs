@@ -312,11 +312,11 @@ namespace RevenuePlanner.Services.MarketingBudget
         int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int UserID, int ClientID, int BudgetDetailId = 0);
         void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int ClientId, string nValue);
 
-        void UpdateOwnerName(int budgetDetailId, List<string> listItems, int ownerId);
-        void UpdateTotalAmount(int budgetDetailId, string nValue, string ColumnName = "", double PlanExchangeRate = 1.0);
+        void UpdateOwnerName(int budgetDetailId, List<string> listItems, int ownerId, int clientId);
+        void UpdateTotalAmount(int budgetDetailId, string nValue, string columnName, int clientId, double planExchangeRate = 1.0);
 
-        void SaveBudgetorForecast(int budgetDetailId, string nValue, bool isForecast = false, string AllocationType = "", string Period = "", double PlanExchangeRate = 1.0);
-        void SaveCustomColumnValues(int customfieldId, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0);
+        void SaveBudgetorForecast(int budgetDetailId, string nValue, int clientId, bool isForecast = false, string allocationType = "quarters", string period = "", double planExchangeRate = 1.0);
+        void SaveCustomColumnValues(int customfieldId, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, int clientId, double planExchangeRate = 1.0);
         List<Budget_Columns> GetBudgetColumn(int clientId);
         //Methods for user permissiopn and lineitems for budget
         LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0, int ClientId=0);

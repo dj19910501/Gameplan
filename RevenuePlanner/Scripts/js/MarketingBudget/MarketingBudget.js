@@ -629,6 +629,7 @@ function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId) {
         success: function (data) {
             _NewGeneratedRowId = budgetDetailName + '_' + data.BudgetDetailId + '_' + parentId;
             GetGridData(budgetId); //refresh grid once we add any new item
+            UpdateFinanceHeaderValues();
             _row_parentId = "";
         }
     });
@@ -1043,7 +1044,7 @@ $(document).mouseup(function (e) {
 // itemType - checks if n=we need to add a child item or a parallel item
 // cntrl - paramter to access the control parameters .
 function AddNewRowbyType(itemType, cntrl) {
-    debugger;
+    
     if (_isNewRowAdd == false) { // checks if an new item is already added then dont add another.
         var row_id = $(cntrl).attr('row-id');
         var childrencount = budgetgrid.hasChildren(row_id); // Get Current Row Children count.
@@ -1091,7 +1092,13 @@ function AddNewRowbyType(itemType, cntrl) {
         for (var k = 0; k < TotalColumn; k++) {
             ColumnsVisibility += budgetgrid.isColumnHidden(k) + ",";
             if (k > 2 && k < (TotalColumn - 3)) {
-                AddRowString.push(CurrencySybmol + "0.00");
+                var ColType = budgetgrid.getColType(k)
+                if (ColType.toString().toLowerCase() == "math") {
+                    AddRowString.push(CurrencySybmol + "0.00");
+                }
+                else {
+                    AddRowString.push("");
+                }
                 AddRowColTypes += ",ro";
             }
         }

@@ -140,7 +140,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 //Call recursive function to bind the hierarchy.
                 List<BudgetGridRowModel> lstData = new List<BudgetGridRowModel>();
                 lstData = GetTopLevelRows(StandardColumnTable)
-                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,TimeFrame)).ToList();
+                        .Select(row => CreateHierarchyItem(BudgetGridData, row, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol, TimeFrame)).ToList();
 
 
                 objBudgetGridDataModel.head = objBudgetGridModel.GridDataStyleList;
@@ -177,7 +177,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="StandardColumnNames">List of names of standard column</param>
         /// <param name="lstUser">List of users</param>
         /// <param name="CurSymbol">Preferred currency symbol by user</param>
-        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol,string TimeFrame)
+        private BudgetGridRowModel CreateHierarchyItem(DataSet DataSet, DataRow row, List<string> CustomColumnNames, List<string> StandardColumnNames, List<BDSService.User> lstUser, string CurSymbol, string TimeFrame)
         {
             string istitleedit = "1";
             string stylecolorgray = string.Empty; // if no permission set style to gray
@@ -213,7 +213,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.LineItems.ToString())
                 {
-                    if (Permission == "None" || Permission == "View" )
+                    if (Permission == "None" || Permission == "View")
                     {
                         BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
                     }
@@ -227,7 +227,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                         {
                             BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
                         }
-                        
+
                     }
 
                 }
@@ -334,7 +334,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
 
             children = lstChildren
-                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol,TimeFrame))
+                  .Select(r => CreateHierarchyItem(DataSet, r, CustomColumnNames, StandardColumnNames, lstUser, CurSymbol, TimeFrame))
                   .ToList();
 
             return new BudgetGridRowModel { id = rowId, data = Data, rows = children, style = stylecolorgray, Detailid = Convert.ToString(id), userdata = objuserData };
@@ -513,7 +513,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     headObj.sort = sort;
                     headObj.width = 180;
                     headObj.align = aligncenter;
-                    if(columns == Enums.DefaultGridColumn.Owner.ToString())
+                    if (columns == Enums.DefaultGridColumn.Owner.ToString())
                     {
                         headObj.type = Combo; //set type for the drop down in the dhtmlxgrid
                     }
@@ -638,7 +638,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 ListHead.Add(headObj);
                 colIndexes.Add(colindex);
                 sbAttachedHeaders.Append("Budget" + ",");
-               
+
 
                 headObj = new GridDataStyle();
                 headObj.value = "Unallocated";
@@ -691,7 +691,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     {
                         headObj.type = Editable;
                     }
-                    headObj.id = string.Format("Cust_{0}",customFieldId);
+                    headObj.id = string.Format("Cust_{0}", customFieldId);
                     ListHead.Add(headObj);
                 }
             }
@@ -1220,8 +1220,8 @@ namespace RevenuePlanner.Services.MarketingBudget
             DefaultMonthList = Enums.ReportMonthDisplayValuesWithPeriod.Select(a => a.Key.ToLower()).ToList();
 
             bool IsMonthly = (from dtMonth in MonthList
-                             join defaultMonth in DefaultMonthList on dtMonth equals defaultMonth
-                             select new { dtMonth }).Any();
+                              join defaultMonth in DefaultMonthList on dtMonth equals defaultMonth
+                              select new { dtMonth }).Any();
             //end
             BudgetDetailId = _database.Budget_Detail.Where(a => a.BudgetId == BudgetDetailId).Select(a => a.Id).FirstOrDefault();
             ValidateBudget(BudgetDetailId, ClientID);
@@ -1258,7 +1258,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             }
             if (Connection.State == System.Data.ConnectionState.Open)
             {
-            Connection.Close();
+                Connection.Close();
             }
             return ExecuteCommand;
 
@@ -1272,7 +1272,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="BudgetId">Id of the Budget</param>
         /// <param name="ExchangeRate">Currency exchange rate</param>
         /// <returns>Returns datatable having 4 values(Budget,Forecast,Planned,Actual)</returns>
-        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate, List<BDSService.User> lstUser,bool IsLineItem=false)
+        public MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate, List<BDSService.User> lstUser, bool IsLineItem = false)
         {
             #region "Declare Variables"
             SqlParameter[] para = new SqlParameter[3];
@@ -1333,7 +1333,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 objBudgetDetail.BudgetId = budgetId;
                 objBudgetDetail.Name = BudgetName;
                 objBudgetDetail.IsDeleted = false;
-                objBudgetDetail.CreatedBy = UserId;                
+                objBudgetDetail.CreatedBy = UserId;
                 objBudgetDetail.CreatedDate = DateTime.Now;
                 objBudgetDetail.TotalForecast = 0;
                 objBudgetDetail.TotalBudget = 0;
@@ -1445,55 +1445,50 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         public void UpdateTaskName(int budgetId, int budgetDetailId, int parentId, int clientId, string nValue)
         {
-            if (clientId <= 0)
+            ValidateBudget(budgetDetailId, clientId);
+            Budget_Detail objBudgetDetail = new Budget_Detail();
+            objBudgetDetail = _database.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
+            if (objBudgetDetail != null)
             {
-                throw new ArgumentOutOfRangeException("clientId", "A clientId less than or equal to zero is invalid, and likely indicates the clientId was not set properly");
-            }
-            else
-            {
-                Budget_Detail objBudgetDetail = new Budget_Detail();
-                objBudgetDetail  = _database.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
-                if (objBudgetDetail != null)
+                if (budgetDetailId > 0 && parentId > 0)
                 {
-                    if (budgetDetailId > 0 && parentId > 0)
+                    //check objBudgetDetail is not null.
+                    if (objBudgetDetail != null)
                     {
-                        //check objBudgetDetail is not null.
-                        if (objBudgetDetail != null)
+                        if (!string.IsNullOrEmpty(nValue))
                         {
-                            if (!string.IsNullOrEmpty(nValue))
-                            {
-                                objBudgetDetail.Name = nValue.Trim(); // assign new budget name to objBudgetDetail.
-                            }
-                            _database.Entry(objBudgetDetail).State = EntityState.Modified;
+                            objBudgetDetail.Name = nValue.Trim(); // assign new budget name to objBudgetDetail.
                         }
+                        _database.Entry(objBudgetDetail).State = EntityState.Modified;
                     }
-                    else if (budgetDetailId > 0 && parentId <= 0)
-                    {
-                        //Update name into Budget Table.
-                        RevenuePlanner.Models.Budget objBudget = new RevenuePlanner.Models.Budget();
-                        objBudget = _database.Budgets.Where(budgt => budgt.Id == budgetId && budgt.IsDeleted == false && budgt.ClientId == clientId).FirstOrDefault();
-                        if (objBudget != null)
-                        {
-                            if (!string.IsNullOrEmpty(nValue))
-                            {
-                                objBudget.Name = nValue.Trim(); // assign new budget name to objBudget.
-                            }
-                            _database.Entry(objBudget).State = EntityState.Modified;
-                        }
-
-                        //Update name into Budget Detail Table.
-                        if (objBudgetDetail != null)
-                        {
-                            if (!string.IsNullOrEmpty(nValue))
-                            {
-                                objBudgetDetail.Name = nValue.Trim(); // assign new budget name to objBudgetDetail.
-                            }
-                            _database.Entry(objBudgetDetail).State = EntityState.Modified;
-                        }
-
-                    }
-                    _database.SaveChanges();
                 }
+                else if (budgetDetailId > 0 && parentId <= 0)
+                {
+                    //Update name into Budget Table.
+                    RevenuePlanner.Models.Budget objBudget = new RevenuePlanner.Models.Budget();
+                    objBudget = _database.Budgets.Where(budgt => budgt.Id == budgetId && budgt.IsDeleted == false && budgt.ClientId == clientId).FirstOrDefault();
+                    if (objBudget != null)
+                    {
+                        if (!string.IsNullOrEmpty(nValue))
+                        {
+                            objBudget.Name = nValue.Trim(); // assign new budget name to objBudget.
+                        }
+                        _database.Entry(objBudget).State = EntityState.Modified;
+                    }
+
+                    //Update name into Budget Detail Table.
+                    if (objBudgetDetail != null)
+                    {
+                        if (!string.IsNullOrEmpty(nValue))
+                        {
+                            objBudgetDetail.Name = nValue.Trim(); // assign new budget name to objBudgetDetail.
+                        }
+                        _database.Entry(objBudgetDetail).State = EntityState.Modified;
+                    }
+
+                }
+                _database.SaveChanges();
+
             }
         }
 
@@ -1505,8 +1500,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="ListItems">List of BudgetDetaildIds of the Budget and its child budget</param>
         /// <param name="ownerId">new Owner Id</param>
 
-        public void UpdateOwnerName(int budgetDetailId, List<string> listItems, int ownerId)
+        public void UpdateOwnerName(int budgetDetailId, List<string> listItems, int ownerId, int clientId)
         {
+            ValidateBudget(budgetDetailId, clientId);
             List<Budget_Detail> listobjBudgetDetail = GetBudgetDetailList(listItems); // get Budget Detail List
             if (listobjBudgetDetail != null && listobjBudgetDetail.Count > 0 && ownerId != 0)
             {
@@ -1552,9 +1548,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="columnName">Name of the Column (i.e Budget, Forecast, ..etc)</param> 
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
 
-        public void UpdateTotalAmount(int budgetDetailId, string nValue, string columnName, double planExchangeRate = 1.0)
+        public void UpdateTotalAmount(int budgetDetailId, string nValue, string columnName, int clientId, double planExchangeRate = 1.0)
         {
-
+            ValidateBudget(budgetDetailId, clientId);
             if (budgetDetailId > 0)
             {
 
@@ -1599,8 +1595,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="Period">period (i.e Jan, Feb.. etc)</param>
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
 
-        public void SaveBudgetorForecast(int budgetDetailId, string nValue, bool isForecast = false, string allocationType = "quarters", string period = "", double planExchangeRate = 1.0)
+        public void SaveBudgetorForecast(int budgetDetailId, string nValue, int clientId, bool isForecast = false, string allocationType = "quarters", string period = "", double planExchangeRate = 1.0)
         {
+            ValidateBudget(budgetDetailId, clientId);
             // get budget amount according to budgetdetail id and its period
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
             objBudAmount = GetBudgetAmount(budgetDetailId, allocationType, period);
@@ -1633,7 +1630,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             else
             {
                 // If not null then update budget amount data into Budget_DetailAmount table
-                UpdateBudgetorForecast(budgetDetailId, allocationType, nValue, isForecast, planExchangeRate);
+                UpdateBudgetorForecast(budgetDetailId, allocationType, clientId, nValue, isForecast, planExchangeRate);
             }
 
         }
@@ -1647,8 +1644,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="isForecast">check the field is forecast or not</param>
         /// <param name="nValue">new Value</param>        
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
-        private void UpdateBudgetorForecast(int budgetDetailId, string allocationType, string nValue, bool isForecast = false, double planExchangeRate = 1.0)
+        private void UpdateBudgetorForecast(int budgetDetailId, string allocationType, int clientId, string nValue, bool isForecast = false, double planExchangeRate = 1.0)
         {
+            ValidateBudget(budgetDetailId, clientId);
             if (string.Compare(allocationType, Enums.PlanAllocatedBy.quarters.ToString(), true) == 0)
             {
                 // save budget and forecast value in quarterly case
@@ -1759,8 +1757,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="nValue">new Value</param>        
         /// <param name="userId">User Id</param>        
         /// <param name="planExchangeRate">Apply multicurrency exchange rate</param> 
-        public void SaveCustomColumnValues(int customfieldId, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, double planExchangeRate = 1.0)
+        public void SaveCustomColumnValues(int customfieldId, Budget_Columns customCol, int budgetDetailId, string nValue, int userId, int clientId, double planExchangeRate = 1.0)
         {
+            ValidateBudget(budgetDetailId, clientId);
             if (customfieldId == customCol.CustomField.CustomFieldId)
             {
                 string[] DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString(), Enums.ColumnValidation.ValidNumeric.ToString() };
@@ -1879,7 +1878,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// Get the list of Parent dropdown for LineItem screen
         /// </summary>
         /// <returns>Return the list of Budget Details list</returns>
-        public LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0, int ClientID=0)
+        public LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0, int ClientID = 0)
         {
             ValidateBudget(BudgetDetailId, ClientID);
             List<Budget_Detail> lstBudgetDetails = new List<Budget_Detail>();
@@ -1903,7 +1902,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// Get the list of Child dropdown for LineItem screen
         /// </summary>
         /// <returns>Return the list of Budget Details list</returns>
-        public List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0, int ClientId=0)
+        public List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0, int ClientId = 0)
         {
             ValidateBudget(ParentBudgetDetailId, ClientId);
             List<ViewByModel> lstChildItems = new List<ViewByModel>();
@@ -1914,7 +1913,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             return lstChildItems;
         }
         //Method to get line item grid for budget and time frame
-        public LineItemDetail GetLineItemGrid(int BudgetDetailId,int ClientId, string IsQuaterly = "quarters", double PlanExchangeRate=1.0)
+        public LineItemDetail GetLineItemGrid(int BudgetDetailId, int ClientId, string IsQuaterly = "quarters", double PlanExchangeRate = 1.0)
         {
             ValidateBudget(BudgetDetailId, ClientId);
             LineItemDetail AllLineItemDetail = new LineItemDetail();
@@ -1936,9 +1935,9 @@ namespace RevenuePlanner.Services.MarketingBudget
                     LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
                     if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
                     {
-                            LineItemidBudgetList.RemoveAt(i);
-                            i--;
-                        
+                        LineItemidBudgetList.RemoveAt(i);
+                        i--;
+
                     }
                 }
             }
@@ -2008,7 +2007,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
                 #region "Get Planned & Actual value based on Timeframe selected value"
                 objBudgetAmount = new BudgetAmount();
-                objBudgetAmount = GetAmountValue(IsQuaterly, new List<Budget_DetailAmount>(), lstPlannedValue, lstActualValue, lstLineItemBudget,PlanExchangeRate);
+                objBudgetAmount = GetAmountValue(IsQuaterly, new List<Budget_DetailAmount>(), lstPlannedValue, lstActualValue, lstLineItemBudget, PlanExchangeRate);
                 #endregion
 
                 if (objBudgetAmount != null)
@@ -2052,7 +2051,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             parentData.Add(HttpUtility.HtmlDecode(objBudgetDetail.Name));   // Set TaskName column value
             parentData.Add(string.Empty);           // Set View column value
             objBudgetAmount = new BudgetAmount();
-            objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList,PlanExchangeRate);
+            objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList, PlanExchangeRate);
 
             if (objBudgetAmount != null)
             {
@@ -2449,7 +2448,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             _database.SaveChanges();
         }
         //method to save user permission
-        public void SaveUSerPermission(List<UserBudgetPermissionDetail> UserData, string ChildItems, string ParentID,  int UserId)
+        public void SaveUSerPermission(List<UserBudgetPermissionDetail> UserData, string ChildItems, string ParentID, int UserId)
         {
             List<string> ListItems = new List<string>();
             if (ChildItems != "" && ChildItems != null)
@@ -2530,11 +2529,11 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         #endregion
 
-//method to validate budget for cross client
+        //method to validate budget for cross client
         private void ValidateBudget(int BudgetDetailId, int ClientID)
         {
-           Budget_Detail BudgetDetail = _database.Budget_Detail.Where(a => a.Id == BudgetDetailId).SingleOrDefault();
-           if (BudgetDetail == null || BudgetDetail.Budget.ClientId != ClientID) throw new Exception(string.Format("BudgetDetailId: {0} not valid", BudgetDetailId));
+            Budget_Detail BudgetDetail = _database.Budget_Detail.Where(a => a.Id == BudgetDetailId).SingleOrDefault();
+            if (BudgetDetail == null || BudgetDetail.Budget.ClientId != ClientID) throw new Exception(string.Format("BudgetDetailId: {0} not valid", BudgetDetailId));
         }
 
     }
