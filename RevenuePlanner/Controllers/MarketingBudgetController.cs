@@ -625,7 +625,7 @@ namespace RevenuePlanner.Controllers
                 }
                 TempData["Userlist"] = lstUserDetail;
                 #endregion
-                FinanceModel objFinanceModel = _MarketingBudget.EditPermission(BudgetId, Sessions.ApplicationId, UserList, Sessions.User.ID);
+                FinanceModel objFinanceModel = _MarketingBudget.EditPermission(BudgetId, Sessions.ApplicationId, UserList, Sessions.User.ID,Sessions.User.CID);
 
                 return PartialView("_UserPermission", objFinanceModel);
             }

@@ -326,7 +326,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         List<UserPermission> FilterByBudget(int BudgetId, Guid ApplicationId);
         string CheckUserPermission(int BudgetId, int ClientId, int UserId);
         UserModel GetuserRecord(int Id, int UserId, Guid ApplicationId);
-        FinanceModel EditPermission(int BudgetId, Guid ApplicationId, List<Budget_Permission> UserList, int UserId);
+        FinanceModel EditPermission(int BudgetId, Guid ApplicationId, List<Budget_Permission> UserList, int UserId, int ClientId);
         List<ViewByModel> GetChildBudget(int BudgetId);
         List<BDSService.User> GetAllUserList(int ClientId, int UserId, Guid ApplicationId);
         void DeleteUserForBudget(List<int> BudgetDetailIds, int UserID);

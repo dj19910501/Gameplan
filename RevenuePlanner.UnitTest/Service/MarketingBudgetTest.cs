@@ -22,7 +22,7 @@ namespace RevenuePlanner.UnitTest.Service
         private const int ClientId = 24; //demo client     
         private const string BudgetTitle = "ZebraAdmin";
         private const int BudgetId = 80;
-        private const int BudgetDetailId = 752;
+        private const int BudgetDetailId = 149;
         private const double ExchangeRate = 1.0; // Currency exchange rate
         private const string Importviewby = "Yearly";//TimeFrame for import budget
         private const string ImportXLSFileLocation = "\\ImportTest_Data\\grid_MarketingBudget.xls"; // xls file location for import marketing budget
@@ -87,7 +87,7 @@ namespace RevenuePlanner.UnitTest.Service
             Command.Fill(ds);
             ExcelConnection.Close();
             //end
-            var res = _marketingBudget.GetXLSData(Importviewby, ds, ClientId, BudgetDetailId, 1);
+            var res = _marketingBudget.GetXLSData(Importviewby, ds, ClientId, BudgetId, 1);
             Assert.IsTrue(res != null);
             if (string.IsNullOrEmpty(res.ErrorMsg))
             {
@@ -105,7 +105,7 @@ namespace RevenuePlanner.UnitTest.Service
         {
             Console.WriteLine("To Import Marketing budget with .XLSX file.\n");
             string FileLocation = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + ImportXLSX_FileLocation;
-            var res = _marketingBudget.GetXLSXData(Importviewby, FileLocation, ClientId, BudgetDetailId, 1);
+            var res = _marketingBudget.GetXLSXData(Importviewby, FileLocation, ClientId, BudgetId, 1);
             Assert.IsTrue(res != null);
             if (string.IsNullOrEmpty(res.ErrorMsg))
             {
@@ -226,7 +226,7 @@ namespace RevenuePlanner.UnitTest.Service
         {
             Console.WriteLine("To get User permission detail for budget.\n");
             List<Budget_Permission> UserData = _marketingBudget.GetUserList(BudgetId);
-            RevenuePlanner.Services.MarketingBudget.FinanceModel Data = _marketingBudget.EditPermission(BudgetId, ApplicationId, UserData,UserId);
+            RevenuePlanner.Services.MarketingBudget.FinanceModel Data = _marketingBudget.EditPermission(BudgetId, ApplicationId, UserData,UserId,ClientId);
             Assert.IsNotNull(Data);
             Assert.IsTrue(Data.Userpermission.Count > 0);
         }
@@ -258,7 +258,7 @@ namespace RevenuePlanner.UnitTest.Service
         public void Test_MarketingBudget_GetParentLineItemBudgetDetailslist()
         {
             Console.WriteLine("To get parent Line item detail for budget to bind dropdown.\n");
-            RevenuePlanner.Services.MarketingBudget.LineItemDropdownModel Data = _marketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId);
+            RevenuePlanner.Services.MarketingBudget.LineItemDropdownModel Data = _marketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId,ClientId);
             Assert.IsNotNull(Data);
             Assert.IsNotNull(Data.parentId);
         }

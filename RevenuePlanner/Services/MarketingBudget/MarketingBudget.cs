@@ -807,7 +807,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             using (SpreadsheetDocument doc = SpreadsheetDocument.Open(fileLocation, false))
             {
-                //Read the first Sheet from Excel file.
+                //Read the first Sheet from Excel file
                 Sheet sheet = doc.WorkbookPart.Workbook.Sheets.GetFirstChild<Sheet>();
 
                 //Get the Worksheet instance.
@@ -2316,11 +2316,11 @@ namespace RevenuePlanner.Services.MarketingBudget
             return UserList;
         }
         //Method to get user permission list for budget
-        public FinanceModel EditPermission(int BudgetId, Guid ApplicationId, List<Budget_Permission> UserList, int UserId)
+        public FinanceModel EditPermission(int BudgetId, Guid ApplicationId, List<Budget_Permission> UserList, int UserId, int ClientId)
         {
             FinanceModel objFinanceModel = new FinanceModel();
             BDSService.User objUser = new BDSService.User();
-
+            ValidateBudget(BudgetId, ClientId);
             UserPermission user = new UserPermission();
             List<BDSService.User> BDSuserList = _ServiceDatabase.GetMultipleTeamMemberDetailsEx(UserList.Select(x => x.UserId).ToList(), ApplicationId);
             List<UserPermission> _user = new List<UserPermission>();
