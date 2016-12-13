@@ -356,6 +356,41 @@ function GetGridData(budgetId) {
                     x: budgetgrid.objBox.scrollLeft,
                 }
                 ManageBorderBoxClass();
+                // Add icons on expand collapse
+                var imgString, imgDeleteString, rowid, ActionText, UserLink, Count, detailid
+                var arrTD = $('.MarketingBudget-tbl #gridbox .objbox').find('table tbody tr').find('td:contains("#GRIDACTION#")').parent();
+                $(arrTD).find("td").each(function (index, element) {
+                    if ($(this).html().indexOf('#GRIDACTION#') >= 0) {
+                        rowid = $(this).text().replace("#GRIDACTION#", "");
+                        imgString = "<div id='dv" + rowid + "' row-id='" + rowid + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div> "
+                        imgDeleteString = "<div id='cb" + rowid + "' row-id='" + rowid + "'onclick='DeleteBudgetIconClick(this)' title='' class='grid_Delete'></div>";
+                        $(this).html(imgString + imgDeleteString);
+                    }
+                    else if ($(this).html().indexOf('#USERACTION#') >= 0) {
+                        ActionText = $(this).text().split('~');
+                        if (ActionText.length > 1) {
+                            rowid = ActionText[0].replace("#USERACTION#", "");
+                            if (rowid.length > 0) {
+                                detailid = rowid.split('_')[1];
+                            }
+                            Count = ActionText[1];
+                            UserLink = ActionText[2];
+                        }
+                        imgString = "<div onclick=Edit('" + detailid + "',false,'User','" + rowid + "',this) class='finance_link' Rowid='" + rowid + "'><a class='marketing-tbl-link'>" + Count + "</a><span class='pipeLine'></span><span class='marketing-tbl-link'>" + UserLink + "</span></div>"
+                        $(this).html(imgString);
+                    }
+                    else if ($(this).html().indexOf('#LineItemLink#') >= 0) {
+                        ActionText = $(this).text().split('~');
+                        if (ActionText.length > 0) {
+                            detailid = ActionText[0].replace("#LineItemLink#", "");
+                            Count = ActionText[1];
+                        }
+                        imgString = "<div onclick='LoadLineItemGrid(" + detailid + ")' class='finance_lineItemlink'>" + Count + "</div>";
+                        $(this).html(imgString);
+                    }
+                return true;
+                });
+                //end
                 return true;
             });
 
