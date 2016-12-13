@@ -2121,7 +2121,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             #endregion
             var temp = parentModelList.Where(a => a.id == Convert.ToString(BudgetDetailId)).Select(a => a.data).FirstOrDefault();
             FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
-            if (temp != null)
+            if (temp != null && lstPlanLineItems.Count > 0)
             {
                 objFinanceHeader.Budget = 0;
                 objFinanceHeader.Forecast = Convert.ToDouble(temp[temp.Count - 3]);
