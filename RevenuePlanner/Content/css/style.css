@@ -14039,7 +14039,7 @@ div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td,
 div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td{
         background-color: #89CEDE;
         border-top: 1px solid #d4d4d4;
-        /*border-bottom: 1px solid #f0f0f0;*/
+        border-bottom: 0px solid #f0f0f0;
         border-right: 1px solid #d4d4d4;
  }
 /* Common Css for all Grid */
@@ -14053,13 +14053,7 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td {
     border-top:0;
 }
 
-div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
-    width: 100% !important;
-}
 
-div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
-    width: 100% !important;
-}
 /* ===================== Dhtmlxtreegrid Table Commin CSS End ===================== */
 /* ===================== MarketingBudget Table Commin CSS  ===================== */
 .MarketingBudget-tbl{height:64.5vh}
@@ -14076,8 +14070,14 @@ div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
 }
 .MarketingBudget-tbl div.gridbox table td, div.gridbox table td .hdrcell{text-align:center}
 
-#gridbox.gridbox_dhx_skyblue.gridbox.border-box table.hdr{width:99.2% !important}
+.MarketingBudget-tbl #gridbox.gridbox_dhx_skyblue.gridbox.border-box table.hdr{width:99.2% !important}
+.MarketingBudget-tbl div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+    width: 100% !important;
+}
 
+.MarketingBudget-tbl div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+    width: 100% !important;
+}
 /* CSS hack for Chrome 29+ (Only) */
 @supports (-webkit-appearance:none) and (not (overflow:-webkit-marquee)) and (not (-ms-ime-align:auto)) and (not (-moz-appearance:none)) { 
    .MarketingBudget-tbl div.gridbox table td, div.gridbox table td{position:static !important; }

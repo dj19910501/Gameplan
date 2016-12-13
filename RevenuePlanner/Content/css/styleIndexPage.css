@@ -1416,7 +1416,7 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa {
 }
 .manageviewicon .fa {
         color: #fff;
-        margin-left: 10px;
+        margin-left: 5px;
     } 
 /*============= Footer Css ===================== */
 footer {
@@ -1486,7 +1486,7 @@ font-size: 18px;
 color: #89CEDE;
 }
 
-
+.rowselected .grid_add:hover .fa.fa-plus-circle, .rowselected .grid_Search:hover .fa{color:#9c9fa0}
 .task-tbl #GridGanttContent .grid_add, .task-tbl #GridGanttContent .grid_Search {
 	margin-top: 1px; /*by bheru mehta 09-12-2015*/
 }
@@ -1539,6 +1539,7 @@ color: #89CEDE;
     padding-left:0;
 }
 /* =========== Grid and Budget  View CSS ======== */
+
 .task-tbl #divgridview .xhdr, .task-tbl #divgridview .hdr{ height: 54px !important; }
 .task-tbl #divgridview.budget-grid .xhdr, .task-tbl #divgridview.budget-grid .hdr{ height: 54px !important; }
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr{height:auto !important; }
@@ -1693,7 +1694,7 @@ color: #89CEDE;
 	font-size: 12px;
     float:left;
 }
-#exp-serach, #searchCriteria, #txtGlobalSearch{height: 53px !important;}
+#exp-serach, #searchCriteria, #txtGlobalSearch{height: 54px !important;}
 
 
 /* #2624 Revert changes so Hide all new css here */

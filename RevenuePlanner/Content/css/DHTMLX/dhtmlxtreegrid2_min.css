@@ -1992,12 +1992,12 @@ div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td {
 div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td,
 div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
     background-color: #f2f2f2;
-    border-top: 1px solid #a1ceed;
-    border-bottom: 1px solid #a1ceed;
-    border-right: 1px solid #b5deff;
+    border-top: 1px solid #d4d4d4;
+    border-bottom: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
 }
 div.gridbox_dhx_skyblue.gridbox table.obj tr td.cellselected {
-    background-color: #b5deff;
+    /*background-color: #b5deff;*/
 }
 div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue {
     /*background: #ebf3ff;*/
