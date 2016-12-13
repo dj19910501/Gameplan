@@ -289,13 +289,13 @@ namespace RevenuePlanner.Services.Transactions
                 sqlQuery = @"SELECT T.* FROM Transactions T
                                 LEFT JOIN TransactionLineItemMapping M ON T.TransactionId = M.TransactionId
                                 WHERE T.ClientId = @ClientId AND T.TransactionDate >= @StartDate AND T.TransactionDate <= @EndDate AND T.LineItemId IS NULL AND M.TransactionId IS NULL
-                                ORDER BY T.TransactionDate
+                                ORDER BY T.TransactionDate DESC
                                 OFFSET @SkipRows ROWS FETCH NEXT @TakeRows ROWS ONLY";
             } else
             {
                 sqlQuery = @"SELECT T.* FROM Transactions T 
                                 WHERE T.ClientId = @ClientId AND T.TransactionDate >= @StartDate AND T.TransactionDate <= @EndDate AND T.LineItemId IS NULL 
-                                ORDER BY T.TransactionDate
+                                ORDER BY T.TransactionDate DESC
                                 OFFSET @SkipRows ROWS FETCH NEXT @TakeRows ROWS ONLY";
             }
 

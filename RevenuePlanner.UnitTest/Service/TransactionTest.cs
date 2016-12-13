@@ -428,8 +428,8 @@ namespace RevenuePlanner.UnitTest.Service
             const int paginationExpectedFirstPageCount = 10;
             const int paginationExpectedThirdPageCount = 2;
             const int paginationExpctedTenthPageCount = 0;
-            const string expectedFirstPageFirstItemClientTransactionId = "47211";
-            const string expectedThirdPageFirstItemClientTransactionId = "49825";
+            const string expectedFirstPageFirstItemClientTransactionId = "36960";
+            const string expectedThirdPageFirstItemClientTransactionId = "05971";
             const int testClientIdWithDirectLinkedLineItems = 1;
             const int testExpctectCountForClientWithDirectLinkedLineItems = 1;     
 
@@ -478,6 +478,16 @@ namespace RevenuePlanner.UnitTest.Service
             // Verify we don't get transactions that directly have a lineItemId
             transactionList = _transaction.GetTransactions(testClientIdWithDirectLinkedLineItems, testMinStartDate, testMaxEndDate, false);
             Assert.AreEqual(testExpctectCountForClientWithDirectLinkedLineItems, transactionList.Count);
+
+            // Verify the transactions are ordered properly.
+            transactionList = _transaction.GetTransactions(testClientId, testMinStartDate, testMaxEndDate, false);
+
+            DateTime lastDateProcessed = DateTime.MaxValue;
+            foreach (Transaction transaction in transactionList)
+            {
+                Assert.IsTrue(lastDateProcessed >= transaction.TransactionDate);
+                lastDateProcessed = transaction.TransactionDate;
+            }
         }
 
         [TestMethod]
