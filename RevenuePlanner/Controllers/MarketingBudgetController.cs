@@ -101,6 +101,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="BudgetId">Id of the Budget</param>
         /// <param name="TimeFrame">Selected time frame</param>
         /// <returns>Json data to bind the grid</returns>
+        [CompressAttribute]
         public JsonResult GetBudgetData(int budgetId, string TimeFrame) // need to pass columns requested
         {
             // set budgetId  and timeframe in session for import

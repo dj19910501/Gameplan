@@ -2387,8 +2387,7 @@ BEGIN
 		[Y10_Actual] [float] NULL,
 		[Y11_Actual] [float] NULL,
 		[Y12_Actual] [float] NULL,
-		[Users] [INT] DEFAULT 0,
-		[LineItems] [INT] DEFAULT 0
+		[Users] [INT] DEFAULT 0
 	) ON [PRIMARY]
 END
 GO
@@ -2400,7 +2399,7 @@ BEGIN
 	BEGIN
 		CREATE NONCLUSTERED INDEX [IX_PreCalculatedMarketingBudget_BudgetDetailId]
 		ON [MV].[PreCalculatedMarketingBudget] ([BudgetDetailId])
-		INCLUDE ([Y1_Actual],[Y2_Actual],[Y3_Actual],[Y4_Actual],[Y5_Actual],[Y6_Actual],[Y7_Actual],[Y8_Actual],[Y9_Actual],[Y10_Actual],[Y11_Actual],[Y12_Actual],[Users],[LineItems])
+		INCLUDE ([Y1_Actual],[Y2_Actual],[Y3_Actual],[Y4_Actual],[Y5_Actual],[Y6_Actual],[Y7_Actual],[Y8_Actual],[Y9_Actual],[Y10_Actual],[Y11_Actual],[Y12_Actual],[Users])
 	END
 END
 GO
@@ -2692,20 +2691,6 @@ BEGIN
 END
 GO
 
-BEGIN
-	-- Update line items into pre calculated table
-	UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
-	FROM [MV].[PreCalculatedMarketingBudget] PreCal
-	LEFT JOIN 
-	(
-		-- Get associated line items count for each budget detail 
-		SELECT LB.BudgetDetailId, COUNT(LB.PlanLineItemId) AS LineItemCount 
-		FROM LineItem_Budget(NOLOCK) LB 
-		INNER JOIN Plan_Campaign_Program_Tactic_LineItem(NOLOCK) PL ON LB.PlanLineItemId = PL.PlanLineItemId AND PL.IsDeleted=0
-		GROUP BY LB.BudgetDetailId
-	) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
-END
-GO
 
 -- End - Added by Arpita Soni on 12/06/2016
 
@@ -3047,13 +3032,13 @@ BEGIN
 	ELSE 
 	BEGIN
 		-- Get values which are deleted
-		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate) FROM DELETED 
+		SELECT @Period = Period, @PlanLineItemId = PlanLineItemId,@Year = YEAR(CreatedDate),@OldValue=Value FROM DELETED 
 
 		IF ((SELECT COUNT(id) FROM LineItem_Budget(NOLOCK) WHERE PlanLineItemId = @PlanLineItemId AND CAST(REPLACE(@Period,'Y','') AS INT) < 13) > 0)
 		BEGIN
 			-- Delete/Update record into pre-calculated table while Cost entry is deleted
 			SET @DeleteQuery = 'UPDATE P SET 
-								' +@Period + '_'+@UpdatedColumn +' = (P.' +@Period + '_'+ @UpdatedColumn + ' - '+CAST(@OldValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) + '+CAST(@NewValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100))
+								' +@Period + '_'+@UpdatedColumn +' = (P.' +@Period + '_'+ @UpdatedColumn + ' - '+CAST(@OldValue AS VARCHAR(30))+' * (CAST(Weightage AS FLOAT)/100) 
 								FROM [MV].[PreCalculatedMarketingBudget] P
 								INNER JOIN [dbo].[LineItem_Budget] LB ON P.BudgetDetailId = LB.BudgetDetailId 
 								WHERE LB.PlanLineItemId = ' +CAST(@PlanLineItemId AS VARCHAR(30)) + ' AND P.Year = ' + CAST(@Year AS VARCHAR(30))
@@ -4287,8 +4272,21 @@ RETURN (
 			,F.BudgetDetailId
 			,F.ParentId
 			,F.Name
-			,F.TotalBudget * @CurrencyRate as Budget
-			,F.TotalForecast * @CurrencyRate as Forecast
+			,CASE 
+				-- Check Null Planned for parent records only.
+				WHEN ( BD2.Id IS NOT NULL) 
+				THEN NULL
+				ELSE
+					IsNull(F.TotalBudget,0) * @CurrencyRate 
+			END as Budget
+			,
+			CASE 
+				-- Check Null Planned for parent records only.
+				WHEN ( BD2.Id IS NOT NULL) 
+				THEN NULL
+				ELSE
+					IsNull(F.TotalForecast,0) * @CurrencyRate 
+			END as Forecast
 			,
 			CASE 
 				-- Check Null Planned for parent records only.
@@ -6208,47 +6206,6 @@ GO
 IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TrgPreCalDeletionLineItemsMarketingBudget]'))
 BEGIN
 	DROP TRIGGER [dbo].[TrgPreCalDeletionLineItemsMarketingBudget]
-END
-GO
-
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		Rahul Shah
--- Create date: 12/12/2016
--- Description:	Update line items count into pre calculation table in case of line item deleted
--- =============================================
-CREATE TRIGGER [dbo].[TrgPreCalDeletionLineItemsMarketingBudget]
-   ON  [dbo].[Plan_Campaign_Program_Tactic_LineItem]
-   AFTER UPDATE
-AS 
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-		
-	IF((SELECT COUNT(*) FROM INSERTED) > 0)	
-	BEGIN	
-		IF UPDATE(IsDeleted) --trigger fire only if isdeleted column is updated
-		BEGIN
-			-- Update line items count into pre calculated table in case of Line Item DELETION
-			UPDATE PreCal SET LineItems = ISNULL(LineItemCount,0)
-			FROM [MV].[PreCalculatedMarketingBudget] PreCal
-			LEFT JOIN
-			(
-				-- Get count of associated all line items to the budget with IsDeleted flag
-				SELECT LB.BudgetDetailId,COUNT(LB.PlanLineItemId) AS LineItemCount 
-				FROM LineItem_Budget LB 
-				INNER JOIN INSERTED I ON I.PlanLineItemId = LB.PlanLineItemId
-				WHERE I.IsDeleted = 0
-				GROUP BY LB.BudgetDetailId
-			) TblLineItems ON PreCal.BudgetDetailId = TblLineItems.BudgetDetailId
-			
-		END
-	END
-
 END
 GO
 
