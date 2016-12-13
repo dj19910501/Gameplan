@@ -244,11 +244,11 @@ namespace RevenuePlanner.Services.Transactions
             {
                 sqlQuery = @"SELECT COUNT(1) from Transactions T
                                 LEFT JOIN TransactionLineItemMapping M ON T.TransactionId = M.TransactionId
-                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND T.LineItemId IS NULL AND M.TransactionId IS NULL";
+                                WHERE T.ClientId = @ClientId AND T.TransactionDate >= @StartDate AND T.TransactionDate <= @EndDate AND T.LineItemId IS NULL AND M.TransactionId IS NULL";
             } else
             {
                 sqlQuery = @"SELECT COUNT(1) from Transactions T
-                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND T.LineItemId IS NULL ";
+                                WHERE T.ClientId = @ClientId AND T.TransactionDate >= @StartDate AND T.TransactionDate <= @EndDate AND T.LineItemId IS NULL ";
             }
 
             if (_database.Database.Connection.State == ConnectionState.Closed)
@@ -288,14 +288,14 @@ namespace RevenuePlanner.Services.Transactions
             {
                 sqlQuery = @"SELECT T.* FROM Transactions T
                                 LEFT JOIN TransactionLineItemMapping M ON T.TransactionId = M.TransactionId
-                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND T.LineItemId IS NULL AND M.TransactionId IS NULL
-                                ORDER BY T.DateCreated
+                                WHERE T.ClientId = @ClientId AND T.TransactionDate >= @StartDate AND T.TransactionDate <= @EndDate AND T.LineItemId IS NULL AND M.TransactionId IS NULL
+                                ORDER BY T.TransactionDate
                                 OFFSET @SkipRows ROWS FETCH NEXT @TakeRows ROWS ONLY";
             } else
             {
                 sqlQuery = @"SELECT T.* FROM Transactions T 
-                                WHERE T.ClientId = @ClientId AND T.DateCreated >= @StartDate AND T.DateCreated <= @EndDate AND T.LineItemId IS NULL 
-                                ORDER BY T.DateCreated
+                                WHERE T.ClientId = @ClientId AND T.TransactionDate >= @StartDate AND T.TransactionDate <= @EndDate AND T.LineItemId IS NULL 
+                                ORDER BY T.TransactionDate
                                 OFFSET @SkipRows ROWS FETCH NEXT @TakeRows ROWS ONLY";
             }
 
@@ -398,7 +398,7 @@ namespace RevenuePlanner.Services.Transactions
                 new TransactionHeaderMapping() { ClientHeader = "Remaining", Hive9Header = "AmountRemaining", HeaderFormat = HeaderMappingFormat.Currency, precision = 2, ExpectedCharacterLength = 10 },
                 new TransactionHeaderMapping() { ClientHeader = "Description", Hive9Header = "TransactionDescription", HeaderFormat = HeaderMappingFormat.Text, precision = 0, ExpectedCharacterLength = 30 },
                 new TransactionHeaderMapping() { ClientHeader = "Account", Hive9Header = "Account", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 7 },
-                new TransactionHeaderMapping() { ClientHeader = "Date", Hive9Header = "AccountingDate", HeaderFormat = HeaderMappingFormat.Date, precision = 0, ExpectedCharacterLength = 10 },
+                new TransactionHeaderMapping() { ClientHeader = "Date", Hive9Header = "TransactionDate", HeaderFormat = HeaderMappingFormat.Date, precision = 0, ExpectedCharacterLength = 10 },
                 new TransactionHeaderMapping() { ClientHeader = "Department", Hive9Header = "Department", HeaderFormat = HeaderMappingFormat.Label, precision = 0, ExpectedCharacterLength = 10 },
             };
         #endregion Internal Implementation 
