@@ -1028,8 +1028,9 @@ function ApplyFormattingAndTooltip(idName) {
 
 //Function to set value of Header and Tooltip Also and Manage Negative Value with Currency
 function setBootstrapTooltipMarketingBudget(lableId, value, maxSize, iscurrency, decimaldigit) {
+    debugger;
     var digit = 0;
-    if (decimaldigit != null || decimaldigit != undefined || decimaldigit != 'undefined') {
+    if (decimaldigit != null && decimaldigit != undefined && decimaldigit != 'undefined') {
         digit = parseInt(decimaldigit);
     }
     var numericval = RemoveExtraCharactersFromString(value.toString()); // Remove currency symbol($) and other characters from value.
@@ -1071,7 +1072,14 @@ function setBootstrapTooltipMarketingBudget(lableId, value, maxSize, iscurrency,
             //Modified by Rahul Shah for PL #2498 & #2499
             //$(lableId).text(CurrencySybmol + number_format(roundValue, digit, '.', ','));
             //Insertation start #2501 24/08/2016 kausha
-            $(lableId).text((CurrencySybmol + number_format(roundValue, digit, '.', ',')).replace(' ', ''));
+            if (value<0) {
+                roundValue = Math.abs(roundValue);
+                $(lableId).text(("-"+CurrencySybmol + number_format(roundValue, digit, '.', ',')).replace(' ', ''));
+            }
+            else {
+                $(lableId).text((CurrencySybmol + number_format(roundValue, digit, '.', ',')).replace(' ', ''));
+            }
+            
             //Insertation end #2501 24/08/2016 kausha
 
         }
