@@ -77,7 +77,7 @@ BEGIN
 					IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @oldBudgetDetailId) > 0)
 					BEGIN
 						-- Update record into pre-calculated table while LineItem - Budget mapping changed
-						EXEC [dbo].UpdatePrecalculationPlannedValue @oldWeightage,@oldBudgetDetailId,@PlanLineItemId,1
+						EXEC [dbo].UpdatePrecalculationPlannedValue @oldWeightage,@oldBudgetDetailId,@PlanLineItemId,0
 					END
 				END
 
@@ -104,7 +104,7 @@ BEGIN
 		IF ((SELECT COUNT(id) FROM [MV].[PreCalculatedMarketingBudget](NOLOCK) WHERE BudgetDetailId = @oldBudgetDetailId) > 0)
 		BEGIN
 			-- Update record into pre-calculated table while LineItem - Budget mapping changed
-			EXEC [dbo].UpdatePrecalculationPlannedValue @oldWeightage,@oldBudgetDetailId,@PlanLineItemId,1
+			EXEC [dbo].UpdatePrecalculationPlannedValue @oldWeightage,@oldBudgetDetailId,@PlanLineItemId,0
 		END
 	END
 
