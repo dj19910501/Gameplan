@@ -905,10 +905,14 @@ function LoadInputModelBox() {
     });
 
     $('#input-43').off('fileuploaded').on('fileuploaded', function (event, data, previewId, index) {
+      
+        myApp.hidePleaseWait();
+        $('#ImportModal').modal('hide');
+        UpdateFinanceHeaderValues(); // Update header values
+        GetGridData();
         if (data.response.conflict == true) {
             ShowMessage(false, data.response.message);
         }
-
         var sucesstextmessagespan = $("#spanMsgSuccess");
         var sucesstextmessagediv = $("#SuccessMsg");
         if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
@@ -917,10 +921,6 @@ function LoadInputModelBox() {
                 sucesstextmessagediv.css('display', 'block');
             }
         }
-        myApp.hidePleaseWait();
-        $('#ImportModal').modal('hide');
-        UpdateFinanceHeaderValues(); // Update header values
-        GetGridData();
     });
 
     $('#input-43').off('fileloaded').on('fileloaded', function (event, file, previewId, index, reader) {
