@@ -421,7 +421,8 @@ namespace RevenuePlanner.Helpers
             {ActiveMenu.Finance.ToString().ToLower(), "finance"},
             {ActiveMenu.Pref.ToString().ToLower(), "user"},
             {ActiveMenu.ExternalService.ToString().ToLower(), "externalservice"},
-            {ActiveMenu.Organization.ToString().ToLower(), "organization"}
+            {ActiveMenu.Organization.ToString().ToLower(), "organization"},
+            {ActiveMenu.MarketingBudget.ToString().ToLower(), "marketingbudget"}
         };
 
         #endregion
