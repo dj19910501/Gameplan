@@ -384,26 +384,36 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             ///If connection is closed then it will be open
             var Connection = _database.Database.Connection as SqlConnection;
-            if (Connection.State == System.Data.ConnectionState.Closed)
+            try
             {
-                Connection.Open();
-            }
-            SqlCommand command = new SqlCommand("MV.GetFinanceGridData", Connection);
-            command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@BudgetId", budgetId);
-            command.Parameters.AddWithValue("@ClientId", ClientID);
-            command.Parameters.AddWithValue("@timeframe", timeframe);
-            command.Parameters.AddWithValue("@lstUserIds", CommaSeparatedUserIds);
-            command.Parameters.AddWithValue("@UserId", UserID);
-            command.Parameters.AddWithValue("@CurrencyRate", Exchangerate);
+                if (Connection.State == System.Data.ConnectionState.Closed)
+                {
+                    Connection.Open();
+                }
+                SqlCommand command = new SqlCommand("MV.GetFinanceGridData", Connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@BudgetId", budgetId);
+                command.Parameters.AddWithValue("@ClientId", ClientID);
+                command.Parameters.AddWithValue("@timeframe", timeframe);
+                command.Parameters.AddWithValue("@lstUserIds", CommaSeparatedUserIds);
+                command.Parameters.AddWithValue("@UserId", UserID);
+                command.Parameters.AddWithValue("@CurrencyRate", Exchangerate);
 
-            SqlDataAdapter adp = new SqlDataAdapter(command);
-            adp.Fill(EntityList);
-            if (Connection.State == System.Data.ConnectionState.Open)
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                adp.Fill(EntityList);              
+            }
+            //Added  try catch and finally block
+            catch (Exception ex)
             {
-                Connection.Close();
+                throw ex;
             }
-
+            finally
+            {
+                if (Connection.State == System.Data.ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
+            }
             return EntityList;
         }
 
@@ -762,26 +772,34 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             ///If connection is closed then it will be open
             var Connection = _database.Database.Connection as SqlConnection;
-            if (Connection.State == System.Data.ConnectionState.Closed)
+            try
             {
-                Connection.Open();
+                if (Connection.State == System.Data.ConnectionState.Closed)
+                {
+                    Connection.Open();
+                }
+                SqlCommand command = new SqlCommand("DeleteMarketingBudget", Connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@BudgetDetailId", selectedBudgetId);
+                command.Parameters.AddWithValue("@ClientId", ClientId);
+
+                SqlParameter returnParameter = command.Parameters.Add("NewParentId", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+                command.ExecuteNonQuery();
+                NextBudgetId = (int)returnParameter.Value;
             }
-            SqlCommand command = new SqlCommand("DeleteMarketingBudget", Connection);
-            command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@BudgetDetailId", selectedBudgetId);
-            command.Parameters.AddWithValue("@ClientId", ClientId);
-
-            SqlParameter returnParameter = command.Parameters.Add("NewParentId", SqlDbType.Int);
-            returnParameter.Direction = ParameterDirection.ReturnValue;
-            command.ExecuteNonQuery();
-            NextBudgetId = (int)returnParameter.Value;
-
-            if (Connection.State == System.Data.ConnectionState.Open)
+            //Added  try catch and finally block
+            catch (Exception ex)
             {
-                Connection.Close();
+                throw ex;
             }
-
-
+            finally
+            {
+                if (Connection.State == System.Data.ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
+            }
             return NextBudgetId; //return new budgetid if user delete root/Parent budget.
         }
 
@@ -1228,37 +1246,49 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             ///If connection is closed then it will be open
             SqlConnection Connection = _database.Database.Connection as SqlConnection;
-            if (Connection.State == System.Data.ConnectionState.Closed)
-            {
-                Connection.Open();
-            }
-            SqlCommand command = new SqlCommand();
             int ExecuteCommand = 0;
-            string spname = string.Empty;
+            try
+            {
+                if (Connection.State == System.Data.ConnectionState.Closed)
+                {
+                    Connection.Open();
+                }
+                SqlCommand command = new SqlCommand();
 
-            if (IsMonthly)
-            {
-                spname = "ImportMarketingBudgetMonthly";
+                string spname = string.Empty;
+
+                if (IsMonthly)
+                {
+                    spname = "ImportMarketingBudgetMonthly";
+                }
+                else
+                {
+                    spname = "ImportMarketingBudgetQuarter";
+                }
+                using (command = new SqlCommand(spname, Connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@UserId", UserID);
+                    command.Parameters.AddWithValue("@ClientId", ClientID);
+                    command.Parameters.AddWithValue("@XMLData", XMLData.InnerXml);
+                    command.Parameters.AddWithValue("@ImportBudgetCol", ImportBudgetCol);
+                    command.Parameters.AddWithValue("@BudgetDetailId", BudgetDetailId);
+                    SqlDataAdapter adp = new SqlDataAdapter(command);
+                    command.CommandTimeout = 0;
+                    ExecuteCommand = command.ExecuteNonQuery();
+                }              
             }
-            else
+            //Added  try catch and finally block
+            catch (Exception ex)
             {
-                spname = "ImportMarketingBudgetQuarter";
+                throw ex;
             }
-            using (command = new SqlCommand(spname, Connection))
+            finally
             {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@UserId", UserID);
-                command.Parameters.AddWithValue("@ClientId", ClientID);
-                command.Parameters.AddWithValue("@XMLData", XMLData.InnerXml);
-                command.Parameters.AddWithValue("@ImportBudgetCol", ImportBudgetCol);
-                command.Parameters.AddWithValue("@BudgetDetailId", BudgetDetailId);
-                SqlDataAdapter adp = new SqlDataAdapter(command);
-                command.CommandTimeout = 0;
-                ExecuteCommand = command.ExecuteNonQuery();
-            }
-            if (Connection.State == System.Data.ConnectionState.Open)
-            {
-                Connection.Close();
+                if (Connection.State == System.Data.ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
             }
             return ExecuteCommand;
 

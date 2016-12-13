@@ -721,12 +721,13 @@ function DeleteBudgetIconClick(data) {
         return false;
     }
     else {
-        if (LineItemCount != 0) {
-            $('#LiWarning').css('display', 'block');
-        }
-        else {
-            $('#LiWarning').css('display', 'none');
-        }
+        $('#LiWarning').css('display', 'block');
+        //if (LineItemCount != 0) {
+        //    $('#LiWarning').css('display', 'block');
+        //}
+        //else {
+        //    $('#LiWarning').css('display', 'none');
+        //}
         var BudgetRowId = $(data).attr('row-id').split('_')[1];
         $("#lipname").html(Name);
         $("#divDeletePopup").modal('show');
