@@ -749,6 +749,7 @@ function DeleteBudgetIconClick(data) {
         //}
         var BudgetRowId = $(data).attr('row-id').split('_')[1];
         $("#lipname").html(Name);
+        $("#lipname").attr('title', Name);
         $("#divDeletePopup").modal('show');
         SelectedBudgetId = BudgetRowId;
         $('#cancel-button_DeleteItem').on("click", function () {
