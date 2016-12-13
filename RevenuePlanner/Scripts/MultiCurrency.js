@@ -32,19 +32,19 @@ function setCurrencyDetails()
 function GetValueByExchangeRate(value) {
     value = value.toString().replace(",", '');
     value = parseFloat(value);
-    if (value > 0) {        
+    //if (value > 0) {        
         value = value * PlanExchangeRate;
         value = Math.round(value * Math.pow(10, 2)) / Math.pow(10, 2);
-    }
+    //}
     return value;   
 }
 
 function SetValueByExchangeRate(value) {
     value = value.toString().replace(",", '');
     value = parseFloat(value);
-    if (value > 0) {
+    //if (value > 0) {
         value = value / PlanExchangeRate;
         value = Math.round(value * Math.pow(10, 2)) / Math.pow(10, 2);
-    }
+    //}
     return value;
 }
