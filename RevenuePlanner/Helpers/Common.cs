@@ -7905,6 +7905,88 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="PlanTacticIds"></param>
         /// <returns></returns>
+        //public static List<MultiYearModel> CalculatePlannedCostTacticslist(List<int> PlanTacticIds)
+        //{
+        //    PlanExchangeRate = Sessions.PlanExchangeRate;
+        //    List<MultiYearModel> MultiYearList = new List<MultiYearModel>();
+        //    List<String> ApprovedTacticStatus = Common.GetStatusListAfterApproved();
+        //    string PeriodPrefix = "Y";
+        //    RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+        //    using (MRPEntities db = new MRPEntities())
+        //    {
+
+        //        List<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem =
+        //            db.Plan_Campaign_Program_Tactic_LineItem.Where(w => w.IsDeleted == false && PlanTacticIds.Contains(w.PlanTacticId)).ToList();
+
+        //        List<int> lineitemIdList = Plan_Campaign_Program_Tactic_LineItem.Where(w => w.IsDeleted == false && PlanTacticIds.Contains(w.PlanTacticId))
+        //            .Select(w => w.PlanLineItemId).ToList();
+        //        List<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost = db.Plan_Campaign_Program_Tactic_LineItem_Cost
+        //            .Where(w => lineitemIdList.Contains(w.PlanLineItemId)).ToList();
+        //        List<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost = db.Plan_Campaign_Program_Tactic_Cost
+        //            .Where(w => PlanTacticIds.Contains(w.PlanTacticId)).ToList();
+
+        //        int TacticLength = PlanTacticIds.Count;
+        //        for (int i = 0; i < TacticLength; i++)
+        //        {
+        //            int TacticId = PlanTacticIds[i];
+        //            var listlineitems = Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && !ln.IsDeleted && ln.LineItemTypeId != null).Select(ln => ln).ToList();
+        //            List<int> lineitemIds = listlineitems.Select(ln => ln.PlanLineItemId).ToList();
+        //            var tacCostData = Plan_Campaign_Program_Tactic_Cost.Where(Cost => Cost.PlanTacticId.Equals(TacticId)).Select(cost => cost).ToList();
+        //            var LineCostListData = Plan_Campaign_Program_Tactic_LineItem_Cost.Where(Cost => lineitemIds.Contains(Cost.PlanLineItemId)).ToList();
+        //            if (lineitemIds.Count > 0)
+        //            {
+
+        //                if (LineCostListData.Count > 0)
+        //                {
+        //                    var LineItemCostData = LineCostListData.Select(tac => new
+        //                    {
+        //                        Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
+        //                        LineItemId = tac.PlanLineItemId,
+        //                        Value = objCurrency.GetValueByExchangeRate(tac.Value, PlanExchangeRate), // Modified By Nishant Sheth #2507
+        //                        StartYear = tac.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.StartDate.Year
+        //                    }).ToList().Select(tac => new
+        //                    {
+        //                        Period = tac.Period,
+        //                        NumPeriod = (tac.Period / 13),
+        //                        LineItemId = tac.LineItemId,
+        //                        Value = tac.Value,
+        //                        StartYear = tac.StartYear
+        //                    }).ToList().Select(tact => new MultiYearModel
+        //                    {
+        //                        Period = PeriodPrefix + Common.ReportMultiyearMonth(tact.Period, tact.NumPeriod),
+        //                        Year = tact.StartYear + tact.NumPeriod,
+        //                        EntityId = tact.LineItemId,
+        //                        Value = tact.Value
+        //                    }).ToList();
+        //                    MultiYearList.AddRange(LineItemCostData);
+        //                }
+        //            }
+
+        //            var OtherLineItem = Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && ln.LineItemTypeId == null &&
+        //                ln.IsDeleted.Equals(false)).FirstOrDefault();
+        //            if (OtherLineItem != null)
+        //            {
+        //                foreach (var taccost in tacCostData)
+        //                {
+        //                    var lineDataList = LineCostListData.Where(a => a.Period == taccost.Period).ToList();
+        //                    var lineCostSum = lineDataList.Select(a => a.Value).Sum();
+        //                    if (taccost.Value >= lineCostSum)
+        //                    {
+        //                        MultiYearList.Add(new MultiYearModel
+        //                        {
+        //                            EntityId = OtherLineItem.PlanTacticId,
+        //                            Period = taccost.Period,
+        //                            Value = taccost.Value - lineCostSum,
+        //                            Year = OtherLineItem.Plan_Campaign_Program_Tactic.StartDate.Year
+        //                        });
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //    }
+        //    return MultiYearList;
+        //}
         public static List<MultiYearModel> CalculatePlannedCostTacticslist(List<int> PlanTacticIds)
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
@@ -7933,55 +8015,56 @@ namespace RevenuePlanner.Helpers
                     List<int> lineitemIds = listlineitems.Select(ln => ln.PlanLineItemId).ToList();
                     var tacCostData = Plan_Campaign_Program_Tactic_Cost.Where(Cost => Cost.PlanTacticId.Equals(TacticId)).Select(cost => cost).ToList();
                     var LineCostListData = Plan_Campaign_Program_Tactic_LineItem_Cost.Where(Cost => lineitemIds.Contains(Cost.PlanLineItemId)).ToList();
-                    if (lineitemIds.Count > 0)
-                    {
+                    // if (lineitemIds.Count > 0)
+                    // {
 
-                        if (LineCostListData.Count > 0)
-                        {
-                            var LineItemCostData = LineCostListData.Select(tac => new
-                            {
-                                Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
-                                LineItemId = tac.PlanLineItemId,
-                                Value = objCurrency.GetValueByExchangeRate(tac.Value, PlanExchangeRate), // Modified By Nishant Sheth #2507
-                                StartYear = tac.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.StartDate.Year
-                            }).ToList().Select(tac => new
-                            {
-                                Period = tac.Period,
-                                NumPeriod = (tac.Period / 13),
-                                LineItemId = tac.LineItemId,
-                                Value = tac.Value,
-                                StartYear = tac.StartYear
-                            }).ToList().Select(tact => new MultiYearModel
-                            {
-                                Period = PeriodPrefix + Common.ReportMultiyearMonth(tact.Period, tact.NumPeriod),
-                                Year = tact.StartYear + tact.NumPeriod,
-                                EntityId = tact.LineItemId,
-                                Value = tact.Value
-                            }).ToList();
-                            MultiYearList.AddRange(LineItemCostData);
-                        }
-                    }
+                    //  if (LineCostListData.Count > 0)
+                    // {
+                    var LineItemCostData = tacCostData.Select(tac => new MultiYearModel
+                    {
+                        Period = tac.Period,
+                        EntityId = tac.PlanTacticId,
+                        Value = objCurrency.GetValueByExchangeRate(tac.Value, PlanExchangeRate), // Modified By Nishant Sheth #2507
+                        Year = tac.Plan_Campaign_Program_Tactic.StartDate.Year
+                    }).ToList();
+                    //}).ToList().Select(tac => new
+                    //{
+                    //    Period = tac.Period,
+                    //    NumPeriod = (tac.Period / 13),
+                    //    LineItemId = tac.LineItemId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartYear
+                    //}).ToList().Select(tact => new MultiYearModel
+                    //{
+                    //    Period = PeriodPrefix + Common.ReportMultiyearMonth(tact.Period, tact.NumPeriod),
+                    //    Year = tact.StartYear + tact.NumPeriod,
+                    //    EntityId = tact.LineItemId,
+                    //    Value = tact.Value
+                    //}).ToList();
+                    MultiYearList.AddRange(LineItemCostData);
+                    //}
+                    // }
 
                     var OtherLineItem = Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && ln.LineItemTypeId == null &&
                         ln.IsDeleted.Equals(false)).FirstOrDefault();
-                    if (OtherLineItem != null)
-                    {
-                        foreach (var taccost in tacCostData)
-                        {
-                            var lineDataList = LineCostListData.Where(a => a.Period == taccost.Period).ToList();
-                            var lineCostSum = lineDataList.Select(a => a.Value).Sum();
-                            if (taccost.Value >= lineCostSum)
-                            {
-                                MultiYearList.Add(new MultiYearModel
-                                {
-                                    EntityId = OtherLineItem.PlanTacticId,
-                                    Period = taccost.Period,
-                                    Value = taccost.Value - lineCostSum,
-                                    Year = OtherLineItem.Plan_Campaign_Program_Tactic.StartDate.Year
-                                });
-                            }
-                        }
-                    }
+                    //if (OtherLineItem != null)
+                    //{
+                    //    foreach (var taccost in tacCostData)
+                    //    {
+                    //        var lineDataList = LineCostListData.Where(a => a.Period == taccost.Period).ToList();
+                    //        var lineCostSum = lineDataList.Select(a => a.Value).Sum();
+                    //        if (taccost.Value >= lineCostSum)
+                    //        {
+                    //            MultiYearList.Add(new MultiYearModel
+                    //            {
+                    //                EntityId = OtherLineItem.PlanTacticId,
+                    //                Period = taccost.Period,
+                    //                Value = taccost.Value - lineCostSum,
+                    //                Year = OtherLineItem.Plan_Campaign_Program_Tactic.StartDate.Year
+                    //            });
+                    //        }
+                    //    }
+                    //}
                 }
 
             }

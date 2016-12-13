@@ -521,9 +521,9 @@
                     else {
                         HomeGrid.setCellTextStyle(GetParentId, cellInd, "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                     }
-                    var parent = ["plan", "campaign", "program", "tactic"];
-                    var parentUppercase = ["Plan", "Campaign", "Program", "Tactic"];
-                    var child = ["Campaign", "Program", "Tactic", "Lineitem"];
+                    var parent = ["plan", "campaign", "program"];
+                    var parentUppercase = ["Plan", "Campaign", "Program"];
+                    var child = ["Campaign", "Program", "Tactic"];
                     var TypeIndex = HomeGrid.getColIndexById("Type");
                     var Type = HomeGrid.cells(GetParentId, TypeIndex).getValue();
                     var p_ind = parent.indexOf(Type.toLowerCase());
@@ -562,11 +562,12 @@
                 else {
                     HomeGrid.setCellTextStyle(rowId, cellInd, "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                 }
-                var parent = ["plan", "campaign", "program"];
-                var parentUppercase = ["Plan", "Campaign", "Program"];
-                var child = ["Campaign", "Program", "Tactic"];
+                var parent = ["plan", "campaign", "program","tactic"];
+                var parentUppercase = ["Plan", "Campaign", "Program","Tactic"];
+                var child = ["Campaign", "Program", "Tactic","LineItem"];
                 var p_ind = parent.indexOf(Type.toLowerCase());
-                HomeGrid.cells(rowId, cellInd).setAttribute("title", parentUppercase[p_ind] + " Budget is less than the budget for it's " + child[p_ind] + ".");
+                if (p_ind > 0)
+                    HomeGrid.cells(rowId, cellInd).setAttribute("title", parentUppercase[p_ind] + " Budget is less than the budget for it's " + child[p_ind] + ".");
             }
             else {
                 var locked = HomeGrid.cells(rowId, cellInd).getAttribute("lo");
@@ -704,9 +705,9 @@
                 else {
                     HomeGrid.setCellTextStyle(rowId, cellInd, "background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                 }
-                var parent = ["plan", "campaign", "program"];
-                var parentUppercase = ["Plan", "Campaign", "Program"];
-                var child = ["Campaign", "Program", "Tactic"];
+                var parent = ["plan", "campaign", "program", "tactic"];
+                var parentUppercase = ["Plan", "Campaign", "Program", "Tactic"];
+                var child = ["Campaign", "Program", "Tactic", "Lineitem"];
                 HomeGrid.cells(rowId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
             }
             else {
@@ -761,9 +762,9 @@
                     else {
                         HomeGrid.setCellTextStyle(ParentId, cellInd, "background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                     }
-                    var parent = ["plan", "campaign", "program"];
-                    var parentUppercase = ["Plan", "Campaign", "Program"];
-                    var child = ["Campaign", "Program", "Tactic"];
+                    var parent = ["plan", "campaign", "program", "tactic"];
+                    var parentUppercase = ["Plan", "Campaign", "Program", "Tactic"];
+                    var child = ["Campaign", "Program", "Tactic", "Lineitem"];
                     HomeGrid.cells(ParentId, cellInd).setAttribute("title", ParentTypeId + "'s cost is over it's budget.");
                 }
                 else {

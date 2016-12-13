@@ -292,6 +292,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     var lineItemFlag = 0;
     var type = HomeGrid.getColType(cellInd);
     $(".popover").removeClass('in').addClass('out'); //Close Honey comb popup on edit cell. to display edited data in honeycomb
+    //Added by Preet Shah on 10/12/2016. If use just enter minus sign, value has been reset to old value. For #2850.
+    if (nValue == '-') {
+        nValue = oValue;
+        HomeGrid.cells(rowId, cellInd).setValue(nValue);
+    }
     if (stage == 0) {
         var newvalue = HomeGrid.cells(rowId, cellInd).getValue();
         if (newvalue.indexOf("</div>") > -1) {

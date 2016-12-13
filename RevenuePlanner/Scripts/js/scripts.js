@@ -111,6 +111,7 @@ function GridPriceFormatKeydown(e, element, isNegative) {
          (e.key == ".") ||
         // allow minus sign /* Added by Preet Shah for allow negative sign */
         //check for minus sign is already available or not. allow minus at only first position
+        (isTextSelected($(element)) && isNegative && e.key == "-") ||
          (isNegative && e.key == "-" && $(element).prop("selectionStart") == 0 && $(element).val().indexOf('-') == -1)) {
         // let it happen, don't do anything
         return;
@@ -121,7 +122,11 @@ function GridPriceFormatKeydown(e, element, isNegative) {
     }
 
 };
-
+// Added by Preet Shah for check value is selected or not.
+function isTextSelected(input) {
+    if ($(input) != undefined)
+        return $(input).prop("selectionStart") == 0 && $(input).prop("selectionEnd") == $(input).val().length;
+}
 /*Added by Mitesh Vaishnav on 30 May 2014 for #492 Difficulty entering weight values when creating an improvement tactic */
 /*function used at textbox which contains only numeric value*/
 function priceFormatKeydown(e) {

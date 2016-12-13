@@ -87,13 +87,13 @@ CREATE PROCEDURE [dbo].[Plan_CampaignBudgetQuarterCalculation]
 			BEGIN
 				--IF((SELECT Value from #tempDataCampaign WHERE PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
 				--BEGIN
-				--UPDATE Plan_Campaign_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter
-				--SET @UpdateValue+=@DifferenceAmount;
+				UPDATE Plan_Campaign_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter
+				SET @UpdateValue+=@DifferenceAmount;
 				--END
 				--ELSE
 				--BEGIN
-				SELECT @UpdateValue+=value from Plan_Campaign_Budget WHERE   PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter;
-				UPDATE Plan_Campaign_Budget  SET Value = 0     WHERE   PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter				
+				--SELECT @UpdateValue+=value from Plan_Campaign_Budget WHERE   PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter;
+				--UPDATE Plan_Campaign_Budget  SET Value = 0     WHERE   PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter				
 				--END			
 			END
 			END			
