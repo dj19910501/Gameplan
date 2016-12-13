@@ -4426,10 +4426,12 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
+
 ALTER PROCEDURE [dbo].[GetGridFilters] 
 	@userId int
 	,@ClientId int
-	,@IsDefaultCustomRestrictionsViewable bit 
+	,@IsDefaultCustomRestrictionsViewable bit ,
+	@IsUserSaveView bit=0
 AS --Todo: New user login then need to some more 
 BEGIN
 	
@@ -4462,8 +4464,14 @@ BEGIN
 		Declare @keyAll varchar(10)='All'
 		Declare @keyCustomField varchar(100)='CustomField'
 		
-
-		select TOP 1 @viewname =  ViewName from Plan_UserSavedViews where Userid=@userId AND IsDefaultPreset = 1
+		if(@IsUserSaveView=1)
+		Begin
+			select TOP 1 @viewname =  ViewName from Plan_UserSavedViews where Userid=@userId AND ViewName is null
+		End
+		Else
+		Begin
+			select TOP 1 @viewname =  ViewName from Plan_UserSavedViews where Userid=@userId AND IsDefaultPreset = 1
+		End
 		SET @viewname = ISNULL(@viewname,'')
 
 		-- Insert user filters to local variables.
@@ -4586,15 +4594,10 @@ BEGIN
 		END
 	             	
 				
-			
-
 		select @PlanId PlanIds,@OwnerIds OwnerIds,@StatusIds StatusIds,@TacticTypeIds TacticTypeIds,@customFields CustomFieldIds
 
     
 END
-
-
-
 GO
 
 -- End - Added by Viral for Ticket #2763 on 11/29/2016

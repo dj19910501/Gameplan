@@ -81,10 +81,10 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// call stored procedure to get list of filters of login user
         /// <summary>
-        public List<PlanGridFilters> GetGridFilterData(int ClientId, int UserId)
+        public List<PlanGridFilters> GetGridFilterData(int ClientId, int UserId, bool IsUserSaveView=false)
         {
             bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
-            SqlParameter[] para = new SqlParameter[3];
+            SqlParameter[] para = new SqlParameter[4];
 
 
             para[0] = new SqlParameter { ParameterName = "userId", Value = UserId };
@@ -93,8 +93,11 @@ namespace RevenuePlanner.Services
 
             para[2] = new SqlParameter { ParameterName = "IsDefaultCustomRestrictionsViewable", Value = IsDefaultCustomRestrictionsViewable };
 
+            para[3] = new SqlParameter { ParameterName = "IsUserSaveView", Value = IsUserSaveView };
+
+
             List<PlanGridFilters> EntityList = objDbMrpEntities.Database
-                .SqlQuery<PlanGridFilters>("GetGridFilters @userId,@ClientId,@IsDefaultCustomRestrictionsViewable", para)
+                .SqlQuery<PlanGridFilters>("GetGridFilters @userId,@ClientId,@IsDefaultCustomRestrictionsViewable,@IsUserSaveView", para)
                 .ToList();
             return EntityList;
         }

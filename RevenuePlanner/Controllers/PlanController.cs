@@ -6587,6 +6587,7 @@ namespace RevenuePlanner.Controllers
             PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
             List<PlanOptionsTacticType> Tactictypelist = new List<PlanOptionsTacticType>();
             List<PlanOptionsTacticType> LineItemtypelist = new List<PlanOptionsTacticType>();
+            bool UserSaveView = false;
             try
             {
                 #region Set Permission
@@ -6613,7 +6614,11 @@ namespace RevenuePlanner.Controllers
                     viewBy = PlanGanttTypes.Tactic.ToString();
                 if (isLoginFirst)
                 {
-                    PlanGridFilters objFilter = objGrid.GetGridFilterData(Sessions.User.CID, Sessions.User.ID).FirstOrDefault();
+                    if (Sessions.PlanUserSavedViews != null)
+                    {
+                        UserSaveView = true;
+                    }
+                    PlanGridFilters objFilter = objGrid.GetGridFilterData(Sessions.User.CID, Sessions.User.ID, UserSaveView).FirstOrDefault();
                     planIds = objFilter.PlanIds;
                     ownerIds = objFilter.OwnerIds;
                     TacticTypeid = objFilter.TacticTypeIds;
