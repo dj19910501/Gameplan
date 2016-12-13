@@ -63,11 +63,10 @@ export default function createLinkedItemSubGrid(element, transactionId, parentGr
         if (dataSource.state.records) {
             dataSource.off("change", onLoad);
 
-            if (dataSource.state.records.length) {
-                createSubGrid(parentGrid, element, td, dataSource);
-            }
-            else {
-                element.innerHTML = noLinkedItemsMessage({css});
+            createSubGrid(parentGrid, element, td, dataSource);
+            if (dataSource.state.records.length == 0 ) {
+                //TODO: we need to show message as will as listening to the transaction changes
+                //element.innerHTML = noLinkedItemsMessage({css});
             }
 
             // Tell our caller that we have finished loading
