@@ -16,6 +16,7 @@ namespace RevenuePlanner.UnitTest.Service
     {
         private ITransaction _transaction;
         private Models.MRPEntities _database;
+        private static bool _initialized = false; 
 
         #region Test Data 
         private const int testClientId = 30; //demo client
@@ -34,11 +35,21 @@ namespace RevenuePlanner.UnitTest.Service
         [TestInitialize()]
         public void Transaction_Test_Setup()
         {
-            string resourceName = "PlanUnitTests.Service.TransactionTestData.1. transactions-test-data-geneated.sql";
-            RunSqlScriptFromResource(resourceName);
+            //class inialize somehow didnt do the job and 
+            //we have to synchrously put data into db before the first test case runs.  
+            lock (_transaction){
+                //initialize only once!
+                if (!_initialized)
+                {
+                    string resourceName = "PlanUnitTests.Service.TransactionTestData.1. transactions-test-data-geneated.sql";
+                    RunSqlScriptFromResource(resourceName);
 
-            resourceName = "PlanUnitTests.Service.TransactionTestData.2. transactions-attribution-insert-test.sql";
-            RunSqlScriptFromResource(resourceName);
+                    resourceName = "PlanUnitTests.Service.TransactionTestData.2. transactions-attribution-insert-test.sql";
+                    RunSqlScriptFromResource(resourceName);
+
+                    _initialized = true;
+                }
+            }
         }
 
         private void RunSqlScriptFromResource(string resourceName)
