@@ -1130,12 +1130,13 @@ function AddNewRowbyType(itemType, cntrl) {
             if (k > 2 && k < (TotalColumn - 3)) {
                 var ColType = budgetgrid.getColType(k)
                 if (ColType.toString().toLowerCase() == "math") {
-                    AddRowString.push(CurrencySybmol + "0.00");
+                    AddRowString.push("0");
+                    AddRowColTypes += ",edn[=sum]";
                 }
                 else {
                     AddRowString.push("");
-                }
-                AddRowColTypes += ",ro";
+                    AddRowColTypes += ",ro";
+                }                
             }
         }
         AddRowString.push("0 | Edit");
@@ -1163,6 +1164,7 @@ function AddNewRowbyType(itemType, cntrl) {
         budgetgrid.setCellTextStyle(_newrowid, titleIndex, "border-right:0px solid #d4d4d4;");
         budgetgrid.openItem(row_id);
         var _newRowIndex = budgetgrid.getRowIndex(_newrowid.toString());
+        budgetgrid.setUserData(_newrowid, "lo", "1");
         window.setTimeout(function () {
             budgetgrid.selectCell(_newRowIndex, 0, false, false, true, true);
             budgetgrid.editCell();
