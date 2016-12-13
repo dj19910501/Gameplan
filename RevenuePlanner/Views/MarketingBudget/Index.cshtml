@@ -221,7 +221,9 @@
     var Lineitems = "@Enums.DefaultGridColumn.LineItems";
     var BudgetColumn = "@Enums.FinanceHeader_Label.Budget.ToString()";
     var ForecastColumn = "@Enums.FinanceHeader_Label.Forecast.ToString()";
-    var ValidParentId = 0; // variable to get parent id 
+    var PlannedColumn = "@Enums.FinanceHeader_Label.Planned.ToString()";
+    var ActualColumn = "@Enums.FinanceHeader_Label.Actual.ToString()";    
+    var ValidParentId = 0; // variable to get parent id
     var IsValid = true; // variable to check if the name entered is valid or not
     var ValidColumnId = 0;
     var ValidRowId = 0;
@@ -237,7 +239,7 @@
     var selectedTaskID="";
     var _NewGeneratedRowId='';
     var IsDelete=false; //Added by Jaymin Modi for PL #2806. to address scroll bar issue in case of budget deletion
-    
+
 var gridpage="MainGrid";
     $(document).ready(function () {
 
@@ -324,6 +326,6 @@ var gridpage="MainGrid";
         });
         //End
     });
-   
+
 
 </script>

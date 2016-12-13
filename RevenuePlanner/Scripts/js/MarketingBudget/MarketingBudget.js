@@ -402,6 +402,7 @@ function SetTooltip() {
 //nValue - new values
 //oValue - old value.
 function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
+
     var ColumnId = budgetgrid.getColumnId(cInd);            // Get column index.
     var locked = budgetgrid.getUserData(rId, "lo");         // Get "lo"(i.e. row locked or not) property to identify that row is locked or not.
     var Permission = budgetgrid.getUserData(rId, "per");    // Get user permission "per" property.
@@ -409,7 +410,7 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
     ValidParentId = budgetgrid.getParentId(rId); // get parent id as per row
     ValidColumnId = cInd; // get column index
     ValidRowId = rId; // get row id
-    // Doesn't allow the user to edit while cell is locked and doesn't have edit permission
+    // Doesn't allow the user to edit while cell is locked and doesn't have edit permission   
     if (locked == 1 && (Permission == "View" || Permission == "None")) {
         budgetgrid.cells(rId, cInd).setDisabled(true);
         return false;
@@ -419,7 +420,10 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
         budgetgrid.cells(rId, cInd).setDisabled(true);
         return false;
     }
-
+    else if (ColumnId.indexOf(PlannedColumn) >= 0 || ColumnId.indexOf(ActualColumn) >= 0 || ColumnId.indexOf('Unallocated') >= 0) {
+        budgetgrid.cells(rId, cInd).setDisabled(true);
+        return false;
+    }
     // Enable or disable to edit "Task Name" column to user by read "isTitleEdit" property.
     if (cInd == ColTaskNameIndex) {
         var isTitleEdit = budgetgrid.getUserData(rId, "isTitleEdit");
@@ -427,6 +431,10 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
             budgetgrid.cells(rId, ColTaskNameIndex).setDisabled(true);
             return false;
         }
+    }
+    if (nValue == '-') {
+        nValue = oValue;
+        budgetgrid.cells(rId, cInd).setValue(nValue);
     }
     //stage 0 means clicked
     if (stage == 0) {
@@ -493,7 +501,7 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
             }));
         }
     }
-    if (IsValid) {
+    if (IsValid) {        
         _isNewRowAdd = false;
     //stage 2 is to handle on focus out event after edit
         if (nValue != oValue && stage.toString() == '2') {   // checks if old value and new value are not same and if edit stage is 2.            
@@ -555,11 +563,7 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
     {
         _isNewRowAdd = true;
     }
-    //---#2799----
-    if (ColumnId.indexOf('Planned') >= 0 || ColumnId.indexOf('Actual') >= 0 || ColumnId.indexOf('Unallocated') >= 0) {
-        budgetgrid.cells(rId, cInd).setDisabled(true);
-        return false;
-    }
+    //---#2799----    
     if (ColumnId.indexOf(BudgetColumn) >= 0 || ColumnId.indexOf(ForecastColumn) >= 0) {
         if (budgetgrid.cells(rId, cInd).grid.cell.original != undefined && budgetgrid.cells(rId, cInd).grid.cell.original == "=sum") {
             budgetgrid.cells(rId, cInd).grid.cell.original = "0";
