@@ -271,6 +271,12 @@ function GetGridData(budgetId) {
                       isrepeat = false;
                       IsValid = false;
                   } else {
+                      if (data.trim().length > 250)
+                      {
+                          isrepeat = false;
+                          IsValid = false;
+                          ShowMessage(true, "Budget title cannot contain more than 250 characters", 1200);
+                      }
                       $.each(childitems, function () {
 
                           if (this.toString() != ValidRowId.toString()) {
@@ -278,6 +284,7 @@ function GetGridData(budgetId) {
                               if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
                                   isrepeat = false;
                                   IsValid = false;
+                                  ShowMessage(true, BudgetTitleExists, 1200);
                               }
                           }
                       });
@@ -285,11 +292,17 @@ function GetGridData(budgetId) {
               }
               else {
                   if (data != ValidOldValue.trim()) {
+                      if (data.trim().length > 250) {
+                          isrepeat = false;
+                          IsValid = false;
+                          ShowMessage(true, "Budget title cannot contain more than 250 characters", 1200);
+                      }
                       var BudgetIndex = BudgetOptions.values.indexOf(data.toLowerCase().trim());// checks if budget with same name already exists
                       if (data.trim() == '' || data.trim() == null || BudgetIndex >= 0) {
 
                           isrepeat = false;
                           IsValid = false;
+                          ShowMessage(true, BudgetTitleExists, 1200);
                       }
                   }
               }
@@ -322,6 +335,7 @@ function GetGridData(budgetId) {
             ColTaskNameIndex = budgetgrid.getColIndexById('Name');  // Get the index of "Name" column to refer it else to access this column.
             colOwnerNameIndex = budgetgrid.getColIndexById('Owner');  // Get the index of "Owner" column to refer it else to access this column.
             colIconIndex = budgetgrid.getColIndexById('Add Row');   // Get the index of "Add Row" column to refer it else to access this column.
+            colLineitemIndex = budgetgrid.getColIndexById('Line Items')
             budgetgrid.setColumnHidden(colIdIndex, true)            // Hide the "Id" column by enable the DHTMLXTreeGrid property "setColumnHidden".
             HideShowColumns();  // Show/Hide the BudgetGrid columns to show default columns while load Grid 1st time.
 
@@ -377,6 +391,7 @@ function GetGridData(budgetId) {
             }
             SetTooltip();
             ManageBorderBoxClass();//For alignment of column line 
+            AttachIcons();
         }
     });
 
@@ -402,7 +417,6 @@ function SetTooltip() {
 //nValue - new values
 //oValue - old value.
 function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
-
     var ColumnId = budgetgrid.getColumnId(cInd);            // Get column index.
     var locked = budgetgrid.getUserData(rId, "lo");         // Get "lo"(i.e. row locked or not) property to identify that row is locked or not.
     var Permission = budgetgrid.getUserData(rId, "per");    // Get user permission "per" property.
@@ -662,7 +676,10 @@ function DeleteBudgetIconClick(data) {
         x: budgetgrid.objBox.scrollLeft,
     }
 
-    var LineItemCount = $(data).attr('licount');
+   
+    var rowid = $(data).attr('row-id');
+    var Name = budgetgrid.cells(rowid, ColTaskNameIndex).getValue();
+    var LineItemCount = budgetgrid.cells(rowid, colLineitemIndex).getValue();
     //Check blank row if user clicks on new row delete icon then delete popup not display
     if (AddNewrow == false) {
         return false;
@@ -675,8 +692,6 @@ function DeleteBudgetIconClick(data) {
             $('#LiWarning').css('display', 'none');
         }
         var BudgetRowId = $(data).attr('row-id').split('_')[1];
-        //var Name = $(data).attr('name');
-        var Name = budgetgrid.cells($(data).attr('row-id'), 1).getValue()
         $("#lipname").html(Name);
         $("#divDeletePopup").modal('show');
         SelectedBudgetId = BudgetRowId;
@@ -1458,4 +1473,46 @@ function BindChildLineItemDropdown(childBudgetDetailId) {
 
         $(a[i]).remove();
     }
+}
+
+//function to add html code form client side.
+function AttachIcons()
+{
+    var imgString, imgDeleteString, rowid,ActionText,UserLink,Count,detailid
+    $('.MarketingBudget-tbl #gridbox .objbox').find('table tbody').find('tr').find("td").each(function (key, value) {
+        if ($(this).html().indexOf('#GRIDACTION#') >= 0)
+        {
+            rowid = $(this).text().replace("#GRIDACTION#", "");
+            imgString = "<div id='dv" + rowid + "' row-id='" + rowid + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div> "
+            imgDeleteString = "<div id='cb" + rowid + "' row-id='" + rowid + "'onclick='DeleteBudgetIconClick(this)' title='' class='grid_Delete'></div>";
+            $(this).html(imgString + imgDeleteString);
+        }
+        else if ($(this).html().indexOf('#USERACTION#') >= 0)
+        {
+            ActionText = $(this).text().split('~');
+            if (ActionText.length > 1)
+            {
+                rowid = ActionText[0].replace("#USERACTION#", "");
+                if (rowid.length > 0)
+                {
+                    detailid = rowid.split('_')[1];
+                }
+                Count = ActionText[1];
+                UserLink = ActionText[2];
+            }
+            imgString = "<div onclick=Edit('" + detailid + "',false,'User','" + rowid + "',this) class='finance_link' Rowid='" + rowid + "'><a class='marketing-tbl-link'>" + Count + "</a><span class='pipeLine'></span><span class='marketing-tbl-link'>" + UserLink + "</span></div>"
+            $(this).html(imgString);
+        }
+        else if($(this).html().indexOf('#LineItemLink#') >= 0)
+        {
+            ActionText = $(this).text().split('~');
+            if (ActionText.length > 0)
+            {
+                detailid = ActionText[0].replace("#LineItemLink#", "");
+                Count = ActionText[1];
+            }
+            imgString = "<div onclick='LoadLineItemGrid(" + detailid + ")' class='finance_lineItemlink'>" + Count + "</div>";
+            $(this).html(imgString);
+        }
+    });
 }
