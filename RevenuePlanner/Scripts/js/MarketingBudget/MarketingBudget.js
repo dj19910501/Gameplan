@@ -1019,10 +1019,67 @@ function ApplyFormattingAndTooltip(idName) {
     $(idName).popover('destroy');
     if (originalValue != undefined && originalValue != null && originalValue != '') {
         $(idName).attr("data-original-title", originalValue);
-        setBootstrapTooltip(idName, originalValue, maxsize, true); // Apply tooltip
+        setBootstrapTooltipMarketingBudget(idName, originalValue, maxsize, true); // Apply tooltip
     }
 }
 
+
+
+//Function to set value of Header and Tooltip Also and Manage Negative Value with Currency
+function setBootstrapTooltipMarketingBudget(lableId, value, maxSize, iscurrency, decimaldigit) {
+    var digit = 0;
+    if (decimaldigit != null || decimaldigit != undefined || decimaldigit != 'undefined') {
+        digit = parseInt(decimaldigit);
+    }
+    var numericval = RemoveExtraCharactersFromString(value.toString()); // Remove currency symbol($) and other characters from value.
+    if (isNaN(numericval))   // check whether value is numeric or not : if illegal then return true.
+        return value;
+    var roundValue = (Math.round(parseFloat(numericval) * 100) / 100);
+    var splitvalue = roundValue.toString().split(".");
+    var lengthvalue = splitvalue[0].toString().length;
+    // Added by Arpita Soni on 10/17/2016 to handle negative values for balance
+    if (parseFloat(numericval) < 0) {
+        maxSize = maxSize + 1;
+    }
+    if (lengthvalue >= maxSize) {
+        if (iscurrency) {
+            //Modified by Rahul Shah for PL #2498 & #2499
+            if (numericval < 0) {
+                numericval = Math.abs(numericval);
+                roundValue = Math.abs(roundValue);
+                $(lableId).text("-" + CurrencySybmol + GetAbberiviatedValue(numericval));
+                $(lableId).attr('title', "-" + CurrencySybmol + number_format(roundValue, 0, '.', ','));
+                bootstrapetitle($(lableId), "-" + CurrencySybmol + number_format(roundValue, 0, '.', ','), "tipsy-innerWhite");
+            }
+            else {
+                $(lableId).text(CurrencySybmol + GetAbberiviatedValue(numericval));
+                $(lableId).attr('title', CurrencySybmol + number_format(roundValue, 0, '.', ','));
+                bootstrapetitle($(lableId), CurrencySybmol + number_format(roundValue, 0, '.', ','), "tipsy-innerWhite");
+            }
+
+
+        }
+        else {
+            $(lableId).text(GetAbberiviatedValue(numericval));
+            $(lableId).attr('title', number_format(roundValue, 0, '.', ','));
+            bootstrapetitle($(lableId), number_format(roundValue, 0, '.', ','), "tipsy-innerWhite");
+        }
+    }
+    else {
+        if (iscurrency) {
+            //Modified by Rahul Shah for PL #2498 & #2499
+            //$(lableId).text(CurrencySybmol + number_format(roundValue, digit, '.', ','));
+            //Insertation start #2501 24/08/2016 kausha
+            $(lableId).text((CurrencySybmol + number_format(roundValue, digit, '.', ',')).replace(' ', ''));
+            //Insertation end #2501 24/08/2016 kausha
+
+        }
+        else {
+            //Modified by Preet Shah on 29/11/2016 for #2768 - Change passing value in number_format function 0 to digit variable.
+            $(lableId).text(number_format(roundValue, digit, '.', ','));
+        }
+    }
+}
 
 //Function to open display menu and add row form it when we click on plus icon
 // cntrl - paramter to access the control parameters .
