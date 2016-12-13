@@ -321,7 +321,7 @@ namespace RevenuePlanner.UnitTest.Service
             const int expectedAllDatesAllItemsCount = 22;
             DateTime testStartDate = new DateTime(2016, 01, 01);
             DateTime testEndDate = new DateTime(2016, 07, 01);
-            const int expectedDateRangeCount = 14;
+            const int expectedDateRangeCount = 8;
             const int testClientIdWithDirectLinkedLineItems = 1;
             const int testExpctectCountForClientWithDirectLinkedLineItems = 1;
 
@@ -420,7 +420,7 @@ namespace RevenuePlanner.UnitTest.Service
             const int expectedAllDatesAllItemsCount = 22;
             DateTime testStartDate = new DateTime(2016, 01, 01);
             DateTime testEndDate = new DateTime(2016, 07, 01);
-            const int expectedDateRangeCount = 14;
+            const int expectedDateRangeCount = 8;
             const int testTakeCount = 10;
             const int testFirstPageSkip = 0;
             const int testThirdPageSkip = 20;
@@ -428,8 +428,8 @@ namespace RevenuePlanner.UnitTest.Service
             const int paginationExpectedFirstPageCount = 10;
             const int paginationExpectedThirdPageCount = 2;
             const int paginationExpctedTenthPageCount = 0;
-            const string expectedFirstPageFirstItemClientTransactionId = "39899";
-            const string expectedThirdPageFirstItemClientTransactionId = "85316";
+            const string expectedFirstPageFirstItemClientTransactionId = "47211";
+            const string expectedThirdPageFirstItemClientTransactionId = "49825";
             const int testClientIdWithDirectLinkedLineItems = 1;
             const int testExpctectCountForClientWithDirectLinkedLineItems = 1;     
 
@@ -456,8 +456,8 @@ namespace RevenuePlanner.UnitTest.Service
             Assert.AreEqual(expectedDateRangeCount, transactionList.Count);
             foreach (Transaction transaction in transactionList)
             {
-                Assert.IsTrue(transaction.DateCreated >= testStartDate);
-                Assert.IsTrue(transaction.DateCreated <= testEndDate);
+                Assert.IsTrue(transaction.TransactionDate >= testStartDate);
+                Assert.IsTrue(transaction.TransactionDate <= testEndDate);
             }
 
             // Exercise pagination
