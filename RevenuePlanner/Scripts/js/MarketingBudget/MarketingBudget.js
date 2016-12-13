@@ -358,7 +358,7 @@ function GetGridData(budgetId) {
                 ManageBorderBoxClass();
                 // Add icons on expand collapse
                 var imgString, imgDeleteString, rowid, ActionText, UserLink, Count, detailid
-                var arrTD = $('.MarketingBudget-tbl #gridbox .objbox').find('table tbody tr').find('td:contains("#GRIDACTION#")').parent();
+                var arrTD = $('.MarketingBudget-tbl #gridbox .objbox').find('table tbody tr').find('td:contains("#GRIDACTION#"),td:contains("#USERACTION#")').parent();
                 $(arrTD).find("td").each(function (index, element) {
                     if ($(this).html().indexOf('#GRIDACTION#') >= 0) {
                         rowid = $(this).text().replace("#GRIDACTION#", "");
@@ -459,6 +459,7 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
     ValidParentId = budgetgrid.getParentId(rId); // get parent id as per row
     ValidColumnId = cInd; // get column index
     ValidRowId = rId; // get row id
+  
     // Doesn't allow the user to edit while cell is locked and doesn't have edit permission   
     if (locked == 1 && (Permission == "View" || Permission == "None")) {
         budgetgrid.cells(rId, cInd).setDisabled(true);
@@ -487,6 +488,7 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
     }
     //stage 0 means clicked
     if (stage == 0) {
+        
         ValidOldValue = budgetgrid.cells(rId, cInd).getValue();
         // TODO: Update owner into database from the drop down
         //ValidOldValue = budgetgrid.cells(rId, cInd).getValue();
@@ -496,6 +498,10 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
             combo.clear();
             $.each(Ownerlist, function (i, item) {
                 combo.put(item.id, item.value);
+                if(item.value == ValidOldValue)
+                {
+                    ValidOldID = item.id;
+                }
             });
         }
     }
@@ -548,6 +554,19 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
                 else { return true; }
 
             }));
+        }
+        if (cInd == colOwnerNameIndex) { // to get unique options in combo box
+            if (ValidOldValue == "")
+                $('.dhx_combo_select option[value="' + ValidOldValue + '"]').remove();
+            else {
+                var v1 = parseInt(ValidOldValue);
+                if (isNaN(v1)) {
+                    $('.dhx_combo_select option[value="' + ValidOldValue + '"]').remove();
+                    $('.dhx_combo_select').val(ValidOldID);
+                }
+                else
+                    $('.dhx_combo_select').val(ValidOldID);
+            }
         }
     }
     if (IsValid) {        
