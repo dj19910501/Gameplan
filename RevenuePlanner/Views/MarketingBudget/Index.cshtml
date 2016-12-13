@@ -205,10 +205,7 @@
     var standardcolumns;
     var scrollstate = 0;
     //add variable for assigning index of grid column to use in export or anywhere else.
-    var colIdIndex;
-    var colIconIndex;
-    var colTaskNameIndex;
-    var colOwnerNameIndex;
+    var colIdIndex,colIconIndex,colTaskNameIndex, colOwnerNameIndex,colLineitemIndex;
     var _isNewRowAdd = false;
     var _newrowid = '';
     var _newParentId = '';
@@ -231,6 +228,7 @@
     var BudgetOptions = {
         values: []
     }
+    var BudgetTitleExists = '@RevenuePlanner.Helpers.Common.objCached.BudgetTitleExist';
     // Set ViewBag value into Ownerlist variable to use into js file
     var Ownerlist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.OwnerList))');
 

@@ -191,7 +191,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             List<BudgetGridRowModel> children = new List<BudgetGridRowModel>();
             IEnumerable<DataRow> lstChildren = null;
             lstChildren = GetChildren(DataSet, id);
-
+            string action = "Edit";
             #region Bind Standard Columns
             foreach (var ColumnName in StandardColumnNames)
             {
@@ -207,7 +207,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     }
                     else
                     {
-                        Data.Add("<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + row[Enums.DefaultGridColumn.Name.ToString()].ToString() + "' LICount='" + row[Enums.DefaultGridColumn.LineItems.ToString()].ToString() + "' onclick='DeleteBudgetIconClick(this)' title='Delete' title='Delete' class='grid_Delete'></div>");
+                        Data.Add("#GRIDACTION#" + rowId);
                     }
 
                 }
@@ -221,11 +221,13 @@ namespace RevenuePlanner.Services.MarketingBudget
                     {
                         if (lstChildren.Count() == 0 && row[Enums.DefaultGridColumn.ParentId.ToString()].ToString() != "")
                         {
-                            string strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id, row[ColumnName.ToString()].ToString());
-                            BindColumnDataatend.Add(strLineItemLink);
+                            BindColumnDataatend.Add("#LineItemLink#" + id + "~" + Convert.ToInt32(row[ColumnName]));
                         }
                         else
+                        {
                             BindColumnDataatend.Add(row[ColumnName.ToString()].ToString());
+                        }
+                        
                     }
 
                 }
@@ -233,12 +235,10 @@ namespace RevenuePlanner.Services.MarketingBudget
                 {
                     if (Permission == Enums.Permission.View.ToString() || Permission == Enums.Permission.None.ToString())
                     {
-                        BindColumnDataatend.Add(string.Format("<div onclick=Edit({0},false,{1},'" + rowId + "',this) class='finance_link' Rowid='" + rowId + "'><a class='marketing-tbl-link'>" + Convert.ToInt32(row[ColumnName]) + "</a><span class='pipeLine'></span><span class='marketing-tbl-link'>View</span></div>", id, HttpUtility.HtmlEncode(Convert.ToString("'User'"))));
+                        action = "View";
                     }
-                    else
-                    {
-                        BindColumnDataatend.Add(string.Format("<div onclick=Edit({0},false,{1},'" + rowId + "',this) class='finance_link' Rowid='" + rowId + "'><a class='marketing-tbl-link'>" + Convert.ToInt32(row[ColumnName]) + "</a><span class='pipeLine'></span><span class='marketing-tbl-link'>Edit</span></div>", id, HttpUtility.HtmlEncode(Convert.ToString("'User'"))));
-                    }
+
+                    BindColumnDataatend.Add("#USERACTION#" + rowId + "~" + Convert.ToInt32(row[ColumnName]) + "~" + action.ToString());
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.Owner.ToString())
                 {
