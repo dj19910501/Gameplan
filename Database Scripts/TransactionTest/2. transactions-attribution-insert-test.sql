@@ -16,6 +16,24 @@ UPDATE dbo.Transactions
 SET LineItemId = NULL -- no specific line item yet 
 WHERE ClientID = @ClientId
 
+--First three are directly mapped to the following 3 line items 
+
+--Demand Center Payroll - 79144
+--Corporate Communications Payroll - 28446
+--Product Marketing Payroll - 57548
+
+UPDATE dbo.Transactions
+SET LineItemId = 14134
+WHERE TransactionId = 1
+
+UPDATE dbo.Transactions
+SET LineItemId = 14135
+WHERE TransactionId = 2
+
+UPDATE dbo.Transactions
+SET LineItemId = 14136
+WHERE TransactionId = 3
+
 DELETE dbo.TransactionLineItemMapping 
 WHERE dbo.TransactionLineItemMapping.TransactionId IN (SELECT TransactionId FROM dbo.Transactions WHERE ClientID = @ClientID)
 
@@ -41,7 +59,7 @@ DECLARE @Step INT = 0
 DECLARE test_cursor CURSOR FOR   
 SELECT TransactionId, Amount  
 FROM dbo.Transactions  
-WHERE ClientID = @ClientId;  
+WHERE ClientID = @ClientId AND LineItemId IS NULL  
   
 OPEN test_cursor  
 

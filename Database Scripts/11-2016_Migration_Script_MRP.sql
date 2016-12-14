@@ -336,10 +336,15 @@ BEGIN
 	SET TX.Error = 'Deleted Line Item ID: ' + STR(TX.LineItemId), 
 		TX.LineItemId = NULL
 	FROM dbo.Transactions TX 
-		JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = TX.LineItemId
-	WHERE TX.ClientID = @ClientID
-		AND Tx.DateCreated > @LastDate
-		AND L.IsDeleted = 1
+	JOIN 
+		(       SELECT DISTINCT TransactionId 
+				FROM dbo.Transactions TX 
+				JOIN dbo.Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = TX.LineItemId
+				WHERE TX.ClientID = @ClientID
+					AND Tx.DateCreated > @LastDate
+					AND L.IsDeleted = 1
+		) A ON A.TransactionId = TX.TransactionId 
+	WHERE A.TransactionId = TX.TransactionId
 
 	UPDATE TX
 	SET TX.Error = 'Invalid Line Item ID: ' + STR(TX.LineItemId), 
