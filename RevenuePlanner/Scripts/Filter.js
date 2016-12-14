@@ -1111,12 +1111,16 @@ function ApplyFilters() {
 
         }
     });
-    $('#txtGlobalSearch').val('');
-    if ($('#ExpClose').css('display') == 'block') {
-        $('#ExpSearch').css('display', 'block');
-        $('#ExpClose').css('display', 'none');
-    }
-     UpdateResult();
+    GetFilterIds();
+
+    var planids = filters.PlanIDs;
+    BindUpcomingActivites(planids);
+    GetTacticTypelist(planids, false);
+    GetOwnerListForFilter(planids, false);
+    UpdateResult();
+    GetMultiplePlanNames();
+    GetGoalValues(urlContent + 'Home/GetGoalValues', planids);
+
 }
 
 var IsPlanChange = false;

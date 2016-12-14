@@ -243,11 +243,11 @@ namespace RevenuePlanner.Controllers
                     //Added By Maitri for #2040 Observation
                     Common.RemoveCookie("gridOpengridBox");
                     Common.RemoveCookie("gridOpen");
-
+                    Sessions.PlanUserSavedViews = null;
                     //Start  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
                     System.Web.Security.FormsAuthentication.SetAuthCookie(obj.UserId.ToString(), false);
                     //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
-                    Sessions.User = obj;                    
+                    Sessions.User = obj;
                     // Add By Nishant Sheth Set Cache for exchange rate #2496
                     objCurrency.SetUserCurrencyCache(Sessions.User.CID, Sessions.User.ID);
 

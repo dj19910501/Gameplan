@@ -6614,7 +6614,7 @@ namespace RevenuePlanner.Controllers
                     viewBy = PlanGanttTypes.Tactic.ToString();
                 if (isLoginFirst)
                 {
-                    if (Sessions.PlanUserSavedViews != null)
+                    if (Sessions.PlanUserSavedViews != null && Sessions.PlanUserSavedViews.Count > 0)
                     {
                         UserSaveView = true;
                     }
@@ -6625,7 +6625,6 @@ namespace RevenuePlanner.Controllers
                     StatusIds = objFilter.StatusIds;
                     customFieldIds = objFilter.CustomFieldIds;
                 }
-
                 int ClientID = Sessions.User.CID;
                 string PlanCurrencySymbol = Sessions.PlanCurrencySymbol;
                 double PlanExchangeRate = Sessions.PlanExchangeRate;
