@@ -4325,9 +4325,12 @@ END
 GO
 
 
-
 -- DROP AND CREATE STORED PROCEDURE [MV].[GetFinanceGridData]
-
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[MV].[GetFinanceGridData]') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [MV].[GetFinanceGridData]
+END
+GO
 /****** Object:  StoredProcedure [MV].[GetFinanceGridData]    Script Date: 12/09/2016 2:09:45 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -4338,7 +4341,7 @@ GO
 -- Create date: 11/18/2016
 -- Description:	SP to fetch finance grid data
 -- =============================================
-ALTER PROCEDURE [MV].[GetFinanceGridData]
+CREATE PROCEDURE [MV].[GetFinanceGridData]
 	@BudgetId		INT,
 	@ClientId		INT,
 	@timeframe		VARCHAR(50) = 'Yearly',
