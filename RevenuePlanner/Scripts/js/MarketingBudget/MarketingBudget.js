@@ -625,7 +625,7 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
             }
         }
     }
-        return true;
+        //return true;
     }
     else
     {
