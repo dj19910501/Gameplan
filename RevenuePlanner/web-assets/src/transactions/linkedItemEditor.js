@@ -68,6 +68,21 @@ function createBrowserGrid(view, model, which, selectedWhich, title) {
 
     const dataSource = model.createNewItemGridDataSource(which, title);
     dataSource.bindToGrid(grid);
+
+    // whenever the data loads, if the model has a selected value, then select that row
+    function onChange(ev) {
+        if (!ev || ev.which.records) {
+            if (selectedWhich) {
+                const selectedItem = model.newItemModel[selectedWhich];
+                if (selectedItem != null) {
+                    grid.selectRowById(selectedItem);
+                }
+            }
+        }
+    }
+
+    dataSource.on("change", onChange);
+    onChange();
 }
 
 function bindGrid(model, $container) {
@@ -221,16 +236,18 @@ function bindModelToEditor(transactionId, model, view) {
     model.newItemModel.subscribe("years", ev => {
         const years = ev.value;
         if (years) {
-            // select the current year by default
-            const currentYear = "" + new Date().getFullYear();
-            if (years.some(y => y === currentYear)) {
-                model.newItemModel.selectedYear = currentYear;
+            if (!model.newItemModel.selectedYear) {
+                // select the current year by default
+                const currentYear = "" + new Date().getFullYear();
+                if (years.some(y => y === currentYear)) {
+                    model.newItemModel.selectedYear = currentYear;
+                }
             }
 
             const optionsHtml = optionsTemplate({
                 prompt: "Select Year",
                 items: years.map(y => ({value: y, text: y})),
-                selected: currentYear,
+                selected: model.newItemModel.selectedYear,
             });
 
             $selectYear.html(optionsHtml);
@@ -252,7 +269,11 @@ function bindModelToEditor(transactionId, model, view) {
     model.newItemModel.subscribe("plans", ev => {
         const plans = ev.value;
         if (plans) {
-            const optionsHtml = optionsTemplate({ prompt: "Select Plan", items: plans.map(p => ({value: p.Id, text: p.Title }))});
+            const optionsHtml = optionsTemplate({
+                prompt: "Select Plan",
+                items: plans.map(p => ({value: p.Id, text: p.Title })),
+                selected: model.newItemModel.selectedPlan,
+            });
             $selectPlan.html(optionsHtml);
             $selectPlan.multiselect("refresh");
             $selectPlan.multiselect("enable");
