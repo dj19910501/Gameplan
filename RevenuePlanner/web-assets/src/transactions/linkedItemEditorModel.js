@@ -131,10 +131,26 @@ export default function createModel(transaction) {
 
             const ds = gridDataSource(undefined, undefined, columns);
 
-            this.newItemModel.subscribe(which, ev => {
-                const records = ev.value && ev.value.map(mapItem);
-                ds.updateRecords(records);
-            }, "editor");
+            const bindDsToModel = () => {
+                this.newItemModel.subscribe(which, ev => {
+                    const records = ev.value && ev.value.map(mapItem);
+                    ds.updateRecords(records);
+                }, "editor");
+            };
+
+            if (which === "lineItems" && !state.items) {
+                // do not bind the data source to the model until we have line items since the mapItem method has a dependency
+                // on the items being loaded already
+                const onItems = () => {
+                    this.off("itemsRefreshed", onItems);
+                    bindDsToModel();
+                };
+
+                this.on("itemsRefreshed", onItems);
+            }
+            else {
+                bindDsToModel();
+            }
 
             return ds;
         },
@@ -352,6 +368,7 @@ export default function createModel(transaction) {
                     state.modifiedCount = 0;
                     updateDataSource(state, dataSource, mapLinkedItems(links));
                     this.updatedData = { links, transaction: singleTransaction };
+                    $(this).trigger("itemsRefreshed");
                     $(this).trigger("modified");
                     $(this).trigger("invalid");
                 });
@@ -361,6 +378,7 @@ export default function createModel(transaction) {
 
     queryLinkedItems(transaction.id).then(result => {
         updateDataSource(state, dataSource, mapLinkedItems(result));
+        $(model).trigger("itemsRefreshed");
         $(model).trigger("availableFunds");
         return result;
     });
