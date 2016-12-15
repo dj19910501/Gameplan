@@ -4,11 +4,12 @@ import Grid from 'dhtmlXGridObject';
 import resolveAppUri from 'util/resolveAppUri';
 import css from './transactions.scss';
 import loadingMessage from './views/loading.ejs';
-import noLinkedItemsMessage from './views/no-linked-items.ejs';
+import linkedItemSubGridTemplate from './views/linkedItemSubGrid.ejs';
 
 // ================= START - code that belongs in a general purpose utility module =====================
 function doRecalc(grid, parentGrid, element, td, initialize) {
-    parentGrid._detectHeight(element, td, grid.objBox.scrollHeight + grid.hdr.offsetHeight + (grid.ftr ? grid.ftr.offsetHeight : 0));
+    const gridHeight = grid.objBox.scrollHeight + grid.hdr.offsetHeight + (grid.ftr ? grid.ftr.offsetHeight : 0);
+    parentGrid._detectHeight(element, td, gridHeight);
     if (!initialize) {
         grid.objBox.style.overflow = "hidden";
     }
@@ -32,10 +33,17 @@ function subGridSetupThatShouldGoSomewhereElse(grid, parentGrid, element, td) {
     grid.attachEvent("onGridReconstructed", function () {
         doRecalc(grid, parentGrid, element, td, false, true);
     });
+
+    // treegrid does not trigger onGridReconstructed at proper time when collapsing a tree branch, so we will trigger it again when the collapse is done
+    grid.attachEvent("onOpenEnd", function (id, state) {
+        if (state !== 1) { // not required on Expand
+            grid.callEvent("onGridReconstructed", [])
+        }
+    });
 }
 
-function createSubGrid(parentGrid, element, td, dataSource) {
-    const grid = new Grid(element);
+function createSubGrid(parentGrid, element, gridContainer, td, dataSource) {
+    const grid = new Grid(gridContainer);
     subGridSetupThatShouldGoSomewhereElse(grid, parentGrid, element, td);
 
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
@@ -49,6 +57,17 @@ function createSubGrid(parentGrid, element, td, dataSource) {
 }
 // ================= END - code that belongs in a general purpose utility module =====================
 
+function createSubGridView(element) {
+    const html = linkedItemSubGridTemplate({css});
+    const $element = $(element);
+    $element.html(html);
+
+    return {
+        $subGrid: $element.find(`.${css.subgrid}`),
+        $noLineItems: $element.find(`.${css.noLineItems}`),
+    };
+}
+
 export default function createLinkedItemSubGrid(element, transactionId, parentGrid, td) {
     element.innerHTML = loadingMessage({css});
 
@@ -58,16 +77,22 @@ export default function createLinkedItemSubGrid(element, transactionId, parentGr
 
     // do not create the grid until the data source has loaded
     const promise = $.Deferred();
+    let view;
+
+    function toggleNoLineItems() {
+        // add/remove the noLikedItemsMessage depending on if there are any records.
+        view.$noLineItems.toggleClass(css.hidden, !!dataSource.state.records.length);
+    }
 
     function onLoad(ev) {
         if (dataSource.state.records) {
             dataSource.off("change", onLoad);
 
-            createSubGrid(parentGrid, element, td, dataSource);
-            if (dataSource.state.records.length == 0 ) {
-                //TODO: we need to show message as will as listening to the transaction changes
-                //element.innerHTML = noLinkedItemsMessage({css});
-            }
+            view = createSubGridView(element);
+            createSubGrid(parentGrid, element, view.$subGrid[0], td, dataSource);
+
+            toggleNoLineItems();
+            dataSource.on("change", toggleNoLineItems);
 
             // Tell our caller that we have finished loading
             promise.resolve();

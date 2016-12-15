@@ -178,6 +178,23 @@ $GRID_PADDING: 5px;
   }
 }
 
+.noLineItems {
+  @include fill-parent(0, 0, 2px, 0); // completely cover the subgrid
+  z-index: 1; // appear on top of the subgrid
+  background-color: white;
+  text-align: center;
+  padding-top: 10px;
+  margin: 0;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.subgrid {
+  z-index: 0;
+}
+
 // Override some modal style rules that have been messed up by legacy app
 :global {
   .modal {

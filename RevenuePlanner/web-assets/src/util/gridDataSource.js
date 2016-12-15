@@ -101,6 +101,9 @@ class GridDataSource {
                     grid._refresh_mode = [true, true, false];
                     grid.parse({rows}, "json");
                     grid.setSizes();
+
+                    // DHTMLXGrid does not trigger this event after a parse.  Grr...
+                    grid.callEvent("onGridReconstructed", []);
                     return;
                 }
                 else {
@@ -109,6 +112,9 @@ class GridDataSource {
 
                 if (records) {
                     grid.parse(records, "js");
+
+                    // DHTMLXGrid does not trigger this event after a parse.  Grr...
+                    grid.callEvent("onGridReconstructed", []);
                 }
 
                 firstTime = false;
