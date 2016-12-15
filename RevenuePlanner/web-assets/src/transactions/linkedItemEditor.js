@@ -221,7 +221,18 @@ function bindModelToEditor(transactionId, model, view) {
     model.newItemModel.subscribe("years", ev => {
         const years = ev.value;
         if (years) {
-            const optionsHtml = optionsTemplate({ prompt: "Select Year", items: years.map(y => ({value: y, text: y})) });
+            // select the current year by default
+            const currentYear = "" + new Date().getFullYear();
+            if (years.some(y => y === currentYear)) {
+                model.newItemModel.selectedYear = currentYear;
+            }
+
+            const optionsHtml = optionsTemplate({
+                prompt: "Select Year",
+                items: years.map(y => ({value: y, text: y})),
+                selected: currentYear,
+            });
+
             $selectYear.html(optionsHtml);
             $selectYear.multiselect("refresh");
             $selectYear.multiselect("enable");
