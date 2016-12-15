@@ -258,7 +258,7 @@ function bindModelToEditor(transactionId, model, view) {
             $selectYear.multiselect("disable");
             $selectYear.multiselect("getButton").children().eq(0).html(`${SPINNER} Loading...`);
         }
-    });
+    }, "editor");
 
     $selectYear.on("change", function () {
         const option = this.options[this.selectedIndex];
@@ -283,7 +283,7 @@ function bindModelToEditor(transactionId, model, view) {
             const label = model.newItemModel.selectedYear ? `${SPINNER} Loading...` : "&nbsp;";
             $selectPlan.multiselect("getButton").children().eq(0).html(label);
         }
-    });
+    }, "editor");
 
     $selectPlan.on("change", function () {
         const option = this.options[this.selectedIndex];
@@ -295,6 +295,12 @@ function bindModelToEditor(transactionId, model, view) {
     createBrowserGrid(view, model, "programs", "selectedProgram", "Programs");
     createBrowserGrid(view, model, "tactics", "selectedTactic", "Tactics");
     createBrowserGrid(view, model, "lineItems", null, "Line Items");
+}
+
+function unbindModel(model) {
+    // can ignore "model" itself since it will get GCed with us
+    // but the newItemModel is a singleton so we need to unsubscribe from it
+    model.newItemModel.unsubscribe(".editor");
 }
 
 function renderInitialView(transaction) {
@@ -351,7 +357,10 @@ export default function linkedItemEditor(transaction) {
     bindModelToEditor(transaction.id, model, view);
 
     // destroy the modal when it is closed
-    view.$window.on('hidden', () => view.$window.remove());
+    view.$window.on('hidden', () => {
+        unbindModel(model);
+        view.$window.remove();
+    });
 
     // display the dialog
     view.$window.modal();

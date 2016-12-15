@@ -65,6 +65,12 @@ function queryTransaction(transactionId) {
     return $.getJSON(GET_SINGLE_TRANSACTION_URI, { transactionId });
 }
 
+// Use a singleton for the newItemLinkModel so that subsequent popups of the editor will "remember" previous selections
+let newItemLinkModel;
+function getNewItemLinkModel() {
+    return newItemLinkModel || (newItemLinkModel = createNewItemModel());
+}
+
 export default function createModel(transaction) {
     const dataSource = gridDataSource(undefined, undefined, columns);
 
@@ -80,7 +86,7 @@ export default function createModel(transaction) {
 
     const model = {
         linkedItemGridDataSource: dataSource,
-        newItemModel: createNewItemModel(),
+        newItemModel: getNewItemLinkModel(),
 
         containsLineItem(lineItemId) {
             return !!(state.items && find(state.items, {lineItemId}));
@@ -128,7 +134,7 @@ export default function createModel(transaction) {
             this.newItemModel.subscribe(which, ev => {
                 const records = ev.value && ev.value.map(mapItem);
                 ds.updateRecords(records);
-            });
+            }, "editor");
 
             return ds;
         },
