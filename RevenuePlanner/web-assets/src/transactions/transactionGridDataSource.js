@@ -10,12 +10,17 @@ import createLinkedItemSubGrid from './createLinkedItemSubGrid';
 export const LINKED_ITEM_RENDERER_PROPERTY = "linkedItemRenderer";
 const EDIT_LINKED_ITEMS = "editLinkedItems";
 
+const CHARACTER_WIDTH_PX = 10;
+
 function getGridColumns() {
     return $.getJSON(GET_HEADER_MAPPINGS_URI)
         .then(headerMappings => {
             const columns = headerMappings.map(mapping => {
                 const column = mapHive9Column(mapping, false);
                 column.sort = "na";
+                if (mapping.ExpectedCharacterLength) {
+                    column.width = mapping.ExpectedCharacterLength * CHARACTER_WIDTH_PX;
+                }
                 return column;
             });
 

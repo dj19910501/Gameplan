@@ -43,7 +43,7 @@ const columns = [
     {
         id: "Plan",
         value: "Plan",
-        width: "*",
+        width: 600,
         type: "rotxt",
         align: "left",
         sort: "na",

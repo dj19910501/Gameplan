@@ -17,13 +17,13 @@ function createGrid($gridContainer, dataSource, filteredView) {
     const grid = new Grid($grid.get(0));
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
     // grid.enableAutoHeight(true);
-    grid.enableAutoWidth(true);
+    // grid.enableAutoWidth(true);
     grid.setDateFormat("%m/%d/%Y");
     dataSource.bindToGrid(grid);
 
     // refresh the grid size whenever the filter panel is toggled
     function resizeGrid() {
-        grid.entBox.style.width = "100%";
+        grid.entBox.style.width = "auto";
         grid.entBox.style.height = "100%";
         grid.setSizes();
     }
