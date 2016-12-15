@@ -4439,7 +4439,7 @@ ALTER PROCEDURE [dbo].[GetGridFilters]
 	@userId int
 	,@ClientId int
 	,@IsDefaultCustomRestrictionsViewable bit
-	,@defaultPresetName varchar(500)--='' 
+	,@defaultPresetName varchar(500)='' 
 	,@IsUserSaveView bit=0
 	
 AS --Todo: New user login then need to some more 
