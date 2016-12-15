@@ -29,7 +29,7 @@ function createView($container, initialFilter) {
     return view;
 }
 
-function bindDateRange(view, dataSource) {
+function bindDateRange(view, dataSource, recalculatePageSize) {
 
     // update the text whenever the datasource filter changes the range
     dataSource.on("change", ev => {
@@ -65,13 +65,13 @@ function bindDateRange(view, dataSource) {
             format: DATE_RANGE_FORMAT,
         }
     }, (startDate, endDate) => {
-        dataSource.updateFilter({...dataSource.state.filter, startDate, endDate });
+        dataSource.updateFilter({...dataSource.state.filter, startDate, endDate }, recalculatePageSize());
     });
 }
 
-export default function createFilter($container, dataSource) {
+export default function createFilter($container, dataSource, recalculatePageSize) {
     const view = createView($container, dataSource.state.filter);
-    bindDateRange(view, dataSource);
+    bindDateRange(view, dataSource, recalculatePageSize);
 
     return view;
 }

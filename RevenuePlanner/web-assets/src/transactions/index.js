@@ -179,8 +179,10 @@ export default function main($rootElement) {
     const $gridContainer = filteredView.$content.find(`.${css.gridContainer}`);
     const $viewBy = filteredView.$content.find(`#${viewOptions.viewById}`);
 
-    const dataSource = transactionGridDataSource(calculateRowsPerPage($gridContainer));
-    const filterPanel = createFilterView(filteredView.$filterPanel, dataSource);
+    const recalculatePageSize = () => calculateRowsPerPage($gridContainer);
+
+    const dataSource = transactionGridDataSource(recalculatePageSize());
+    const filterPanel = createFilterView(filteredView.$filterPanel, dataSource, recalculatePageSize);
     bindViewBy($viewBy, dataSource);
     createPager($pager, dataSource, () => calculateRowsPerPage($gridContainer));
     createGrid($gridContainer, dataSource, filteredView);

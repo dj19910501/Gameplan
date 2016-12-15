@@ -175,10 +175,13 @@ class GridDataSource {
         }
     }
 
-    updateFilter(newFilter) {
+    updateFilter(newFilter, pageSize) {
         this.state.filter = newFilter;
         this.state.totalRecords = undefined;
-        this._notify({filter: true, totalRecords: true});
+        if (pageSize !== undefined) {
+            this.state.paging = {skip: 0, take: pageSize};
+        }
+        this._notify({filter: true, totalRecords: true, paging: pageSize !== undefined });
     }
 
     /**
