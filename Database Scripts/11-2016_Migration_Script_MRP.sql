@@ -4415,11 +4415,11 @@ Go
 
 -- Start - Added by Viral for Ticket #2763 on 11/29/2016
 
-/****** Object:  StoredProcedure [dbo].[GetGridFilters]    Script Date: 11/29/2016 4:12:04 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetGridFilters]    Script Date: 12/15/2016 6:21:43 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridFilters]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetGridFilters]
 GO
-/****** Object:  StoredProcedure [dbo].[GetGridFilters]    Script Date: 11/29/2016 4:12:04 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetGridFilters]    Script Date: 12/15/2016 6:21:43 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4438,8 +4438,10 @@ GO
 ALTER PROCEDURE [dbo].[GetGridFilters] 
 	@userId int
 	,@ClientId int
-	,@IsDefaultCustomRestrictionsViewable bit ,
-	@IsUserSaveView bit=0
+	,@IsDefaultCustomRestrictionsViewable bit
+	,@defaultPresetName varchar(500)--='' 
+	,@IsUserSaveView bit=0
+	
 AS --Todo: New user login then need to some more 
 BEGIN
 	
@@ -4474,7 +4476,15 @@ BEGIN
 		
 		if(@IsUserSaveView=1)
 		Begin
-			select TOP 1 @viewname =  ViewName from Plan_UserSavedViews where Userid=@userId AND ViewName is null
+			IF(IsNull(@defaultPresetName,'') <> '')
+			BEGIN
+				select TOP 1 @viewname =  ViewName from Plan_UserSavedViews where Userid=@userId AND ViewName = @defaultPresetName
+			END
+			ELSE
+			BEGIN
+				select TOP 1 @viewname =  ViewName from Plan_UserSavedViews where Userid=@userId AND ViewName is null	
+			END
+			
 		End
 		Else
 		Begin
@@ -4606,7 +4616,9 @@ BEGIN
 
     
 END
+
 GO
+
 
 -- End - Added by Viral for Ticket #2763 on 11/29/2016
 

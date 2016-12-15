@@ -6618,7 +6618,9 @@ namespace RevenuePlanner.Controllers
                     {
                         UserSaveView = true;
                     }
-                    PlanGridFilters objFilter = objGrid.GetGridFilterData(Sessions.User.CID, Sessions.User.ID, UserSaveView).FirstOrDefault();
+
+                    PlanGridFilters objFilter = objGrid.GetGridFilterData(Sessions.User.CID, Sessions.User.ID, Sessions.FilterPresetName, UserSaveView).FirstOrDefault();
+                    
                     planIds = objFilter.PlanIds;
                     ownerIds = objFilter.OwnerIds;
                     TacticTypeid = objFilter.TacticTypeIds;
@@ -6630,6 +6632,7 @@ namespace RevenuePlanner.Controllers
                 double PlanExchangeRate = Sessions.PlanExchangeRate;
                 int UserID = Sessions.User.ID;
                 objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, ClientID, ownerIds, TacticTypeid, StatusIds, customFieldIds, PlanCurrencySymbol, PlanExchangeRate, UserID, objPermission, lstSubordinatesIds, viewBy, SearchText,SearchBy, IsFromCache);
+                Sessions.FilterPresetName = null; // Make null default Filter Preset name hence plan grid load.
                 Tactictypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
                 LineItemtypelist = objGrid.GetLineItemTypeListForHeader(planIds, Sessions.User.CID);
             }

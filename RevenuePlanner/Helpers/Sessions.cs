@@ -201,6 +201,8 @@ namespace RevenuePlanner.Helpers
             Sessions.ViewByValue = string.Empty;
             Sessions.ImportTimeFrame = null;
             Sessions.BudgetDetailId = 0;
+            Sessions.PlanPlanIds = null;
+            Sessions.ClientUsers = null;
         }
 
         /// <summary>

@@ -1111,16 +1111,14 @@ function ApplyFilters() {
 
         }
     });
-    GetFilterIds();
 
-    var planids = filters.PlanIDs;
-    BindUpcomingActivites(planids);
-    GetTacticTypelist(planids, false);
-    GetOwnerListForFilter(planids, false);
+    $('#txtGlobalSearch').val('');
+    if ($('#ExpClose').css('display') == 'block') {
+        $('#ExpSearch').css('display', 'block');
+        $('#ExpClose').css('display', 'none');
+    }
+
     UpdateResult();
-    GetMultiplePlanNames();
-    GetGoalValues(urlContent + 'Home/GetGoalValues', planids);
-
 }
 
 var IsPlanChange = false;

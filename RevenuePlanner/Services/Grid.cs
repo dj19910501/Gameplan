@@ -81,11 +81,13 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// call stored procedure to get list of filters of login user
         /// <summary>
-        public List<PlanGridFilters> GetGridFilterData(int ClientId, int UserId, bool IsUserSaveView=false)
+        public List<PlanGridFilters> GetGridFilterData(int ClientId, int UserId,string defaultPresetName, bool IsUserSaveView=false)
         {
             bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
-            SqlParameter[] para = new SqlParameter[4];
+            SqlParameter[] para = new SqlParameter[5];
 
+            if (string.IsNullOrEmpty(defaultPresetName))
+                defaultPresetName = string.Empty;
 
             para[0] = new SqlParameter { ParameterName = "userId", Value = UserId };
 
@@ -93,11 +95,13 @@ namespace RevenuePlanner.Services
 
             para[2] = new SqlParameter { ParameterName = "IsDefaultCustomRestrictionsViewable", Value = IsDefaultCustomRestrictionsViewable };
 
-            para[3] = new SqlParameter { ParameterName = "IsUserSaveView", Value = IsUserSaveView };
+            para[3] = new SqlParameter { ParameterName = "defaultPresetName", Value = defaultPresetName };
+
+            para[4] = new SqlParameter { ParameterName = "IsUserSaveView", Value = IsUserSaveView };
 
 
             List<PlanGridFilters> EntityList = objDbMrpEntities.Database
-                .SqlQuery<PlanGridFilters>("GetGridFilters @userId,@ClientId,@IsDefaultCustomRestrictionsViewable,@IsUserSaveView", para)
+                .SqlQuery<PlanGridFilters>("GetGridFilters @userId,@ClientId,@IsDefaultCustomRestrictionsViewable,@defaultPresetName,@IsUserSaveView", para)
                 .ToList();
             return EntityList;
         }
