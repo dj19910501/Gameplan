@@ -93,8 +93,6 @@ function bindGrid(model, $container) {
                         finally {
                             inSetSize = false;
                         }
-
-                        console.log(grid.entBox.style.width);
                     }
                 });
             }

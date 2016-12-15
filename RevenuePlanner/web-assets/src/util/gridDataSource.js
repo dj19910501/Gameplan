@@ -221,7 +221,7 @@ class GridDataSource {
         }
     }
 
-    _setSkip(pSkip) {
+    _setSkip(pSkip, newTake) {
         const {paging, totalRecords} = this.state;
 
         let newSkip = pSkip;
@@ -237,8 +237,13 @@ class GridDataSource {
             newSkip = 0;
         }
 
-        if (newSkip !== paging.skip) {
-            this.updatePaging({...paging, skip: newSkip});
+        const updatedTake = newTake || paging.take;
+
+        // ensure skip is a multiple of take
+        newSkip -= (newSkip % updatedTake);
+
+        if (newSkip !== paging.skip || updatedTake !== paging.take) {
+            this.updatePaging({...paging, skip: newSkip, take: updatedTake});
         }
 
     }
@@ -255,10 +260,10 @@ class GridDataSource {
         }
     }
 
-    gotoPage(pageNumber) {
+    gotoPage(pageNumber, newTake) {
         const {paging} = this.state;
         if (paging.take !== undefined) {
-            this._setSkip((pageNumber - 1) * paging.take);
+            this._setSkip((pageNumber - 1) * paging.take, newTake);
         }
     }
 }
