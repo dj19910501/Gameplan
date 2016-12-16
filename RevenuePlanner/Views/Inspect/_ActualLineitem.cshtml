@@ -17,6 +17,8 @@
 
     List<TransactionHeaderMapping> HeaderMappings = ViewBag.HeaderMappings;
     List<LinkedTransaction> Transactions = ViewBag.Transactions;
+
+    bool transactionAttributionAllowed = Enums.ApplicationActivity.TransactionAttribution == (Sessions.UserActivityPermission & Enums.ApplicationActivity.TransactionAttribution);
 }
 <style type="text/css">
     .disabled-row > th {
@@ -149,7 +151,9 @@
                     <h3 class="modal-popup-innertitle source-sans-proregular">Transactions</h3>
                 </li>
             </ul>
-            <div class="pull-right"><a class="transaction_link" href="@Url.Action("Transactions","Finance")">Go to Transactions</a></div>
+            @if (transactionAttributionAllowed) {
+            <div class="pull-right"><a class="transaction_link" href="@Url.Action("Transactions", "Finance")">Go to Transactions</a></div>
+            }
             <table class="table table-striped3 mystats table-style">
                 <thead>
                     <tr class="height42">
