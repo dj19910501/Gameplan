@@ -9324,6 +9324,52 @@ GO
 
 --end
 
+
+
+/* Start - Remove duplicate records from LineItem_Budget table */
+
+-- 1. Back up LineItem_Budget table
+-- 2. Get Duplicate records from LineItem_Budget table
+-- 3. Delete duplicate records from LineItem_Budget table
+-- 4. Create UNIQUE CONSTRAINT on 2 Columns(BudgetDetailId, PlanLineItemId) in table LineItem_Budget
+
+-- 1. Back up LineItem_Budget table
+	BEGIN
+		IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[LineItem_Budget_BKP]') AND type in (N'U'))
+		BEGIN
+		 SELECT * INTO LineItem_Budget_BKP FROM LineItem_Budget(NOLOCK)
+		END
+		
+	END
+
+
+-- 2. Get Duplicate records from LineItem_Budget table
+;WITH CTE AS
+(
+	SELECT * ,ROW_NUMBER() OVER(PARTITION BY BudgetDetailId, PlanLineItemId ORDER BY ID) as RowCnt
+	FROM dbo.LineItem_Budget
+	WHERE PlanLineItemId IN (
+	SELECT DISTINCT PlanLineItemId
+	FROM dbo.LineItem_Budget
+	GROUP BY BudgetDetailId, PlanLineItemId
+	HAVING COUNT(*) > 1 )
+) 
+
+-- 3. Delete duplicate records from LineItem_Budget table
+DELETE LB 
+FROM dbo.LineItem_Budget LB
+JOIN CTE C ON LB.Id = C.Id
+WHERE C.RowCnt > 1
+GO
+
+-- 4. CREATE UNIQUE CONSTRAINT ON TWO COLUMNS
+IF NOT EXISTS (SELECT * FROM sysconstraints WHERE OBJECT_NAME(constid) = 'PK_LineItemBudgetDetail' AND OBJECT_NAME(id) = 'LineItem_Budget')
+ALTER TABLE dbo.LineItem_Budget ADD CONSTRAINT PK_LineItemBudgetDetail UNIQUE(BudgetDetailId, PlanLineItemId)
+GO
+
+/* END - Remove duplicate records from LineItem_Budget table */
+
+
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
 -- ======================================================================================
