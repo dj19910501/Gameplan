@@ -24,13 +24,14 @@ namespace RevenuePlanner.Controllers
     public class TransactionController : ApiController
     {
         private ITransaction _transaction;
-        private ICurrency _currency = new Currency();
+        private ICurrency _currency;
 
-        public TransactionController(ITransaction transaction)
+        public TransactionController(ITransaction transaction, ICurrency currency)
         {
             Contract.Requires<ArgumentNullException>(transaction != null, "Argument Transaction cannot be null");
 
             _transaction = transaction; //DI will take care of populating this!
+            _currency = currency;
         }
 
         /// <summary>
@@ -44,11 +45,7 @@ namespace RevenuePlanner.Controllers
         {
             Contract.Requires<ArgumentNullException>(transactionLineItemMappings != null, "transactionLineItemsMappings cannot be null");
 
-            // Convert to USD
-            foreach (TransactionLineItemMapping tlim in transactionLineItemMappings)
-            {
-                tlim.Amount = _currency.SetValueByExchangeRate(tlim.Amount, Sessions.PlanExchangeRate);
-            }
+            ConvertCurrency(transactionLineItemMappings);
 
             _transaction.SaveTransactionToLineItemMapping(Sessions.User.CID, transactionLineItemMappings, Sessions.User.ID);
         }
@@ -95,23 +92,7 @@ namespace RevenuePlanner.Controllers
 
             IEnumerable<LineItemsGroupedByTactic> ligbtList = _transaction.GetLinkedLineItemsForTransaction(Sessions.User.CID, transactionId);
 
-            // Convert to user's currency
-            double exchangeRate = Sessions.PlanExchangeRate;
-
-            foreach (LineItemsGroupedByTactic ligbt in ligbtList)
-            {
-                ligbt.ActualCost = _currency.GetValueByExchangeRate(ligbt.ActualCost, exchangeRate);
-                ligbt.PlannedCost = _currency.GetValueByExchangeRate(ligbt.PlannedCost, exchangeRate);
-                ligbt.TotalLinkedCost = _currency.GetValueByExchangeRate(ligbt.TotalLinkedCost, exchangeRate);
-
-                foreach (LinkedLineItem lineItem in ligbt.LineItems)
-                {
-                    lineItem.Actual = _currency.GetValueByExchangeRate(lineItem.Actual, exchangeRate);
-                    lineItem.Cost = _currency.GetValueByExchangeRate(lineItem.Cost, exchangeRate);
-                    lineItem.LineItemMapping.Amount = _currency.GetValueByExchangeRate(lineItem.LineItemMapping.Amount, exchangeRate);
-                }
-                
-            }
+            ConvertCurrency(ligbtList);
 
             return ligbtList;
         }
@@ -147,15 +128,7 @@ namespace RevenuePlanner.Controllers
 
             List<Transaction> transactions = _transaction.GetTransactions(Sessions.User.CID, start, end, unprocessedOnly, skip, take);
 
-            // Convert to user's currency
-            double exchangeRate = Sessions.PlanExchangeRate;
-
-            foreach (Transaction transaction in transactions)
-            {
-                transaction.Amount = _currency.GetValueByExchangeRate(transaction.Amount, exchangeRate);
-                transaction.AmountAttributed = _currency.GetValueByExchangeRate(transaction.AmountAttributed, exchangeRate);
-                transaction.AmountRemaining = _currency.GetValueByExchangeRate(transaction.AmountRemaining, exchangeRate);
-            }
+            ConvertCurrency(transactions);
 
             return Trim(transactions);
         }
@@ -171,14 +144,7 @@ namespace RevenuePlanner.Controllers
 
             List<LinkedTransaction> linkedTransactions = _transaction.GetTransactionsForLineItem(Sessions.User.CID, lineItemId);
 
-            // Convert to user's currency
-            double exchangeRate = Sessions.PlanExchangeRate;
-
-            foreach (LinkedTransaction linkedTransaction in linkedTransactions)
-            {
-                linkedTransaction.Amount = _currency.GetValueByExchangeRate(linkedTransaction.Amount, exchangeRate);
-                linkedTransaction.LinkedAmount = _currency.GetValueByExchangeRate(linkedTransaction.LinkedAmount, exchangeRate);
-            }
+            ConvertCurrency(linkedTransactions);
 
             return linkedTransactions;
         }
@@ -196,13 +162,66 @@ namespace RevenuePlanner.Controllers
             transaction.AmountAttributed = _currency.GetValueByExchangeRate(transaction.AmountAttributed, exchangeRate);
             transaction.AmountRemaining = _currency.GetValueByExchangeRate(transaction.AmountRemaining, exchangeRate);
 
-            var leanTransactions = Trim(new List<Transaction>()
-                                            {
-                                                transaction
-                                            } );
-
-            return leanTransactions.FirstOrDefault();
+            return Trim(transaction);
         }
+
+        #region Currency conversions 
+        private void ConvertCurrency(List<LinkedTransaction> linkedTransactions)
+        {
+            // Convert to user's currency
+            double exchangeRate = Sessions.PlanExchangeRate;
+
+            foreach (LinkedTransaction linkedTransaction in linkedTransactions)
+            {
+                linkedTransaction.Amount = _currency.GetValueByExchangeRate(linkedTransaction.Amount, exchangeRate);
+                linkedTransaction.LinkedAmount = _currency.GetValueByExchangeRate(linkedTransaction.LinkedAmount, exchangeRate);
+            }
+        }
+
+        private void ConvertCurrency(List<Transaction> transactions)
+        {
+            // Convert to user's currency
+            double exchangeRate = Sessions.PlanExchangeRate;
+
+            foreach (Transaction transaction in transactions)
+            {
+                transaction.Amount = _currency.GetValueByExchangeRate(transaction.Amount, exchangeRate);
+                transaction.AmountAttributed = _currency.GetValueByExchangeRate(transaction.AmountAttributed, exchangeRate);
+                transaction.AmountRemaining = _currency.GetValueByExchangeRate(transaction.AmountRemaining, exchangeRate);
+            }
+        }
+
+        private void ConvertCurrency(IEnumerable<LineItemsGroupedByTactic> lineItemsGroupedByTactic)
+        {
+            // Convert to user's currency
+            double exchangeRate = Sessions.PlanExchangeRate;
+
+            foreach (LineItemsGroupedByTactic ligbt in lineItemsGroupedByTactic)
+            {
+                ligbt.ActualCost = _currency.GetValueByExchangeRate(ligbt.ActualCost, exchangeRate);
+                ligbt.PlannedCost = _currency.GetValueByExchangeRate(ligbt.PlannedCost, exchangeRate);
+                ligbt.TotalLinkedCost = _currency.GetValueByExchangeRate(ligbt.TotalLinkedCost, exchangeRate);
+
+                foreach (LinkedLineItem lineItem in ligbt.LineItems)
+                {
+                    lineItem.Actual = _currency.GetValueByExchangeRate(lineItem.Actual, exchangeRate);
+                    lineItem.Cost = _currency.GetValueByExchangeRate(lineItem.Cost, exchangeRate);
+                    lineItem.LineItemMapping.Amount = _currency.GetValueByExchangeRate(lineItem.LineItemMapping.Amount, exchangeRate);
+                }
+
+            }
+        }
+
+        private void ConvertCurrency(List<TransactionLineItemMapping> transactionLineItemMappings)
+        {
+            // Convert to USD
+            foreach (TransactionLineItemMapping tlim in transactionLineItemMappings)
+            {
+                tlim.Amount = _currency.SetValueByExchangeRate(tlim.Amount, Sessions.PlanExchangeRate);
+            }
+        }
+
+        #endregion Currency conversions
 
         #region trim transactions for a lean data structure
         /// <summary>
@@ -223,7 +242,16 @@ namespace RevenuePlanner.Controllers
             "AmountAttributed", //Amount attributed already 
             "AmountRemaining", //Amount unattributed (remaining)
             "TransactionDate", // Transaction date 
-        };  
+        };
+
+        private LeanTransaction Trim(Transaction transaction)
+        {
+            var leanTransactions = Trim(new List<Transaction>()
+                                            {
+                                                transaction
+                                            });
+            return leanTransactions.FirstOrDefault();
+        }
 
         /// <summary>
         /// This function build a lean version of transaction that only contain the columns a client is needed.

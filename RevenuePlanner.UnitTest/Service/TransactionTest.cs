@@ -24,6 +24,8 @@ namespace RevenuePlanner.UnitTest.Service
         private const int testUserId = 297;
         private DateTime testMinStartDate = (DateTime)SqlDateTime.MinValue;
         private DateTime testMaxEndDate = (DateTime)SqlDateTime.MaxValue;
+        private const int testTransactionId = 120;
+
         #endregion
 
         public TransactionTest()
@@ -209,6 +211,21 @@ namespace RevenuePlanner.UnitTest.Service
         }
 
         [TestMethod]
+        public void Test_Transaction_GetHeaderMappings_ColumnNameValidation()
+        {
+            Transaction trans = _transaction.GetTransaction(testClientId, testTransactionId);
+            Assert.AreEqual(testTransactionId, trans.TransactionId);
+
+            //This is to make sure an Hive9Header is always a valid property of Transaction object! 
+            List<TransactionHeaderMapping> mappings = _transaction.GetHeaderMappings(testClientId);
+            foreach (var map in mappings)
+            {
+                var pi = trans.GetType().GetProperty(map.Hive9Header);
+                Assert.IsNotNull(pi);
+            }
+        }
+
+        [TestMethod]
         public void Test_Transaction_GetLinkedLineItemsForTransaction_InvalidArguments()
         {
             // Test clientId == 0
@@ -259,10 +276,9 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_GetLinkedLineItemsForTransaction()
         {
-            const int testTransactionId = 30;
-            const int expectedLineItemsGroupedByTactic = 5;
-            const int testTacticId = 4671;
-            const int expectedLineItemsForTactic = 4;
+            const int expectedLineItemsGroupedByTactic = 9;
+            const int testTacticId = 4622;
+            const int expectedLineItemsForTactic = 1;
                
             // Test that we get line items by tactic
             List<LineItemsGroupedByTactic> ligbtList = _transaction.GetLinkedLineItemsForTransaction(testClientId, testTransactionId);           
@@ -760,7 +776,6 @@ namespace RevenuePlanner.UnitTest.Service
         [TestMethod]
         public void Test_Transaction_GetTransaction()
         {
-            const int testTransactionId = 120;
             const int testInvalidTransactionId = Int32.MaxValue;
 
             // Test with valid transaction

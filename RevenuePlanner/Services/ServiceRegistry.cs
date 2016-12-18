@@ -13,6 +13,7 @@ namespace RevenuePlanner.Services
             this.For<IMarketingBudget>().LifecycleIs(new SingletonLifecycle()).Use<MarketingBudget.MarketingBudget>();
             this.For<ITransaction>().LifecycleIs(new SingletonLifecycle()).Use<FinancialTransaction>();
             this.For<IPlanPicker>().LifecycleIs(new SingletonLifecycle()).Use<PlanPicker.PlanPicker>();
+            this.For<ICurrency>().LifecycleIs(new UniquePerRequestLifecycle()).Use<Currency>();
         }
     }
 }

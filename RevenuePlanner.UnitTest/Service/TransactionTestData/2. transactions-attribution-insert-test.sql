@@ -19,6 +19,8 @@ WHERE ClientID = @ClientId
 DELETE dbo.TransactionLineItemMapping 
 WHERE dbo.TransactionLineItemMapping.TransactionId IN (SELECT TransactionId FROM dbo.Transactions WHERE ClientID = @ClientID)
 
+DBCC CHECKIDENT (TransactionLineItemMapping, RESEED, 0)
+
 --PREPARE LINE ITEM ACTUAL TABLES 
 DELETE 
 FROM dbo.Plan_Campaign_Program_Tactic_LineItem_Actual 
