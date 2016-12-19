@@ -233,36 +233,68 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns true if the operation is successful, 0 otherwise.</returns>
         public ActionResult CheckCurrentPassword(string currentPassword)
         {
+
             bool isValid = false;
 
-            /* ------------------------------- single hash current password ------------------------------*/
-            string SingleHash_CurrentPassword = Common.ComputeSingleHash(currentPassword.ToString().Trim());
-            /*--------------------------------------------------------------------------------------------*/
-            try
+            if (Sessions.User.UserId != null && Sessions.User.IsLocked == false) //must be a logged in user 
             {
-                //// Verify Current Password by UserId.
-                isValid = objBDSServiceClient.CheckCurrentPasswordEx(Sessions.User.ID, SingleHash_CurrentPassword);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
+                /* ------------------------------- single hash current password ------------------------------*/
+                string SingleHash_CurrentPassword = Common.ComputeSingleHash(currentPassword.ToString().Trim());
+                /*--------------------------------------------------------------------------------------------*/
+                try
                 {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                    //// Verify Current Password by UserId.
+                    isValid = objBDSServiceClient.CheckCurrentPasswordEx(Sessions.User.ID, SingleHash_CurrentPassword);
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+
+                    //To handle unavailability of BDSService
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        //// Flag to indicate unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                    }
                 }
             }
+
             if (isValid)
             {
                 return Json("0", JsonRequestBehavior.AllowGet);
             }
             else
             {
+                KickUserOutIfAttemptExcessive("CountCheckCurrentPassword");
+
                 return Json("1", JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Keeps track of user attempt per action. If attempt is found exessive, kick user out 
+        /// </summary>
+        /// <param name="sessionKey"></param>
+        private void KickUserOutIfAttemptExcessive(string sessionKey)
+        {
+            Nullable<int> count = HttpContext.Session[sessionKey] as Nullable<int>;
+            if (count == null)
+            {
+                HttpContext.Session[sessionKey] = 1;
+            }
+            else
+            {
+                count++;
+                if (count > 3)
+                {
+                    HttpContext.Session.Clear(); //this will end the current session to prevent user from further trials!
+                }
+                else
+                {
+                    HttpContext.Session[sessionKey] = count;
+                }
             }
         }
 
