@@ -6,6 +6,7 @@ import resolveAppUri from 'util/resolveAppUri';
 import transactionGridDataSource, {LINKED_ITEM_RENDERER_PROPERTY} from './transactionGridDataSource';
 import linkedItemEditor from './linkedItemEditor';
 import find from 'lodash/find';
+import debounce from 'lodash/debounce';
 import "third-party/jquery.simplePagination";
 import "third-party/jquery.simplePagination.scss";
 import createFilteredContentView from 'components/filteredContent/filteredContent';
@@ -16,15 +17,23 @@ function createGrid($gridContainer, dataSource, filteredView) {
     const grid = new Grid($grid.get(0));
     grid.setImagePath(resolveAppUri("codebase/imgs/"));
     // grid.enableAutoHeight(true);
-    grid.enableAutoWidth(true);
+    // grid.enableAutoWidth(true);
     grid.setDateFormat("%m/%d/%Y");
     dataSource.bindToGrid(grid);
 
     // refresh the grid size whenever the filter panel is toggled
-    $(filteredView).on("filterToggled", () => {
+    function resizeGrid() {
         grid.entBox.style.width = "auto";
-        grid.setSizes()
-    });
+        grid.entBox.style.height = "100%";
+        grid.setSizes();
+    }
+    $(filteredView).on("filterToggled", resizeGrid);
+
+    // whenever the window is resized, resize the grid
+    // debounce the window events so we do not cause a performance issue
+    // TODO: if we ever make this an SPA, then we need a way to remove this event handler when this page is torn down!
+    $(window).on("resize", debounce(resizeGrid, 100));
+
 
     // add click handler to grid editLineItems whenever the grid re-renders
     grid.attachEvent("onXLE", () => {
@@ -66,13 +75,13 @@ function createGrid($gridContainer, dataSource, filteredView) {
     });
 }
 
-function createPager($pager, dataSource) {
+function createPager($pager, dataSource, recalculateRowsPerPage) {
     $pager.pagination({
         cssStyle: "light-theme",
         pages: dataSource.numPages || 1,
         currentPage: dataSource.pageNumber || 1,
         onPageClick: (pageNumber, ev) => {
-            dataSource.gotoPage(pageNumber);
+            dataSource.gotoPage(pageNumber, recalculateRowsPerPage());
 
             // ev is undefined if user used ellipses to type in a page number
             if (ev) {
@@ -170,10 +179,12 @@ export default function main($rootElement) {
     const $gridContainer = filteredView.$content.find(`.${css.gridContainer}`);
     const $viewBy = filteredView.$content.find(`#${viewOptions.viewById}`);
 
-    const dataSource = transactionGridDataSource(calculateRowsPerPage($gridContainer));
-    const filterPanel = createFilterView(filteredView.$filterPanel, dataSource);
+    const recalculatePageSize = () => calculateRowsPerPage($gridContainer);
+
+    const dataSource = transactionGridDataSource(recalculatePageSize());
+    const filterPanel = createFilterView(filteredView.$filterPanel, dataSource, recalculatePageSize);
     bindViewBy($viewBy, dataSource);
-    createPager($pager, dataSource);
+    createPager($pager, dataSource, () => calculateRowsPerPage($gridContainer));
     createGrid($gridContainer, dataSource, filteredView);
     bindNoRecordsMessage(dataSource, $pager, $gridContainer);
 }

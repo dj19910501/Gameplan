@@ -34,8 +34,9 @@ class NewLinkModel {
      * @param which
      * @param handler
      */
-    subscribe(which, handler) {
-        $(this).on(which, handler);
+    subscribe(which, handler, namespace) {
+        const evType = namespace ? `${which}.${namespace}` : which;
+        $(this).on(evType, handler);
         handler(this._makeEvent(which));
     }
 

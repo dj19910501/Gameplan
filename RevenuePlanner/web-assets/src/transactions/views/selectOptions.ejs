@@ -1,4 +1,4 @@
     <option value=""><%- o.prompt %></option>
 <% o.items.forEach(function (item) { %>
-    <option value="<%= item.value %>"><%- item.text %></option>
+    <option value="<%= item.value %>" <%= item.value === o.selected ? 'selected="selected"': '' %>><%- item.text %></option>
 <% }) %>

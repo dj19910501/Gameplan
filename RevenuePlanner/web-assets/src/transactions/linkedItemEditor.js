@@ -68,6 +68,21 @@ function createBrowserGrid(view, model, which, selectedWhich, title) {
 
     const dataSource = model.createNewItemGridDataSource(which, title);
     dataSource.bindToGrid(grid);
+
+    // whenever the data loads, if the model has a selected value, then select that row
+    function onChange(ev) {
+        if (!ev || ev.which.records) {
+            if (selectedWhich) {
+                const selectedItem = model.newItemModel[selectedWhich];
+                if (selectedItem != null) {
+                    grid.selectRowById(selectedItem);
+                }
+            }
+        }
+    }
+
+    dataSource.on("change", onChange);
+    onChange();
 }
 
 function bindGrid(model, $container) {
@@ -93,8 +108,6 @@ function bindGrid(model, $container) {
                         finally {
                             inSetSize = false;
                         }
-
-                        console.log(grid.entBox.style.width);
                     }
                 });
             }
@@ -223,7 +236,20 @@ function bindModelToEditor(transactionId, model, view) {
     model.newItemModel.subscribe("years", ev => {
         const years = ev.value;
         if (years) {
-            const optionsHtml = optionsTemplate({ prompt: "Select Year", items: years.map(y => ({value: y, text: y})) });
+            if (!model.newItemModel.selectedYear) {
+                // select the current year by default
+                const currentYear = "" + new Date().getFullYear();
+                if (years.some(y => y === currentYear)) {
+                    model.newItemModel.selectedYear = currentYear;
+                }
+            }
+
+            const optionsHtml = optionsTemplate({
+                prompt: "Select Year",
+                items: years.map(y => ({value: y, text: y})),
+                selected: model.newItemModel.selectedYear,
+            });
+
             $selectYear.html(optionsHtml);
             $selectYear.multiselect("refresh");
             $selectYear.multiselect("enable");
@@ -232,7 +258,7 @@ function bindModelToEditor(transactionId, model, view) {
             $selectYear.multiselect("disable");
             $selectYear.multiselect("getButton").children().eq(0).html(`${SPINNER} Loading...`);
         }
-    });
+    }, "editor");
 
     $selectYear.on("change", function () {
         const option = this.options[this.selectedIndex];
@@ -243,7 +269,11 @@ function bindModelToEditor(transactionId, model, view) {
     model.newItemModel.subscribe("plans", ev => {
         const plans = ev.value;
         if (plans) {
-            const optionsHtml = optionsTemplate({ prompt: "Select Plan", items: plans.map(p => ({value: p.Id, text: p.Title }))});
+            const optionsHtml = optionsTemplate({
+                prompt: "Select Plan",
+                items: plans.map(p => ({value: p.Id, text: p.Title })),
+                selected: model.newItemModel.selectedPlan,
+            });
             $selectPlan.html(optionsHtml);
             $selectPlan.multiselect("refresh");
             $selectPlan.multiselect("enable");
@@ -253,7 +283,7 @@ function bindModelToEditor(transactionId, model, view) {
             const label = model.newItemModel.selectedYear ? `${SPINNER} Loading...` : "&nbsp;";
             $selectPlan.multiselect("getButton").children().eq(0).html(label);
         }
-    });
+    }, "editor");
 
     $selectPlan.on("change", function () {
         const option = this.options[this.selectedIndex];
@@ -265,6 +295,12 @@ function bindModelToEditor(transactionId, model, view) {
     createBrowserGrid(view, model, "programs", "selectedProgram", "Programs");
     createBrowserGrid(view, model, "tactics", "selectedTactic", "Tactics");
     createBrowserGrid(view, model, "lineItems", null, "Line Items");
+}
+
+function unbindModel(model) {
+    // can ignore "model" itself since it will get GCed with us
+    // but the newItemModel is a singleton so we need to unsubscribe from it
+    model.newItemModel.unsubscribe(".editor");
 }
 
 function renderInitialView(transaction) {
@@ -321,7 +357,10 @@ export default function linkedItemEditor(transaction) {
     bindModelToEditor(transaction.id, model, view);
 
     // destroy the modal when it is closed
-    view.$window.on('hidden', () => view.$window.remove());
+    view.$window.on('hidden', () => {
+        unbindModel(model);
+        view.$window.remove();
+    });
 
     // display the dialog
     view.$window.modal();

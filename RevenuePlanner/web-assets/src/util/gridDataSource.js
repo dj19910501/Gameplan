@@ -101,6 +101,9 @@ class GridDataSource {
                     grid._refresh_mode = [true, true, false];
                     grid.parse({rows}, "json");
                     grid.setSizes();
+
+                    // DHTMLXGrid does not trigger this event after a parse.  Grr...
+                    grid.callEvent("onGridReconstructed", []);
                     return;
                 }
                 else {
@@ -109,6 +112,9 @@ class GridDataSource {
 
                 if (records) {
                     grid.parse(records, "js");
+
+                    // DHTMLXGrid does not trigger this event after a parse.  Grr...
+                    grid.callEvent("onGridReconstructed", []);
                 }
 
                 firstTime = false;
@@ -169,10 +175,13 @@ class GridDataSource {
         }
     }
 
-    updateFilter(newFilter) {
+    updateFilter(newFilter, pageSize) {
         this.state.filter = newFilter;
         this.state.totalRecords = undefined;
-        this._notify({filter: true, totalRecords: true});
+        if (pageSize !== undefined) {
+            this.state.paging = {skip: 0, take: pageSize};
+        }
+        this._notify({filter: true, totalRecords: true, paging: pageSize !== undefined });
     }
 
     /**
@@ -215,7 +224,7 @@ class GridDataSource {
         }
     }
 
-    _setSkip(pSkip) {
+    _setSkip(pSkip, newTake) {
         const {paging, totalRecords} = this.state;
 
         let newSkip = pSkip;
@@ -231,8 +240,13 @@ class GridDataSource {
             newSkip = 0;
         }
 
-        if (newSkip !== paging.skip) {
-            this.updatePaging({...paging, skip: newSkip});
+        const updatedTake = newTake || paging.take;
+
+        // ensure skip is a multiple of take
+        newSkip -= (newSkip % updatedTake);
+
+        if (newSkip !== paging.skip || updatedTake !== paging.take) {
+            this.updatePaging({...paging, skip: newSkip, take: updatedTake});
         }
 
     }
@@ -249,10 +263,10 @@ class GridDataSource {
         }
     }
 
-    gotoPage(pageNumber) {
+    gotoPage(pageNumber, newTake) {
         const {paging} = this.state;
         if (paging.take !== undefined) {
-            this._setSkip((pageNumber - 1) * paging.take);
+            this._setSkip((pageNumber - 1) * paging.take, newTake);
         }
     }
 }
