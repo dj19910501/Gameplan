@@ -18,6 +18,16 @@
         dhtmlxValidation.isCustomNameValid = function (data) {
             var childitems = newTreeGrid.getSubItems(ValidParentId).split(',');
             var isrepeat = true;
+            //Push All budget Names to array to check if budget with same name already exists
+            BudgetOptions = {
+                values: []
+            }
+
+            $.each($("#ddlParentFinanceMain").find("option"), function () {
+                BudgetOptions.values.push($(this).text().toLowerCase().trim())
+            });
+            //End
+
             if (data.trim() == '' || data.trim() == null) {
                 isrepeat = false;
                 IsValid = false;

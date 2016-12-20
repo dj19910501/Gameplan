@@ -264,6 +264,15 @@ function GetGridData(budgetId) {
             // Desc :: handle for same name or empty string
             dhtmlxValidation.isGridCustomNameValid = function (data) {
               var isrepeat = true;
+                //Push All budget Names to array to check if budget with same name already exists
+                BudgetOptions = {
+                    values: []
+                }
+
+                $.each($("#ddlParentFinanceMain").find("option"), function () {
+                    BudgetOptions.values.push($(this).text().toLowerCase().trim())
+                });
+                //End
               if (ValidParentId != 0) {
                   var childitems = budgetgrid.getSubItems(ValidParentId).split(',');
 
