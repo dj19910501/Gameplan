@@ -1,13 +1,15 @@
 ﻿@model RevenuePlanner.Models.LoginModel
+@using RevenuePlanner.Controllers.Filters;
 
 @{
     ViewBag.Title = "Login";
     Layout = "~/Views/Shared/_LoginLayout.cshtml";
     string sessionTimeoutErrMsg = TempData["SessionTimeOut"] != null ? TempData["SessionTimeOut"].ToString().ToLower() : string.Empty;
+    var AntiForgeryToken = Request.RequestContext.HttpContext.GetAntiForgeryToken();
 }
 @using (Html.BeginForm("", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "frmLogin", @class = "form-signin", name = "login-register" }))
 {
-    @Html.AntiForgeryToken()
+    @AntiForgeryToken
    
     <h2 class="primary-title source-sans-prosemibold">Secure Login</h2>
     @Html.TextBoxFor(u => u.UserEmail, new { maxlength = "200", @class = "input-block-level conv_helveticaltstd-light", placeholder = "Email", required = "required" })
@@ -34,5 +36,7 @@
         }
 
         $("#UserEmail").focus();    //// Added by :- Sohel Pathan on 25/04/2014 for Internal Review Points to set focus on Email textbox on Page load.
+
+        //alert(_AntiForgeryToken);
     });
 </script>
