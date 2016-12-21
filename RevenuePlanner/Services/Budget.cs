@@ -1279,7 +1279,7 @@ namespace RevenuePlanner.Services
             Contract.Requires<ArgumentNullException>(Entity != null, "Entity cannot be null.");
             Contract.Requires<ArgumentNullException>(BudgetProp != null, "Budget Property cannot be null.");
             Contract.Requires<ArgumentNullException>(BudgetProp.Length > 0, "Budget Property count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(MonthNo > 0, "Month Number cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(MonthNo >= 0, "Month Number cannot be less than zero.");
 
             double FMNBudget = Convert.ToDouble(BudgetProp[MonthNo].GetValue(Entity.NextYearMonthValues)); // Multi Year First Budget Month of Quarter
             double SMNBudget = Convert.ToDouble(BudgetProp[MonthNo + 1].GetValue(Entity.NextYearMonthValues)); // Multi Year Second Budget Month of Quarter
