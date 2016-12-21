@@ -201,7 +201,8 @@ namespace RevenuePlanner.Controllers
                     else if (obj.Email == "")
                     {
                         IsEmailInvalid = true;
-                        ModelState.AddModelError("", Common.objCached.InvalidEmailLogin);
+                        //Below Message Changed By Jaymin Modi for PL ticket #2896
+                        ModelState.AddModelError("", Common.objCached.InvalidLogin);
                         obj = null;
 
                         //Modified By Komal Rawal for #2181 to check current version before returning form incase of wrong attempt
