@@ -1917,7 +1917,7 @@ namespace RevenuePlanner.Services
         private static void BottonUpCostMonthlyValues(PlanBudgetModel PBModel, int Weightage, List<PlanBudgetModel> Childs)
         {
             Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(Weightage > 0, "Weight-age cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(Weightage >= 0, "Weight-age cannot be less than zero.");
 
             if (Childs != null)
             {
@@ -1984,7 +1984,7 @@ namespace RevenuePlanner.Services
         private static void BottonUpActualMonthlyValues(PlanBudgetModel PBModel, int Weightage, List<PlanBudgetModel> Childs)
         {
             Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(Weightage > 0, "Weight-age cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(Weightage >= 0, "Weight-age cannot be less than zero.");
 
             if (Childs != null)
             {
