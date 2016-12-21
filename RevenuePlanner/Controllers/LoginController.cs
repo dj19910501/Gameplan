@@ -347,7 +347,7 @@ namespace RevenuePlanner.Controllers
                             Sessions.AppMenus.Remove(item);
                         }
 
-                       
+
                         if (!AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TransactionAttribution))
                         {
                             item = Sessions.AppMenus.Find(menuItem => menuItem.Code == "TRANSACTIONS");
@@ -391,7 +391,7 @@ namespace RevenuePlanner.Controllers
                     }
                     //End Bhavesh
                     //added by devanshi cache media code customfield configuration
-                  
+
                     #region add tactic media code customfield configuration to cache
                     bool isMediaCodePermission = IsClientMediaCodePermission();
                     Sessions.IsMediaCodePermission = isMediaCodePermission;
@@ -415,7 +415,7 @@ namespace RevenuePlanner.Controllers
                     }
                     #endregion
                     //end
-                  //  Sessions.IsAlertPermission = IsClientAlertsPermission();
+                    //  Sessions.IsAlertPermission = IsClientAlertsPermission();
                     //Redirect users logging in for the first time to the change password module
                     TempData.Clear();
                     if (obj.LastLoginDate == null)
@@ -595,7 +595,7 @@ namespace RevenuePlanner.Controllers
         /// Added by devanshi on 19-8-2016 for #2476 to set permission of alerts for client
         /// </summary>
         /// <returns></returns>
-          private bool IsClientAlertsPermission()
+        private bool IsClientAlertsPermission()
         {
             bool isAlertPermission = false;
             try
@@ -620,7 +620,7 @@ namespace RevenuePlanner.Controllers
             }
             return isAlertPermission;
         }
-        
+
         private ActionResult RedirectLocal(string returnUrl)
         {
             var questionMarkIndex = returnUrl.IndexOf('?');
@@ -671,11 +671,11 @@ namespace RevenuePlanner.Controllers
             //Modified By komal Rawal for #2283 Could not login  after session timeout from plan page
             List<BDSService.Menu> ListofControllerMenus = new List<BDSService.Menu>();
             ListofControllerMenus = AppMenus.ToList().Where(am => am.ControllerName != null && am.ControllerName.ToLower().Equals(controllerName)).ToList();
-            
+
 
             // Modified by Viral Kadiya on 10/15/14 for #795 Cannot Log In After Session Expiration.
             BDSService.Menu currentMenuOfUrl = (BDSService.Menu)AppMenus.Where(am => am.ControllerName.ToLower().Equals(controllerName)).FirstOrDefault();
-            if(ListofControllerMenus.Count() > 1)
+            if (ListofControllerMenus.Count() > 1)
             {
                 currentMenuOfUrl = ListofControllerMenus.Where(am => am.ControllerName.ToLower().Equals(controllerName) && am.ActionName.Equals(actionName)).FirstOrDefault();
             }
@@ -900,14 +900,8 @@ namespace RevenuePlanner.Controllers
             try
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-
                 var objUser = objBDSServiceClient.GetUserDetails(form.UserEmail);
-
-                if (objUser == null)
-                {
-                    ModelState.AddModelError("", Common.objCached.EmailNotExistInDatabse);
-                }
-                else
+                if (objUser != null)
                 {
                     BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
                     objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
@@ -939,11 +933,10 @@ namespace RevenuePlanner.Controllers
                         //string tempUrl = "http://localhost:57856/Login/SecurityQuestion/" + PasswordResetRequestId;
 
                         Common.sendMail(objUser.Email, Common.FromMail, emailBody, notification.Subject, string.Empty);
-
-
-                        form.IsSuccess = true;
                     }
                 }
+
+                form.IsSuccess = true;
             }
             catch (Exception ex)
             {
