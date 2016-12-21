@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="7b50d3b2-dfb2-43a2-85b1-6e77941167b7" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="c3bd4b74-d37d-4a7d-b319-516f7ae72f05" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -21,16 +21,16 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="http://localhost/BDSService/BDSService.svc" Protocol="http" SourceId="1" />
+    <MetadataSource Address="http://localhost:51731/bdsservice.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="BDSService.xsd" MetadataType="Schema" ID="f79f91fb-bf84-4b2d-b41d-24ccc058ebe1" SourceId="1" SourceUrl="http://localhost/BDSService/BDSService.svc?xsd=xsd0" />
-    <MetadataFile FileName="BDSService1.xsd" MetadataType="Schema" ID="030e36ae-1db7-4e27-af9a-6ed714f7660b" SourceId="1" SourceUrl="http://localhost/BDSService/BDSService.svc?xsd=xsd3" />
-    <MetadataFile FileName="BDSService2.xsd" MetadataType="Schema" ID="094202a3-618b-4575-8542-554fbf917746" SourceId="1" SourceUrl="http://localhost/BDSService/BDSService.svc?xsd=xsd4" />
-    <MetadataFile FileName="BDSService.wsdl" MetadataType="Wsdl" ID="93e908ac-f401-4364-be72-b4b1e69c3ff4" SourceId="1" SourceUrl="http://localhost/BDSService/BDSService.svc?wsdl" />
-    <MetadataFile FileName="BDSService3.xsd" MetadataType="Schema" ID="4dcfa194-6c5d-442d-aac1-956dd7a6129c" SourceId="1" SourceUrl="http://localhost/BDSService/BDSService.svc?xsd=xsd2" />
-    <MetadataFile FileName="BDSService4.xsd" MetadataType="Schema" ID="56db5656-7c01-4030-8b27-f6b97cdd10f4" SourceId="1" SourceUrl="http://localhost/BDSService/BDSService.svc?xsd=xsd1" />
-    <MetadataFile FileName="BDSService.disco" MetadataType="Disco" ID="db1e6503-a5b1-4023-ba75-e24792e1ae4a" SourceId="1" SourceUrl="http://localhost/BDSService/BDSService.svc?disco" />
+    <MetadataFile FileName="bdsservice.xsd" MetadataType="Schema" ID="67438b97-a60f-4251-85a8-170da412c56f" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd4" />
+    <MetadataFile FileName="BDSService.wsdl" MetadataType="Wsdl" ID="aa8b2ab3-3c66-4e30-adb9-62bd59da8135" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?wsdl" />
+    <MetadataFile FileName="bdsservice1.xsd" MetadataType="Schema" ID="ddadea35-ddda-4c01-b477-e199c716947c" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd2" />
+    <MetadataFile FileName="bdsservice2.xsd" MetadataType="Schema" ID="d3d7f934-016e-4e6d-a6e1-03f1bb156a78" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd3" />
+    <MetadataFile FileName="bdsservice3.xsd" MetadataType="Schema" ID="bc7dc481-edec-47b1-b5f0-2a4fa0b8f2bf" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd0" />
+    <MetadataFile FileName="bdsservice4.xsd" MetadataType="Schema" ID="45f5b652-56e8-431f-b0e9-24c4fb4a6820" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd1" />
+    <MetadataFile FileName="bdsservice.disco" MetadataType="Disco" ID="90b50025-74ae-41e1-b84e-690a3a1b80db" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?disco" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

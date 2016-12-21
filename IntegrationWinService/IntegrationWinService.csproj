@@ -109,55 +109,24 @@
     <None Include="Properties\DataSources\Integration.BDSService.UserApplicationPermission.datasource" />
     <None Include="Properties\DataSources\Integration.BDSService.UserHierarchy.datasource" />
     <None Include="Service References\BDSService\BDSService.wsdl" />
-    <None Include="Service References\BDSService\BDSService.xsd">
+    <None Include="Service References\BDSService\bdsservice.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService1.wsdl" />
-    <None Include="Service References\BDSService\BDSService1.xsd">
+    <None Include="Service References\BDSService\bdsservice1.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService2.xsd">
+    <None Include="Service References\BDSService\bdsservice2.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService3.xsd">
+    <None Include="Service References\BDSService\bdsservice3.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService4.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService5.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService6.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService7.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService8.xsd">
+    <None Include="Service References\BDSService\bdsservice4.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\BDSService\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\BDSService\BDSService.disco" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\BDSService\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\BDSService\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\BDSService\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">
@@ -170,7 +139,13 @@
     <Content Include="DLL\Newtonsoft.Json.dll" />
     <Content Include="DLL\RestSharp.dll" />
     <Content Include="DLL\SalesforceSharp.dll" />
-    <None Include="Service References\BDSService\BDSService1.disco" />
+    <None Include="Service References\BDSService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\BDSService\configuration.svcinfo" />
+    <None Include="Service References\BDSService\configuration91.svcinfo" />
+    <None Include="Service References\BDSService\bdsservice.disco" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
@@ -181,6 +156,9 @@
       <Project>{b312ef9a-c33a-4e44-8bd6-b141080302e0}</Project>
       <Name>Integration</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\BDSService\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

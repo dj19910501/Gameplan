@@ -1,142 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://121.243.79.150:8085/BDSServiceDev/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-  <xs:complexType name="User">
+<xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/BDSService" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BDSService" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:51731/bdsservice.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:complexType name="ExchangeRate_Log">
     <xs:sequence>
-      <xs:element minOccurs="0" name="Answer" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="BusinessUnitId" type="ser:guid" />
-      <xs:element minOccurs="0" name="Client" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ClientId" type="ser:guid" />
-      <xs:element minOccurs="0" name="DisplayName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="GeographyId" type="ser:guid" />
-      <xs:element minOccurs="0" name="IsClientAdmin" type="xs:boolean" />
-      <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
-      <xs:element minOccurs="0" name="IsDirector" type="xs:boolean" />
-      <xs:element minOccurs="0" name="IsPlanner" type="xs:boolean" />
-      <xs:element minOccurs="0" name="IsSystemAdmin" type="xs:boolean" />
-      <xs:element minOccurs="0" name="JobTitle" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="LastLoginDate" nillable="true" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="Password" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="ProfilePhoto" nillable="true" type="xs:base64Binary" />
-      <xs:element minOccurs="0" name="RoleCode" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="RoleId" type="ser:guid" />
-      <xs:element minOccurs="0" name="RoleTitle" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="SecurityQuestion" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="SecurityQuestionId" nillable="true" type="xs:int" />
-      <xs:element minOccurs="0" name="UserId" type="ser:guid" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="User" nillable="true" type="tns:User" />
-  <xs:complexType name="ArrayOfUser">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="User" nillable="true" type="tns:User" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfUser" nillable="true" type="tns:ArrayOfUser" />
-  <xs:complexType name="ArrayOfClient">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Client" nillable="true" type="tns:Client" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfClient" nillable="true" type="tns:ArrayOfClient" />
-  <xs:complexType name="Client">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="Address1" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="Address2" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="ClientId" type="ser:guid" />
-      <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="Country" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="CreatedBy" nillable="true" type="ser:guid" />
-      <xs:element minOccurs="0" name="CreatedDate" nillable="true" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
-      <xs:element minOccurs="0" name="Logo" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="ModifiedBy" nillable="true" type="ser:guid" />
-      <xs:element minOccurs="0" name="ModifiedDate" nillable="true" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="ZipCode" nillable="true" type="xs:string" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="Client" nillable="true" type="tns:Client" />
-  <xs:complexType name="ArrayOfRole">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Role" nillable="true" type="tns:Role" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfRole" nillable="true" type="tns:ArrayOfRole" />
-  <xs:complexType name="Role">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="CreatedBy" nillable="true" type="ser:guid" />
-      <xs:element minOccurs="0" name="CreatedDate" nillable="true" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
-      <xs:element minOccurs="0" name="ModifiedBy" nillable="true" type="ser:guid" />
-      <xs:element minOccurs="0" name="ModifiedDate" nillable="true" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="RoleId" type="ser:guid" />
-      <xs:element minOccurs="0" name="Title" nillable="true" type="xs:string" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="Role" nillable="true" type="tns:Role" />
-  <xs:complexType name="ArrayOfMenu">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Menu" nillable="true" type="tns:Menu" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfMenu" nillable="true" type="tns:ArrayOfMenu" />
-  <xs:complexType name="Menu">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="ActionName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="ControllerName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="IsDisplayInMenu" type="xs:boolean" />
-      <xs:element minOccurs="0" name="IsEnable" type="xs:boolean" />
-      <xs:element minOccurs="0" name="MenuApplicationId" type="xs:int" />
-      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="ParentApplicationId" nillable="true" type="xs:int" />
-      <xs:element minOccurs="0" name="SortOrder" type="xs:int" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="Menu" nillable="true" type="tns:Menu" />
-  <xs:complexType name="ArrayOfPermission">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Permission" nillable="true" type="tns:Permission" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfPermission" nillable="true" type="tns:ArrayOfPermission" />
-  <xs:complexType name="Permission">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="PermissionCode" type="xs:int" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="Permission" nillable="true" type="tns:Permission" />
-  <xs:complexType name="PasswordResetRequest">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="AttemptCount" type="xs:int" />
+      <xs:element minOccurs="0" name="Component" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CreatedBy" type="ser:guid" />
       <xs:element minOccurs="0" name="CreatedDate" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="IsUsed" type="xs:boolean" />
-      <xs:element minOccurs="0" name="PasswordResetRequestId" type="ser:guid" />
-      <xs:element minOccurs="0" name="UserId" type="ser:guid" />
+      <xs:element minOccurs="0" name="EndDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="ISOCurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="LogId" type="xs:long" />
+      <xs:element minOccurs="0" name="Mode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="NewExchangeRate" type="xs:double" />
+      <xs:element minOccurs="0" name="OldExchangeRate" nillable="true" type="xs:double" />
+      <xs:element minOccurs="0" name="StartDate" type="xs:dateTime" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="PasswordResetRequest" nillable="true" type="tns:PasswordResetRequest" />
-  <xs:complexType name="ArrayOfSecurityQuestion">
+  <xs:element name="ExchangeRate_Log" nillable="true" type="tns:ExchangeRate_Log" />
+  <xs:complexType name="ArrayOfExchangeRate_Log">
     <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="SecurityQuestion" nillable="true" type="tns:SecurityQuestion" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ExchangeRate_Log" nillable="true" type="tns:ExchangeRate_Log" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="ArrayOfSecurityQuestion" nillable="true" type="tns:ArrayOfSecurityQuestion" />
-  <xs:complexType name="SecurityQuestion">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="SecurityQuestion1" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="SecurityQuestionId" type="xs:int" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="SecurityQuestion" nillable="true" type="tns:SecurityQuestion" />
+  <xs:element name="ArrayOfExchangeRate_Log" nillable="true" type="tns:ArrayOfExchangeRate_Log" />
 </xs:schema>

@@ -435,7 +435,13 @@
     <Content Include="Properties\DataSources\Integration.BDSService.User.datasource" />
     <Content Include="Properties\DataSources\Integration.BDSService.UserApplicationPermission.datasource" />
     <Content Include="Properties\DataSources\Integration.BDSService.UserHierarchy.datasource" />
-    <None Include="Service References\BDSService\bdsservice1.disco" />
+    <None Include="Service References\BDSService\bdsservice.disco" />
+    <None Include="Service References\BDSService\configuration91.svcinfo" />
+    <None Include="Service References\BDSService\configuration.svcinfo" />
+    <None Include="Service References\BDSService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
     <Content Include="Views\Finance\Transactions.cshtml" />
     <Content Include="Views\MeasureDashboard\_ViewAllReportGraph.cshtml" />
     <Content Include="Views\MarketingBudget\_newBudget.cshtml" />
@@ -443,20 +449,20 @@
     <Content Include="Views\Inspect\_InspectPopupPlan.cshtml" />
     <Content Include="Views\MarketingBudget\_LineItem.cshtml" />
     <Content Include="Views\MarketingBudget\_UserPermission.cshtml" />
-    <None Include="Service References\BDSService\BDSService1.wsdl" />
-    <None Include="Service References\BDSService\bdsservice5.xsd">
+    <None Include="Service References\BDSService\BDSService.wsdl" />
+    <None Include="Service References\BDSService\bdsservice.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\bdsservice51.xsd">
+    <None Include="Service References\BDSService\bdsservice1.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\bdsservice52.xsd">
+    <None Include="Service References\BDSService\bdsservice2.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\bdsservice53.xsd">
+    <None Include="Service References\BDSService\bdsservice3.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\bdsservice54.xsd">
+    <None Include="Service References\BDSService\bdsservice4.xsd">
       <SubType>Designer</SubType>
     </None>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.AppConfiguration.datasource">
@@ -1009,12 +1015,6 @@
     <None Include="Properties\PublishProfiles\zhang-local.pubxml" />
     <Content Include="Scripts\MultiCurrency.js" />
     <Content Include="Scripts\Planhud.js" />
-    <None Include="Service References\BDSService\configuration91.svcinfo" />
-    <None Include="Service References\BDSService\configuration.svcinfo" />
-    <None Include="Service References\BDSService\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
     <Content Include="web-assets\build\include-js.htm" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
