@@ -1455,7 +1455,8 @@ namespace RevenuePlanner.Services
                                 }
 
                                 if (columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType
-                                    || columnName == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost)
+                                    || columnName == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost
+                                     || columnName == Enums.HomeGrid_Default_Hidden_Columns.Owner)
                                 {
                                     objPlanData.locked = !string.IsNullOrEmpty(RowData.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
                                     cellTextColor = int.Parse(IsEditable) == 0 ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
@@ -1463,7 +1464,6 @@ namespace RevenuePlanner.Services
                                 else if (columnName == Enums.HomeGrid_Default_Hidden_Columns.StartDate
                                         || columnName == Enums.HomeGrid_Default_Hidden_Columns.EndDate
                                         || columnName == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal
-                                        || columnName == Enums.HomeGrid_Default_Hidden_Columns.Owner
                                         || columnName == Enums.HomeGrid_Default_Hidden_Columns.Status
                                         || columnName == Enums.HomeGrid_Default_Hidden_Columns.AssetType)
                                 {

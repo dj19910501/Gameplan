@@ -806,7 +806,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 var oldvalueofEndYear = new Date(oValue).getFullYear(); //oValue.split('/')[2];
                                 var _yrDiff = oldvalueofEndYear - StartYear;
                                 if (YearDiff > 0) {
-                                    debugger;
                                     var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
                                     var Index = getvalue.indexOf("</div>");
                                     if (Index > -1) {
@@ -858,13 +857,14 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                             if (UpdateColumn == OwnerId) {
                                 if ((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" && states.OwnerName != null) {
-                                    if (planid != 0 && planid != null && planid != undefined) {
+                                    if (_planid != 0 && _planid != null && _planid != undefined) {
                                         GetTacticTypelist(filters.PlanIDs);
                                         GetOwnerListForFilter(filters.PlanIDs);
                                         SaveLastSetofViews();
+                                        LoadPlanGrid();
                                     }
                                 }
-                                CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
+                                //CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
 
                             }
                             if (UpdateColumn == TaskNameId) {

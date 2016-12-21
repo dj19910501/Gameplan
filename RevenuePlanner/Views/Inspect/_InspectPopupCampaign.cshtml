@@ -413,7 +413,7 @@
           // Reload campaign for further edit/update zz
           //
           function ReloadSavedCampaign() {
-              loadInspectPopup($("#hdnPlanCampaignId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId', $("#hdnRedirectType").val());
+              loadInspectPopup($("#hdnPlanCampaignId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", '@Enums.InspectPopupMode.Edit.ToString()', '@planCampaignId', $("#hdnRedirectType").val());
           }
 
           $("#btnAddCampaign").on("click", function () {
