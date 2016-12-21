@@ -253,8 +253,17 @@ namespace RevenuePlanner.Services
             objTacticData.style = stylecolor;
             lstTacticData.Add(objTacticData);
 
-            objTacticData = new Budgetdataobj();    // Add Icons column value
-            objTacticData.value = "";
+            objTacticData = new Budgetdataobj();   
+            //Modified by Rahul Shah to add '+' icon for tactic on lineitem tab of Tactic inspection window also made changes to move html code from controller to cshtml page.
+            //objTacticData.value = Convert.ToString(BindIconsForLineItem(tacticModel));
+            if (tacticModel.isEditable)
+            {
+                objTacticData.value = "#GRIDACTION#" + ActivityType.ActivityTactic + "-" + tacticModel.LineItemTypeId + "-" + Convert.ToString(tacticModel.ParentActivityId) + "_" + Convert.ToString(tacticModel.ActivityId) + "-" + tacticModel.isEditable;
+            }
+            else
+            {
+                objTacticData.value = "";
+            }
             objTacticData.lo = lockedstate;
             objTacticData.style = stylecolor;
             lstTacticData.Add(objTacticData);
@@ -286,28 +295,7 @@ namespace RevenuePlanner.Services
             objTacticRows.rows = lstLineItemRows;
             lstTacticRows.Add(objTacticRows);
             return lstTacticRows;
-        }
-
-        /// <summary>
-        /// Bind icons column for line item
-        /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
-        /// </summary>
-        /// <param name="Entity"></param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private StringBuilder BindIconsForLineItem(BudgetModel Entity)
-        {
-            StringBuilder strIconsData = new StringBuilder();
-
-            // Magnifying Glass to open Inspect Popup
-            strIconsData.Append("<div class=grid_Search id=LP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>");
-
-            // Add Button
-            strIconsData.Append("<div class=grid_add onclick=javascript:OpenLineItemGridPopup(this,event)  id=Line alt=" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId));
-            strIconsData.Append(" lt=" + ((Entity.LineItemTypeId == null) ? 0 : Entity.LineItemTypeId) + " per=true");
-            strIconsData.Append(" dt=" + Convert.ToString(Entity.ActivityName) + " ><i class='fa fa-plus-circle' aria-hidden='true'></i></div>");
-            return strIconsData;
-        }
+        }        
 
         /// <summary>
         /// Bind data for each line item
@@ -343,7 +331,9 @@ namespace RevenuePlanner.Services
             lstLineItemData.Add(objLineItemData);
 
             objLineItemData = new Budgetdataobj();  // Add Icons to the column
-            objLineItemData.value = modelEntity.LineItemTypeId != null ? Convert.ToString(BindIconsForLineItem(modelEntity)) : "";
+            //also made changes to move html code from controller to cshtml page.
+            //objLineItemData.value = modelEntity.LineItemTypeId != null ? Convert.ToString(BindIconsForLineItem(modelEntity)) : "";
+            objLineItemData.value = "#GRIDACTION#" + ActivityType.ActivityLineItem + "-" + modelEntity.LineItemTypeId + "-" + Convert.ToString(modelEntity.ParentActivityId) + "_" + Convert.ToString(modelEntity.ActivityId) + "-" + modelEntity.isEditable; 
             lstLineItemData.Add(objLineItemData);
 
             objLineItemData = new Budgetdataobj();  // Add Planned Cost to the column

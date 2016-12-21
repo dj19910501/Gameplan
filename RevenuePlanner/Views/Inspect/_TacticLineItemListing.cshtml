@@ -140,9 +140,49 @@ else
         ActivityIdColIndex = LineItemGrid.getColIndexById("id");
         PlannedCostColIndex = LineItemGrid.getColIndexById("plannedcost");
         TaskNameColIndex = LineItemGrid.getColIndexById("taskname");
+        AttachIcons();
+    }
+    //Added by Rahul Shah to bind '+' & 'view' Icon
+    function AttachIcons()
+    {       
+        var imgAddString,imgSearchString, rowid, ActivityType, ActivityTypeId, AltId, EntityType, Permisson;
+        $('#lineItemGrid .objbox').find('table tbody').find('tr').find("td").each(function (key, value) {            
+            if ($(this).html().indexOf('#GRIDACTION#') >= 0)
+            {                
+                rowid = $(this).text().replace("#GRIDACTION#", "");
+                if(rowid.split('-').length > 1){
+                    ActivityType = rowid.split('-')[0];
+                    ActivityTypeId = rowid.split('-')[1];
+                    AltId = rowid.split('-')[2];
+                    Permisson = rowid.split('-')[3];
+
+                }
+                if(ActivityType.toString().toUpperCase() == '@Enums.EntityType.Tactic.ToString().ToUpper()')
+                {
+                    EntityType = '@Enums.EntityType.Tactic.ToString().ToUpper()';
+                    imgAddString = "<div style = 'margin-left: 31px ! important' class='grid_add' id= '"+ EntityType +"' onclick='OpenLineItemGridPopup(this,event)'  alt = " + AltId +" lt=" + ActivityTypeId + "><i class='fa fa-plus-circle' aria-hidden='true'></i></div> "
+                    $(this).html(imgAddString);
+                }
+                else if(EntityType = '@Enums.EntityType.Lineitem.ToString().ToUpper()' && ActivityTypeId != "")
+                {
+                    EntityType = '@Enums.EntityType.Lineitem.ToString().ToUpper()';
+                    imgSearchString = "<div class='grid_Search' id= 'LP' title=View><i class='fa fa-external-link-square' aria-hidden='true'></i></div> "
+                    if(Permisson.toString().toUpperCase() == 'TRUE'){
+                        imgAddString = "<div class='grid_add' id= '"+ EntityType +"' onclick='OpenLineItemGridPopup(this,event)'  alt = " + AltId +" lt=" + ActivityTypeId + "><i class='fa fa-plus-circle' aria-hidden='true'></i></div> "
+                    }                   
+                    else{
+                        imgAddString  = "";
+                    }
+                    $(this).html(imgSearchString + imgAddString);
+                }
+                else{
+                    $(this).html('');
+                }
+            }
+        });
     }
 
-    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {        
         if (stage == 0) {   // Stage == 0 Means Click on Cell
             // Disable cells which has no permission to edit
             var locked = LineItemGrid.cells(rowId, cellInd).getAttribute("lo");
@@ -353,17 +393,22 @@ else
         }
     });
     function OpenLineItemGridPopup(obj, e) {
-        var arrTacticAndLineItemIds = $(obj).attr('alt').replace('cpt_','').replace('cptl_','').split('_');
-
-        ParentId = arrTacticAndLineItemIds[0];
-        EntityId = arrTacticAndLineItemIds[1];
+        var arrTacticAndLineItemIds = $(obj).attr('alt').replace('cp_','').replace('cpt_','').replace('cptl_','').split('_');
+        ItemType = $(obj).attr('id');
+        if(ItemType.toString().toUpperCase() == '@Enums.EntityType.Tactic.ToString().ToUpper()'){
+            ParentId = arrTacticAndLineItemIds[1];
+        }
+        else{
+            ParentId = arrTacticAndLineItemIds[0];
+            EntityId = arrTacticAndLineItemIds[1];
+        }
 
         var lineItemType = $(obj).attr('lt');
-        Type = $(obj).attr('id');
+
         var LinkTacticPermission = $(obj).attr('linktacticper');
         var LinkedTacticId = $(obj).attr('linkedtacticid');
 
-        if (lineItemType == "0") {
+        if (lineItemType == "0" || ItemType.toString().toUpperCase() == '@Enums.EntityType.Tactic.ToString().ToUpper()') {
             ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItemGrid'>New Line Item</li> </ul>";
         }
         else {
