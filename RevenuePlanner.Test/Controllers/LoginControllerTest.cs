@@ -315,6 +315,25 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(result.Data);
 
         }
+
+        [TestMethod]
+        public void ForgotPassword_POST()
+        {
+
+            var routes = new RouteCollection();
+            Console.WriteLine("To POST Forgot Password View.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            LoginController objLoginController = new LoginController();
+            objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
+            ForgotPasswordModel form = new ForgotPasswordModel();
+            form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString();
+            var result = objLoginController.ForgotPassword(form);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result);
+            Assert.AreEqual(result, false);
+
+        }
+
         #endregion
 
         #region return Site maintainance

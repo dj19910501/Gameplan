@@ -1008,37 +1008,18 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 var objUser = objBDSServiceClient.GetUserDetails(form.UserEmail);
                 if (objUser != null)
-                {
-                    BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
-                    objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
-                    objPasswordResetRequest.UserId = objUser.UserId;
-                    objPasswordResetRequest.AttemptCount = 0;
-                    objPasswordResetRequest.CreatedDate = DateTime.Now;
+                {  //Method for Prepare PasswordResetRequest object
+                    BDSService.PasswordResetRequest objPasswordResetRequest = Common.PreparePasswordResetRequest(objUser.UserId);
+                    string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
 
-                    string passwordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
-
-                    if (passwordResetRequestId == string.Empty)
+                    if (PasswordResetRequestId == string.Empty)
                     {
                         ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
                     }
                     else
-                    {
-                        // Send email
-                        string notificationShare = "";
-                        string emailBody = "";
-                        Notification notification = new Notification();
-                        notificationShare = Enums.Custom_Notification.ResetPasswordLink.ToString();
-                        notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
+                    {   //Call Method for sending mail to Appropriate Email
+                        Common.SendForgotPasswordMail(PasswordResetRequestId, objUser.Email, objPasswordResetRequest.CreatedDate);
 
-                        //Changes made by Komal rawal for #1328
-                        TempData["UserId"] = objUser.UserId;
-                        string PasswordResetLink = Url.Action("ResetPassword", "Login", new { id = passwordResetRequestId }, Request.Url.Scheme);
-                        emailBody = notification.EmailContent.Replace("[PasswordResetLinkToBeReplaced]", "<a href='" + PasswordResetLink + "'>" + PasswordResetLink + "</a>")
-                                                             .Replace("[ExpireDateToBeReplaced]", objPasswordResetRequest.CreatedDate.AddHours(int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"])).ToString());
-
-                        //string tempUrl = "http://localhost:57856/Login/SecurityQuestion/" + PasswordResetRequestId;
-
-                        Common.sendMail(objUser.Email, Common.FromMail, emailBody, notification.Subject, string.Empty);
                     }
                 }
 

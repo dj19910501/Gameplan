@@ -8944,7 +8944,50 @@ namespace RevenuePlanner.Helpers
             }
             return UserId;
         }
-       
+
+
+        
+        #region Methods for Forgot Password Added By Jaymin Modi for PL #2895
+
+        /// <summary>
+        /// Added By Jaymin Modi at 22/Dec/2016 for Prepare PasswordResetRequest
+        /// </summary>
+        /// <param name="Userid"></param>
+        /// <returns></returns>
+        public static PasswordResetRequest PreparePasswordResetRequest(Guid Userid)
+        {
+            BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+            objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
+            objPasswordResetRequest.UserId = Userid;
+            objPasswordResetRequest.AttemptCount = 0;
+            objPasswordResetRequest.CreatedDate = DateTime.Now;
+            return objPasswordResetRequest;
+        }
+
+        /// <summary>
+        /// Added By Jaymin Modi at 22/Dec/2016. Send Mail for forgot Password
+        /// </summary>
+        public static void SendForgotPasswordMail(string PasswordResetRequestId, string Email, DateTime ResetRequestCreateDate)
+        {
+            MRPEntities db = new MRPEntities();
+            string notificationShare = "";
+            string emailBody = "";
+            Notification notification = new Notification();
+            notificationShare = Enums.Custom_Notification.ResetPasswordLink.ToString();
+            notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
+
+            var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
+            var PasswordResetLink = urlHelper.Action("ResetPassword", "Login", new { id = PasswordResetRequestId }, HttpContext.Current.Request.Url.Scheme);
+            emailBody = notification.EmailContent.Replace("[PasswordResetLinkToBeReplaced]", "<a href='" + PasswordResetLink + "'>" + PasswordResetLink + "</a>")
+                                                 .Replace("[ExpireDateToBeReplaced]", ResetRequestCreateDate.AddHours(int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"])).ToString());
+
+            Common.sendMail(Email, Common.FromMail, emailBody, notification.Subject, string.Empty);
+
+        }
+
+
+        #endregion
+
     }
 
     /// <summary>
