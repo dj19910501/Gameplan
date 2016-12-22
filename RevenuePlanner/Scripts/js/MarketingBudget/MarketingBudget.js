@@ -577,6 +577,9 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
                     $('.dhx_combo_select').val(ValidOldID);
             }
         }
+        if ( cInd != ColTaskNameIndex && this != null && this.editor != null && this.editor.obj != null) {
+            this.editor.obj.select();//Added by komal rawal on 22-12-2016 to higlight the value when we edit the cell.
+        }
     }
     if (IsValid) {        
         _isNewRowAdd = false;
@@ -1037,7 +1040,6 @@ function ApplyFormattingAndTooltip(idName) {
 
 //Function to set value of Header and Tooltip Also and Manage Negative Value with Currency
 function setBootstrapTooltipMarketingBudget(lableId, value, maxSize, iscurrency, decimaldigit) {
-    debugger;
     var digit = 0;
     if (decimaldigit != null && decimaldigit != undefined && decimaldigit != 'undefined') {
         digit = parseInt(decimaldigit);

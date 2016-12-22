@@ -457,6 +457,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             //this.editor.obj.value = (psv[0].replace(/,/g, ""));
             this.editor.obj.value = (ReplaceCC(actualcost.toString()));
         }
+        if (this != null && this.editor != null && this.editor.obj != null)
+        {
+            this.editor.obj.select();//Added by komal rawal on 22-12-2016 to higlight the value when we edit the cell.
+        }
+      
     }
     if (stage == 2) {
         if (nValue.trim() != null && nValue.trim() != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {

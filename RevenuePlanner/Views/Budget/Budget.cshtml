@@ -343,6 +343,9 @@
                     }
                 }
             }
+            if (this != null && this.editor != null && this.editor.obj != null) {
+                this.editor.obj.select();//Added by komal rawal on 22-12-2016 to higlight the value when we edit the cell.
+            }
         }
 
         if (stage == 2) { // Stage == 2 - Means perform focus out event
