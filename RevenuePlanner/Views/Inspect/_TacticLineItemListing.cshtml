@@ -144,7 +144,7 @@ else
     }
     //Added by Rahul Shah to bind '+' & 'view' Icon
     function AttachIcons()
-    {       
+    {   
         var imgAddString,imgSearchString, rowid, ActivityType, ActivityTypeId, AltId, EntityType, Permisson;
         $('#lineItemGrid .objbox').find('table tbody').find('tr').find("td").each(function (key, value) {            
             if ($(this).html().indexOf('#GRIDACTION#') >= 0)
@@ -157,7 +157,7 @@ else
                     Permisson = rowid.split('-')[3];
 
                 }
-                if(ActivityType.toString().toUpperCase() == '@Enums.EntityType.Tactic.ToString().ToUpper()')
+                if(ActivityType.toString().trim().toUpperCase() == '@Enums.EntityType.Tactic.ToString().ToUpper()')
                 {
                     EntityType = '@Enums.EntityType.Tactic.ToString().ToUpper()';
                     imgAddString = "<div style = 'margin-left: 31px ! important' class='grid_add' id= '"+ EntityType +"' onclick='OpenLineItemGridPopup(this,event)'  alt = " + AltId +" lt=" + ActivityTypeId + "><i class='fa fa-plus-circle' aria-hidden='true'></i></div> "
@@ -395,14 +395,15 @@ else
     function OpenLineItemGridPopup(obj, e) {
         var arrTacticAndLineItemIds = $(obj).attr('alt').replace('cp_','').replace('cpt_','').replace('cptl_','').split('_');
         ItemType = $(obj).attr('id');
-        if(ItemType.toString().toUpperCase() == '@Enums.EntityType.Tactic.ToString().ToUpper()'){
-            ParentId = arrTacticAndLineItemIds[1];
+        if(arrTacticAndLineItemIds.length > 1){
+            if(ItemType.toString().toUpperCase() == '@Enums.EntityType.Tactic.ToString().ToUpper()'){
+                ParentId = arrTacticAndLineItemIds[1];
+            }
+            else{
+                ParentId = arrTacticAndLineItemIds[0];
+                EntityId = arrTacticAndLineItemIds[1];
+            }
         }
-        else{
-            ParentId = arrTacticAndLineItemIds[0];
-            EntityId = arrTacticAndLineItemIds[1];
-        }
-
         var lineItemType = $(obj).attr('lt');
 
         var LinkTacticPermission = $(obj).attr('linktacticper');

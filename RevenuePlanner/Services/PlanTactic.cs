@@ -258,7 +258,7 @@ namespace RevenuePlanner.Services
             //objTacticData.value = Convert.ToString(BindIconsForLineItem(tacticModel));
             if (tacticModel.isEditable)
             {
-                objTacticData.value = "#GRIDACTION#" + ActivityType.ActivityTactic + "-" + tacticModel.LineItemTypeId + "-" + Convert.ToString(tacticModel.ParentActivityId) + "_" + Convert.ToString(tacticModel.ActivityId) + "-" + tacticModel.isEditable;
+                objTacticData.value = string.Format("#GRIDACTION# {0}-{1}-{2}_{3}-{4}", ActivityType.ActivityTactic, tacticModel.LineItemTypeId, Convert.ToString(tacticModel.ParentActivityId), Convert.ToString(tacticModel.ActivityId), tacticModel.isEditable);                
             }
             else
             {
@@ -332,8 +332,8 @@ namespace RevenuePlanner.Services
 
             objLineItemData = new Budgetdataobj();  // Add Icons to the column
             //also made changes to move html code from controller to cshtml page.
-            //objLineItemData.value = modelEntity.LineItemTypeId != null ? Convert.ToString(BindIconsForLineItem(modelEntity)) : "";
-            objLineItemData.value = "#GRIDACTION#" + ActivityType.ActivityLineItem + "-" + modelEntity.LineItemTypeId + "-" + Convert.ToString(modelEntity.ParentActivityId) + "_" + Convert.ToString(modelEntity.ActivityId) + "-" + modelEntity.isEditable; 
+            //objLineItemData.value = modelEntity.LineItemTypeId != null ? Convert.ToString(BindIconsForLineItem(modelEntity)) : "";            
+            objLineItemData.value = string.Format("#GRIDACTION# {0}-{1}-{2}_{3}-{4}", ActivityType.ActivityLineItem, modelEntity.LineItemTypeId, Convert.ToString(modelEntity.ParentActivityId), Convert.ToString(modelEntity.ActivityId), modelEntity.isEditable);
             lstLineItemData.Add(objLineItemData);
 
             objLineItemData = new Budgetdataobj();  // Add Planned Cost to the column
