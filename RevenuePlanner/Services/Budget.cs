@@ -61,72 +61,72 @@ namespace RevenuePlanner.Services
             objColumnView = new ColumnView();
             objCurrency = new RevenuePlanner.Services.Currency();
             objCache = new CacheObject();
-        }       
+        }
 
         /// <summary>
         /// Method to Get budget,planned and actuals grid data
         /// </summary>        
-        public BudgetDHTMLXGridModel GetBudget(int ClientId, int UserID, string PlanIds, double PlanExchangeRate, string ViewBy, string Year = "", string CustomFieldIds = "", string OwnerIds = "", string TacticTypeIds = "", string StatusIds = "", string SearchText = "", string SearchBy = "", bool IsFromCache = false)
+        public BudgetDHTMLXGridModel GetBudget(int clientId, int userID, string planIds, double planExchangeRate, string viewBy, string year = "", string customFieldIds = "", string ownerIds = "", string tacticTypeIds = "", string statusIds = "", string searchText = "", string searchBy = "", bool isFromCache = false)
         {
-            Contract.Requires<ArgumentNullException>(ClientId > 0, "Client Id cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(UserID > 0, "User Id cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(PlanIds != null, "At-least one plan should be selected");
-            Contract.Requires<ArgumentNullException>(PlanExchangeRate > 0, "Plan Exchange Rate cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ViewBy != null, "ViewBy cannot be null.");
+            Contract.Requires<ArgumentNullException>(clientId > 0, "Client Id cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(userID > 0, "User Id cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(planIds != null, "At-least one plan should be selected");
+            Contract.Requires<ArgumentNullException>(planExchangeRate > 0, "Plan Exchange Rate cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(viewBy != null, "ViewBy cannot be null.");
 
             string strThisQuarter = Convert.ToString(Enums.UpcomingActivities.ThisYearQuaterly);
             string strThisMonth = Convert.ToString(Enums.UpcomingActivities.ThisYearMonthly);
             // Set actual for quarters
             string AllocatedBy = Convert.ToString(Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.quarters)]).ToLower();
             // Check time frame selected for this year quarterly or this year monthly data and for this year option isMultiyear flag will always be false
-            if (string.Compare(Year, strThisQuarter, true) == 0)
+            if (string.Compare(year, strThisQuarter, true) == 0)
             {
                 isMultiYear = false;
-                Year = Convert.ToString(DateTime.Now.Year);
+                year = Convert.ToString(DateTime.Now.Year);
             }
-            else if (string.Compare(Year, strThisMonth, true) == 0)
+            else if (string.Compare(year, strThisMonth, true) == 0)
             {
                 isMultiYear = false;
                 AllocatedBy = Convert.ToString(Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.months)]).ToLower();
-                Year = Convert.ToString(DateTime.Now.Year);
+                year = Convert.ToString(DateTime.Now.Year);
             }
             else
             {
-                isMultiYear = Common.IsMultiyearTimeframe(Year);
+                isMultiYear = Common.IsMultiyearTimeframe(year);
             }
             List<PlanBudgetModel> GridDataList = new List<PlanBudgetModel>();
             List<PlanBudgetModel> PBModel = new List<PlanBudgetModel>(); // PBModel = Plan Budget Model
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-            if (IsFromCache) // Create Model from Cache
+            if (isFromCache) // Create Model from Cache
                 GridDataList = (List<PlanBudgetModel>)objCache.Returncache(Convert.ToString(Enums.CacheObject.AllBudgetGridData));
             if (GridDataList == null || GridDataList.Count() == 0)
             {
-                DataTable dtBudget = objSp.GetBudget(PlanIds, UserID, ViewBy, OwnerIds, TacticTypeIds, StatusIds, Year); // Get budget data for budget,planned cost and actual using store procedure GetplanBudget
+                DataTable dtBudget = objSp.GetBudget(planIds, userID, viewBy, ownerIds, tacticTypeIds, statusIds, year); // Get budget data for budget,planned cost and actual using store procedure GetplanBudget
 
-                PBModel = CreateBudgetDataModel(dtBudget, PlanExchangeRate); // Convert data table with budget data to PlanBudgetModel model
+                PBModel = CreateBudgetDataModel(dtBudget, planExchangeRate); // Convert data table with budget data to PlanBudgetModel model
 
-                PBModel = FilterPlanByTimeFrame(PBModel, Year); // Except plan level entity be filter at Db level so we remove plan object by applying time frame filter.  
+                PBModel = FilterPlanByTimeFrame(PBModel, year); // Except plan level entity be filter at Db level so we remove plan object by applying time frame filter.  
 
-                List<int> CustomFieldFilteredTacticIds = FilterCustomField(PBModel, CustomFieldIds);
+                List<int> CustomFieldFilteredTacticIds = FilterCustomField(PBModel, customFieldIds);
 
                 // filter budget model by custom field filter list
                 if (CustomFieldFilteredTacticIds != null && CustomFieldFilteredTacticIds.Count > 0)
                 {
                     PBModel.RemoveAll(a => string.Compare(a.ActivityType, ActivityType.ActivityTactic, true) == 0 && !CustomFieldFilteredTacticIds.Contains(Convert.ToInt32(a.Id)));
                 }
-                PBModel = SetCustomFieldRestriction(PBModel, UserID, ClientId); // Set custom field permission for budget cells. budget cell will editable or not.
+                PBModel = SetCustomFieldRestriction(PBModel, userID, clientId); // Set custom field permission for budget cells. budget cell will editable or not.
 
                 PBModel = ManageLineItems(PBModel); // Manage line items unallocated cost values in other line item
 
                 #region "Calculate Monthly Budget from Bottom to Top for Hierarchy level like: LineItem > Tactic > Program > Campaign > CustomField(if filtered) > Plan"
 
                 // Set ViewBy data to model.
-                PBModel = RollUp(PBModel, ViewBy);
+                PBModel = RollUp(PBModel, viewBy);
 
                 #endregion
-                if (ViewBy.Contains(Convert.ToString(PlanGanttTypes.Custom)))
+                if (viewBy.Contains(Convert.ToString(PlanGanttTypes.Custom)))
                 {
-                    PBModel = SetLineItemCostByWeightage(PBModel, ViewBy); // Set LineItem monthly budget cost by it's parent tactic weight-age.
+                    PBModel = SetLineItemCostByWeightage(PBModel, viewBy); // Set LineItem monthly budget cost by it's parent tactic weight-age.
                 }
                 objCache.AddCache(Convert.ToString(Enums.CacheObject.AllBudgetGridData), PBModel);
             }
@@ -134,17 +134,17 @@ namespace RevenuePlanner.Services
             {
                 PBModel = GridDataList;
             }
-            objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, Year); // Create header of model
-            if (!string.IsNullOrEmpty(SearchText)) // Searching Text
+            objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, year); // Create header of model
+            if (!string.IsNullOrEmpty(searchText)) // Searching Text
             {
                 List<PlanBudgetModel> SearchlistData;
-                if (string.IsNullOrEmpty(SearchBy) || string.Compare(SearchBy, Convert.ToString(Enums.GlobalSearch.ActivityName), true) == 0)
+                if (string.IsNullOrEmpty(searchBy) || string.Compare(searchBy, Convert.ToString(Enums.GlobalSearch.ActivityName), true) == 0)
                 {
-                    SearchlistData = PBModel.Where(a => a.ActivityName.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.Trim().ToLower()))).ToList();
+                    SearchlistData = PBModel.Where(a => a.ActivityName.ToLower().Contains(HttpUtility.HtmlEncode(searchText.Trim().ToLower()))).ToList();
                 }
                 else
                 {
-                    SearchlistData = PBModel.Where(a => a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(SearchText.Trim().ToLower()))).ToList();
+                    SearchlistData = PBModel.Where(a => a.MachineName.ToLower().Contains(HttpUtility.HtmlEncode(searchText.Trim().ToLower()))).ToList();
                 }
                 List<SearchParentDetail> parenttaskids = SearchlistData.Select(a => new SearchParentDetail
                 {
@@ -155,15 +155,15 @@ namespace RevenuePlanner.Services
                 List<string> selectedSerachId = Common.SearchGridCalendarData(parenttaskids, PBModel, Convert.ToString(Enums.ActivePlanTab.Budget));
                 // Add all parents
                 PBModel = (from Data in PBModel
-                         join ParentData in selectedSerachId
-                         on Data.ActivityId equals ParentData
-                         select Data).ToList();
+                           join ParentData in selectedSerachId
+                           on Data.ActivityId equals ParentData
+                           select Data).ToList();
             }
-            objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, PBModel, AllocatedBy, UserID, ClientId, Year, ViewBy); // Create model to bind data in grid as per DHTMLx grid format.
+            objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, PBModel, AllocatedBy, userID, clientId, year, viewBy); // Create model to bind data in grid as per DHTMLx grid format.
             // Get number of tab views for user in column management
             bool isPlangrid = false;
             bool isSelectAll = false;
-            List<ColumnViewEntity> userManagedColumns = objColumnView.GetCustomfieldModel(ClientId, isPlangrid, out isSelectAll, UserID);
+            List<ColumnViewEntity> userManagedColumns = objColumnView.GetCustomfieldModel(clientId, isPlangrid, out isSelectAll, userID);
             string hiddenTab = string.Empty;
             if (!userManagedColumns.Where(u => u.EntityIsChecked).Any())
             {
@@ -173,11 +173,6 @@ namespace RevenuePlanner.Services
                     PlannedColumn.EntityIsChecked = true;
                 }
             }
-            foreach (ColumnViewEntity item in userManagedColumns.Where(u => !u.EntityIsChecked).ToList())
-            {
-                hiddenTab = hiddenTab + item.EntityType + ',';
-            }
-
             hiddenTab = string.Join(",", userManagedColumns.Where(u => !u.EntityIsChecked).Select(u => u.EntityType).ToList());
 
             objBudgetDHTMLXGrid.HiddenTab = hiddenTab;
@@ -189,20 +184,20 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method for roll-up bottom up values as per view by
         /// </summary>        
-        public List<PlanBudgetModel> RollUp(List<PlanBudgetModel> PBModel, string ViewBy)
+        public List<PlanBudgetModel> RollUp(List<PlanBudgetModel> budgetModel, string viewBy)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel.Count > 0, "Budget Model item count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ViewBy != null, "ViewBy cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget Model item count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(viewBy != null, "ViewBy cannot be null.");
 
             List<PlanBudgetModel> Finalmodel = new List<PlanBudgetModel>();
-            Finalmodel = CalculateBottomUp(PBModel, ActivityType.ActivityTactic, ActivityType.ActivityLineItem, ViewBy); // Calculate monthly Tactic budget from it's child budget i.e LineItem
+            Finalmodel = CalculateBottomUp(budgetModel, ActivityType.ActivityTactic, ActivityType.ActivityLineItem, viewBy); // Calculate monthly Tactic budget from it's child budget i.e LineItem
 
-            Finalmodel = CalculateBottomUp(PBModel, ActivityType.ActivityProgram, ActivityType.ActivityTactic, ViewBy); // Calculate monthly Program budget from it's child budget i.e Tactic
+            Finalmodel = CalculateBottomUp(budgetModel, ActivityType.ActivityProgram, ActivityType.ActivityTactic, viewBy); // Calculate monthly Program budget from it's child budget i.e Tactic
 
-            Finalmodel = CalculateBottomUp(PBModel, ActivityType.ActivityCampaign, ActivityType.ActivityProgram, ViewBy); // Calculate monthly Campaign budget from it's child budget i.e Program
+            Finalmodel = CalculateBottomUp(budgetModel, ActivityType.ActivityCampaign, ActivityType.ActivityProgram, viewBy); // Calculate monthly Campaign budget from it's child budget i.e Program
 
-            Finalmodel = CalculateBottomUp(PBModel, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, ViewBy); // Calculate monthly Plan budget from it's child budget i.e Campaign
+            Finalmodel = CalculateBottomUp(budgetModel, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, viewBy); // Calculate monthly Plan budget from it's child budget i.e Campaign
 
             return Finalmodel;
         }
@@ -210,20 +205,20 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to Filter Data by Custom Field Selection
         /// </summary>        
-        public List<int> FilterCustomField(List<PlanBudgetModel> BudgetModel, string CustomFieldFilter)
+        public List<int> FilterCustomField(List<PlanBudgetModel> budgetModel, string customFieldFilter)
         {
-            Contract.Requires<ArgumentNullException>(BudgetModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(BudgetModel.Count > 0, "Budget Model item count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget Model item count cannot be less than zero.");
 
             List<int> lstTacticIds = new List<int>();
-            if (BudgetModel != null && BudgetModel.Count > 0)
+            if (budgetModel != null && budgetModel.Count > 0)
             {
                 #region "Declare & Initialize local Variables"
                 List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                 string tacticType = Convert.ToString(Enums.EntityType.Tactic).ToUpper();
-                string[] filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldFilter) ? null : CustomFieldFilter.Split(',');
-                List<PlanBudgetModel> tacData = BudgetModel.Where(tac => string.Compare(tac.ActivityType, tacticType, true) == 0).ToList();
+                string[] filteredCustomFields = string.IsNullOrWhiteSpace(customFieldFilter) ? null : customFieldFilter.Split(',');
+                List<PlanBudgetModel> tacData = budgetModel.Where(tac => string.Compare(tac.ActivityType, tacticType, true) == 0).ToList();
                 lstTacticIds = tacData.Select(tactic => Convert.ToInt32(tactic.Id)).ToList();
                 #endregion
 
@@ -245,16 +240,16 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to set Budget Grid Model
         /// </summary>        
-        public List<PlanBudgetModel> CreateBudgetDataModel(DataTable DtBudget, double PlanExchangeRate)
+        public List<PlanBudgetModel> CreateBudgetDataModel(DataTable dtBudget, double planExchangeRate)
         {
-            Contract.Requires<ArgumentNullException>(DtBudget != null, "Budget Data Table cannot be null.");
-            Contract.Requires<ArgumentNullException>(DtBudget.Rows.Count > 0, "Budget Data Table rows count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(PlanExchangeRate > 0, "Plan Exchange Rate Filter cannot be null.");
+            Contract.Requires<ArgumentNullException>(dtBudget != null, "Budget Data Table cannot be null.");
+            Contract.Requires<ArgumentNullException>(dtBudget.Rows.Count > 0, "Budget Data Table rows count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(planExchangeRate > 0, "Plan Exchange Rate Filter cannot be null.");
 
             List<PlanBudgetModel> model = new List<PlanBudgetModel>();
-            if (DtBudget != null)
+            if (dtBudget != null)
             {
-                model = DtBudget.AsEnumerable().Select(row => new PlanBudgetModel
+                model = dtBudget.AsEnumerable().Select(row => new PlanBudgetModel
                 {
                     Id = Convert.ToString(row["Id"]),
                     TaskId = Convert.ToString(row["TaskId"]),
@@ -263,11 +258,11 @@ namespace RevenuePlanner.Services
                     ActivityName = Convert.ToString(row["Title"]),
                     ActivityType = Convert.ToString(row["ActivityType"]),
                     ParentActivityId = Convert.ToString(row["ParentTaskId"]),
-                    YearlyBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Budget"])), PlanExchangeRate),
-                    TotalUnallocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnallocatedBudget"])), PlanExchangeRate),
-                    TotalActuals = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationActual"])), PlanExchangeRate),
-                    TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Cost"])), PlanExchangeRate),
-                    UnallocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnAllocationCost"])), PlanExchangeRate),
+                    YearlyBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Budget"])), planExchangeRate),
+                    TotalUnallocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnallocatedBudget"])), planExchangeRate),
+                    TotalActuals = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationActual"])), planExchangeRate),
+                    TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Cost"])), planExchangeRate),
+                    UnallocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnAllocationCost"])), planExchangeRate),
                     IsOwner = Convert.ToBoolean(row["IsOwner"]),
                     CreatedBy = int.Parse(Convert.ToString(row["CreatedBy"])),
                     LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
@@ -287,90 +282,90 @@ namespace RevenuePlanner.Services
                     MonthValues = new BudgetMonth()
                     {
                         // Budget Month Allocation
-                        BudgetY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y2"])), PlanExchangeRate),
-                        BudgetY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y1"])), PlanExchangeRate),
-                        BudgetY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y3"])), PlanExchangeRate),
-                        BudgetY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y4"])), PlanExchangeRate),
-                        BudgetY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y5"])), PlanExchangeRate),
-                        BudgetY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y6"])), PlanExchangeRate),
-                        BudgetY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y7"])), PlanExchangeRate),
-                        BudgetY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y8"])), PlanExchangeRate),
-                        BudgetY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y9"])), PlanExchangeRate),
-                        BudgetY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y10"])), PlanExchangeRate),
-                        BudgetY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y11"])), PlanExchangeRate),
-                        BudgetY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y12"])), PlanExchangeRate),
+                        BudgetY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y2"])), planExchangeRate),
+                        BudgetY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y1"])), planExchangeRate),
+                        BudgetY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y3"])), planExchangeRate),
+                        BudgetY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y4"])), planExchangeRate),
+                        BudgetY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y5"])), planExchangeRate),
+                        BudgetY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y6"])), planExchangeRate),
+                        BudgetY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y7"])), planExchangeRate),
+                        BudgetY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y8"])), planExchangeRate),
+                        BudgetY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y9"])), planExchangeRate),
+                        BudgetY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y10"])), planExchangeRate),
+                        BudgetY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y11"])), planExchangeRate),
+                        BudgetY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y12"])), planExchangeRate),
 
                         // Cost Month Allocation
-                        CostY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY2"])), PlanExchangeRate),
-                        CostY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY1"])), PlanExchangeRate),
-                        CostY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY3"])), PlanExchangeRate),
-                        CostY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY4"])), PlanExchangeRate),
-                        CostY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY5"])), PlanExchangeRate),
-                        CostY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY6"])), PlanExchangeRate),
-                        CostY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY7"])), PlanExchangeRate),
-                        CostY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY8"])), PlanExchangeRate),
-                        CostY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY9"])), PlanExchangeRate),
-                        CostY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY10"])), PlanExchangeRate),
-                        CostY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY11"])), PlanExchangeRate),
-                        CostY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY12"])), PlanExchangeRate),
+                        CostY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY2"])), planExchangeRate),
+                        CostY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY1"])), planExchangeRate),
+                        CostY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY3"])), planExchangeRate),
+                        CostY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY4"])), planExchangeRate),
+                        CostY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY5"])), planExchangeRate),
+                        CostY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY6"])), planExchangeRate),
+                        CostY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY7"])), planExchangeRate),
+                        CostY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY8"])), planExchangeRate),
+                        CostY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY9"])), planExchangeRate),
+                        CostY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY10"])), planExchangeRate),
+                        CostY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY11"])), planExchangeRate),
+                        CostY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY12"])), planExchangeRate),
 
                         // Actuals Month Allocation
-                        ActualY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY2"])), PlanExchangeRate),
-                        ActualY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY1"])), PlanExchangeRate),
-                        ActualY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY3"])), PlanExchangeRate),
-                        ActualY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY4"])), PlanExchangeRate),
-                        ActualY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY5"])), PlanExchangeRate),
-                        ActualY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY6"])), PlanExchangeRate),
-                        ActualY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY7"])), PlanExchangeRate),
-                        ActualY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY8"])), PlanExchangeRate),
-                        ActualY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY9"])), PlanExchangeRate),
-                        ActualY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY10"])), PlanExchangeRate),
-                        ActualY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY11"])), PlanExchangeRate),
-                        ActualY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY12"])), PlanExchangeRate)
+                        ActualY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY2"])), planExchangeRate),
+                        ActualY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY1"])), planExchangeRate),
+                        ActualY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY3"])), planExchangeRate),
+                        ActualY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY4"])), planExchangeRate),
+                        ActualY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY5"])), planExchangeRate),
+                        ActualY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY6"])), planExchangeRate),
+                        ActualY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY7"])), planExchangeRate),
+                        ActualY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY8"])), planExchangeRate),
+                        ActualY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY9"])), planExchangeRate),
+                        ActualY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY10"])), planExchangeRate),
+                        ActualY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY11"])), planExchangeRate),
+                        ActualY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY12"])), planExchangeRate)
                     },
                     NextYearMonthValues = new BudgetMonth()
                     {
                         // Budget Month Allocation
-                        BudgetY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y14"])), PlanExchangeRate),
-                        BudgetY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y13"])), PlanExchangeRate),
-                        BudgetY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y15"])), PlanExchangeRate),
-                        BudgetY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y16"])), PlanExchangeRate),
-                        BudgetY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y17"])), PlanExchangeRate),
-                        BudgetY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y18"])), PlanExchangeRate),
-                        BudgetY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y19"])), PlanExchangeRate),
-                        BudgetY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y20"])), PlanExchangeRate),
-                        BudgetY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y21"])), PlanExchangeRate),
-                        BudgetY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y22"])), PlanExchangeRate),
-                        BudgetY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y23"])), PlanExchangeRate),
-                        BudgetY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y24"])), PlanExchangeRate),
+                        BudgetY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y14"])), planExchangeRate),
+                        BudgetY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y13"])), planExchangeRate),
+                        BudgetY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y15"])), planExchangeRate),
+                        BudgetY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y16"])), planExchangeRate),
+                        BudgetY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y17"])), planExchangeRate),
+                        BudgetY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y18"])), planExchangeRate),
+                        BudgetY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y19"])), planExchangeRate),
+                        BudgetY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y20"])), planExchangeRate),
+                        BudgetY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y21"])), planExchangeRate),
+                        BudgetY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y22"])), planExchangeRate),
+                        BudgetY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y23"])), planExchangeRate),
+                        BudgetY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y24"])), planExchangeRate),
 
                         // Cost Month Allocation
-                        CostY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY14"])), PlanExchangeRate),
-                        CostY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY13"])), PlanExchangeRate),
-                        CostY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY15"])), PlanExchangeRate),
-                        CostY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY16"])), PlanExchangeRate),
-                        CostY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY17"])), PlanExchangeRate),
-                        CostY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY18"])), PlanExchangeRate),
-                        CostY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY19"])), PlanExchangeRate),
-                        CostY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY20"])), PlanExchangeRate),
-                        CostY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY21"])), PlanExchangeRate),
-                        CostY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY22"])), PlanExchangeRate),
-                        CostY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY23"])), PlanExchangeRate),
-                        CostY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY24"])), PlanExchangeRate),
+                        CostY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY14"])), planExchangeRate),
+                        CostY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY13"])), planExchangeRate),
+                        CostY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY15"])), planExchangeRate),
+                        CostY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY16"])), planExchangeRate),
+                        CostY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY17"])), planExchangeRate),
+                        CostY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY18"])), planExchangeRate),
+                        CostY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY19"])), planExchangeRate),
+                        CostY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY20"])), planExchangeRate),
+                        CostY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY21"])), planExchangeRate),
+                        CostY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY22"])), planExchangeRate),
+                        CostY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY23"])), planExchangeRate),
+                        CostY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY24"])), planExchangeRate),
 
                         // Actuals Month Allocation
-                        ActualY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY14"])), PlanExchangeRate),
-                        ActualY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY13"])), PlanExchangeRate),
-                        ActualY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY15"])), PlanExchangeRate),
-                        ActualY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY16"])), PlanExchangeRate),
-                        ActualY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY17"])), PlanExchangeRate),
-                        ActualY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY18"])), PlanExchangeRate),
-                        ActualY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY19"])), PlanExchangeRate),
-                        ActualY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY20"])), PlanExchangeRate),
-                        ActualY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY21"])), PlanExchangeRate),
-                        ActualY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY22"])), PlanExchangeRate),
-                        ActualY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY23"])), PlanExchangeRate),
-                        ActualY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY24"])), PlanExchangeRate)
+                        ActualY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY14"])), planExchangeRate),
+                        ActualY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY13"])), planExchangeRate),
+                        ActualY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY15"])), planExchangeRate),
+                        ActualY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY16"])), planExchangeRate),
+                        ActualY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY17"])), planExchangeRate),
+                        ActualY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY18"])), planExchangeRate),
+                        ActualY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY19"])), planExchangeRate),
+                        ActualY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY20"])), planExchangeRate),
+                        ActualY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY21"])), planExchangeRate),
+                        ActualY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY22"])), planExchangeRate),
+                        ActualY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY23"])), planExchangeRate),
+                        ActualY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY24"])), planExchangeRate)
                     },
                     ChildMonthValues = new BudgetMonth(),
                     ChildNextYearMonthValues = new BudgetMonth()
@@ -382,91 +377,92 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to set Budget Object in DHTMLx Format
         /// </summary>        
-        public List<Budgetdataobj> SetBudgetDhtmlxFormattedValues(List<PlanBudgetModel> PBModel, PlanBudgetModel Entity, string OwnerName, string EntityType, string AllocatedBy, bool IsNextYear, bool IsMultiyearPlan, string DhtmlxGridRowId, bool IsAddEntityRights, bool IsViewBy = false, string pcptid = "", string TacticType = "")  // pcptid = Plan-Campaign-Program-Tactic-Id
+        public List<Budgetdataobj> SetBudgetDhtmlxFormattedValues(List<PlanBudgetModel> budgetModel, PlanBudgetModel entity, string ownerName, string entityType, string allocatedBy, bool isNextYear, bool isMultiyearPlan, string dhtmlxGridRowId, bool isAddEntityRights, bool isViewBy = false, string pcptid = "", string tacticType = "")  // pcptid = Plan-Campaign-Program-Tactic-Id
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel.Count > 0, "Budget model rows count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(Entity != null, "Entity cannot be null.");
-            Contract.Requires<ArgumentNullException>(EntityType != null, "Entity Type cannot be null.");
-            Contract.Requires<ArgumentNullException>(AllocatedBy != null, "Allocated By cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget model rows count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(entity != null, "Entity cannot be null.");
+            Contract.Requires<ArgumentNullException>(entityType != null, "Entity Type cannot be null.");
+            Contract.Requires<ArgumentNullException>(allocatedBy != null, "Allocated By cannot be null.");
 
             List<Budgetdataobj> BudgetDataObjList = new List<Budgetdataobj>();
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             string Roistring = string.Empty;
-            string PackageTacticIds = Entity.CalendarHoneycombpackageIDs;
-            BudgetDataObj.value = Entity.Id;
+            string PackageTacticIds = entity.CalendarHoneycombpackageIDs;
+            BudgetDataObj.value = entity.Id;
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
-            BudgetDataObj.value = Entity.ActivityType;
+            BudgetDataObj.value = entity.ActivityType;
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
-            BudgetDataObj.value = Entity.MachineName;
+            BudgetDataObj.value = entity.MachineName;
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
-            BudgetDataObj.value = Convert.ToString(Entity.LinkTacticId);
+            BudgetDataObj.value = Convert.ToString(entity.LinkTacticId);
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
-            BudgetDataObj.style = "background-color:#" + Entity.ColorCode;
+            BudgetDataObj.style = "background-color:#" + entity.ColorCode;
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
             // Add LineItemTypeId into DHTMLx model
-            BudgetDataObj.value = Convert.ToString(Entity.LineItemTypeId);
+            BudgetDataObj.value = Convert.ToString(entity.LineItemTypeId);
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
             // Add title of plan entity into DHTMLx model
 
-            bool IsExtendedTactic = (Entity.EndDate.Year - Entity.StartDate.Year) > 0 ? true : false;
-            int? LinkedTacticId = Entity.LinkTacticId;
+            bool IsExtendedTactic = (entity.EndDate.Year - entity.StartDate.Year) > 0 ? true : false;
+            int? LinkedTacticId = entity.LinkTacticId;
             if (LinkedTacticId == 0)
             {
                 LinkedTacticId = null;
             }
             string Linkedstring = string.Empty;
-            if (string.Compare(Entity.ActivityType, Convert.ToString(Enums.EntityType.Tactic), true) == 0)
+            if (string.Compare(entity.ActivityType, Convert.ToString(Enums.EntityType.Tactic), true) == 0)
             {
                 Linkedstring = (((IsExtendedTactic && LinkedTacticId == null) ?
                                     "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" :
                                         ((IsExtendedTactic && LinkedTacticId != null) || (LinkedTacticId != null)) ?
-                                        "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + (string.IsNullOrEmpty(Entity.LinkedPlanName) ?
+                                        "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + (string.IsNullOrEmpty(entity.LinkedPlanName) ?
                                         null :
-                                    Entity.LinkedPlanName.Replace("'", "&#39;")) + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : ""));
+                                    entity.LinkedPlanName.Replace("'", "&#39;")) + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : ""));
             }
 
-            if (Entity.AnchorTacticID != null && Entity.AnchorTacticID > 0 && !string.IsNullOrEmpty(Entity.Id) && string.Compare(Convert.ToString(Entity.AnchorTacticID), Entity.Id, true) == 0)
+            if (entity.AnchorTacticID != null && entity.AnchorTacticID > 0 && !string.IsNullOrEmpty(entity.Id) && string.Compare(Convert.ToString(entity.AnchorTacticID), entity.Id, true) == 0)
             {
                 // Get list of package tactic ids
-                Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='"
-                            + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
-                BudgetDataObj.value = (Roistring).Replace("'", "&#39;").Replace("\"", "&#34;") + Linkedstring + (Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
+                Roistring = string.Concat("<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='",
+                            PackageTacticIds,
+                            "'><i class='fa fa-object-group'></i></div>");
+                BudgetDataObj.value = string.Concat((Roistring).Replace("'", "&#39;").Replace("\"", "&#34;"), Linkedstring, (entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;")));
             }
             else
             {
-                BudgetDataObj.value = Linkedstring + (Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
+                BudgetDataObj.value = Linkedstring + (entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
             }
 
-            if (string.Compare(Entity.ActivityType, ActivityType.ActivityLineItem, true) == 0 && Entity.LineItemTypeId == null)
+            if (string.Compare(entity.ActivityType, ActivityType.ActivityLineItem, true) == 0 && entity.LineItemTypeId == null)
             {
                 BudgetDataObj.lo = CellLocked;
                 BudgetDataObj.style = NotEditableCellStyle;
             }
             else
             {
-                BudgetDataObj.lo = Entity.isEntityEditable ? CellNotLocked : CellLocked;
-                BudgetDataObj.style = Entity.isEntityEditable ? string.Empty : NotEditableCellStyle;
+                BudgetDataObj.lo = entity.isEntityEditable ? CellNotLocked : CellLocked;
+                BudgetDataObj.style = entity.isEntityEditable ? string.Empty : NotEditableCellStyle;
             }
             BudgetDataObjList.Add(BudgetDataObj);
 
             // Set icon of magnifying glass and honey comb for plan entity with respective ids
             Budgetdataobj iconsData = new Budgetdataobj();
-            if (!IsViewBy)
+            if (!isViewBy)
             {
-                iconsData.value = (SetIcons(Entity, OwnerName, EntityType, DhtmlxGridRowId, IsAddEntityRights, pcptid, TacticType));
+                iconsData.value = (SetIcons(entity, ownerName, entityType, dhtmlxGridRowId, isAddEntityRights, pcptid, tacticType));
             }
             else
             {
@@ -475,21 +471,21 @@ namespace RevenuePlanner.Services
             BudgetDataObjList.Add(iconsData);
 
             // Set Total Actual,Total Budget and Total planned cost for plan entity
-            BudgetDataObjList = CampaignBudgetSummary(PBModel, EntityType, Entity.ParentActivityId,
-                  BudgetDataObjList, AllocatedBy, Entity.ActivityId, IsViewBy);
+            BudgetDataObjList = CampaignBudgetSummary(budgetModel, entityType, entity.ParentActivityId,
+                  BudgetDataObjList, allocatedBy, entity.ActivityId, isViewBy);
             // Set monthly/quarterly allocation of budget,actuals and planned for plan
-            BudgetDataObjList = CampaignMonth(PBModel, EntityType, Entity.ParentActivityId,
-                    BudgetDataObjList, AllocatedBy, Entity.ActivityId, IsNextYear, IsMultiyearPlan, IsViewBy);
+            BudgetDataObjList = CampaignMonth(budgetModel, entityType, entity.ParentActivityId,
+                    BudgetDataObjList, allocatedBy, entity.ActivityId, isNextYear, isMultiyearPlan, isViewBy);
             BudgetDataObj = new Budgetdataobj();
             // Add UnAllocated Cost into DHTMLx model
             BudgetDataObj.style = NotEditableCellStyle;
-            BudgetDataObj.value = Convert.ToString(Entity.UnallocatedCost);
+            BudgetDataObj.value = Convert.ToString(entity.UnallocatedCost);
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
             // Add unAllocated budget into DHTMLx model
             BudgetDataObj.style = NotEditableCellStyle;
-            BudgetDataObj.value = Convert.ToString(Entity.TotalUnallocatedBudget);
+            BudgetDataObj.value = Convert.ToString(entity.TotalUnallocatedBudget);
             BudgetDataObjList.Add(BudgetDataObj);
 
             return BudgetDataObjList;
@@ -498,105 +494,107 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to set Magnifying Glass, Add Button & HoneyComb Button Icons
         /// </summary>
-        public string SetIcons(PlanBudgetModel Entity, string OwnerName, string EntityType, string DhtmlxGridRowId, bool IsAddEntityRights, string pcptid, string TacticType)
+        public string SetIcons(PlanBudgetModel entity, string ownerName, string entityType, string dhtmlxGridRowId, bool isAddEntityRights, string pcptid, string tacticType)
         {
-            Contract.Requires<ArgumentNullException>(Entity != null, "Entity cannot be null.");
-            Contract.Requires<ArgumentNullException>(EntityType != null, "Entity Type cannot be null.");
+            Contract.Requires<ArgumentNullException>(entity != null, "Entity cannot be null.");
+            Contract.Requires<ArgumentNullException>(entityType != null, "Entity Type cannot be null.");
 
             string doubledesh = "--";
             string IconsData = string.Empty;
+            string addIcon = "<i class='fa fa-plus-circle' aria-hidden='true'></i>";
             // Set icon of magnifying glass and honey comb for plan entity with respective ids
-            string Title = (Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
-            if (string.Compare(EntityType, ActivityType.ActivityPlan, true) == 0)
+            string Title = (entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
+            if (string.Compare(entityType, ActivityType.ActivityPlan, true) == 0)
             {
                 // Magnifying Glass to open Inspect Pop up
                 IconsData = "<div class=grid_Search id=Plan onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
-                if (IsAddEntityRights)
+                if (isAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Plan alt=" + Entity.Id + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " >";
-                    IconsData += "<i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Plan alt=" + entity.Id + " per=" + Convert.ToString(isAddEntityRights).ToLower() + " >";
+                    IconsData += addIcon;
+                    IconsData += "</div>";
                 }
 
                 // HoneyComb Button
                 IconsData += " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title=Select  id=Plan  TacticType= " + doubledesh;
-                IconsData += " OwnerName= '" + Convert.ToString(OwnerName) + "' TaskName='" + Title + "' altId=" + Convert.ToString(DhtmlxGridRowId);
-                IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ColorCode=" + Convert.ToString(Entity.ColorCode) + " taskId=" + Convert.ToString(Entity.Id);
-                IconsData += " csvId=Plan_" + Convert.ToString(Entity.Id) + " ></div>";
+                IconsData += " OwnerName= '" + Convert.ToString(ownerName) + "' TaskName='" + Title + "' altId=" + Convert.ToString(dhtmlxGridRowId);
+                IconsData += " per=" + Convert.ToString(isAddEntityRights).ToLower() + " ColorCode=" + Convert.ToString(entity.ColorCode) + " taskId=" + Convert.ToString(entity.Id);
+                IconsData += string.Concat(" csvId=Plan_", Convert.ToString(entity.Id), " ></div>");
             }
-            else if (string.Compare(EntityType, ActivityType.ActivityCampaign, true) == 0)
+            else if (string.Compare(entityType, ActivityType.ActivityCampaign, true) == 0)
             {
                 // Magnifying Glass to open Inspect Pop up
                 IconsData = "<div class=grid_Search id=CP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
-                if (IsAddEntityRights)
+                if (isAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Campaign alt=" + Entity.ParentId + "_" + Entity.Id;
-                    IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ><i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Campaign alt=" + entity.ParentId + "_" + entity.Id;
+                    IconsData += string.Concat(" per=", Convert.ToString(isAddEntityRights).ToLower(), " >", addIcon, "</div>");
                 }
 
                 // HoneyComb Button
                 IconsData += " <div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title=Select   TacticType= " + doubledesh;
-                IconsData += " OwnerName= '" + Convert.ToString(OwnerName) + "' TaskName='" + Title;
-                IconsData += "' altId=" + Convert.ToString(DhtmlxGridRowId) + " per=" + Convert.ToString(IsAddEntityRights).ToLower();
-                IconsData += " ColorCode=" + Convert.ToString(Entity.ColorCode) + " taskId= " + Convert.ToString(Entity.Id) + " csvId=Campaign_" + Entity.Id + "></div>";
+                IconsData += " OwnerName= '" + Convert.ToString(ownerName) + "' TaskName='" + Title;
+                IconsData += "' altId=" + Convert.ToString(dhtmlxGridRowId) + " per=" + Convert.ToString(isAddEntityRights).ToLower();
+                IconsData += " ColorCode=" + Convert.ToString(entity.ColorCode) + " taskId= " + Convert.ToString(entity.Id) + " csvId=Campaign_" + entity.Id + "></div>";
             }
-            else if (string.Compare(EntityType, ActivityType.ActivityProgram, true) == 0)
+            else if (string.Compare(entityType, ActivityType.ActivityProgram, true) == 0)
             {
                 // Magnifying Glass to open Inspect Pop up
                 IconsData = "<div class=grid_Search id=PP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
-                if (IsAddEntityRights)
+                if (isAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Program alt=_" + Entity.ParentId + "_" + Entity.Id;
-                    IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ><i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Program alt=_" + entity.ParentId + "_" + entity.Id;
+                    IconsData += string.Concat(" per=", Convert.ToString(isAddEntityRights).ToLower(), " >", addIcon, "</div>");
                 }
 
                 // HoneyComb Button
                 IconsData += " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this) title=Select  TacticType= " + doubledesh;
-                IconsData += " OwnerName= '" + Convert.ToString(OwnerName) + "' TaskName='" + Title;
-                IconsData += "' altId=" + Convert.ToString(DhtmlxGridRowId) + " ColorCode=" + Convert.ToString(Entity.ColorCode);
-                IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Convert.ToString(Entity.Id) + " csvId=Program_" + Convert.ToString(Entity.Id) + " ></div>";
+                IconsData += " OwnerName= '" + Convert.ToString(ownerName) + "' TaskName='" + Title;
+                IconsData += "' altId=" + Convert.ToString(dhtmlxGridRowId) + " ColorCode=" + Convert.ToString(entity.ColorCode);
+                IconsData += string.Concat(" per=", Convert.ToString(isAddEntityRights).ToLower(), " taskId=", Convert.ToString(entity.Id), " csvId=Program_", Convert.ToString(entity.Id), " ></div>");
             }
-            else if (string.Compare(EntityType, ActivityType.ActivityTactic, true) == 0)
+            else if (string.Compare(entityType, ActivityType.ActivityTactic, true) == 0)
             {
                 // LinkTactic Permission based on Entity Year
-                bool LinkTacticPermission = ((Entity.EndDate.Year - Entity.StartDate.Year) > 0) ? true : false;
-                string LinkedTacticId = Entity.LinkTacticId == 0 ? "null" : Convert.ToString(Entity.LinkTacticId);
+                bool LinkTacticPermission = ((entity.EndDate.Year - entity.StartDate.Year) > 0) ? true : false;
+                string LinkedTacticId = entity.LinkTacticId == 0 ? "null" : Convert.ToString(entity.LinkTacticId);
 
                 // Magnifying Glass to open Inspect Pop up
                 IconsData = "<div class=grid_Search id=TP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
-                if (IsAddEntityRights)
+                if (isAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Tactic alt=__" + Convert.ToString(Entity.ParentId) + "_" + Convert.ToString(Entity.Id);
-                    IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " LinkTacticper =" + Convert.ToString(LinkTacticPermission) + " LinkedTacticId = " + Convert.ToString(LinkedTacticId);
-                    IconsData += " tacticaddId=" + Convert.ToString(Entity.Id) + "><i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Tactic alt=__" + Convert.ToString(entity.ParentId) + "_" + Convert.ToString(entity.Id);
+                    IconsData += " per=" + Convert.ToString(isAddEntityRights).ToLower() + " LinkTacticper =" + Convert.ToString(LinkTacticPermission) + " LinkedTacticId = " + Convert.ToString(LinkedTacticId);
+                    IconsData += string.Concat(" tacticaddId=", Convert.ToString(entity.Id), ">", addIcon, "</div>");
                 }
 
                 // HoneyComb Button
                 IconsData += " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title=Select  id=Tactic ";
-                IconsData += " TacticType= '" + Convert.ToString(TacticType) + "' OwnerName= '" + Convert.ToString(OwnerName) + "' roitactictype='"
-                                + Entity.AssetType + "' anchortacticid='" + Entity.AnchorTacticID + "'  ";
+                IconsData += string.Concat(" TacticType= '", Convert.ToString(tacticType), "' OwnerName= '", Convert.ToString(ownerName), "' roitactictype='",
+                                entity.AssetType, "' anchortacticid='", entity.AnchorTacticID, "'  ");
                 IconsData += " TaskName='" + Title;
-                IconsData += "' altId=" + Convert.ToString(DhtmlxGridRowId) + " ColorCode=" + Convert.ToString(Entity.ColorCode);
-                IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Convert.ToString(Entity.Id) + " csvId=Tactic_" + Convert.ToString(Entity.Id) + " ></div>";
+                IconsData += "' altId=" + Convert.ToString(dhtmlxGridRowId) + " ColorCode=" + Convert.ToString(entity.ColorCode);
+                IconsData += string.Concat(" per=", Convert.ToString(isAddEntityRights).ToLower(), " taskId=", Convert.ToString(entity.Id), " csvId=Tactic_", Convert.ToString(entity.Id), " ></div>");
             }
-            else if (string.Compare(EntityType, ActivityType.ActivityLineItem, true) == 0 && Entity.LineItemTypeId != null)
+            else if (string.Compare(entityType, ActivityType.ActivityLineItem, true) == 0 && entity.LineItemTypeId != null)
             {
                 // Magnifying Glass to open Inspect Pop up
                 IconsData = "<div class=grid_Search id=LP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
-                if (IsAddEntityRights)
+                if (isAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  title=Add  id=Line alt=___" + Convert.ToString(Entity.ParentId) + "_" + Convert.ToString(Entity.Id);
-                    IconsData += " lt=" + ((Entity.LineItemTypeId == null) ? 0 : Entity.LineItemTypeId) + " per=" + Convert.ToString(IsAddEntityRights).ToLower();
-                    IconsData += " dt=" + Title + " ><i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  title=Add  id=Line alt=___" + Convert.ToString(entity.ParentId) + "_" + Convert.ToString(entity.Id);
+                    IconsData += " lt=" + ((entity.LineItemTypeId == null) ? 0 : entity.LineItemTypeId) + " per=" + Convert.ToString(isAddEntityRights).ToLower();
+                    IconsData += string.Concat(" dt=", Title, " >", addIcon, "</div>");
                 }
             }
             return IconsData;
@@ -605,32 +603,32 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to create data in DHTMLx Format
         /// </summary>
-        public BudgetDHTMLXGridModel CreateDhtmlxFormattedBudgetData(BudgetDHTMLXGridModel ObjBudgetDHTMLXGrid, List<PlanBudgetModel> PBModel, string AllocatedBy, int UserID, int ClientId, string Year, string ViewBy)
+        public BudgetDHTMLXGridModel CreateDhtmlxFormattedBudgetData(BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> budgetModel, string allocatedBy, int userID, int clientId, string year, string viewBy)
         {
-            Contract.Requires<ArgumentNullException>(ObjBudgetDHTMLXGrid != null, "Budget DHTMLX Grid Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel.Count > 0, "Budget Model rows cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ClientId > 0, "Client Id cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(UserID > 0, "User Id cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(AllocatedBy != null, "Allocated By cannot be null.");
-            Contract.Requires<ArgumentNullException>(ViewBy != null, "View By cannot be null.");
+            Contract.Requires<ArgumentNullException>(objBudgetDHTMLXGrid != null, "Budget DHTMLX Grid Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget Model rows cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(clientId > 0, "Client Id cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(userID > 0, "User Id cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(allocatedBy != null, "Allocated By cannot be null.");
+            Contract.Requires<ArgumentNullException>(viewBy != null, "View By cannot be null.");
 
             List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
 
-            if (ViewBy != Convert.ToString(PlanGanttTypes.Tactic))
+            if (viewBy != Convert.ToString(PlanGanttTypes.Tactic))
             {
-                foreach (PlanBudgetModel bmViewby in PBModel.Where(p => string.Compare(p.ActivityType, ViewBy, true) == 0).OrderBy(p => p.ActivityName))
+                foreach (PlanBudgetModel bmViewby in budgetModel.Where(p => string.Compare(p.ActivityType, viewBy, true) == 0).OrderBy(p => p.ActivityName))
                 {
                     BudgetDHTMLXGridDataModel gridViewbyData = new BudgetDHTMLXGridDataModel();
                     List<BudgetDHTMLXGridDataModel> gridjsonlistViewby = new List<BudgetDHTMLXGridDataModel>();
                     gridViewbyData.id = bmViewby.ActivityId;
                     gridViewbyData.open = Open;
                     List<Budgetdataobj> BudgetviewbyDataList;
-                    string EntityType = ViewBy;
+                    string EntityType = viewBy;
                     bool isViewby = true;
-                    BudgetviewbyDataList = SetBudgetDhtmlxFormattedValues(PBModel, bmViewby, string.Empty, EntityType, AllocatedBy, false, false, bmViewby.ActivityId, false, isViewby);
+                    BudgetviewbyDataList = SetBudgetDhtmlxFormattedValues(budgetModel, bmViewby, string.Empty, EntityType, allocatedBy, false, false, bmViewby.ActivityId, false, isViewby);
                     gridViewbyData.data = BudgetviewbyDataList;
-                    List<BudgetDHTMLXGridDataModel> gridJsondata = GenerateHierarchy(PBModel, UserID, ClientId, Year, AllocatedBy, isViewby, bmViewby.ActivityId);
+                    List<BudgetDHTMLXGridDataModel> gridJsondata = GenerateHierarchy(budgetModel, userID, clientId, year, allocatedBy, isViewby, bmViewby.ActivityId);
                     foreach (BudgetDHTMLXGridDataModel item in gridJsondata)
                     {
                         gridjsonlistViewby.Add(item);
@@ -641,7 +639,7 @@ namespace RevenuePlanner.Services
             }
             else
             {
-                List<BudgetDHTMLXGridDataModel> gridJsondata = GenerateHierarchy(PBModel, UserID, ClientId, Year, AllocatedBy, false);
+                List<BudgetDHTMLXGridDataModel> gridJsondata = GenerateHierarchy(budgetModel, userID, clientId, year, allocatedBy, false);
                 foreach (BudgetDHTMLXGridDataModel item in gridJsondata)
                 {
                     gridjsonlist.Add(item);
@@ -650,21 +648,21 @@ namespace RevenuePlanner.Services
 
             // Set plan entity in the DHTMLx formated model at top level of the hierarchy using loop
 
-            ObjBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
-            ObjBudgetDHTMLXGrid.Grid.rows = gridjsonlist;
-            return ObjBudgetDHTMLXGrid;
+            objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
+            objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;
+            return objBudgetDHTMLXGrid;
         }
 
         /// <summary>
         /// Method to set data in hierarchy
         /// </summary>
-        private List<BudgetDHTMLXGridDataModel> GenerateHierarchy(List<PlanBudgetModel> PBModel, int UserID, int ClientId, string Year, string AllocatedBy, bool IsViewBy, string ParentId = "")
+        private List<BudgetDHTMLXGridDataModel> GenerateHierarchy(List<PlanBudgetModel> budgetModel, int userID, int clientId, string year, string allocatedBy, bool isViewBy, string parentId = "")
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel.Count > 0, "Budget Model rows cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ClientId > 0, "Client Id cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(UserID > 0, "User Id cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(AllocatedBy != null, "Allocated By cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget Model rows cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(clientId > 0, "Client Id cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(userID > 0, "User Id cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(allocatedBy != null, "Allocated By cannot be null.");
 
             bool IsPlanCreateAll = false;
             bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -678,14 +676,14 @@ namespace RevenuePlanner.Services
             bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             if (IsTacticAllowForSubordinates)
             {
-                lstSubordinatesIds = Common.GetAllSubordinates(UserID);
+                lstSubordinatesIds = Common.GetAllSubordinates(userID);
             }
 
-            IEnumerable<int> TacticTypeIds = PBModel.Where(t => string.Compare(t.ActivityType, ActivityType.ActivityTactic, true) == 0).Select(t => t.TacticTypeId).Distinct();
+            IEnumerable<int> TacticTypeIds = budgetModel.Where(t => string.Compare(t.ActivityType, ActivityType.ActivityTactic, true) == 0).Select(t => t.TacticTypeId).Distinct();
             Dictionary<int, string> lstTacticTypeTitle = objDbMrpEntities.TacticTypes.Where(tt => TacticTypeIds.Contains(tt.TacticTypeId) && tt.IsDeleted == false)
                                                             .ToDictionary(tt => tt.TacticTypeId, tt => tt.Title);
 
-            List<BudgetDHTMLXGridDataModel> gridjsonlist = SetPlanHierarchy(PBModel, IsViewBy, ParentId, IsPlanCreateAll, UserID, lstSubordinatesIds, Year, lstTacticTypeTitle, AllocatedBy);
+            List<BudgetDHTMLXGridDataModel> gridjsonlist = SetPlanHierarchy(budgetModel, isViewBy, parentId, IsPlanCreateAll, userID, lstSubordinatesIds, year, lstTacticTypeTitle, allocatedBy);
 
             return gridjsonlist;
         }
@@ -693,32 +691,32 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to set data in hierarchy for Plan
         /// </summary>
-        private List<BudgetDHTMLXGridDataModel> SetPlanHierarchy(List<PlanBudgetModel> PBModel, bool IsViewBy, string ParentId, bool IsPlanCreateAll, int UserID, List<int> lstSubordinatesIds, string Year, Dictionary<int, string> lstTacticTypeTitle, string AllocatedBy)
+        private List<BudgetDHTMLXGridDataModel> SetPlanHierarchy(List<PlanBudgetModel> budgetModel, bool isViewBy, string parentId, bool isPlanCreateAll, int userID, List<int> lstSubordinatesIds, string year, Dictionary<int, string> lstTacticTypeTitle, string allocatedBy)
         {
             List<Budgetdataobj> BudgetDataObjList;
             List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel gridjsonlistPlanObj;
-            foreach (PlanBudgetModel bm in PBModel.Where(p => string.Compare(p.ActivityType, ActivityType.ActivityPlan, true) == 0
-                        && (!IsViewBy || string.Compare(p.ParentActivityId, ParentId, true) == 0)).OrderBy(p => p.ActivityName))
+            foreach (PlanBudgetModel bm in budgetModel.Where(p => string.Compare(p.ActivityType, ActivityType.ActivityPlan, true) == 0
+                        && (!isViewBy || string.Compare(p.ParentActivityId, parentId, true) == 0)).OrderBy(p => p.ActivityName))
             {
-                if (!IsPlanCreateAll)
+                if (!isPlanCreateAll)
                 {
-                    if (bm.CreatedBy == UserID || lstSubordinatesIds.Contains(bm.CreatedBy))
-                        IsPlanCreateAll = true;
+                    if (bm.CreatedBy == userID || lstSubordinatesIds.Contains(bm.CreatedBy))
+                        isPlanCreateAll = true;
                     else
-                        IsPlanCreateAll = false;
+                        isPlanCreateAll = false;
                 }
-                bool isCampignExist = PBModel.Where(p => string.Compare(p.ParentActivityId, bm.ActivityId, true) == 0).Any();
+                bool isCampignExist = budgetModel.Where(p => string.Compare(p.ParentActivityId, bm.ActivityId, true) == 0).Any();
                 DateTime MaxDate = default(DateTime); ;
                 if (isCampignExist)
                 {
-                    MaxDate = PBModel.Where(p => string.Compare(p.ParentActivityId, bm.ActivityId, true) == 0).Max(a => a.EndDate);
+                    MaxDate = budgetModel.Where(p => string.Compare(p.ParentActivityId, bm.ActivityId, true) == 0).Max(a => a.EndDate);
                 }
 
                 // Set flag to identify plan year. e.g.if time frame is 2015-2016 and plan have plan year 2016 then we will not set month data for Jan-2015 to Dec-2015 of respective plan
                 bool isNextYearPlan = false;
                 bool isMultiYearPlan = false;
-                string firstYear = Common.GetInitialYearFromTimeFrame(Year);
+                string firstYear = Common.GetInitialYearFromTimeFrame(year);
                 if (bm.PlanYear != firstYear)
                 {
                     isNextYearPlan = true;
@@ -739,10 +737,10 @@ namespace RevenuePlanner.Services
                 string OwnerName = string.Empty;
                 OwnerName = Convert.ToString(bm.CreatedBy);
 
-                BudgetDataObjList = SetBudgetDhtmlxFormattedValues(PBModel, bm, OwnerName, ActivityType.ActivityPlan, AllocatedBy, isNextYearPlan, isMultiYearPlan, gridjsonlistPlanObj.id, IsPlanCreateAll);
+                BudgetDataObjList = SetBudgetDhtmlxFormattedValues(budgetModel, bm, OwnerName, ActivityType.ActivityPlan, allocatedBy, isNextYearPlan, isMultiYearPlan, gridjsonlistPlanObj.id, isPlanCreateAll);
                 gridjsonlistPlanObj.data = BudgetDataObjList;
 
-                List<BudgetDHTMLXGridDataModel> CampaignRowsObjList = SetCampaignHierarchy(PBModel, bm, IsPlanCreateAll, UserID, lstSubordinatesIds, OwnerName, lstTacticTypeTitle, AllocatedBy, isNextYearPlan, isMultiYearPlan);
+                List<BudgetDHTMLXGridDataModel> CampaignRowsObjList = SetCampaignHierarchy(budgetModel, bm, isPlanCreateAll, userID, lstSubordinatesIds, OwnerName, lstTacticTypeTitle, allocatedBy, isNextYearPlan, isMultiYearPlan);
 
                 // set campaign row data as child to respective plan
                 gridjsonlistPlanObj.rows = CampaignRowsObjList;
@@ -754,28 +752,28 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to set data in hierarchy for Campaign
         /// </summary>
-        private List<BudgetDHTMLXGridDataModel> SetCampaignHierarchy(List<PlanBudgetModel> PBModel, PlanBudgetModel PlanModel, bool IsPlanCreateAll, int UserID, List<int> lstSubordinatesIds, string OwnerName, Dictionary<int, string> lstTacticTypeTitle, string AllocatedBy, bool IsNextYearPlan, bool IsMultiYearPlan)
+        private List<BudgetDHTMLXGridDataModel> SetCampaignHierarchy(List<PlanBudgetModel> budgetModel, PlanBudgetModel planModel, bool isPlanCreateAll, int userID, List<int> lstSubordinatesIds, string ownerName, Dictionary<int, string> lstTacticTypeTitle, string allocatedBy, bool isNextYearPlan, bool isMultiYearPlan)
         {
             List<BudgetDHTMLXGridDataModel> CampaignRowsObjList = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel CampaignRowsObj;
             foreach (
                 PlanBudgetModel bmc in
-                    PBModel.Where(
-                        p => string.Compare(p.ActivityType, ActivityType.ActivityCampaign, true) == 0 && string.Compare(p.ParentActivityId, PlanModel.ActivityId, true) == 0).OrderBy(p => p.ActivityName)
+                    budgetModel.Where(
+                        p => string.Compare(p.ActivityType, ActivityType.ActivityCampaign, true) == 0 && string.Compare(p.ParentActivityId, planModel.ActivityId, true) == 0).OrderBy(p => p.ActivityName)
                 )
             {
                 CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                 CampaignRowsObj.id = bmc.TaskId;
                 CampaignRowsObj.open = Open;
 
-                bool IsCampCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmc.CreatedBy == UserID || lstSubordinatesIds.Contains(bmc.CreatedBy)) ? true : false : true;
+                bool IsCampCreateAll = isPlanCreateAll = isPlanCreateAll == false ? (bmc.CreatedBy == userID || lstSubordinatesIds.Contains(bmc.CreatedBy)) ? true : false : true;
 
-                OwnerName = Convert.ToString(PlanModel.CreatedBy);
-                List<Budgetdataobj> CampaignDataObjList = SetBudgetDhtmlxFormattedValues(PBModel, bmc, OwnerName, ActivityType.ActivityCampaign, AllocatedBy, IsNextYearPlan,
-                                                            IsMultiYearPlan, CampaignRowsObj.id, IsCampCreateAll);
+                ownerName = Convert.ToString(planModel.CreatedBy);
+                List<Budgetdataobj> CampaignDataObjList = SetBudgetDhtmlxFormattedValues(budgetModel, bmc, ownerName, ActivityType.ActivityCampaign, allocatedBy, isNextYearPlan,
+                                                            isMultiYearPlan, CampaignRowsObj.id, IsCampCreateAll);
 
                 CampaignRowsObj.data = CampaignDataObjList;
-                List<BudgetDHTMLXGridDataModel> ProgramRowsObjList = SetProgramHierarchy(PBModel, bmc, IsPlanCreateAll, UserID, lstSubordinatesIds, OwnerName, PlanModel, lstTacticTypeTitle, AllocatedBy, IsNextYearPlan, IsMultiYearPlan);
+                List<BudgetDHTMLXGridDataModel> ProgramRowsObjList = SetProgramHierarchy(budgetModel, bmc, isPlanCreateAll, userID, lstSubordinatesIds, ownerName, planModel, lstTacticTypeTitle, allocatedBy, isNextYearPlan, isMultiYearPlan);
 
                 // set program row data as child to respective campaign
                 CampaignRowsObj.rows = ProgramRowsObjList;
@@ -787,29 +785,29 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to set data in hierarchy for Program
         /// </summary>
-        private List<BudgetDHTMLXGridDataModel> SetProgramHierarchy(List<PlanBudgetModel> PBModel, PlanBudgetModel CampaignModel, bool IsPlanCreateAll, int UserID, List<int> lstSubordinatesIds, string OwnerName, PlanBudgetModel PlanModel, Dictionary<int, string> lstTacticTypeTitle, string AllocatedBy, bool IsNextYearPlan, bool IsMultiYearPlan)
+        private List<BudgetDHTMLXGridDataModel> SetProgramHierarchy(List<PlanBudgetModel> budgetModel, PlanBudgetModel campaignModel, bool isPlanCreateAll, int userID, List<int> lstSubordinatesIds, string ownerName, PlanBudgetModel planModel, Dictionary<int, string> lstTacticTypeTitle, string allocatedBy, bool isNextYearPlan, bool isMultiYearPlan)
         {
             List<BudgetDHTMLXGridDataModel> ProgramRowsObjList = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel ProgramRowsObj;
             foreach (
                 PlanBudgetModel bmp in
-                    PBModel.Where(
+                    budgetModel.Where(
                         p =>
                             string.Compare(p.ActivityType, ActivityType.ActivityProgram, true) == 0 &&
-                            string.Compare(p.ParentActivityId, CampaignModel.ActivityId, true) == 0).OrderBy(p => p.ActivityName))
+                            string.Compare(p.ParentActivityId, campaignModel.ActivityId, true) == 0).OrderBy(p => p.ActivityName))
             {
                 ProgramRowsObj = new BudgetDHTMLXGridDataModel();
                 ProgramRowsObj.id = bmp.TaskId;
                 ProgramRowsObj.open = null;
 
-                bool IsProgCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmp.CreatedBy == UserID || lstSubordinatesIds.Contains(bmp.CreatedBy)) ? true : false : true;
+                bool IsProgCreateAll = isPlanCreateAll = isPlanCreateAll == false ? (bmp.CreatedBy == userID || lstSubordinatesIds.Contains(bmp.CreatedBy)) ? true : false : true;
 
-                OwnerName = Convert.ToString(PlanModel.CreatedBy);
-                List<Budgetdataobj> ProgramDataObjList = SetBudgetDhtmlxFormattedValues(PBModel, bmp, OwnerName, ActivityType.ActivityProgram, AllocatedBy, IsNextYearPlan,
-                                                            IsMultiYearPlan, ProgramRowsObj.id, IsProgCreateAll);
+                ownerName = Convert.ToString(planModel.CreatedBy);
+                List<Budgetdataobj> ProgramDataObjList = SetBudgetDhtmlxFormattedValues(budgetModel, bmp, ownerName, ActivityType.ActivityProgram, allocatedBy, isNextYearPlan,
+                                                            isMultiYearPlan, ProgramRowsObj.id, IsProgCreateAll);
                 ProgramRowsObj.data = ProgramDataObjList;
 
-                List<BudgetDHTMLXGridDataModel> TacticRowsObjList = SetTacticHierarchy(PBModel, bmp, IsPlanCreateAll, UserID, lstSubordinatesIds, OwnerName, PlanModel, lstTacticTypeTitle, AllocatedBy, IsNextYearPlan, IsMultiYearPlan, CampaignModel);
+                List<BudgetDHTMLXGridDataModel> TacticRowsObjList = SetTacticHierarchy(budgetModel, bmp, isPlanCreateAll, userID, lstSubordinatesIds, ownerName, planModel, lstTacticTypeTitle, allocatedBy, isNextYearPlan, isMultiYearPlan, campaignModel);
 
                 // set tactic row data as child to respective program
                 ProgramRowsObj.rows = TacticRowsObjList;
@@ -821,25 +819,25 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to set data in hierarchy for Tactic
         /// </summary>
-        private List<BudgetDHTMLXGridDataModel> SetTacticHierarchy(List<PlanBudgetModel> PBModel, PlanBudgetModel ProgramModel, bool IsPlanCreateAll, int UserID, List<int> lstSubordinatesIds, string OwnerName, PlanBudgetModel PlanModel, Dictionary<int, string> lstTacticTypeTitle, string AllocatedBy, bool IsNextYearPlan, bool IsMultiYearPlan, PlanBudgetModel CampaignModel)
+        private List<BudgetDHTMLXGridDataModel> SetTacticHierarchy(List<PlanBudgetModel> budgetModel, PlanBudgetModel programModel, bool isPlanCreateAll, int userID, List<int> lstSubordinatesIds, string ownerName, PlanBudgetModel planModel, Dictionary<int, string> lstTacticTypeTitle, string allocatedBy, bool isNextYearPlan, bool isMultiYearPlan, PlanBudgetModel campaignModel)
         {
             List<BudgetDHTMLXGridDataModel> TacticRowsObjList = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel TacticRowsObj;
             foreach (
                 PlanBudgetModel bmt in
-                    PBModel.Where(
+                    budgetModel.Where(
                         p =>
                             string.Compare(p.ActivityType, ActivityType.ActivityTactic, true) == 0 &&
-                            string.Compare(p.ParentActivityId, ProgramModel.ActivityId, true) == 0).OrderBy(p => p.ActivityName).OrderBy(p => p.ActivityName))
+                            string.Compare(p.ParentActivityId, programModel.ActivityId, true) == 0).OrderBy(p => p.ActivityName).OrderBy(p => p.ActivityName))
             {
                 TacticRowsObj = new BudgetDHTMLXGridDataModel();
                 TacticRowsObj.id = bmt.TaskId;
                 TacticRowsObj.open = null;
 
-                bool IsTacCreateAll = IsPlanCreateAll == false ? (bmt.CreatedBy == UserID || lstSubordinatesIds.Contains(bmt.CreatedBy)) ? true : false : true;
+                bool IsTacCreateAll = isPlanCreateAll == false ? (bmt.CreatedBy == userID || lstSubordinatesIds.Contains(bmt.CreatedBy)) ? true : false : true;
 
 
-                OwnerName = Convert.ToString(PlanModel.CreatedBy);
+                ownerName = Convert.ToString(planModel.CreatedBy);
                 string TacticType = string.Empty;
                 if (lstTacticTypeTitle != null && lstTacticTypeTitle.Count > 0)
                 {
@@ -848,11 +846,11 @@ namespace RevenuePlanner.Services
                         TacticType = Convert.ToString(lstTacticTypeTitle[bmt.TacticTypeId]);
                     }
                 }
-                List<Budgetdataobj> TacticDataObjList = SetBudgetDhtmlxFormattedValues(PBModel, bmt, OwnerName, ActivityType.ActivityTactic, AllocatedBy, IsNextYearPlan,
-                        IsMultiYearPlan, TacticRowsObj.id, IsTacCreateAll, false, "L" + PlanModel.ActivityId + "_C" + CampaignModel.ActivityId + "_P" + ProgramModel.ActivityId + "_T" + bmt.ActivityId, TacticType);
+                List<Budgetdataobj> TacticDataObjList = SetBudgetDhtmlxFormattedValues(budgetModel, bmt, ownerName, ActivityType.ActivityTactic, allocatedBy, isNextYearPlan,
+                        isMultiYearPlan, TacticRowsObj.id, IsTacCreateAll, false, "L" + planModel.ActivityId + "_C" + campaignModel.ActivityId + "_P" + programModel.ActivityId + "_T" + bmt.ActivityId, TacticType);
 
                 TacticRowsObj.data = TacticDataObjList;
-                List<BudgetDHTMLXGridDataModel> LineRowsObjList = SetLineItemHierarchy(PBModel, bmt, IsPlanCreateAll, UserID, lstSubordinatesIds, OwnerName, AllocatedBy, IsNextYearPlan, IsMultiYearPlan, PlanModel);
+                List<BudgetDHTMLXGridDataModel> LineRowsObjList = SetLineItemHierarchy(budgetModel, bmt, isPlanCreateAll, userID, lstSubordinatesIds, ownerName, allocatedBy, isNextYearPlan, isMultiYearPlan, planModel);
 
                 // set line item row data as child to respective tactic
                 TacticRowsObj.rows = LineRowsObjList;
@@ -864,26 +862,26 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to set data in hierarchy for LineItem
         /// </summary>
-        private List<BudgetDHTMLXGridDataModel> SetLineItemHierarchy(List<PlanBudgetModel> PBModel, PlanBudgetModel TacticModel, bool IsPlanCreateAll, int UserID, List<int> lstSubordinatesIds, string OwnerName, string AllocatedBy, bool IsNextYearPlan, bool IsMultiYearPlan, PlanBudgetModel PlanModel)
+        private List<BudgetDHTMLXGridDataModel> SetLineItemHierarchy(List<PlanBudgetModel> budgetModel, PlanBudgetModel tacticModel, bool isPlanCreateAll, int userID, List<int> lstSubordinatesIds, string ownerName, string allocatedBy, bool isNextYearPlan, bool isMultiYearPlan, PlanBudgetModel planModel)
         {
             List<BudgetDHTMLXGridDataModel> LineRowsObjList = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel LineRowsObj;
             foreach (
                 PlanBudgetModel bml in
-                    PBModel.Where(
+                    budgetModel.Where(
                         p =>
                             string.Compare(p.ActivityType, ActivityType.ActivityLineItem, true) == 0 &&
-                            string.Compare(p.ParentActivityId, TacticModel.ActivityId, true) == 0).OrderBy(p => p.ActivityName))
+                            string.Compare(p.ParentActivityId, tacticModel.ActivityId, true) == 0).OrderBy(p => p.ActivityName))
             {
                 LineRowsObj = new BudgetDHTMLXGridDataModel();
                 LineRowsObj.id = bml.TaskId;
                 LineRowsObj.open = null;
 
-                bool IsLinItmCreateAll = IsPlanCreateAll == false ? (bml.CreatedBy == UserID || lstSubordinatesIds.Contains(bml.CreatedBy)) ? true : false : true;
+                bool IsLinItmCreateAll = isPlanCreateAll == false ? (bml.CreatedBy == userID || lstSubordinatesIds.Contains(bml.CreatedBy)) ? true : false : true;
 
-                OwnerName = Convert.ToString(PlanModel.CreatedBy);
-                List<Budgetdataobj> LineDataObjList = SetBudgetDhtmlxFormattedValues(PBModel, bml, OwnerName, ActivityType.ActivityLineItem, AllocatedBy, IsNextYearPlan,
-                                                        IsMultiYearPlan, LineRowsObj.id, IsLinItmCreateAll);
+                ownerName = Convert.ToString(planModel.CreatedBy);
+                List<Budgetdataobj> LineDataObjList = SetBudgetDhtmlxFormattedValues(budgetModel, bml, ownerName, ActivityType.ActivityLineItem, allocatedBy, isNextYearPlan,
+                                                        isMultiYearPlan, LineRowsObj.id, IsLinItmCreateAll);
 
                 LineRowsObj.data = LineDataObjList;
                 LineRowsObjList.Add(LineRowsObj);
@@ -894,12 +892,12 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Method to generate header string in DHTMLx format
         /// </summary>
-        private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel ObjBudgetDHTMLXGrid, string Year)
+        private BudgetDHTMLXGridModel GenerateHeaderString(string allocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, string year)
         {
-            Contract.Requires<ArgumentNullException>(ObjBudgetDHTMLXGrid != null, "Budget DHTMLX Grid Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(AllocatedBy != null, "Allocated By cannot be null.");
+            Contract.Requires<ArgumentNullException>(objBudgetDHTMLXGrid != null, "Budget DHTMLX Grid Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(allocatedBy != null, "Allocated By cannot be null.");
 
-            string firstYear = Common.GetInitialYearFromTimeFrame(Year);
+            string firstYear = Common.GetInitialYearFromTimeFrame(year);
             string lastYear = string.Empty;
             // Check if multi year flag is on then last year will be firstyear + 1
             if (isMultiYear)
@@ -917,7 +915,7 @@ namespace RevenuePlanner.Services
             width = FixcolWidth;
             colSorting = FixColsorting;
             string headerYear = firstYear; // Column header year text which will bind with respective header
-            if (string.Compare(AllocatedBy, Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.quarters)], true) == 0)
+            if (string.Compare(allocatedBy, Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.quarters)], true) == 0)
             {
                 int quarterCounter = 1;
 
@@ -996,39 +994,39 @@ namespace RevenuePlanner.Services
                 }
             }
 
-            ObjBudgetDHTMLXGrid.SetHeader = setHeader + EndColumnsHeader;
-            ObjBudgetDHTMLXGrid.ColType = colType + EndColType;
-            ObjBudgetDHTMLXGrid.Width = width + EndcolWidth;
-            ObjBudgetDHTMLXGrid.ColSorting = colSorting + EndColsorting;
-            ObjBudgetDHTMLXGrid.ColumnIds = columnIds + EndColumnIds;
+            objBudgetDHTMLXGrid.SetHeader = setHeader + EndColumnsHeader;
+            objBudgetDHTMLXGrid.ColType = colType + EndColType;
+            objBudgetDHTMLXGrid.Width = width + EndcolWidth;
+            objBudgetDHTMLXGrid.ColSorting = colSorting + EndColsorting;
+            objBudgetDHTMLXGrid.ColumnIds = columnIds + EndColumnIds;
 
-            return ObjBudgetDHTMLXGrid;
+            return objBudgetDHTMLXGrid;
         }
 
         /// <summary>
         /// Method to set Total Budget, Planned & Actual Data
         /// </summary>
-        private List<Budgetdataobj> CampaignBudgetSummary(List<PlanBudgetModel> PBModel, string ActType, string ParentActivityId, List<Budgetdataobj> BudgetDataObjList, string AllocatedBy, string ActivityId, bool IsViewBy = false)
+        private List<Budgetdataobj> CampaignBudgetSummary(List<PlanBudgetModel> budgetModel, string actType, string parentActivityId, List<Budgetdataobj> budgetDataObjList, string allocatedBy, string activityId, bool isViewBy = false)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel.Count > 0, "Budget model rows count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ActType != null, "Activity Type cannot be null.");
-            Contract.Requires<ArgumentNullException>(ParentActivityId != null, "Parent Activity Id cannot be null.");
-            Contract.Requires<ArgumentNullException>(AllocatedBy != null, "Allocated By cannot be null.");
-            Contract.Requires<ArgumentNullException>(ActivityId != null, "Activity Id cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget model rows count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(actType != null, "Activity Type cannot be null.");
+            Contract.Requires<ArgumentNullException>(parentActivityId != null, "Parent Activity Id cannot be null.");
+            Contract.Requires<ArgumentNullException>(allocatedBy != null, "Allocated By cannot be null.");
+            Contract.Requires<ArgumentNullException>(activityId != null, "Activity Id cannot be null.");
 
-            PlanBudgetModel Entity = PBModel.Where(pl => string.Compare(pl.ActivityType, ActType, true) == 0 &&
-                                                    string.Compare(pl.ParentActivityId, ParentActivityId, true) == 0 &&
-                                                    string.Compare(pl.ActivityId, ActivityId, true) == 0)
+            PlanBudgetModel Entity = budgetModel.Where(pl => string.Compare(pl.ActivityType, actType, true) == 0 &&
+                                                    string.Compare(pl.ParentActivityId, parentActivityId, true) == 0 &&
+                                                    string.Compare(pl.ActivityId, activityId, true) == 0)
                                                 .OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
-            double ChildTotalBudget = PBModel.Where(cl => string.Compare(cl.ParentActivityId, ActivityId, true) == 0).Sum(cl => cl.YearlyBudget);
+            double ChildTotalBudget = budgetModel.Where(cl => string.Compare(cl.ParentActivityId, activityId, true) == 0).Sum(cl => cl.YearlyBudget);
             if (Entity != null)
             {
                 Budgetdataobj objTotalBudget = new Budgetdataobj();
                 Budgetdataobj objTotalCost = new Budgetdataobj();
                 Budgetdataobj objTotalActual = new Budgetdataobj();
                 // Entity type line item has no budget so we set '---' value for line item
-                if (!IsViewBy)
+                if (!isViewBy)
                 {
                     if (string.Compare(Entity.ActivityType, ActivityType.ActivityLineItem, true) == 0)
                     {
@@ -1047,7 +1045,7 @@ namespace RevenuePlanner.Services
                     objTotalActual.lo = CellLocked;
                     objTotalActual.style = NotEditableCellStyle;
 
-                    bool isOtherLineItem = string.Compare(ActType, ActivityType.ActivityLineItem, true) == 0 && Entity.LineItemTypeId == null;
+                    bool isOtherLineItem = string.Compare(actType, ActivityType.ActivityLineItem, true) == 0 && Entity.LineItemTypeId == null;
                     objTotalCost.value = Convert.ToString(Entity.TotalAllocatedCost);
                     objTotalCost.lo = Entity.isCostEditable && !isOtherLineItem ? CellNotLocked : CellLocked;
                     objTotalCost.style = Entity.isCostEditable && !isOtherLineItem ? string.Empty : NotEditableCellStyle;
@@ -1076,68 +1074,68 @@ namespace RevenuePlanner.Services
                 }
 
 
-                BudgetDataObjList.Add(objTotalBudget);
-                BudgetDataObjList.Add(objTotalCost);
-                BudgetDataObjList.Add(objTotalActual);
+                budgetDataObjList.Add(objTotalBudget);
+                budgetDataObjList.Add(objTotalCost);
+                budgetDataObjList.Add(objTotalActual);
 
             }
-            return BudgetDataObjList;
+            return budgetDataObjList;
         }
 
         /// <summary>
         /// Method to check view by i.e. quarterly or monthly & check plan is multi-year plan or not.
         /// </summary>
-        private List<Budgetdataobj> CampaignMonth(List<PlanBudgetModel> PBModel, string ActType, string ParentActivityId, List<Budgetdataobj> BudgetDataObjList, string AllocatedBy, string ActivityId, bool IsNextYearPlan, bool IsMulityearPlan, bool IsViewBy = false)
+        private List<Budgetdataobj> CampaignMonth(List<PlanBudgetModel> budgetModel, string actType, string parentActivityId, List<Budgetdataobj> budgetDataObjList, string allocatedBy, string activityId, bool isNextYearPlan, bool isMulityearPlan, bool isViewBy = false)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel.Count > 0, "Budget model rows count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ActType != null, "Activity Type cannot be null.");
-            Contract.Requires<ArgumentNullException>(ParentActivityId != null, "Parent Activity Id cannot be null.");
-            Contract.Requires<ArgumentNullException>(AllocatedBy != null, "Allocated By cannot be null.");
-            Contract.Requires<ArgumentNullException>(ActivityId != null, "Activity Id cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget model rows count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(actType != null, "Activity Type cannot be null.");
+            Contract.Requires<ArgumentNullException>(parentActivityId != null, "Parent Activity Id cannot be null.");
+            Contract.Requires<ArgumentNullException>(allocatedBy != null, "Allocated By cannot be null.");
+            Contract.Requires<ArgumentNullException>(activityId != null, "Activity Id cannot be null.");
 
-            PlanBudgetModel Entity = PBModel.Where(pl => string.Compare(pl.ActivityType, ActType, true) == 0 && string.Compare(pl.ParentActivityId, ParentActivityId, true) == 0 &&
-                                                    string.Compare(pl.ActivityId, ActivityId, true) == 0).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
+            PlanBudgetModel Entity = budgetModel.Where(pl => string.Compare(pl.ActivityType, actType, true) == 0 && string.Compare(pl.ParentActivityId, parentActivityId, true) == 0 &&
+                                                    string.Compare(pl.ActivityId, activityId, true) == 0).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
 
-            bool isTactic = string.Compare(ActType, Helpers.ActivityType.ActivityTactic, true) == 0 ? true : false;
-            bool isLineItem = string.Compare(ActType, Helpers.ActivityType.ActivityLineItem, true) == 0 ? true : false;
-            bool isOtherLineitem = string.Compare(ActType, Helpers.ActivityType.ActivityLineItem, true) == 0 && Entity.LineItemTypeId == null ? true : false;
+            bool isTactic = string.Compare(actType, Helpers.ActivityType.ActivityTactic, true) == 0 ? true : false;
+            bool isLineItem = string.Compare(actType, Helpers.ActivityType.ActivityLineItem, true) == 0 ? true : false;
+            bool isOtherLineitem = string.Compare(actType, Helpers.ActivityType.ActivityLineItem, true) == 0 && Entity.LineItemTypeId == null ? true : false;
 
-            if (string.Compare(AllocatedBy, "quarters", true) != 0)
+            if (string.Compare(allocatedBy, "quarters", true) != 0)
             {
-                if (!IsNextYearPlan)
+                if (!isNextYearPlan)
                 {
-                    BudgetDataObjList = CampignMonthlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, IsViewBy, isOtherLineitem);
+                    budgetDataObjList = CampignMonthlyAllocation(Entity, isTactic, isLineItem, budgetDataObjList, isViewBy, isOtherLineitem);
                 }
             }
             else
             {
-                if (!IsNextYearPlan)
+                if (!isNextYearPlan)
                 {
-                    BudgetDataObjList = CampignQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, IsMulityearPlan, IsViewBy, isOtherLineitem);
+                    budgetDataObjList = CampignQuarterlyAllocation(Entity, isTactic, isLineItem, budgetDataObjList, isMulityearPlan, isViewBy, isOtherLineitem);
                 }
                 else if (!isMultiYear)
                 {
-                    BudgetDataObjList = CampignNextYearQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, IsMulityearPlan, IsViewBy, isOtherLineitem);
+                    budgetDataObjList = CampignNextYearQuarterlyAllocation(Entity, isTactic, isLineItem, budgetDataObjList, isMulityearPlan, isViewBy, isOtherLineitem);
                 }
                 else
                 {
-                    BudgetDataObjList = CampignMulitYearQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, IsViewBy, isOtherLineitem);
+                    budgetDataObjList = CampignMulitYearQuarterlyAllocation(Entity, isTactic, isLineItem, budgetDataObjList, isViewBy, isOtherLineitem);
                 }
             }
-            return BudgetDataObjList;
+            return budgetDataObjList;
         }
 
         /// <summary>
         /// Method to set model in monthly view
         /// </summary>
-        private List<Budgetdataobj> CampignMonthlyAllocation(PlanBudgetModel Entity, bool IsTactic, bool IsLineItem, List<Budgetdataobj> BudgetDataObjList, bool IsViewby = false, bool IsOtherLineItem = false)
+        private List<Budgetdataobj> CampignMonthlyAllocation(PlanBudgetModel entity, bool isTactic, bool isLineItem, List<Budgetdataobj> budgetDataObjList, bool isViewby = false, bool isOtherLineItem = false)
         {
-            Contract.Requires<ArgumentNullException>(Entity != null, "Entity cannot be null.");
+            Contract.Requires<ArgumentNullException>(entity != null, "Entity cannot be null.");
 
-            PropertyInfo[] BudgetProp = Entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("budget")).ToArray(); // Get Array of Budget Month Properties
-            PropertyInfo[] CostProp = Entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("cost")).ToArray(); // Get Array of Cost Month Properties
-            PropertyInfo[] ActualProp = Entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("actual")).ToArray(); // Get Array of Actual Month Properties
+            PropertyInfo[] BudgetProp = entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("budget")).ToArray(); // Get Array of Budget Month Properties
+            PropertyInfo[] CostProp = entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("cost")).ToArray(); // Get Array of Cost Month Properties
+            PropertyInfo[] ActualProp = entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("actual")).ToArray(); // Get Array of Actual Month Properties
 
             Budgetdataobj objBudgetMonth;
             Budgetdataobj objCostMonth;
@@ -1149,32 +1147,32 @@ namespace RevenuePlanner.Services
                 objBudgetMonth = new Budgetdataobj();
                 objCostMonth = new Budgetdataobj();
                 objActualMonth = new Budgetdataobj();
-                if (!IsViewby)
+                if (!isViewby)
                 {
                     // Set cell locked property
-                    objBudgetMonth.lo = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-                    objCostMonth.lo = Entity.isCostEditable && (IsTactic || (IsLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-                    objActualMonth.lo = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                    objBudgetMonth.lo = entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                    objCostMonth.lo = entity.isCostEditable && (isTactic || (isLineItem && entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                    objActualMonth.lo = !isOtherLineItem && entity.isActualEditable && entity.isAfterApproved ? CellNotLocked : CellLocked;
 
                     // Set cell style property
-                    objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
-                    objCostMonth.style = Entity.isCostEditable && (IsTactic || (IsLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                    objActualMonth.style = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+                    objBudgetMonth.style = entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
+                    objCostMonth.style = entity.isCostEditable && (isTactic || (isLineItem && entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
+                    objActualMonth.style = !isOtherLineItem && entity.isActualEditable && entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
 
                     // Set cell value property
-                    objBudgetMonth.value = !IsLineItem ? Convert.ToString(BProp.GetValue(Entity.MonthValues)) : ThreeDash;
-                    objCostMonth.value = Convert.ToString(CostProp[BudgetIndex].GetValue(Entity.MonthValues));
-                    objActualMonth.value = Convert.ToString(ActualProp[BudgetIndex].GetValue(Entity.MonthValues));
+                    objBudgetMonth.value = !isLineItem ? Convert.ToString(BProp.GetValue(entity.MonthValues)) : ThreeDash;
+                    objCostMonth.value = Convert.ToString(CostProp[BudgetIndex].GetValue(entity.MonthValues));
+                    objActualMonth.value = Convert.ToString(ActualProp[BudgetIndex].GetValue(entity.MonthValues));
 
                     // Set Orange Flag
-                    if (!IsLineItem && Convert.ToDouble(BProp.GetValue(Entity.MonthValues)) < Convert.ToDouble(BProp.GetValue(Entity.ChildMonthValues)))
+                    if (!isLineItem && Convert.ToDouble(BProp.GetValue(entity.MonthValues)) < Convert.ToDouble(BProp.GetValue(entity.ChildMonthValues)))
                     {
                         objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
                         objBudgetMonth.av = BudgetFlagval;
                     }
 
                     // Set Red Flag
-                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !IsLineItem)
+                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
                         objCostMonth.av = CostFlagVal;
@@ -1189,21 +1187,21 @@ namespace RevenuePlanner.Services
                     objCostMonth.value = ThreeDash;
                     objActualMonth.value = ThreeDash;
                 }
-                BudgetDataObjList.Add(objBudgetMonth);
-                BudgetDataObjList.Add(objCostMonth);
-                BudgetDataObjList.Add(objActualMonth);
+                budgetDataObjList.Add(objBudgetMonth);
+                budgetDataObjList.Add(objCostMonth);
+                budgetDataObjList.Add(objActualMonth);
 
                 BudgetIndex++;
             }
-            return BudgetDataObjList;
+            return budgetDataObjList;
         }
 
         /// <summary>
         /// Method to set model in quarterly view
         /// </summary>
-        private List<Budgetdataobj> CampignQuarterlyAllocation(PlanBudgetModel Entity, bool IsTactic, bool IsLineItem, List<Budgetdataobj> BudgetDataObjList, bool IsMultiYearPlan, bool IsViewBy = false, bool IsOtherLineItem = false)
+        private List<Budgetdataobj> CampignQuarterlyAllocation(PlanBudgetModel entity, bool isTactic, bool isLineItem, List<Budgetdataobj> budgetDataObjList, bool isMultiYearPlan, bool isViewBy = false, bool isOtherLineItem = false)
         {
-            Contract.Requires<ArgumentNullException>(Entity != null, "Entity cannot be null.");
+            Contract.Requires<ArgumentNullException>(entity != null, "Entity cannot be null.");
 
             int multiYearCounter = 23;
             if (!isMultiYear)
@@ -1211,9 +1209,9 @@ namespace RevenuePlanner.Services
                 multiYearCounter = 11;
             }
 
-            PropertyInfo[] BudgetProp = Entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("budget")).ToArray(); // Get Array of Budget Month Properties
-            PropertyInfo[] CostProp = Entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("cost")).ToArray(); // Get Array of Cost Month Properties
-            PropertyInfo[] ActualProp = Entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("actual")).ToArray(); // Get Array of Actual Month Properties
+            PropertyInfo[] BudgetProp = entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("budget")).ToArray(); // Get Array of Budget Month Properties
+            PropertyInfo[] CostProp = entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("cost")).ToArray(); // Get Array of Cost Month Properties
+            PropertyInfo[] ActualProp = entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("actual")).ToArray(); // Get Array of Actual Month Properties
 
             Budgetdataobj objBudgetMonth;
             Budgetdataobj objCostMonth;
@@ -1226,30 +1224,30 @@ namespace RevenuePlanner.Services
                 objActualMonth = new Budgetdataobj();
 
                 // Set cell locked property
-                objBudgetMonth.lo = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-                objCostMonth.lo = Entity.isCostEditable && (IsTactic || (IsLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-                objActualMonth.lo = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                objBudgetMonth.lo = entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                objCostMonth.lo = entity.isCostEditable && (isTactic || (isLineItem && entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                objActualMonth.lo = !isOtherLineItem && entity.isActualEditable && entity.isAfterApproved ? CellNotLocked : CellLocked;
 
                 // Set cell style property
-                objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
-                objCostMonth.style = Entity.isCostEditable && (IsTactic || (IsLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                objActualMonth.style = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+                objBudgetMonth.style = entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
+                objCostMonth.style = entity.isCostEditable && (isTactic || (isLineItem && entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
+                objActualMonth.style = !isOtherLineItem && entity.isActualEditable && entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
 
-                if (!IsViewBy)
+                if (!isViewBy)
                 {
                     if (MYCnt < 12)
                     {
                         // Set First Year Cost
-                        SetCampaignQuarterlyAllocation(Entity, IsLineItem, BudgetProp, CostProp, ActualProp, objBudgetMonth, objCostMonth, objActualMonth, MYCnt);
+                        SetCampaignQuarterlyAllocation(entity, isLineItem, BudgetProp, CostProp, ActualProp, objBudgetMonth, objCostMonth, objActualMonth, MYCnt);
                     }
                     else
                     {
                         // Set Multi Year Cost
-                        SetCampaignMultiyearQuarterlyAllocation(Entity, IsLineItem, IsMultiYearPlan, BudgetProp, objBudgetMonth, objCostMonth, objActualMonth, MYCnt - 12);
+                        SetCampaignMultiyearQuarterlyAllocation(entity, isLineItem, isMultiYearPlan, BudgetProp, objBudgetMonth, objCostMonth, objActualMonth, MYCnt - 12);
                     }
 
                     // Set Red Flag
-                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !IsLineItem)
+                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
                         objCostMonth.av = CostFlagVal;
@@ -1264,105 +1262,105 @@ namespace RevenuePlanner.Services
                     objCostMonth.value = ThreeDash;
                     objActualMonth.value = ThreeDash;
                 }
-                BudgetDataObjList.Add(objBudgetMonth);
-                BudgetDataObjList.Add(objCostMonth);
-                BudgetDataObjList.Add(objActualMonth);
+                budgetDataObjList.Add(objBudgetMonth);
+                budgetDataObjList.Add(objCostMonth);
+                budgetDataObjList.Add(objActualMonth);
             }
-            return BudgetDataObjList;
+            return budgetDataObjList;
         }
 
         /// <summary>
         /// Method to set model for multi-year plan
         /// </summary>
-        private static void SetCampaignMultiyearQuarterlyAllocation(PlanBudgetModel Entity, bool IsLineItem, bool IsMultiYearPlan, PropertyInfo[] BudgetProp, Budgetdataobj ObjBudgetMonth, Budgetdataobj ObjCostMonth, Budgetdataobj ObjActualMonth, int MonthNo)
+        private static void SetCampaignMultiyearQuarterlyAllocation(PlanBudgetModel entity, bool isLineItem, bool isMultiYearPlan, PropertyInfo[] budgetProp, Budgetdataobj objBudgetMonth, Budgetdataobj objCostMonth, Budgetdataobj objActualMonth, int monthNo)
         {
-            Contract.Requires<ArgumentNullException>(Entity != null, "Entity cannot be null.");
-            Contract.Requires<ArgumentNullException>(BudgetProp != null, "Budget Property cannot be null.");
-            Contract.Requires<ArgumentNullException>(BudgetProp.Length > 0, "Budget Property count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(MonthNo >= 0, "Month Number cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(entity != null, "Entity cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetProp != null, "Budget Property cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetProp.Length > 0, "Budget Property count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(monthNo >= 0, "Month Number cannot be less than zero.");
 
-            double FMNBudget = Convert.ToDouble(BudgetProp[MonthNo].GetValue(Entity.NextYearMonthValues)); // Multi Year First Budget Month of Quarter
-            double SMNBudget = Convert.ToDouble(BudgetProp[MonthNo + 1].GetValue(Entity.NextYearMonthValues)); // Multi Year Second Budget Month of Quarter
-            double TMNBudget = Convert.ToDouble(BudgetProp[MonthNo + 2].GetValue(Entity.NextYearMonthValues)); // Multi Year Third Budget Month of Quarter
+            double FMNBudget = Convert.ToDouble(budgetProp[monthNo].GetValue(entity.NextYearMonthValues)); // Multi Year First Budget Month of Quarter
+            double SMNBudget = Convert.ToDouble(budgetProp[monthNo + 1].GetValue(entity.NextYearMonthValues)); // Multi Year Second Budget Month of Quarter
+            double TMNBudget = Convert.ToDouble(budgetProp[monthNo + 2].GetValue(entity.NextYearMonthValues)); // Multi Year Third Budget Month of Quarter
 
-            double FMNCBudget = Convert.ToDouble(BudgetProp[MonthNo].GetValue(Entity.ChildNextYearMonthValues)); // Multi Year First Child Budget Month of Quarter
-            double SMNCBudget = Convert.ToDouble(BudgetProp[MonthNo + 1].GetValue(Entity.ChildNextYearMonthValues)); // Multi Year Second Child Budget Month of Quarter
-            double TMNCBudget = Convert.ToDouble(BudgetProp[MonthNo + 2].GetValue(Entity.ChildNextYearMonthValues)); // Multi Year Third Child Budget Month of Quarter
+            double FMNCBudget = Convert.ToDouble(budgetProp[monthNo].GetValue(entity.ChildNextYearMonthValues)); // Multi Year First Child Budget Month of Quarter
+            double SMNCBudget = Convert.ToDouble(budgetProp[monthNo + 1].GetValue(entity.ChildNextYearMonthValues)); // Multi Year Second Child Budget Month of Quarter
+            double TMNCBudget = Convert.ToDouble(budgetProp[monthNo + 2].GetValue(entity.ChildNextYearMonthValues)); // Multi Year Third Child Budget Month of Quarter
 
-            double FMCCost = Convert.ToDouble(BudgetProp[MonthNo].GetValue(Entity.NextYearMonthValues)); // Multi Year First Cost Month of Quarter
-            double SMCCost = Convert.ToDouble(BudgetProp[MonthNo + 1].GetValue(Entity.NextYearMonthValues)); // Multi Year Second Cost Month of Quarter
-            double TMCCost = Convert.ToDouble(BudgetProp[MonthNo + 2].GetValue(Entity.NextYearMonthValues)); // Multi Year Third Cost Month of Quarter
+            double FMCCost = Convert.ToDouble(budgetProp[monthNo].GetValue(entity.NextYearMonthValues)); // Multi Year First Cost Month of Quarter
+            double SMCCost = Convert.ToDouble(budgetProp[monthNo + 1].GetValue(entity.NextYearMonthValues)); // Multi Year Second Cost Month of Quarter
+            double TMCCost = Convert.ToDouble(budgetProp[monthNo + 2].GetValue(entity.NextYearMonthValues)); // Multi Year Third Cost Month of Quarter
 
-            double FMCActual = Convert.ToDouble(BudgetProp[MonthNo].GetValue(Entity.NextYearMonthValues)); // Multi Year First Actual Month of Quarter
-            double SMCActual = Convert.ToDouble(BudgetProp[MonthNo + 1].GetValue(Entity.NextYearMonthValues)); // Multi Year Second Actual Month of Quarter
-            double TMCActual = Convert.ToDouble(BudgetProp[MonthNo + 2].GetValue(Entity.NextYearMonthValues)); // Multi Year Third Actual Month of Quarter
+            double FMCActual = Convert.ToDouble(budgetProp[monthNo].GetValue(entity.NextYearMonthValues)); // Multi Year First Actual Month of Quarter
+            double SMCActual = Convert.ToDouble(budgetProp[monthNo + 1].GetValue(entity.NextYearMonthValues)); // Multi Year Second Actual Month of Quarter
+            double TMCActual = Convert.ToDouble(budgetProp[monthNo + 2].GetValue(entity.NextYearMonthValues)); // Multi Year Third Actual Month of Quarter
 
             // Set cell value property
-            ObjBudgetMonth.value = IsMultiYearPlan && !IsLineItem ? Convert.ToString(FMNBudget + SMNBudget + TMNBudget) : ThreeDash;
-            ObjCostMonth.value = IsMultiYearPlan ? Convert.ToString(FMCCost + SMCCost + TMCCost) : ThreeDash;
-            ObjActualMonth.value = IsMultiYearPlan ? Convert.ToString(FMCActual + SMCActual + TMCActual) : ThreeDash;
+            objBudgetMonth.value = isMultiYearPlan && !isLineItem ? Convert.ToString(FMNBudget + SMNBudget + TMNBudget) : ThreeDash;
+            objCostMonth.value = isMultiYearPlan ? Convert.ToString(FMCCost + SMCCost + TMCCost) : ThreeDash;
+            objActualMonth.value = isMultiYearPlan ? Convert.ToString(FMCActual + SMCActual + TMCActual) : ThreeDash;
 
             // Set Orange Flag
-            if (!IsLineItem && Common.ParseDoubleValue(ObjBudgetMonth.value) < (FMNCBudget + SMNCBudget + TMNCBudget))
+            if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (FMNCBudget + SMNCBudget + TMNCBudget))
             {
-                ObjBudgetMonth.style = ObjBudgetMonth.style + OrangeCornerStyle;
-                ObjBudgetMonth.av = BudgetFlagval;
+                objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                objBudgetMonth.av = BudgetFlagval;
             }
         }
 
         /// <summary>
         /// Method to set model for single-year plan
         /// </summary>
-        private static void SetCampaignQuarterlyAllocation(PlanBudgetModel Entity, bool IsLineItem, PropertyInfo[] BudgetProp, PropertyInfo[] CostProp, PropertyInfo[] ActualProp, Budgetdataobj ObjBudgetMonth, Budgetdataobj ObjCostMonth, Budgetdataobj objActualMonth, int MonthNo)
+        private static void SetCampaignQuarterlyAllocation(PlanBudgetModel entity, bool isLineItem, PropertyInfo[] budgetProp, PropertyInfo[] costProp, PropertyInfo[] actualProp, Budgetdataobj objBudgetMonth, Budgetdataobj objCostMonth, Budgetdataobj objActualMonth, int monthNo)
         {
-            Contract.Requires<ArgumentNullException>(Entity != null, "Entity cannot be null.");
-            Contract.Requires<ArgumentNullException>(BudgetProp != null, "Budget Property cannot be null.");
-            Contract.Requires<ArgumentNullException>(BudgetProp.Length > 0, "Budget Property count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(CostProp != null, "Cost Property cannot be null.");
-            Contract.Requires<ArgumentNullException>(CostProp.Length > 0, "Cost Property count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ActualProp != null, "Actual Property cannot be null.");
-            Contract.Requires<ArgumentNullException>(ActualProp.Length > 0, "Actual Property count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(MonthNo >= 0, "Month Number cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(entity != null, "Entity cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetProp != null, "Budget Property cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetProp.Length > 0, "Budget Property count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(costProp != null, "Cost Property cannot be null.");
+            Contract.Requires<ArgumentNullException>(costProp.Length > 0, "Cost Property count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(actualProp != null, "Actual Property cannot be null.");
+            Contract.Requires<ArgumentNullException>(actualProp.Length > 0, "Actual Property count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(monthNo >= 0, "Month Number cannot be less than zero.");
 
-            double FMBudget = Convert.ToDouble(BudgetProp[MonthNo].GetValue(Entity.MonthValues)); // First Budget Month of Quarter
-            double SMBudget = Convert.ToDouble(BudgetProp[MonthNo + 1].GetValue(Entity.MonthValues)); // Second Budget Month of Quarter
-            double TMBudget = Convert.ToDouble(BudgetProp[MonthNo + 2].GetValue(Entity.MonthValues)); // Third Budget Month of Quarter
+            double FMBudget = Convert.ToDouble(budgetProp[monthNo].GetValue(entity.MonthValues)); // First Budget Month of Quarter
+            double SMBudget = Convert.ToDouble(budgetProp[monthNo + 1].GetValue(entity.MonthValues)); // Second Budget Month of Quarter
+            double TMBudget = Convert.ToDouble(budgetProp[monthNo + 2].GetValue(entity.MonthValues)); // Third Budget Month of Quarter
 
-            double FMCBudget = Convert.ToDouble(BudgetProp[MonthNo].GetValue(Entity.ChildMonthValues)); // First Child Budget Month of Quarter
-            double SMCBudget = Convert.ToDouble(BudgetProp[MonthNo + 1].GetValue(Entity.ChildMonthValues)); // Second Child Budget Month of Quarter
-            double TMCBudget = Convert.ToDouble(BudgetProp[MonthNo + 2].GetValue(Entity.ChildMonthValues)); // Third Child Budget Month of Quarter
+            double FMCBudget = Convert.ToDouble(budgetProp[monthNo].GetValue(entity.ChildMonthValues)); // First Child Budget Month of Quarter
+            double SMCBudget = Convert.ToDouble(budgetProp[monthNo + 1].GetValue(entity.ChildMonthValues)); // Second Child Budget Month of Quarter
+            double TMCBudget = Convert.ToDouble(budgetProp[monthNo + 2].GetValue(entity.ChildMonthValues)); // Third Child Budget Month of Quarter
 
-            double FMCost = Convert.ToDouble(CostProp[MonthNo].GetValue(Entity.MonthValues)); // First Cost Month of Quarter
-            double SMCost = Convert.ToDouble(CostProp[MonthNo + 1].GetValue(Entity.MonthValues)); // Second Cost Month of Quarter
-            double TMCost = Convert.ToDouble(CostProp[MonthNo + 2].GetValue(Entity.MonthValues)); // Third Cost Month of Quarter
+            double FMCost = Convert.ToDouble(costProp[monthNo].GetValue(entity.MonthValues)); // First Cost Month of Quarter
+            double SMCost = Convert.ToDouble(costProp[monthNo + 1].GetValue(entity.MonthValues)); // Second Cost Month of Quarter
+            double TMCost = Convert.ToDouble(costProp[monthNo + 2].GetValue(entity.MonthValues)); // Third Cost Month of Quarter
 
-            double FMActual = Convert.ToDouble(ActualProp[MonthNo].GetValue(Entity.MonthValues)); // First Actual Month of Quarter
-            double SMActual = Convert.ToDouble(ActualProp[MonthNo + 1].GetValue(Entity.MonthValues)); // Second Actual Month of Quarter
-            double TMActual = Convert.ToDouble(ActualProp[MonthNo + 2].GetValue(Entity.MonthValues)); // Third Actual Month of Quarter
+            double FMActual = Convert.ToDouble(actualProp[monthNo].GetValue(entity.MonthValues)); // First Actual Month of Quarter
+            double SMActual = Convert.ToDouble(actualProp[monthNo + 1].GetValue(entity.MonthValues)); // Second Actual Month of Quarter
+            double TMActual = Convert.ToDouble(actualProp[monthNo + 2].GetValue(entity.MonthValues)); // Third Actual Month of Quarter
 
             // Set cell value property
-            ObjBudgetMonth.value = !IsLineItem ? Convert.ToString(FMBudget + SMBudget + TMBudget) : ThreeDash;
-            ObjCostMonth.value = Convert.ToString(FMCost + SMCost + TMCost);
+            objBudgetMonth.value = !isLineItem ? Convert.ToString(FMBudget + SMBudget + TMBudget) : ThreeDash;
+            objCostMonth.value = Convert.ToString(FMCost + SMCost + TMCost);
             objActualMonth.value = Convert.ToString(FMActual + SMActual + TMActual);
 
             // Set Orange Flag
-            if (!IsLineItem && Common.ParseDoubleValue(ObjBudgetMonth.value) < (FMCBudget + SMCBudget + TMCBudget))
+            if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (FMCBudget + SMCBudget + TMCBudget))
             {
-                ObjBudgetMonth.style = ObjBudgetMonth.style + OrangeCornerStyle;
-                ObjBudgetMonth.av = BudgetFlagval;
+                objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                objBudgetMonth.av = BudgetFlagval;
             }
         }
 
         /// <summary>
         /// Method to set quarterly model for multi-year plan
         /// </summary>
-        private List<Budgetdataobj> CampignMulitYearQuarterlyAllocation(PlanBudgetModel Entity, bool IsTactic, bool IsLineItem, List<Budgetdataobj> BudgetDataObjList, bool IsViewBy = false, bool IsOtherLineItem = false)
+        private List<Budgetdataobj> CampignMulitYearQuarterlyAllocation(PlanBudgetModel entity, bool isTactic, bool isLineItem, List<Budgetdataobj> budgetDataObjList, bool isViewBy = false, bool isOtherLineItem = false)
         {
-            Contract.Requires<ArgumentNullException>(Entity != null, "Entity cannot be null.");
+            Contract.Requires<ArgumentNullException>(entity != null, "Entity cannot be null.");
 
-            PropertyInfo[] BudgetProp = Entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("budget")).ToArray(); // Get Array of Budget Month Properties
-            PropertyInfo[] CostProp = Entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("cost")).ToArray(); // Get Array of Cost Month Properties
-            PropertyInfo[] ActualProp = Entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("actual")).ToArray(); // Get Array of Actual Month Properties
+            PropertyInfo[] BudgetProp = entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("budget")).ToArray(); // Get Array of Budget Month Properties
+            PropertyInfo[] CostProp = entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("cost")).ToArray(); // Get Array of Cost Month Properties
+            PropertyInfo[] ActualProp = entity.MonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("actual")).ToArray(); // Get Array of Actual Month Properties
 
             Budgetdataobj objBudgetMonth;
             Budgetdataobj objCostMonth;
@@ -1374,17 +1372,17 @@ namespace RevenuePlanner.Services
                 objCostMonth = new Budgetdataobj();
                 objActualMonth = new Budgetdataobj();
 
-                if (!IsViewBy)
+                if (!isViewBy)
                 {
                     // Set cell locked property
-                    objBudgetMonth.lo = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-                    objCostMonth.lo = Entity.isCostEditable && (IsTactic || (IsLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-                    objActualMonth.lo = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                    objBudgetMonth.lo = entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                    objCostMonth.lo = entity.isCostEditable && (isTactic || (isLineItem && entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                    objActualMonth.lo = !isOtherLineItem && entity.isActualEditable && entity.isAfterApproved ? CellNotLocked : CellLocked;
 
                     // Set cell style property
-                    objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
-                    objCostMonth.style = Entity.isCostEditable && (IsTactic || (IsLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                    objActualMonth.style = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+                    objBudgetMonth.style = entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
+                    objCostMonth.style = entity.isCostEditable && (isTactic || (isLineItem && entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
+                    objActualMonth.style = !isOtherLineItem && entity.isActualEditable && entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
 
                     if (monthNo < 12)
                     {
@@ -1406,37 +1404,37 @@ namespace RevenuePlanner.Services
                     else
                     {
                         int SingleYrMonth = monthNo - 12;
-                        double FMBudget = Convert.ToDouble(BudgetProp[SingleYrMonth].GetValue(Entity.MonthValues)); // First Budget Month of Quarter
-                        double SMBudget = Convert.ToDouble(BudgetProp[SingleYrMonth + 1].GetValue(Entity.MonthValues)); // Second Budget Month of Quarter
-                        double TMBudget = Convert.ToDouble(BudgetProp[SingleYrMonth + 2].GetValue(Entity.MonthValues)); // Third Budget Month of Quarter
+                        double FMBudget = Convert.ToDouble(BudgetProp[SingleYrMonth].GetValue(entity.MonthValues)); // First Budget Month of Quarter
+                        double SMBudget = Convert.ToDouble(BudgetProp[SingleYrMonth + 1].GetValue(entity.MonthValues)); // Second Budget Month of Quarter
+                        double TMBudget = Convert.ToDouble(BudgetProp[SingleYrMonth + 2].GetValue(entity.MonthValues)); // Third Budget Month of Quarter
 
-                        objBudgetMonth.value = !IsLineItem ? Convert.ToString(FMBudget + SMBudget + TMBudget) : ThreeDash; // Set cell value property
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(FMBudget + SMBudget + TMBudget) : ThreeDash; // Set cell value property
 
-                        double FMCBudget = Convert.ToDouble(BudgetProp[SingleYrMonth].GetValue(Entity.ChildMonthValues)); // First Child Budget Month of Quarter
-                        double SMCBudget = Convert.ToDouble(BudgetProp[SingleYrMonth + 1].GetValue(Entity.ChildMonthValues)); // Second Child Budget Month of Quarter
-                        double TMCBudget = Convert.ToDouble(BudgetProp[SingleYrMonth + 2].GetValue(Entity.ChildMonthValues)); // Third Child Budget Month of Quarter
+                        double FMCBudget = Convert.ToDouble(BudgetProp[SingleYrMonth].GetValue(entity.ChildMonthValues)); // First Child Budget Month of Quarter
+                        double SMCBudget = Convert.ToDouble(BudgetProp[SingleYrMonth + 1].GetValue(entity.ChildMonthValues)); // Second Child Budget Month of Quarter
+                        double TMCBudget = Convert.ToDouble(BudgetProp[SingleYrMonth + 2].GetValue(entity.ChildMonthValues)); // Third Child Budget Month of Quarter
 
                         // Set Orange Flag
-                        if (!IsLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (FMCBudget + SMCBudget + TMCBudget))
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (FMCBudget + SMCBudget + TMCBudget))
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
                             objBudgetMonth.av = BudgetFlagval;
                         }
 
-                        double FMCost = Convert.ToDouble(CostProp[SingleYrMonth].GetValue(Entity.MonthValues)); // First Cost Month of Quarter
-                        double SMCost = Convert.ToDouble(CostProp[SingleYrMonth + 1].GetValue(Entity.MonthValues)); // Second Cost Month of Quarter
-                        double TMCost = Convert.ToDouble(CostProp[SingleYrMonth + 2].GetValue(Entity.MonthValues)); // Third Cost Month of Quarter
+                        double FMCost = Convert.ToDouble(CostProp[SingleYrMonth].GetValue(entity.MonthValues)); // First Cost Month of Quarter
+                        double SMCost = Convert.ToDouble(CostProp[SingleYrMonth + 1].GetValue(entity.MonthValues)); // Second Cost Month of Quarter
+                        double TMCost = Convert.ToDouble(CostProp[SingleYrMonth + 2].GetValue(entity.MonthValues)); // Third Cost Month of Quarter
 
                         objCostMonth.value = Convert.ToString(FMCost + SMCost + TMCost); // Set cell value property
 
-                        double FMActual = Convert.ToDouble(ActualProp[SingleYrMonth].GetValue(Entity.MonthValues)); // First Actual Month of Quarter
-                        double SMActual = Convert.ToDouble(ActualProp[SingleYrMonth + 1].GetValue(Entity.MonthValues)); // Second Actual Month of Quarter
-                        double TMActual = Convert.ToDouble(ActualProp[SingleYrMonth + 2].GetValue(Entity.MonthValues)); // Third Actual Month of Quarter                        
+                        double FMActual = Convert.ToDouble(ActualProp[SingleYrMonth].GetValue(entity.MonthValues)); // First Actual Month of Quarter
+                        double SMActual = Convert.ToDouble(ActualProp[SingleYrMonth + 1].GetValue(entity.MonthValues)); // Second Actual Month of Quarter
+                        double TMActual = Convert.ToDouble(ActualProp[SingleYrMonth + 2].GetValue(entity.MonthValues)); // Third Actual Month of Quarter                        
 
                         objActualMonth.value = Convert.ToString(FMActual + SMActual + TMActual); // Set cell value property
                     }
                     // Set Red Flag
-                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !IsLineItem)
+                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
                         objCostMonth.av = CostFlagVal;
@@ -1451,23 +1449,23 @@ namespace RevenuePlanner.Services
                     objCostMonth.value = ThreeDash;
                     objActualMonth.value = ThreeDash;
                 }
-                BudgetDataObjList.Add(objBudgetMonth);
-                BudgetDataObjList.Add(objCostMonth);
-                BudgetDataObjList.Add(objActualMonth);
+                budgetDataObjList.Add(objBudgetMonth);
+                budgetDataObjList.Add(objCostMonth);
+                budgetDataObjList.Add(objActualMonth);
             }
-            return BudgetDataObjList;
+            return budgetDataObjList;
         }
 
         /// <summary>
         /// Method to set quarterly model for next-year plan
         /// </summary>
-        private List<Budgetdataobj> CampignNextYearQuarterlyAllocation(PlanBudgetModel Entity, bool IsTactic, bool IsLineItem, List<Budgetdataobj> BudgetDataObjList, bool IsMultiYearPlan, bool isViewBy = false, bool IsOtherLineItem = false)
+        private List<Budgetdataobj> CampignNextYearQuarterlyAllocation(PlanBudgetModel entity, bool isTactic, bool isLineItem, List<Budgetdataobj> budgetDataObjList, bool isMultiYearPlan, bool isViewBy = false, bool isOtherLineItem = false)
         {
-            Contract.Requires<ArgumentNullException>(Entity != null, "Entity cannot be null.");
+            Contract.Requires<ArgumentNullException>(entity != null, "Entity cannot be null.");
 
-            PropertyInfo[] BudgetProp = Entity.NextYearMonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("budget")).ToArray(); // Get Array of Budget Month Properties
-            PropertyInfo[] CostProp = Entity.NextYearMonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("cost")).ToArray(); // Get Array of Cost Month Properties
-            PropertyInfo[] ActualProp = Entity.NextYearMonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("actual")).ToArray(); // Get Array of Actual Month Properties
+            PropertyInfo[] BudgetProp = entity.NextYearMonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("budget")).ToArray(); // Get Array of Budget Month Properties
+            PropertyInfo[] CostProp = entity.NextYearMonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("cost")).ToArray(); // Get Array of Cost Month Properties
+            PropertyInfo[] ActualProp = entity.NextYearMonthValues.GetType().GetProperties().Where(x => x.Name.ToLower().Contains("actual")).ToArray(); // Get Array of Actual Month Properties
 
             Budgetdataobj objBudgetMonth;
             Budgetdataobj objCostMonth;
@@ -1480,66 +1478,66 @@ namespace RevenuePlanner.Services
                 objActualMonth = new Budgetdataobj();
 
                 // Set cell locked property
-                objBudgetMonth.lo = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-                objCostMonth.lo = Entity.isCostEditable && (IsTactic || (IsLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-                objActualMonth.lo = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                objBudgetMonth.lo = entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                objCostMonth.lo = entity.isCostEditable && (isTactic || (isLineItem && entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                objActualMonth.lo = !isOtherLineItem && entity.isActualEditable && entity.isAfterApproved ? CellNotLocked : CellLocked;
 
                 // Set cell style property
-                objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
-                objCostMonth.style = Entity.isCostEditable && (IsTactic || (IsLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                objActualMonth.style = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+                objBudgetMonth.style = entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
+                objCostMonth.style = entity.isCostEditable && (isTactic || (isLineItem && entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
+                objActualMonth.style = !isOtherLineItem && entity.isActualEditable && entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
 
-                double FMNBudget = Convert.ToDouble(BudgetProp[monthNo].GetValue(Entity.NextYearMonthValues)); // Multi Year First Budget Month of Quarter
-                double SMNBudget = Convert.ToDouble(BudgetProp[monthNo + 1].GetValue(Entity.NextYearMonthValues)); // Multi Year Second Budget Month of Quarter
-                double TMNBudget = Convert.ToDouble(BudgetProp[monthNo + 2].GetValue(Entity.NextYearMonthValues)); // Multi Year Third Budget Month of Quarter
+                double FMNBudget = Convert.ToDouble(BudgetProp[monthNo].GetValue(entity.NextYearMonthValues)); // Multi Year First Budget Month of Quarter
+                double SMNBudget = Convert.ToDouble(BudgetProp[monthNo + 1].GetValue(entity.NextYearMonthValues)); // Multi Year Second Budget Month of Quarter
+                double TMNBudget = Convert.ToDouble(BudgetProp[monthNo + 2].GetValue(entity.NextYearMonthValues)); // Multi Year Third Budget Month of Quarter
 
-                objBudgetMonth.value = !IsLineItem ? Convert.ToString(FMNBudget + SMNBudget + TMNBudget) : ThreeDash; // Set cell value property
+                objBudgetMonth.value = !isLineItem ? Convert.ToString(FMNBudget + SMNBudget + TMNBudget) : ThreeDash; // Set cell value property
 
-                double FMNCBudget = Convert.ToDouble(BudgetProp[monthNo].GetValue(Entity.ChildNextYearMonthValues)); // Multi Year First Child Budget Month of Quarter
-                double SMNCBudget = Convert.ToDouble(BudgetProp[monthNo + 1].GetValue(Entity.ChildNextYearMonthValues)); // Multi Year Second Child Budget Month of Quarter
-                double TMNCBudget = Convert.ToDouble(BudgetProp[monthNo + 2].GetValue(Entity.ChildNextYearMonthValues)); // Multi Year Third Child Budget Month of Quarter
+                double FMNCBudget = Convert.ToDouble(BudgetProp[monthNo].GetValue(entity.ChildNextYearMonthValues)); // Multi Year First Child Budget Month of Quarter
+                double SMNCBudget = Convert.ToDouble(BudgetProp[monthNo + 1].GetValue(entity.ChildNextYearMonthValues)); // Multi Year Second Child Budget Month of Quarter
+                double TMNCBudget = Convert.ToDouble(BudgetProp[monthNo + 2].GetValue(entity.ChildNextYearMonthValues)); // Multi Year Third Child Budget Month of Quarter
 
                 // Set Orange Flag
-                if (!IsLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (FMNCBudget + SMNCBudget + TMNCBudget))
+                if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (FMNCBudget + SMNCBudget + TMNCBudget))
                 {
                     objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
                     objBudgetMonth.av = BudgetFlagval;
                 }
 
-                double FMCCost = Convert.ToDouble(BudgetProp[monthNo].GetValue(Entity.NextYearMonthValues)); // Multi Year First Cost Month of Quarter
-                double SMCCost = Convert.ToDouble(BudgetProp[monthNo + 1].GetValue(Entity.NextYearMonthValues)); // Multi Year Second Cost Month of Quarter
-                double TMCCost = Convert.ToDouble(BudgetProp[monthNo + 2].GetValue(Entity.NextYearMonthValues)); // Multi Year Third Cost Month of Quarter
+                double FMCCost = Convert.ToDouble(BudgetProp[monthNo].GetValue(entity.NextYearMonthValues)); // Multi Year First Cost Month of Quarter
+                double SMCCost = Convert.ToDouble(BudgetProp[monthNo + 1].GetValue(entity.NextYearMonthValues)); // Multi Year Second Cost Month of Quarter
+                double TMCCost = Convert.ToDouble(BudgetProp[monthNo + 2].GetValue(entity.NextYearMonthValues)); // Multi Year Third Cost Month of Quarter
 
                 objCostMonth.value = Convert.ToString(FMCCost + SMCCost + TMCCost); // Set cell value property
 
-                double FMCActual = Convert.ToDouble(BudgetProp[monthNo].GetValue(Entity.NextYearMonthValues)); // Multi Year First Actual Month of Quarter
-                double SMCActual = Convert.ToDouble(BudgetProp[monthNo + 1].GetValue(Entity.NextYearMonthValues)); // Multi Year Second Actual Month of Quarter
-                double TMCActual = Convert.ToDouble(BudgetProp[monthNo + 2].GetValue(Entity.NextYearMonthValues)); // Multi Year Third Actual Month of Quarter
+                double FMCActual = Convert.ToDouble(BudgetProp[monthNo].GetValue(entity.NextYearMonthValues)); // Multi Year First Actual Month of Quarter
+                double SMCActual = Convert.ToDouble(BudgetProp[monthNo + 1].GetValue(entity.NextYearMonthValues)); // Multi Year Second Actual Month of Quarter
+                double TMCActual = Convert.ToDouble(BudgetProp[monthNo + 2].GetValue(entity.NextYearMonthValues)); // Multi Year Third Actual Month of Quarter
 
                 objActualMonth.value = Convert.ToString(FMCActual + SMCActual + TMCActual); // Set cell value property
 
                 // Set Red Flag
-                if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !IsLineItem)
+                if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                 {
                     objCostMonth.style = objCostMonth.style + RedCornerStyle;
                     objCostMonth.av = CostFlagVal;
                 }
-                BudgetDataObjList.Add(objBudgetMonth);
-                BudgetDataObjList.Add(objCostMonth);
-                BudgetDataObjList.Add(objActualMonth);
+                budgetDataObjList.Add(objBudgetMonth);
+                budgetDataObjList.Add(objCostMonth);
+                budgetDataObjList.Add(objActualMonth);
             }
-            return BudgetDataObjList;
+            return budgetDataObjList;
         }
 
         /// <summary>
         /// Method to set custom field restriction based on permission
         /// </summary>
-        public List<PlanBudgetModel> SetCustomFieldRestriction(List<PlanBudgetModel> BudgetModel, int UserId, int ClientId)
+        public List<PlanBudgetModel> SetCustomFieldRestriction(List<PlanBudgetModel> budgetModel, int userId, int clientId)
         {
-            Contract.Requires<ArgumentNullException>(BudgetModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(BudgetModel.Count > 0, "Budget Model count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(UserId > 0, "UserId cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ClientId > 0, "ClientId cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget Model count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(userId > 0, "UserId cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(clientId > 0, "ClientId cannot be less than zero.");
 
             List<int> lstSubordinatesIds = new List<int>();
 
@@ -1547,7 +1545,7 @@ namespace RevenuePlanner.Services
             bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             if (IsTacticAllowForSubordinates)
             {
-                lstSubordinatesIds = Common.GetAllSubordinates(UserId);
+                lstSubordinatesIds = Common.GetAllSubordinates(userId);
             }
             // Custom field type drop-down list
             string DropDownList = Convert.ToString(Enums.CustomFieldType.DropDownList);
@@ -1556,10 +1554,10 @@ namespace RevenuePlanner.Services
             // Flag will be use to set if custom field is display for filter or not
             bool isDisplayForFilter = false;
 
-            bool IsCustomFeildExist = Common.IsCustomFeildExist(Convert.ToString(Enums.EntityType.Tactic), ClientId);
+            bool IsCustomFeildExist = Common.IsCustomFeildExist(Convert.ToString(Enums.EntityType.Tactic), clientId);
 
             // Get list tactic's custom field
-            List<CustomField> customfieldlist = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == ClientId && customfield.EntityType.Equals(EntityTypeTactic)
+            List<CustomField> customfieldlist = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic)
                                                     && customfield.IsDeleted.Equals(false)).ToList();
             // Check custom field which are not set to display for filter and is required are exist
             bool CustomFieldexists = customfieldlist.Where(customfield => customfield.IsRequired && !isDisplayForFilter).Any();
@@ -1567,7 +1565,7 @@ namespace RevenuePlanner.Services
             List<int> customfieldids = customfieldlist.Where(customfield => string.Compare(customfield.CustomFieldType.Name, DropDownList, true) == 0
                                         && (isDisplayForFilter ? customfield.IsDisplayForFilter : true)).Select(customfield => customfield.CustomFieldId).ToList();
             // Get tactics only for budget model
-            List<string> tacIds = BudgetModel.Where(t => string.Compare(t.ActivityType, EntityTypeTactic, true) == 0).Select(t => t.Id).ToList();
+            List<string> tacIds = budgetModel.Where(t => string.Compare(t.ActivityType, EntityTypeTactic, true) == 0).Select(t => t.Id).ToList();
 
             // Get tactic ids from tactic list
             List<int> intList = tacIds.ConvertAll(s => Int32.Parse(s));
@@ -1576,7 +1574,7 @@ namespace RevenuePlanner.Services
             // Get tactic custom fields list
             List<CustomField_Entity> lstAllTacticCustomFieldEntities = Entities.Where(customFieldEntity => customfieldids.Contains(customFieldEntity.CustomFieldId))
                                                                                                 .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
-            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId, true);
+            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(userId, true);
 
 
             #region "Set Permissions"
@@ -1585,7 +1583,7 @@ namespace RevenuePlanner.Services
 
             if (IsPlanEditAllAuthorized)
             {
-                BudgetModel.Where(item => string.Compare(item.ActivityType, ActivityType.ActivityPlan, true) == 0)
+                budgetModel.Where(item => string.Compare(item.ActivityType, ActivityType.ActivityPlan, true) == 0)
                             .ToList().ForEach(item =>
                             {
                                 item.isBudgetEditable = item.isEntityEditable = true;
@@ -1593,7 +1591,7 @@ namespace RevenuePlanner.Services
             }
             else
             {
-                BudgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityPlan, true) == 0) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+                budgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityPlan, true) == 0) && ((item.CreatedBy == userId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
                            .ToList().ForEach(item =>
                            {
                                item.isBudgetEditable = item.isEntityEditable = true;
@@ -1602,23 +1600,23 @@ namespace RevenuePlanner.Services
             #endregion
 
             int allwTaccount = 0;
-            List<string> lstTacs = BudgetModel.Where(item => string.Compare(item.ActivityType, ActivityType.ActivityTactic, true) == 0).Select(t => t.Id).ToList();
+            List<string> lstTacs = budgetModel.Where(item => string.Compare(item.ActivityType, ActivityType.ActivityTactic, true) == 0).Select(t => t.Id).ToList();
             List<int> tIds = lstTacs.ConvertAll(s => Int32.Parse(s));
-            List<int> lstAllAllowedTacIds = Common.GetEditableTacticListPO(UserId, ClientId, tIds, IsCustomFeildExist, CustomFieldexists, Entities,
+            List<int> lstAllAllowedTacIds = Common.GetEditableTacticListPO(userId, clientId, tIds, IsCustomFeildExist, CustomFieldexists, Entities,
                                                 lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
 
             #region "Set Campaign Permission"
-            BudgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityCampaign, true) == 0) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+            budgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityCampaign, true) == 0) && ((item.CreatedBy == userId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
                        .ToList().ForEach(item =>
                        {
                            // Check user is subordinate or user is owner
-                           if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
+                           if (item.CreatedBy == userId || lstSubordinatesIds.Contains(item.CreatedBy))
                            {
                                List<int> planTacticIds = new List<int>();
                                // To find tactic level permission ,first get program list and then get respective tactic list of program which will be used to get editable tactic list
-                               List<string> modelprogramid = BudgetModel.Where(minner => string.Compare(minner.ActivityType, ActivityType.ActivityProgram, true) == 0 &&
+                               List<string> modelprogramid = budgetModel.Where(minner => string.Compare(minner.ActivityType, ActivityType.ActivityProgram, true) == 0 &&
                                                                                string.Compare(minner.ParentActivityId, item.ActivityId, true) == 0).Select(minner => minner.ActivityId).ToList();
-                               planTacticIds = BudgetModel.Where(m => string.Compare(m.ActivityType, ActivityType.ActivityTactic, true) == 0 &&
+                               planTacticIds = budgetModel.Where(m => string.Compare(m.ActivityType, ActivityType.ActivityTactic, true) == 0 &&
                                                                        modelprogramid.Contains(m.ParentActivityId)).Select(m => Convert.ToInt32(m.Id)).ToList();
                                allwTaccount = lstAllAllowedTacIds.Where(t => planTacticIds.Contains(t)).Count();
                                if (allwTaccount == planTacticIds.Count)
@@ -1636,16 +1634,16 @@ namespace RevenuePlanner.Services
 
             #region "Set Program Permission"
 
-            BudgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityProgram, true) == 0) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+            budgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityProgram, true) == 0) && ((item.CreatedBy == userId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
                    .ToList().ForEach(item =>
                    {
 
                        // Check user is subordinate or user is owner
-                       if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
+                       if (item.CreatedBy == userId || lstSubordinatesIds.Contains(item.CreatedBy))
                        {
                            List<int> planTacticIds = new List<int>();
                            // To find tactic level permission , get respective tactic list of program which will be used to get editable tactic list
-                           planTacticIds = BudgetModel.Where(m => string.Compare(m.ActivityType, ActivityType.ActivityTactic, true) == 0 &&
+                           planTacticIds = budgetModel.Where(m => string.Compare(m.ActivityType, ActivityType.ActivityTactic, true) == 0 &&
                                                                string.Compare(m.ParentActivityId, item.ActivityId, true) == 0).Select(m => Convert.ToInt32(m.Id)).ToList();
                            allwTaccount = lstAllAllowedTacIds.Where(t => planTacticIds.Contains(t)).Count();
                            if (allwTaccount == planTacticIds.Count)
@@ -1663,13 +1661,13 @@ namespace RevenuePlanner.Services
             #region "Set Tactic Permission"
 
 
-            BudgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityTactic, true) == 0) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+            budgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityTactic, true) == 0) && ((item.CreatedBy == userId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
                    .ToList().ForEach(item =>
                    {
                        // Check user is subordinate or user is owner
-                       if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
+                       if (item.CreatedBy == userId || lstSubordinatesIds.Contains(item.CreatedBy))
                        {
-                           bool isLineItem = BudgetModel.Where(ent => string.Compare(ent.ParentActivityId, item.ActivityId, true) == 0 && ent.LineItemTypeId != null).Any();
+                           bool isLineItem = budgetModel.Where(ent => string.Compare(ent.ParentActivityId, item.ActivityId, true) == 0 && ent.LineItemTypeId != null).Any();
                            // Check tactic is editable or not
                            if (lstAllAllowedTacIds.Any(t => t == Convert.ToInt32(item.Id)))
                            {
@@ -1688,17 +1686,17 @@ namespace RevenuePlanner.Services
             #endregion
 
             #region "Set LineItem Permission"
-            BudgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityLineItem, true) == 0) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+            budgetModel.Where(item => (string.Compare(item.ActivityType, ActivityType.ActivityLineItem, true) == 0) && ((item.CreatedBy == userId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
                    .ToList().ForEach(item =>
                    {
                        int tacticOwner = 0;
-                       if (BudgetModel.Where(m => string.Compare(m.ActivityId, item.ParentActivityId, true) == 0).Any())
+                       if (budgetModel.Where(m => string.Compare(m.ActivityId, item.ParentActivityId, true) == 0).Any())
                        {
-                           tacticOwner = BudgetModel.Where(m => string.Compare(m.ActivityId, item.ParentActivityId, true) == 0).FirstOrDefault().CreatedBy;
+                           tacticOwner = budgetModel.Where(m => string.Compare(m.ActivityId, item.ParentActivityId, true) == 0).FirstOrDefault().CreatedBy;
                        }
 
                        // Check user is subordinate or user is owner of line item or user is owner of tactic
-                       if (item.CreatedBy == UserId || tacticOwner == UserId || lstSubordinatesIds.Contains(tacticOwner))
+                       if (item.CreatedBy == userId || tacticOwner == userId || lstSubordinatesIds.Contains(tacticOwner))
                        {
                            if (lstAllAllowedTacIds.Any(t => t == Convert.ToInt32(item.ParentId)))
                            {
@@ -1714,21 +1712,21 @@ namespace RevenuePlanner.Services
 
             #endregion
 
-            return BudgetModel;
+            return budgetModel;
         }
 
         /// <summary>
         /// Method to set model for LineItem
         /// </summary>
-        private List<PlanBudgetModel> ManageLineItems(List<PlanBudgetModel> PBModel)
+        private List<PlanBudgetModel> ManageLineItems(List<PlanBudgetModel> budgetModel)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel.Count > 0, "Budget Model count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget Model count cannot be less than zero.");
 
-            foreach (PlanBudgetModel l in PBModel.Where(l => string.Compare(l.ActivityType, ActivityType.ActivityTactic, true) == 0))
+            foreach (PlanBudgetModel l in budgetModel.Where(l => string.Compare(l.ActivityType, ActivityType.ActivityTactic, true) == 0))
             {
                 // Calculate Line items Difference.
-                List<PlanBudgetModel> lines = PBModel.Where(line => string.Compare(line.ActivityType, ActivityType.ActivityLineItem, true) == 0 &&
+                List<PlanBudgetModel> lines = budgetModel.Where(line => string.Compare(line.ActivityType, ActivityType.ActivityLineItem, true) == 0 &&
                                                             string.Compare(line.ParentActivityId, l.ActivityId, true) == 0).ToList();
                 PlanBudgetModel otherLine = lines.Where(ol => ol.LineItemTypeId == null).FirstOrDefault();
                 lines = lines.Where(ol => ol.LineItemTypeId != null).ToList();
@@ -1780,41 +1778,41 @@ namespace RevenuePlanner.Services
 
                 }
             }
-            return PBModel;
+            return budgetModel;
         }
 
         /// <summary>
         /// sum up the total of planned and actuals cell of budget to child to parent
         /// </summary>        
-        private List<PlanBudgetModel> CalculateBottomUp(List<PlanBudgetModel> PBModel, string ParentActivityType, string ChildActivityType, string ViewBy)
+        private List<PlanBudgetModel> CalculateBottomUp(List<PlanBudgetModel> budgetModel, string parentActivityType, string childActivityType, string viewBy)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel.Count > 0, "Budget Model count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ParentActivityType != null, "Parent Activity Type cannot be null.");
-            Contract.Requires<ArgumentNullException>(ChildActivityType != null, "Child Activity Type cannot be null.");
-            Contract.Requires<ArgumentNullException>(ViewBy != null, "View By cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget Model count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(parentActivityType != null, "Parent Activity Type cannot be null.");
+            Contract.Requires<ArgumentNullException>(childActivityType != null, "Child Activity Type cannot be null.");
+            Contract.Requires<ArgumentNullException>(viewBy != null, "View By cannot be null.");
 
             double totalMonthCostSum = 0;
 
-            foreach (PlanBudgetModel l in PBModel.Where(_mdl => string.Compare(_mdl.ActivityType, ParentActivityType, true) == 0))
+            foreach (PlanBudgetModel l in budgetModel.Where(_mdl => string.Compare(_mdl.ActivityType, parentActivityType, true) == 0))
             {
                 // Check if ViewBy is Campaign selected then set weight-age value to 100;
                 int weightage = 100;
-                if (ViewBy != Convert.ToString(PlanGanttTypes.Tactic))
+                if (viewBy != Convert.ToString(PlanGanttTypes.Tactic))
                 {
                     weightage = l.Weightage;
                 }
                 weightage = weightage / 100;
 
-                List<PlanBudgetModel> childs = PBModel.Where(line => string.Compare(line.ActivityType, ChildActivityType, true) == 0 && string.Compare(line.ParentActivityId, l.ActivityId, true) == 0).ToList();
+                List<PlanBudgetModel> childs = budgetModel.Where(line => string.Compare(line.ActivityType, childActivityType, true) == 0 && string.Compare(line.ParentActivityId, l.ActivityId, true) == 0).ToList();
                 if (l.ActivityType != ActivityType.ActivityTactic
-                        || PBModel.Where(m => string.Compare(m.ParentActivityId, l.ActivityId, true) == 0 && m.LineItemTypeId != null &&
+                        || budgetModel.Where(m => string.Compare(m.ParentActivityId, l.ActivityId, true) == 0 && m.LineItemTypeId != null &&
                             string.Compare(m.ActivityType, ActivityType.ActivityLineItem, true) == 0).Any() && childs != null)
                 {
                     BottonUpActualMonthlyValues(l, weightage, childs);
                 }
 
-                if (string.Compare(ParentActivityType, ActivityType.ActivityTactic, true) < 0 && childs != null)
+                if (string.Compare(parentActivityType, ActivityType.ActivityTactic, true) < 0 && childs != null)
                 {
                     BottonUpCostMonthlyValues(l, weightage, childs);
                     if (childs != null)
@@ -1831,236 +1829,236 @@ namespace RevenuePlanner.Services
 
                 if (l.ActivityType != ActivityType.ActivityTactic)
                 {
-                    l.TotalAllocatedCost = PBModel.Where(line => string.Compare(line.ActivityType, ChildActivityType, true) == 0 && string.Compare(line.ParentActivityId, l.ActivityId, true) == 0)
+                    l.TotalAllocatedCost = budgetModel.Where(line => string.Compare(line.ActivityType, childActivityType, true) == 0 && string.Compare(line.ParentActivityId, l.ActivityId, true) == 0)
                                             .Sum(line => (double?)line.TotalAllocatedCost) ?? 0;
                     l.UnallocatedCost = l.TotalAllocatedCost - totalMonthCostSum;
                 }
-                if (l.ActivityType != ActivityType.ActivityTactic || PBModel.Where(m => string.Compare(m.ParentActivityId, l.ActivityId, true) == 0 && m.LineItemTypeId != null &&
+                if (l.ActivityType != ActivityType.ActivityTactic || budgetModel.Where(m => string.Compare(m.ParentActivityId, l.ActivityId, true) == 0 && m.LineItemTypeId != null &&
                         string.Compare(m.ActivityType, ActivityType.ActivityLineItem, true) == 0).Any())
                 {
-                    l.TotalActuals = PBModel.Where(line => string.Compare(line.ActivityType, ChildActivityType, true) == 0 && string.Compare(line.ParentActivityId, l.ActivityId, true) == 0)
+                    l.TotalActuals = budgetModel.Where(line => string.Compare(line.ActivityType, childActivityType, true) == 0 && string.Compare(line.ParentActivityId, l.ActivityId, true) == 0)
                                     .Sum(line => (double?)line.TotalActuals) ?? 0;
                 }
             }
 
-            return PBModel;
+            return budgetModel;
         }
 
         /// <summary>
         /// sum up the total of budget to child to parent
         /// </summary>
-        private static void BottonUpBudgetMonthlyValues(PlanBudgetModel PBModel, List<PlanBudgetModel> Childs)
+        private static void BottonUpBudgetMonthlyValues(PlanBudgetModel budgetModel, List<PlanBudgetModel> childs)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
 
-            if (Childs != null)
+            if (childs != null)
             {
-                PBModel.ChildMonthValues.BudgetY1 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY1)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY2 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY2)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY3 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY3)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY4 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY4)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY5 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY5)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY6 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY6)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY7 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY7)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY8 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY8)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY9 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY9)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY10 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY10)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY11 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY11)) ?? 0;
-                PBModel.ChildMonthValues.BudgetY12 = Childs.Sum(line => (double?)(line.MonthValues.BudgetY12)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY1 = childs.Sum(line => (double?)(line.MonthValues.BudgetY1)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY2 = childs.Sum(line => (double?)(line.MonthValues.BudgetY2)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY3 = childs.Sum(line => (double?)(line.MonthValues.BudgetY3)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY4 = childs.Sum(line => (double?)(line.MonthValues.BudgetY4)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY5 = childs.Sum(line => (double?)(line.MonthValues.BudgetY5)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY6 = childs.Sum(line => (double?)(line.MonthValues.BudgetY6)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY7 = childs.Sum(line => (double?)(line.MonthValues.BudgetY7)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY8 = childs.Sum(line => (double?)(line.MonthValues.BudgetY8)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY9 = childs.Sum(line => (double?)(line.MonthValues.BudgetY9)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY10 = childs.Sum(line => (double?)(line.MonthValues.BudgetY10)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY11 = childs.Sum(line => (double?)(line.MonthValues.BudgetY11)) ?? 0;
+                budgetModel.ChildMonthValues.BudgetY12 = childs.Sum(line => (double?)(line.MonthValues.BudgetY12)) ?? 0;
 
-                PBModel.ChildNextYearMonthValues.BudgetY1 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY1)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY2 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY2)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY3 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY3)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY4 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY4)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY5 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY5)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY6 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY6)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY7 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY7)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY8 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY8)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY9 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY9)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY10 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY10)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY11 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY11)) ?? 0;
-                PBModel.ChildNextYearMonthValues.BudgetY12 = Childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY12)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY1 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY1)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY2 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY2)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY3 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY3)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY4 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY4)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY5 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY5)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY6 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY6)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY7 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY7)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY8 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY8)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY9 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY9)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY10 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY10)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY11 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY11)) ?? 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY12 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY12)) ?? 0;
             }
             else
             {
-                PBModel.ChildMonthValues.BudgetY1 = 0;
-                PBModel.ChildMonthValues.BudgetY2 = 0;
-                PBModel.ChildMonthValues.BudgetY3 = 0;
-                PBModel.ChildMonthValues.BudgetY4 = 0;
-                PBModel.ChildMonthValues.BudgetY5 = 0;
-                PBModel.ChildMonthValues.BudgetY6 = 0;
-                PBModel.ChildMonthValues.BudgetY7 = 0;
-                PBModel.ChildMonthValues.BudgetY8 = 0;
-                PBModel.ChildMonthValues.BudgetY9 = 0;
-                PBModel.ChildMonthValues.BudgetY10 = 0;
-                PBModel.ChildMonthValues.BudgetY11 = 0;
-                PBModel.ChildMonthValues.BudgetY12 = 0;
+                budgetModel.ChildMonthValues.BudgetY1 = 0;
+                budgetModel.ChildMonthValues.BudgetY2 = 0;
+                budgetModel.ChildMonthValues.BudgetY3 = 0;
+                budgetModel.ChildMonthValues.BudgetY4 = 0;
+                budgetModel.ChildMonthValues.BudgetY5 = 0;
+                budgetModel.ChildMonthValues.BudgetY6 = 0;
+                budgetModel.ChildMonthValues.BudgetY7 = 0;
+                budgetModel.ChildMonthValues.BudgetY8 = 0;
+                budgetModel.ChildMonthValues.BudgetY9 = 0;
+                budgetModel.ChildMonthValues.BudgetY10 = 0;
+                budgetModel.ChildMonthValues.BudgetY11 = 0;
+                budgetModel.ChildMonthValues.BudgetY12 = 0;
 
-                PBModel.ChildNextYearMonthValues.BudgetY1 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY2 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY3 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY4 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY5 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY6 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY7 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY8 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY9 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY10 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY11 = 0;
-                PBModel.ChildNextYearMonthValues.BudgetY12 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY1 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY2 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY3 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY4 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY5 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY6 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY7 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY8 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY9 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY10 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY11 = 0;
+                budgetModel.ChildNextYearMonthValues.BudgetY12 = 0;
             }
         }
 
         /// <summary>
         /// sum up the total of planned cost to child to parent
         /// </summary>
-        private static void BottonUpCostMonthlyValues(PlanBudgetModel PBModel, int Weightage, List<PlanBudgetModel> Childs)
+        private static void BottonUpCostMonthlyValues(PlanBudgetModel budgetModel, int weightage, List<PlanBudgetModel> childs)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(Weightage >= 0, "Weight-age cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(weightage >= 0, "Weight-age cannot be less than zero.");
 
-            if (Childs != null)
+            if (childs != null)
             {
-                PBModel.MonthValues.CostY1 = Childs.Sum(line => (double?)(line.MonthValues.CostY1 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY2 = Childs.Sum(line => (double?)(line.MonthValues.CostY2 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY3 = Childs.Sum(line => (double?)(line.MonthValues.CostY3 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY4 = Childs.Sum(line => (double?)(line.MonthValues.CostY4 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY5 = Childs.Sum(line => (double?)(line.MonthValues.CostY5 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY6 = Childs.Sum(line => (double?)(line.MonthValues.CostY6 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY7 = Childs.Sum(line => (double?)(line.MonthValues.CostY7 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY8 = Childs.Sum(line => (double?)(line.MonthValues.CostY8 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY9 = Childs.Sum(line => (double?)(line.MonthValues.CostY9 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY10 = Childs.Sum(line => (double?)(line.MonthValues.CostY10 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY11 = Childs.Sum(line => (double?)(line.MonthValues.CostY11 * Weightage)) ?? 0;
-                PBModel.MonthValues.CostY12 = Childs.Sum(line => (double?)(line.MonthValues.CostY12 * Weightage)) ?? 0;
+                budgetModel.MonthValues.CostY1 = childs.Sum(line => (double?)(line.MonthValues.CostY1 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY2 = childs.Sum(line => (double?)(line.MonthValues.CostY2 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY3 = childs.Sum(line => (double?)(line.MonthValues.CostY3 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY4 = childs.Sum(line => (double?)(line.MonthValues.CostY4 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY5 = childs.Sum(line => (double?)(line.MonthValues.CostY5 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY6 = childs.Sum(line => (double?)(line.MonthValues.CostY6 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY7 = childs.Sum(line => (double?)(line.MonthValues.CostY7 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY8 = childs.Sum(line => (double?)(line.MonthValues.CostY8 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY9 = childs.Sum(line => (double?)(line.MonthValues.CostY9 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY10 = childs.Sum(line => (double?)(line.MonthValues.CostY10 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY11 = childs.Sum(line => (double?)(line.MonthValues.CostY11 * weightage)) ?? 0;
+                budgetModel.MonthValues.CostY12 = childs.Sum(line => (double?)(line.MonthValues.CostY12 * weightage)) ?? 0;
 
 
-                PBModel.NextYearMonthValues.CostY1 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY1 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY2 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY2 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY3 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY3 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY4 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY4 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY5 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY5 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY6 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY6 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY7 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY7 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY8 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY8 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY9 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY9 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY10 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY10 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY11 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY11 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.CostY12 = Childs.Sum(line => (double?)(line.NextYearMonthValues.CostY12 * Weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY1 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY1 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY2 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY2 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY3 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY3 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY4 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY4 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY5 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY5 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY6 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY6 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY7 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY7 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY8 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY8 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY9 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY9 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY10 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY10 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY11 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY11 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.CostY12 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY12 * weightage)) ?? 0;
             }
             else
             {
-                PBModel.MonthValues.CostY1 = 0;
-                PBModel.MonthValues.CostY2 = 0;
-                PBModel.MonthValues.CostY3 = 0;
-                PBModel.MonthValues.CostY4 = 0;
-                PBModel.MonthValues.CostY5 = 0;
-                PBModel.MonthValues.CostY6 = 0;
-                PBModel.MonthValues.CostY7 = 0;
-                PBModel.MonthValues.CostY8 = 0;
-                PBModel.MonthValues.CostY9 = 0;
-                PBModel.MonthValues.CostY10 = 0;
-                PBModel.MonthValues.CostY11 = 0;
-                PBModel.MonthValues.CostY12 = 0;
+                budgetModel.MonthValues.CostY1 = 0;
+                budgetModel.MonthValues.CostY2 = 0;
+                budgetModel.MonthValues.CostY3 = 0;
+                budgetModel.MonthValues.CostY4 = 0;
+                budgetModel.MonthValues.CostY5 = 0;
+                budgetModel.MonthValues.CostY6 = 0;
+                budgetModel.MonthValues.CostY7 = 0;
+                budgetModel.MonthValues.CostY8 = 0;
+                budgetModel.MonthValues.CostY9 = 0;
+                budgetModel.MonthValues.CostY10 = 0;
+                budgetModel.MonthValues.CostY11 = 0;
+                budgetModel.MonthValues.CostY12 = 0;
 
-                PBModel.NextYearMonthValues.CostY1 = 0;
-                PBModel.NextYearMonthValues.CostY2 = 0;
-                PBModel.NextYearMonthValues.CostY3 = 0;
-                PBModel.NextYearMonthValues.CostY4 = 0;
-                PBModel.NextYearMonthValues.CostY5 = 0;
-                PBModel.NextYearMonthValues.CostY6 = 0;
-                PBModel.NextYearMonthValues.CostY7 = 0;
-                PBModel.NextYearMonthValues.CostY8 = 0;
-                PBModel.NextYearMonthValues.CostY9 = 0;
-                PBModel.NextYearMonthValues.CostY10 = 0;
-                PBModel.NextYearMonthValues.CostY11 = 0;
-                PBModel.NextYearMonthValues.CostY12 = 0;
+                budgetModel.NextYearMonthValues.CostY1 = 0;
+                budgetModel.NextYearMonthValues.CostY2 = 0;
+                budgetModel.NextYearMonthValues.CostY3 = 0;
+                budgetModel.NextYearMonthValues.CostY4 = 0;
+                budgetModel.NextYearMonthValues.CostY5 = 0;
+                budgetModel.NextYearMonthValues.CostY6 = 0;
+                budgetModel.NextYearMonthValues.CostY7 = 0;
+                budgetModel.NextYearMonthValues.CostY8 = 0;
+                budgetModel.NextYearMonthValues.CostY9 = 0;
+                budgetModel.NextYearMonthValues.CostY10 = 0;
+                budgetModel.NextYearMonthValues.CostY11 = 0;
+                budgetModel.NextYearMonthValues.CostY12 = 0;
             }
         }
 
         /// <summary>
         /// sum up the total of actual cost to child to parent
         /// </summary>
-        private static void BottonUpActualMonthlyValues(PlanBudgetModel PBModel, int Weightage, List<PlanBudgetModel> Childs)
+        private static void BottonUpActualMonthlyValues(PlanBudgetModel budgetModel, int weightage, List<PlanBudgetModel> childs)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(Weightage >= 0, "Weight-age cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(weightage >= 0, "Weight-age cannot be less than zero.");
 
-            if (Childs != null)
+            if (childs != null)
             {
-                PBModel.MonthValues.ActualY1 = Childs.Sum(line => (double?)(line.MonthValues.ActualY1 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY2 = Childs.Sum(line => (double?)(line.MonthValues.ActualY2 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY3 = Childs.Sum(line => (double?)(line.MonthValues.ActualY3 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY4 = Childs.Sum(line => (double?)(line.MonthValues.ActualY4 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY5 = Childs.Sum(line => (double?)(line.MonthValues.ActualY5 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY6 = Childs.Sum(line => (double?)(line.MonthValues.ActualY6 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY7 = Childs.Sum(line => (double?)(line.MonthValues.ActualY7 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY8 = Childs.Sum(line => (double?)(line.MonthValues.ActualY8 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY9 = Childs.Sum(line => (double?)(line.MonthValues.ActualY9 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY10 = Childs.Sum(line => (double?)(line.MonthValues.ActualY10 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY11 = Childs.Sum(line => (double?)(line.MonthValues.ActualY11 * Weightage)) ?? 0;
-                PBModel.MonthValues.ActualY12 = Childs.Sum(line => (double?)(line.MonthValues.ActualY12 * Weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY1 = childs.Sum(line => (double?)(line.MonthValues.ActualY1 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY2 = childs.Sum(line => (double?)(line.MonthValues.ActualY2 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY3 = childs.Sum(line => (double?)(line.MonthValues.ActualY3 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY4 = childs.Sum(line => (double?)(line.MonthValues.ActualY4 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY5 = childs.Sum(line => (double?)(line.MonthValues.ActualY5 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY6 = childs.Sum(line => (double?)(line.MonthValues.ActualY6 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY7 = childs.Sum(line => (double?)(line.MonthValues.ActualY7 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY8 = childs.Sum(line => (double?)(line.MonthValues.ActualY8 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY9 = childs.Sum(line => (double?)(line.MonthValues.ActualY9 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY10 = childs.Sum(line => (double?)(line.MonthValues.ActualY10 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY11 = childs.Sum(line => (double?)(line.MonthValues.ActualY11 * weightage)) ?? 0;
+                budgetModel.MonthValues.ActualY12 = childs.Sum(line => (double?)(line.MonthValues.ActualY12 * weightage)) ?? 0;
 
-                PBModel.NextYearMonthValues.ActualY1 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY1 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY2 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY2 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY3 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY3 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY4 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY4 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY5 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY5 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY6 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY6 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY7 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY7 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY8 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY8 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY9 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY9 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY10 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY10 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY11 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY11 * Weightage)) ?? 0;
-                PBModel.NextYearMonthValues.ActualY12 = Childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY12 * Weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY1 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY1 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY2 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY2 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY3 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY3 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY4 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY4 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY5 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY5 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY6 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY6 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY7 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY7 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY8 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY8 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY9 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY9 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY10 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY10 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY11 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY11 * weightage)) ?? 0;
+                budgetModel.NextYearMonthValues.ActualY12 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY12 * weightage)) ?? 0;
             }
             else
             {
-                PBModel.MonthValues.ActualY1 = 0;
-                PBModel.MonthValues.ActualY2 = 0;
-                PBModel.MonthValues.ActualY3 = 0;
-                PBModel.MonthValues.ActualY4 = 0;
-                PBModel.MonthValues.ActualY5 = 0;
-                PBModel.MonthValues.ActualY6 = 0;
-                PBModel.MonthValues.ActualY7 = 0;
-                PBModel.MonthValues.ActualY8 = 0;
-                PBModel.MonthValues.ActualY9 = 0;
-                PBModel.MonthValues.ActualY10 = 0;
-                PBModel.MonthValues.ActualY11 = 0;
-                PBModel.MonthValues.ActualY12 = 0;
+                budgetModel.MonthValues.ActualY1 = 0;
+                budgetModel.MonthValues.ActualY2 = 0;
+                budgetModel.MonthValues.ActualY3 = 0;
+                budgetModel.MonthValues.ActualY4 = 0;
+                budgetModel.MonthValues.ActualY5 = 0;
+                budgetModel.MonthValues.ActualY6 = 0;
+                budgetModel.MonthValues.ActualY7 = 0;
+                budgetModel.MonthValues.ActualY8 = 0;
+                budgetModel.MonthValues.ActualY9 = 0;
+                budgetModel.MonthValues.ActualY10 = 0;
+                budgetModel.MonthValues.ActualY11 = 0;
+                budgetModel.MonthValues.ActualY12 = 0;
 
-                PBModel.NextYearMonthValues.ActualY1 = 0;
-                PBModel.NextYearMonthValues.ActualY2 = 0;
-                PBModel.NextYearMonthValues.ActualY3 = 0;
-                PBModel.NextYearMonthValues.ActualY4 = 0;
-                PBModel.NextYearMonthValues.ActualY5 = 0;
-                PBModel.NextYearMonthValues.ActualY6 = 0;
-                PBModel.NextYearMonthValues.ActualY7 = 0;
-                PBModel.NextYearMonthValues.ActualY8 = 0;
-                PBModel.NextYearMonthValues.ActualY9 = 0;
-                PBModel.NextYearMonthValues.ActualY10 = 0;
-                PBModel.NextYearMonthValues.ActualY11 = 0;
-                PBModel.NextYearMonthValues.ActualY12 = 0;
+                budgetModel.NextYearMonthValues.ActualY1 = 0;
+                budgetModel.NextYearMonthValues.ActualY2 = 0;
+                budgetModel.NextYearMonthValues.ActualY3 = 0;
+                budgetModel.NextYearMonthValues.ActualY4 = 0;
+                budgetModel.NextYearMonthValues.ActualY5 = 0;
+                budgetModel.NextYearMonthValues.ActualY6 = 0;
+                budgetModel.NextYearMonthValues.ActualY7 = 0;
+                budgetModel.NextYearMonthValues.ActualY8 = 0;
+                budgetModel.NextYearMonthValues.ActualY9 = 0;
+                budgetModel.NextYearMonthValues.ActualY10 = 0;
+                budgetModel.NextYearMonthValues.ActualY11 = 0;
+                budgetModel.NextYearMonthValues.ActualY12 = 0;
             }
         }
 
         /// <summary>
         /// apply weight-age to budget cell values
         /// </summary>
-        private List<PlanBudgetModel> SetLineItemCostByWeightage(List<PlanBudgetModel> PBModel, string ViewBy)
+        private List<PlanBudgetModel> SetLineItemCostByWeightage(List<PlanBudgetModel> budgetModel, string viewBy)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(PBModel.Count > 0, "Budget Model count cannot be less than zero.");
-            Contract.Requires<ArgumentNullException>(ViewBy != null, "View By cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget Model count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(viewBy != null, "View By cannot be null.");
 
             int weightage = 100;
-            foreach (PlanBudgetModel l in PBModel.Where(_mdl => string.Compare(_mdl.ActivityType, ActivityType.ActivityTactic, true) == 0))
+            foreach (PlanBudgetModel l in budgetModel.Where(_mdl => string.Compare(_mdl.ActivityType, ActivityType.ActivityTactic, true) == 0))
             {
-                List<PlanBudgetModel> lstLineItems = PBModel.Where(line => string.Compare(line.ActivityType, ActivityType.ActivityLineItem, true) == 0 &&
+                List<PlanBudgetModel> lstLineItems = budgetModel.Where(line => string.Compare(line.ActivityType, ActivityType.ActivityLineItem, true) == 0 &&
                                                         string.Compare(line.ParentActivityId, l.ActivityId, true) == 0).ToList();
 
                 // Check if ViewBy is Campaign selected then set weight-age value to 100;
-                if (ViewBy != Convert.ToString(PlanGanttTypes.Tactic))
+                if (viewBy != Convert.ToString(PlanGanttTypes.Tactic))
                 {
                     weightage = l.Weightage;
                 }
@@ -2081,144 +2079,144 @@ namespace RevenuePlanner.Services
                     line.NextYearMonthValues = lineNextYearBudget;
                 }
             }
-            return PBModel;
+            return budgetModel;
         }
 
         /// <summary>
         /// apply weight-age to budget cell values
         /// </summary>
-        private static void SetBudgetLineItembyWeightage(int Weightage, BudgetMonth LineBudget, BudgetMonth LineNextYearBudget, PlanBudgetModel PBModel)
+        private static void SetBudgetLineItembyWeightage(int weightage, BudgetMonth lineBudget, BudgetMonth lineNextYearBudget, PlanBudgetModel budgetModel)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(LineBudget != null, "Line Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(LineNextYearBudget != null, "Line Next Year Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(Weightage >= 0, "Weight-age cannot be less than zero.");
-            
-            LineBudget.BudgetY1 = (double)(PBModel.MonthValues.BudgetY1 * Weightage) / 100;
-            LineBudget.BudgetY2 = (double)(PBModel.MonthValues.BudgetY2 * Weightage) / 100;
-            LineBudget.BudgetY3 = (double)(PBModel.MonthValues.BudgetY3 * Weightage) / 100;
-            LineBudget.BudgetY4 = (double)(PBModel.MonthValues.BudgetY4 * Weightage) / 100;
-            LineBudget.BudgetY5 = (double)(PBModel.MonthValues.BudgetY5 * Weightage) / 100;
-            LineBudget.BudgetY6 = (double)(PBModel.MonthValues.BudgetY6 * Weightage) / 100;
-            LineBudget.BudgetY7 = (double)(PBModel.MonthValues.BudgetY7 * Weightage) / 100;
-            LineBudget.BudgetY8 = (double)(PBModel.MonthValues.BudgetY8 * Weightage) / 100;
-            LineBudget.BudgetY9 = (double)(PBModel.MonthValues.BudgetY9 * Weightage) / 100;
-            LineBudget.BudgetY10 = (double)(PBModel.MonthValues.BudgetY10 * Weightage) / 100;
-            LineBudget.BudgetY11 = (double)(PBModel.MonthValues.BudgetY11 * Weightage) / 100;
-            LineBudget.BudgetY12 = (double)(PBModel.MonthValues.BudgetY12 * Weightage) / 100;
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(lineBudget != null, "Line Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(lineNextYearBudget != null, "Line Next Year Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(weightage >= 0, "Weight-age cannot be less than zero.");
 
-            LineNextYearBudget.BudgetY1 = (double)(PBModel.NextYearMonthValues.BudgetY1 * Weightage) / 100;
-            LineNextYearBudget.BudgetY2 = (double)(PBModel.NextYearMonthValues.BudgetY2 * Weightage) / 100;
-            LineNextYearBudget.BudgetY3 = (double)(PBModel.NextYearMonthValues.BudgetY3 * Weightage) / 100;
-            LineNextYearBudget.BudgetY4 = (double)(PBModel.NextYearMonthValues.BudgetY4 * Weightage) / 100;
-            LineNextYearBudget.BudgetY5 = (double)(PBModel.NextYearMonthValues.BudgetY5 * Weightage) / 100;
-            LineNextYearBudget.BudgetY6 = (double)(PBModel.NextYearMonthValues.BudgetY6 * Weightage) / 100;
-            LineNextYearBudget.BudgetY7 = (double)(PBModel.NextYearMonthValues.BudgetY7 * Weightage) / 100;
-            LineNextYearBudget.BudgetY8 = (double)(PBModel.NextYearMonthValues.BudgetY8 * Weightage) / 100;
-            LineNextYearBudget.BudgetY9 = (double)(PBModel.NextYearMonthValues.BudgetY9 * Weightage) / 100;
-            LineNextYearBudget.BudgetY10 = (double)(PBModel.NextYearMonthValues.BudgetY10 * Weightage) / 100;
-            LineNextYearBudget.BudgetY11 = (double)(PBModel.NextYearMonthValues.BudgetY11 * Weightage) / 100;
-            LineNextYearBudget.BudgetY12 = (double)(PBModel.NextYearMonthValues.BudgetY12 * Weightage) / 100;
+            lineBudget.BudgetY1 = (double)(budgetModel.MonthValues.BudgetY1 * weightage) / 100;
+            lineBudget.BudgetY2 = (double)(budgetModel.MonthValues.BudgetY2 * weightage) / 100;
+            lineBudget.BudgetY3 = (double)(budgetModel.MonthValues.BudgetY3 * weightage) / 100;
+            lineBudget.BudgetY4 = (double)(budgetModel.MonthValues.BudgetY4 * weightage) / 100;
+            lineBudget.BudgetY5 = (double)(budgetModel.MonthValues.BudgetY5 * weightage) / 100;
+            lineBudget.BudgetY6 = (double)(budgetModel.MonthValues.BudgetY6 * weightage) / 100;
+            lineBudget.BudgetY7 = (double)(budgetModel.MonthValues.BudgetY7 * weightage) / 100;
+            lineBudget.BudgetY8 = (double)(budgetModel.MonthValues.BudgetY8 * weightage) / 100;
+            lineBudget.BudgetY9 = (double)(budgetModel.MonthValues.BudgetY9 * weightage) / 100;
+            lineBudget.BudgetY10 = (double)(budgetModel.MonthValues.BudgetY10 * weightage) / 100;
+            lineBudget.BudgetY11 = (double)(budgetModel.MonthValues.BudgetY11 * weightage) / 100;
+            lineBudget.BudgetY12 = (double)(budgetModel.MonthValues.BudgetY12 * weightage) / 100;
+
+            lineNextYearBudget.BudgetY1 = (double)(budgetModel.NextYearMonthValues.BudgetY1 * weightage) / 100;
+            lineNextYearBudget.BudgetY2 = (double)(budgetModel.NextYearMonthValues.BudgetY2 * weightage) / 100;
+            lineNextYearBudget.BudgetY3 = (double)(budgetModel.NextYearMonthValues.BudgetY3 * weightage) / 100;
+            lineNextYearBudget.BudgetY4 = (double)(budgetModel.NextYearMonthValues.BudgetY4 * weightage) / 100;
+            lineNextYearBudget.BudgetY5 = (double)(budgetModel.NextYearMonthValues.BudgetY5 * weightage) / 100;
+            lineNextYearBudget.BudgetY6 = (double)(budgetModel.NextYearMonthValues.BudgetY6 * weightage) / 100;
+            lineNextYearBudget.BudgetY7 = (double)(budgetModel.NextYearMonthValues.BudgetY7 * weightage) / 100;
+            lineNextYearBudget.BudgetY8 = (double)(budgetModel.NextYearMonthValues.BudgetY8 * weightage) / 100;
+            lineNextYearBudget.BudgetY9 = (double)(budgetModel.NextYearMonthValues.BudgetY9 * weightage) / 100;
+            lineNextYearBudget.BudgetY10 = (double)(budgetModel.NextYearMonthValues.BudgetY10 * weightage) / 100;
+            lineNextYearBudget.BudgetY11 = (double)(budgetModel.NextYearMonthValues.BudgetY11 * weightage) / 100;
+            lineNextYearBudget.BudgetY12 = (double)(budgetModel.NextYearMonthValues.BudgetY12 * weightage) / 100;
         }
 
         /// <summary>
         /// apply weight-age to planned cell values
         /// </summary>
-        private static void SetCostLineItembyWeightage(int Weightage, BudgetMonth LineBudget, BudgetMonth LineNextYearBudget, PlanBudgetModel PBModel)
+        private static void SetCostLineItembyWeightage(int weightage, BudgetMonth lineBudget, BudgetMonth lineNextYearBudget, PlanBudgetModel budgetModel)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(LineBudget != null, "Line Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(LineNextYearBudget != null, "Line Next Year Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(Weightage >= 0, "Weight-age cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(lineBudget != null, "Line Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(lineNextYearBudget != null, "Line Next Year Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(weightage >= 0, "Weight-age cannot be less than zero.");
 
-            LineBudget.CostY1 = (double)(PBModel.MonthValues.CostY1 * Weightage) / 100;
-            LineBudget.CostY2 = (double)(PBModel.MonthValues.CostY2 * Weightage) / 100;
-            LineBudget.CostY3 = (double)(PBModel.MonthValues.CostY3 * Weightage) / 100;
-            LineBudget.CostY4 = (double)(PBModel.MonthValues.CostY4 * Weightage) / 100;
-            LineBudget.CostY5 = (double)(PBModel.MonthValues.CostY5 * Weightage) / 100;
-            LineBudget.CostY6 = (double)(PBModel.MonthValues.CostY6 * Weightage) / 100;
-            LineBudget.CostY7 = (double)(PBModel.MonthValues.CostY7 * Weightage) / 100;
-            LineBudget.CostY8 = (double)(PBModel.MonthValues.CostY8 * Weightage) / 100;
-            LineBudget.CostY9 = (double)(PBModel.MonthValues.CostY9 * Weightage) / 100;
-            LineBudget.CostY10 = (double)(PBModel.MonthValues.CostY10 * Weightage) / 100;
-            LineBudget.CostY11 = (double)(PBModel.MonthValues.CostY11 * Weightage) / 100;
-            LineBudget.CostY12 = (double)(PBModel.MonthValues.CostY12 * Weightage) / 100;
+            lineBudget.CostY1 = (double)(budgetModel.MonthValues.CostY1 * weightage) / 100;
+            lineBudget.CostY2 = (double)(budgetModel.MonthValues.CostY2 * weightage) / 100;
+            lineBudget.CostY3 = (double)(budgetModel.MonthValues.CostY3 * weightage) / 100;
+            lineBudget.CostY4 = (double)(budgetModel.MonthValues.CostY4 * weightage) / 100;
+            lineBudget.CostY5 = (double)(budgetModel.MonthValues.CostY5 * weightage) / 100;
+            lineBudget.CostY6 = (double)(budgetModel.MonthValues.CostY6 * weightage) / 100;
+            lineBudget.CostY7 = (double)(budgetModel.MonthValues.CostY7 * weightage) / 100;
+            lineBudget.CostY8 = (double)(budgetModel.MonthValues.CostY8 * weightage) / 100;
+            lineBudget.CostY9 = (double)(budgetModel.MonthValues.CostY9 * weightage) / 100;
+            lineBudget.CostY10 = (double)(budgetModel.MonthValues.CostY10 * weightage) / 100;
+            lineBudget.CostY11 = (double)(budgetModel.MonthValues.CostY11 * weightage) / 100;
+            lineBudget.CostY12 = (double)(budgetModel.MonthValues.CostY12 * weightage) / 100;
 
-            LineNextYearBudget.CostY1 = (double)(PBModel.NextYearMonthValues.CostY1 * Weightage) / 100;
-            LineNextYearBudget.CostY2 = (double)(PBModel.NextYearMonthValues.CostY2 * Weightage) / 100;
-            LineNextYearBudget.CostY3 = (double)(PBModel.NextYearMonthValues.CostY3 * Weightage) / 100;
-            LineNextYearBudget.CostY4 = (double)(PBModel.NextYearMonthValues.CostY4 * Weightage) / 100;
-            LineNextYearBudget.CostY5 = (double)(PBModel.NextYearMonthValues.CostY5 * Weightage) / 100;
-            LineNextYearBudget.CostY6 = (double)(PBModel.NextYearMonthValues.CostY6 * Weightage) / 100;
-            LineNextYearBudget.CostY7 = (double)(PBModel.NextYearMonthValues.CostY7 * Weightage) / 100;
-            LineNextYearBudget.CostY8 = (double)(PBModel.NextYearMonthValues.CostY8 * Weightage) / 100;
-            LineNextYearBudget.CostY9 = (double)(PBModel.NextYearMonthValues.CostY9 * Weightage) / 100;
-            LineNextYearBudget.CostY10 = (double)(PBModel.NextYearMonthValues.CostY10 * Weightage) / 100;
-            LineNextYearBudget.CostY11 = (double)(PBModel.NextYearMonthValues.CostY11 * Weightage) / 100;
-            LineNextYearBudget.CostY12 = (double)(PBModel.NextYearMonthValues.CostY12 * Weightage) / 100;
+            lineNextYearBudget.CostY1 = (double)(budgetModel.NextYearMonthValues.CostY1 * weightage) / 100;
+            lineNextYearBudget.CostY2 = (double)(budgetModel.NextYearMonthValues.CostY2 * weightage) / 100;
+            lineNextYearBudget.CostY3 = (double)(budgetModel.NextYearMonthValues.CostY3 * weightage) / 100;
+            lineNextYearBudget.CostY4 = (double)(budgetModel.NextYearMonthValues.CostY4 * weightage) / 100;
+            lineNextYearBudget.CostY5 = (double)(budgetModel.NextYearMonthValues.CostY5 * weightage) / 100;
+            lineNextYearBudget.CostY6 = (double)(budgetModel.NextYearMonthValues.CostY6 * weightage) / 100;
+            lineNextYearBudget.CostY7 = (double)(budgetModel.NextYearMonthValues.CostY7 * weightage) / 100;
+            lineNextYearBudget.CostY8 = (double)(budgetModel.NextYearMonthValues.CostY8 * weightage) / 100;
+            lineNextYearBudget.CostY9 = (double)(budgetModel.NextYearMonthValues.CostY9 * weightage) / 100;
+            lineNextYearBudget.CostY10 = (double)(budgetModel.NextYearMonthValues.CostY10 * weightage) / 100;
+            lineNextYearBudget.CostY11 = (double)(budgetModel.NextYearMonthValues.CostY11 * weightage) / 100;
+            lineNextYearBudget.CostY12 = (double)(budgetModel.NextYearMonthValues.CostY12 * weightage) / 100;
         }
 
         /// <summary>
         /// apply weight-age to actual cell values
         /// </summary>
-        private static void SetActualLineItembyWeightage(int Weightage, BudgetMonth LineBudget, BudgetMonth LineNextYearBudget, PlanBudgetModel PBModel)
+        private static void SetActualLineItembyWeightage(int weightage, BudgetMonth lineBudget, BudgetMonth lineNextYearBudget, PlanBudgetModel budgetModel)
         {
-            Contract.Requires<ArgumentNullException>(PBModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(LineBudget != null, "Line Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(LineNextYearBudget != null, "Line Next Year Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(Weightage >= 0, "Weight-age cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(lineBudget != null, "Line Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(lineNextYearBudget != null, "Line Next Year Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(weightage >= 0, "Weight-age cannot be less than zero.");
 
-            LineBudget.ActualY1 = (double)(PBModel.MonthValues.ActualY1 * Weightage) / 100;
-            LineBudget.ActualY2 = (double)(PBModel.MonthValues.ActualY2 * Weightage) / 100;
-            LineBudget.ActualY3 = (double)(PBModel.MonthValues.ActualY3 * Weightage) / 100;
-            LineBudget.ActualY4 = (double)(PBModel.MonthValues.ActualY4 * Weightage) / 100;
-            LineBudget.ActualY5 = (double)(PBModel.MonthValues.ActualY5 * Weightage) / 100;
-            LineBudget.ActualY6 = (double)(PBModel.MonthValues.ActualY6 * Weightage) / 100;
-            LineBudget.ActualY7 = (double)(PBModel.MonthValues.ActualY7 * Weightage) / 100;
-            LineBudget.ActualY8 = (double)(PBModel.MonthValues.ActualY8 * Weightage) / 100;
-            LineBudget.ActualY9 = (double)(PBModel.MonthValues.ActualY9 * Weightage) / 100;
-            LineBudget.ActualY10 = (double)(PBModel.MonthValues.ActualY10 * Weightage) / 100;
-            LineBudget.ActualY11 = (double)(PBModel.MonthValues.ActualY11 * Weightage) / 100;
-            LineBudget.ActualY12 = (double)(PBModel.MonthValues.ActualY12 * Weightage) / 100;
+            lineBudget.ActualY1 = (double)(budgetModel.MonthValues.ActualY1 * weightage) / 100;
+            lineBudget.ActualY2 = (double)(budgetModel.MonthValues.ActualY2 * weightage) / 100;
+            lineBudget.ActualY3 = (double)(budgetModel.MonthValues.ActualY3 * weightage) / 100;
+            lineBudget.ActualY4 = (double)(budgetModel.MonthValues.ActualY4 * weightage) / 100;
+            lineBudget.ActualY5 = (double)(budgetModel.MonthValues.ActualY5 * weightage) / 100;
+            lineBudget.ActualY6 = (double)(budgetModel.MonthValues.ActualY6 * weightage) / 100;
+            lineBudget.ActualY7 = (double)(budgetModel.MonthValues.ActualY7 * weightage) / 100;
+            lineBudget.ActualY8 = (double)(budgetModel.MonthValues.ActualY8 * weightage) / 100;
+            lineBudget.ActualY9 = (double)(budgetModel.MonthValues.ActualY9 * weightage) / 100;
+            lineBudget.ActualY10 = (double)(budgetModel.MonthValues.ActualY10 * weightage) / 100;
+            lineBudget.ActualY11 = (double)(budgetModel.MonthValues.ActualY11 * weightage) / 100;
+            lineBudget.ActualY12 = (double)(budgetModel.MonthValues.ActualY12 * weightage) / 100;
 
-            LineNextYearBudget.ActualY1 = (double)(PBModel.NextYearMonthValues.ActualY1 * Weightage) / 100;
-            LineNextYearBudget.ActualY2 = (double)(PBModel.NextYearMonthValues.ActualY2 * Weightage) / 100;
-            LineNextYearBudget.ActualY3 = (double)(PBModel.NextYearMonthValues.ActualY3 * Weightage) / 100;
-            LineNextYearBudget.ActualY4 = (double)(PBModel.NextYearMonthValues.ActualY4 * Weightage) / 100;
-            LineNextYearBudget.ActualY5 = (double)(PBModel.NextYearMonthValues.ActualY5 * Weightage) / 100;
-            LineNextYearBudget.ActualY6 = (double)(PBModel.NextYearMonthValues.ActualY6 * Weightage) / 100;
-            LineNextYearBudget.ActualY7 = (double)(PBModel.NextYearMonthValues.ActualY7 * Weightage) / 100;
-            LineNextYearBudget.ActualY8 = (double)(PBModel.NextYearMonthValues.ActualY8 * Weightage) / 100;
-            LineNextYearBudget.ActualY9 = (double)(PBModel.NextYearMonthValues.ActualY9 * Weightage) / 100;
-            LineNextYearBudget.ActualY10 = (double)(PBModel.NextYearMonthValues.ActualY10 * Weightage) / 100;
-            LineNextYearBudget.ActualY11 = (double)(PBModel.NextYearMonthValues.ActualY11 * Weightage) / 100;
-            LineNextYearBudget.ActualY12 = (double)(PBModel.NextYearMonthValues.ActualY12 * Weightage) / 100;
+            lineNextYearBudget.ActualY1 = (double)(budgetModel.NextYearMonthValues.ActualY1 * weightage) / 100;
+            lineNextYearBudget.ActualY2 = (double)(budgetModel.NextYearMonthValues.ActualY2 * weightage) / 100;
+            lineNextYearBudget.ActualY3 = (double)(budgetModel.NextYearMonthValues.ActualY3 * weightage) / 100;
+            lineNextYearBudget.ActualY4 = (double)(budgetModel.NextYearMonthValues.ActualY4 * weightage) / 100;
+            lineNextYearBudget.ActualY5 = (double)(budgetModel.NextYearMonthValues.ActualY5 * weightage) / 100;
+            lineNextYearBudget.ActualY6 = (double)(budgetModel.NextYearMonthValues.ActualY6 * weightage) / 100;
+            lineNextYearBudget.ActualY7 = (double)(budgetModel.NextYearMonthValues.ActualY7 * weightage) / 100;
+            lineNextYearBudget.ActualY8 = (double)(budgetModel.NextYearMonthValues.ActualY8 * weightage) / 100;
+            lineNextYearBudget.ActualY9 = (double)(budgetModel.NextYearMonthValues.ActualY9 * weightage) / 100;
+            lineNextYearBudget.ActualY10 = (double)(budgetModel.NextYearMonthValues.ActualY10 * weightage) / 100;
+            lineNextYearBudget.ActualY11 = (double)(budgetModel.NextYearMonthValues.ActualY11 * weightage) / 100;
+            lineNextYearBudget.ActualY12 = (double)(budgetModel.NextYearMonthValues.ActualY12 * weightage) / 100;
         }
 
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket 2585
         /// </summary>
-        /// <param name="BudgetModel"></param>
-        /// <param name="Year"></param>
+        /// <param name="budgetModel"></param>
+        /// <param name="year"></param>
         /// <returns></returns>
-        private List<PlanBudgetModel> FilterPlanByTimeFrame(List<PlanBudgetModel> BudgetModel, string Year)
+        private List<PlanBudgetModel> FilterPlanByTimeFrame(List<PlanBudgetModel> budgetModel, string year)
         {
-            Contract.Requires<ArgumentNullException>(BudgetModel != null, "Budget Model cannot be null.");
-            Contract.Requires<ArgumentNullException>(BudgetModel.Count > 0, "Budget Model Count cannot be less than zero.");
+            Contract.Requires<ArgumentNullException>(budgetModel != null, "Budget Model cannot be null.");
+            Contract.Requires<ArgumentNullException>(budgetModel.Count > 0, "Budget Model Count cannot be less than zero.");
 
-            foreach (PlanBudgetModel objPlan in BudgetModel.Where(p => string.Compare(p.ActivityType, ActivityType.ActivityPlan, true) == 0).ToList())
+            foreach (PlanBudgetModel objPlan in budgetModel.Where(p => string.Compare(p.ActivityType, ActivityType.ActivityPlan, true) == 0).ToList())
             {
-                if (!BudgetModel.Where(ent => string.Compare(ent.ParentActivityId, objPlan.ActivityId, true) == 0).Any())
+                if (!budgetModel.Where(ent => string.Compare(ent.ParentActivityId, objPlan.ActivityId, true) == 0).Any())
                 {
                     int planId = Convert.ToInt32(objPlan.Id);
                     bool isChildExist = objDbMrpEntities.Plan_Campaign.Where(p => p.PlanId == planId && p.IsDeleted == false).Any();
                     if (isChildExist)
                     {
-                        BudgetModel.Remove(objPlan);
+                        budgetModel.Remove(objPlan);
                     }
                     else
                     {
-                        string firstYear = Common.GetInitialYearFromTimeFrame(Year);
+                        string firstYear = Common.GetInitialYearFromTimeFrame(year);
                         string lastYear = firstYear;
                         if (isMultiYear)
                         {
@@ -2226,12 +2224,12 @@ namespace RevenuePlanner.Services
                         }
                         if (objPlan.PlanYear != firstYear && objPlan.PlanYear != lastYear)
                         {
-                            BudgetModel.Remove(objPlan);
+                            budgetModel.Remove(objPlan);
                         }
                     }
                 }
             }
-            return BudgetModel;
+            return budgetModel;
         }
 
 
