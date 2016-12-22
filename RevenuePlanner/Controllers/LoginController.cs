@@ -242,10 +242,10 @@ namespace RevenuePlanner.Controllers
                                 objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
                                 objPasswordResetRequest.UserId = Sessions.User.UserId;
                                 objPasswordResetRequest.AttemptCount = 0;
-                                objPasswordResetRequest.CreatedDate = DateTime.Now;                               
-                                string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
-                                ObjResetPwd.RequestId = new Guid(PasswordResetRequestId);
-                                Session["RequestId"] = PasswordResetRequestId;
+                                objPasswordResetRequest.CreatedDate = DateTime.Now;
+                                string passwordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+                                ObjResetPwd.RequestId = new Guid(passwordResetRequestId);
+                                Sessions.RequestId = ObjResetPwd.RequestId;
                                 return View("ResetPassword", ObjResetPwd);
                             }
                         }
@@ -919,9 +919,9 @@ namespace RevenuePlanner.Controllers
                     objPasswordResetRequest.AttemptCount = 0;
                     objPasswordResetRequest.CreatedDate = DateTime.Now;
 
-                    string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+                    string passwordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
 
-                    if (PasswordResetRequestId == string.Empty)
+                    if (passwordResetRequestId == string.Empty)
                     {
                         ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
                     }
@@ -936,7 +936,7 @@ namespace RevenuePlanner.Controllers
 
                         //Changes made by Komal rawal for #1328
                         TempData["UserId"] = objUser.UserId;
-                        string PasswordResetLink = Url.Action("ResetPassword", "Login", new { id = PasswordResetRequestId }, Request.Url.Scheme);
+                        string PasswordResetLink = Url.Action("ResetPassword", "Login", new { id = passwordResetRequestId }, Request.Url.Scheme);
                         emailBody = notification.EmailContent.Replace("[PasswordResetLinkToBeReplaced]", "<a href='" + PasswordResetLink + "'>" + PasswordResetLink + "</a>")
                                                              .Replace("[ExpireDateToBeReplaced]", objPasswordResetRequest.CreatedDate.AddHours(int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"])).ToString());
 
@@ -985,13 +985,13 @@ namespace RevenuePlanner.Controllers
             try
             {
                 //Changes made by Komal rawal for #1328
-                Guid PasswordResetRequestId = Guid.Parse(id);
+                Guid passwordResetRequestId = Guid.Parse(id);
                 //Assign this request id in to Session to match it when user change password to handle security.
-                Session["RequestId"] = PasswordResetRequestId;
+                Sessions.RequestId = passwordResetRequestId;
                 SecurityQuestionModel objSecurityQuestionModel = new SecurityQuestionModel();
 
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                var objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(PasswordResetRequestId);
+                var objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(passwordResetRequestId);
                 //Added By Maitri Gandhi on 13/4/2016
                 if (PasswordExpired == true)
                 {
@@ -1026,7 +1026,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            objPasswordResetRequest.PasswordResetRequestId = PasswordResetRequestId;
+                            objPasswordResetRequest.PasswordResetRequestId = passwordResetRequestId;
                             //Added By Maitri Gandhi on 13/4/2016
                             if (PasswordExpired)
                             {
@@ -1043,7 +1043,7 @@ namespace RevenuePlanner.Controllers
                             TempData["UserId"] = null;
 
                             ResetPasswordModel objResetPasswordModel = new ResetPasswordModel();
-                            objResetPasswordModel.RequestId = PasswordResetRequestId;
+                            objResetPasswordModel.RequestId = passwordResetRequestId;
                             // objResetPasswordModel.UserId = UserId;
 
                             return View(objResetPasswordModel);
@@ -1085,7 +1085,7 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 //Check RequestId of Session and passed on change password event is same or not, if not same then eror message will be appear.
 
-                if (string.Compare(Convert.ToString(Session["RequestId"]), Convert.ToString(form.RequestId), true) == 0)
+                if (string.Compare(Convert.ToString(Sessions.RequestId), Convert.ToString(form.RequestId), true) == 0)
                 {
 
                     //Get User Data using Password RequestId
@@ -1159,7 +1159,7 @@ namespace RevenuePlanner.Controllers
         {
             bool isValid = false;
             //Check RequestId of Session and passed on change password event is same or not, if not same then eror message will be appear.
-            if (string.Compare(Convert.ToString(Session["RequestId"]), Convert.ToString(requestId), true) == 0)
+            if (string.Compare(Convert.ToString(Sessions.RequestId), Convert.ToString(requestId), true) == 0)
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 //Get User Data using Password RequestId
@@ -1197,7 +1197,7 @@ namespace RevenuePlanner.Controllers
                 //If RequestId will be invalid then eror message will be appear.
                 return Json("2", JsonRequestBehavior.AllowGet);
             }
-          
+
         }
 
         #endregion

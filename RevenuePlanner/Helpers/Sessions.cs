@@ -56,6 +56,24 @@ namespace RevenuePlanner.Helpers
                 return Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]); ;
             }
         }
+        /// <summary>
+        /// RequestId is added for security purpose ,when user reset password.
+        /// </summary>
+        public static Guid RequestId
+        {
+            get
+            {
+                if (HttpContext.Current.Session["RequestId"] != null)
+                {
+                    return new Guid(Convert.ToString(HttpContext.Current.Session["RequestId"]));
+                }
+                return new Guid("");
+            }
+            set
+            {
+                HttpContext.Current.Session["RequestId"] = value;
+            }
+        }
 
         /// <summary>
         /// Logged in user details
