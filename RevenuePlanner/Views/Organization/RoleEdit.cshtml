@@ -7,7 +7,7 @@
     var lstActivity = ViewData["activitylist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["activitylist"];
     var lstpermission = ViewData["permissionlist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["permissionlist"];
     string varUrl = Url.Action("vieweditpermission", "Organization");
-    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.ID + "&Mode=MyPermission";
+    string ViewPermissionURL = varUrl + "?UserGuid=" + Sessions.User.UserId + "&Mode=MyPermission";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     ViewBag.PageTitle = "ManageRole";
     ViewBag.ModuleTitle = "Organization";
@@ -341,7 +341,7 @@
         //syntax to get selected text 
         var roledesc = $("#ddlRoles :selected").text();
         var roleid = '@ViewBag.roleid';
-    var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+        var uId = '@Sessions.User.UserId';  
     $.ajax({
         url: '@Url.Content("~/Organization/Save/")',
             data: {

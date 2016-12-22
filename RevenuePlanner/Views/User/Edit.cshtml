@@ -69,7 +69,8 @@
     $(document).ready(function () {
         //Added by Viral Kadiya on 11/06/2014 for PL ticket #917
         // On document load page retrieve user details for editing purpose.
-        $("#dvEditUserDetails").load("@Url.Action("EditUserDetails", "User")", function (response, status, xhr) {
+        var url = "@Url.Action("EditUserDetails", "User")" + "?UserGuid=" + '@Sessions.User.UserId';
+        $("#dvEditUserDetails").load(url, function (response, status, xhr) {
             if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                 //// Call function to redirect on service unavailibility.
                 //// Added By: Maninder Singh Wadhva on 11/24/2014.

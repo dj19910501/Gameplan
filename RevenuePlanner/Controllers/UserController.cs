@@ -73,6 +73,7 @@ namespace RevenuePlanner.Controllers
                         objUserModel.RoleId = user.RoleId;
                         objUserModel.RoleTitle = user.RoleTitle;
                         objUserModel.IsManager = user.IsManager;    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                        objUserModel.UserGuid = user.UserId;
                         teamMemberList.Add(objUserModel);
                     }
                 }
@@ -338,10 +339,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">user to be deleted</param>
         /// <returns> Redirect to Index Action</returns>
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult Delete(int id)
+        public ActionResult Delete(Guid UserGuid)// change type of parameter UserId from interger to guid #2953 
         {
             try
             {
+                int id = 0;
+                id = Common.GetIntegerUserId(UserGuid);//called method to get interger userid from GUID
                 if (id != 0)
                 {
                     //This is cross client check, #2878 Security - Account Creation – Client Id and User Id
@@ -376,11 +379,12 @@ namespace RevenuePlanner.Controllers
         }
 
 
-        public JsonResult CheckAssociatedTactics(int UserId)
+        public JsonResult CheckAssociatedTactics(Guid UserGuid)
         {
             bool IsTacticOwned = false;
             try
             {
+                int UserId = Common.GetIntegerUserId(UserGuid);//called method to get interger userid from GUID
                 if (UserId != 0)
                 {
                     //check if the user owns any tactic.
@@ -632,7 +636,7 @@ namespace RevenuePlanner.Controllers
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
             ViewData["Roles"] = objBDSServiceClient.GetAllRoleListEx(Sessions.ApplicationId, Sessions.User.CID);
 
-            ViewBag.CurrentUserId = Sessions.User.ID;
+            ViewBag.CurrentUserId = Sessions.User.UserId;
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
         }
 
@@ -657,7 +661,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="isForDelete">Added to give delete option, if user has selected the delete operation from user listing.</param> // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         /// <returns>Returns _UpdateUserDetails partialview with UserModel</returns>
         /// This method is common for MyAccount and Team Member edit page.
-        public ActionResult EditUserDetails(int usrid = 0, string src = "myaccount", string isForDelete = "false")
+        public ActionResult EditUserDetails(Guid UserGuid, string src = "myaccount", string isForDelete = "false")// change type of parameter UserId from interger to guid #2953 
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
@@ -666,14 +670,8 @@ namespace RevenuePlanner.Controllers
             // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             ViewBag.isForDelete = isForDelete;
             int userId = 0;
-            if (usrid == 0)
-            {
-                userId = Sessions.User.ID;
-            }
-            else
-            {
-                userId = usrid;
-            }
+
+            userId = Common.GetIntegerUserId(UserGuid);//called method to get interger userid from GUID
 
             BDSService.User objUser = new BDSService.User();
             UserModel objUserModel = new UserModel();
@@ -711,6 +709,7 @@ namespace RevenuePlanner.Controllers
                     objUserModel.RoleTitle = objUser.RoleTitle;
                     objUserModel.Password = objUser.Password;
                     objUserModel.ConfirmPassword = objUser.Password;
+                    objUserModel.UserGuid = objUser.UserId;
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     objUserModel.IsManager = objUser.IsManager;
                     if (objUser.MID != 0)
@@ -799,7 +798,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    if (usrid == 0)
+                    if (userId == 0)
                     {
                         //// Flag to indicate unavailability of web service.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -1002,7 +1001,7 @@ namespace RevenuePlanner.Controllers
                 {
                     // Start - Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
                     ViewBag.SourceValue = "myaccount";
-                    ViewBag.CurrentUserId = Convert.ToString(Sessions.User.ID);
+                    ViewBag.CurrentUserId = Convert.ToString(Sessions.User.UserId);
                     ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
                     // End - Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
                 }
@@ -1170,6 +1169,85 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
+        /// To load user profile photo for user prefrence module
+        /// </summary>
+        /// <param name="id">user</param>
+        /// <param name="width">width of photo</param>
+        /// <param name="height">height of photo</param>
+        /// <param name="src">Load Team Member Image</param>
+        /// <returns>Return User Image file</returns>
+        public ActionResult LoadUserImageForPrefrence(Guid UserGuid = new Guid(), int width = 35, int height = 35, string src = null)
+        {
+            int userId = 0;
+            byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
+            try
+            {
+                userId = Common.GetIntegerUserId(UserGuid);//called method to get interger userid from GUID
+                if (userId != 0)
+                {
+                    
+                    BDSService.User objUser = new BDSService.User();
+                    //// Get User profile photo.
+                    objUser = objBDSServiceClient.GetTeamMemberDetailsEx(userId, Sessions.ApplicationId);
+                    if (objUser != null)
+                    {
+                        if (objUser.CID != Sessions.User.CID)//This is cross client check, #2878 Security - Account Creation – Client Id and User Id
+                        {
+                            objUser.ProfilePhoto = null;
+                        }
+                        if (objUser.ProfilePhoto != null)
+                        {
+                            imageBytes = objUser.ProfilePhoto;
+                        }
+                    }
+                }
+                if (imageBytes != null)
+                {
+                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                    {
+                        ms.Write(imageBytes, 0, imageBytes.Length);
+                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                        image = Common.ImageResize(image, width, height, true, false);
+                        imageBytes = Common.ImageToByteArray(image);
+                        // Modified by Viral Kadiya on 11/06/2014 for PL Ticket #917 to load team member profile image.
+                        if (src == "myteam")
+                            return Json(new { base64imgage = Convert.ToBase64String(imageBytes) }, JsonRequestBehavior.AllowGet);   // if src "myteam" then return json result for ajax query to display team member image.
+                        return File(imageBytes, "image/jpg");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                    imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
+                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                    {
+                        ms.Write(imageBytes, 0, imageBytes.Length);
+                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                        image = Common.ImageResize(image, width, height, true, false);
+                        imageBytes = Common.ImageToByteArray(image);
+                        // Modified by Viral Kadiya on 11/06/2014 for PL Ticket #917 to load team member profile image.
+                        if (src == "myteam")
+                            return Json(new { base64imgage = Convert.ToBase64String(imageBytes) }, JsonRequestBehavior.AllowGet);   // if src "myteam" then return json result for ajax query to display team member image.
+                        return File(imageBytes, "image/jpg");
+                    }
+                }
+            }
+            return View();
+        }
+
+
+        /// <summary>
         /// To load user profile photo
         /// </summary>
         /// <param name="id">user</param>
@@ -1304,10 +1382,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">UserId</param>
         /// <returns>Return Managerlist in JsonResult</returns>
         [AcceptVerbs(HttpVerbs.Get)]
-        public JsonResult GetManagers(int id = 0, int UserId = 0)
+        public JsonResult GetManagers(int id = 0, Guid UserGud = new Guid())
         {
             id = Sessions.User.CID; //For security reason, simply ignore client ID passed from UI!  zz 
+            int UserId = 0;
             List<UserModel> managerList = new List<UserModel>();
+            UserId = Common.GetIntegerUserId(UserGud);//called method to get interger userid from GUID
             if (UserId != 0)
             {
                 managerList = GetManagersList(UserId, id);
@@ -1358,10 +1438,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">UserId</param>
         /// <param name="RoleId">RoleId</param>
         /// <returns>Return Success message.</returns>
-        public ActionResult AssignUser(int UserId, string RoleId)
+        public ActionResult AssignUser(Guid UserGuid, string RoleId)
         {
+            int UserId = 0;
             try
             {
+                UserId = Common.GetIntegerUserId(UserGuid);//called method to get interger userid from GUID
                 //This is cross client check, #2878 Security - Account Creation – Client Id and User Id
                 BDSService.User objUser = objBDSServiceClient.GetTeamMemberDetailsEx(UserId, Sessions.ApplicationId);
                 if (objUser.CID != Sessions.User.CID)

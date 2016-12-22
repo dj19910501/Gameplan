@@ -11,7 +11,7 @@ namespace RevenuePlanner.Models
     {
         [Key]
         public int UserId { get; set; }
-
+        public Guid UserGuid { get; set; }
         //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in First Name.")]
         [AllowHtml]
         [Display(Name = "First Name")]

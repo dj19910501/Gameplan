@@ -80,9 +80,9 @@ namespace RevenuePlanner.Test.MockHelpers
             HttpContext.Current = MockHelpers.FakeHttpContext();
 
             HttpContext.Current.Session["User"] = objBDSServiceClient.ValidateUser(applicationId, userName, singlehash);
+            HttpContext.Current.Session["ClientUsers"] = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ToList();
 
             HttpContext.Current.Session["Permission"] = objBDSServiceClient.GetPermission(applicationId, ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).RoleId);
-
             Message msg = new Message();
             var xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");
             msg.loadMsg(xmlMsgFilePath);

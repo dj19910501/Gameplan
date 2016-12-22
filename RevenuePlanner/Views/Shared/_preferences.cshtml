@@ -50,75 +50,74 @@
     $(document).ready(
         function () {
             var isDataUpdated ='';
-          
-                $('#aMyProfile').click(function () {
-                    isDataUpdated = $("#aMyProfile").attr("isDataUpdated");
-                 
-                    if (isDataUpdated == 'true')
-                        return false;
-                    var url = '';
-                    url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.ID, src = "myaccount" })';
-                    window.location.href = url;
-                });
+
+            $('#aMyProfile').click(function () {
+                isDataUpdated = $("#aMyProfile").attr("isDataUpdated");
+
+                if (isDataUpdated == 'true')
+                    return false;
+                var url = '@Url.Action("Edit", "User")';
+                url = url+"?usrid = "+'@Sessions.User.UserId'+"&src = myaccount";
+                window.location.href = url;
+            });
 
             $('#aIntegrations').click(function () {
                 isDataUpdated = $("#aIntegrations").attr("isDataUpdated");
                 if (isDataUpdated == 'true')
                     return false;
-                    var url = '';
-                    url = '@Url.Content("~/ExternalService/Index")';
-                    window.location.href = url;
-                });
+                var url = '';
+                url = '@Url.Content("~/ExternalService/Index")';
+                window.location.href = url;
+            });
             $('#aOrganization').click(function () {
                 isDataUpdated = $("#aOrganization").attr("isDataUpdated");
                 if (isDataUpdated == 'true')
                     return false;
-                    var url = '';
-                    url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.ID, Mode = "MyPermission" })';
-
-                    window.location.href = url;
-                });
-                //insertation start 09/08/2016 kausha #2492.
+                var url =  '@Url.Action("vieweditpermission", "Organization")';
+                url = url + "?UserGuid=" + '@Sessions.User.UserId' + "&Mode=MyPermission";
+                window.location.href = url;
+            });
+            //insertation start 09/08/2016 kausha #2492.
             $('#aCurrency').click(function () {
                 isDataUpdated = $("#aCurrency").attr("isDataUpdated");
                 if (isDataUpdated == true)
                     return false;
-                    var url = '';
-                    url = '@Url.Content("~/Currency/Index")';
-                    window.location.href = url;
-                });
-                //end insertation start 09/08/2016 kausha #2492.
-                $('.nav nav-list nav-gray li').each(function () {
-                    $(this).removeClass('active');
-                });
-                if ('@ViewBag.ModuleTitle' == 'MyProfile') {
+                var url = '';
+                url = '@Url.Content("~/Currency/Index")';
+                window.location.href = url;
+            });
+            //end insertation start 09/08/2016 kausha #2492.
+            $('.nav nav-list nav-gray li').each(function () {
+                $(this).removeClass('active');
+            });
+            if ('@ViewBag.ModuleTitle' == 'MyProfile') {
 
-                    if (!$('#liMyProfile').hasClass('active')) {
-                        $('#liMyProfile').addClass('active');
+                if (!$('#liMyProfile').hasClass('active')) {
+                    $('#liMyProfile').addClass('active');
 
-                    }
                 }
-                else if ('@ViewBag.ModuleTitle' == 'Organization') {
-                    if (!$('#liOrganization').hasClass('active')) {
-                        $('#liOrganization').addClass('active');
+            }
+            else if ('@ViewBag.ModuleTitle' == 'Organization') {
+                if (!$('#liOrganization').hasClass('active')) {
+                    $('#liOrganization').addClass('active');
 
-                    }
                 }
-                else if ('@ViewBag.ModuleTitle' == 'Integration') {
-                    if (!$('#liIntegrations').hasClass('active')) {
-                        $('#liIntegrations').addClass('active');
+            }
+            else if ('@ViewBag.ModuleTitle' == 'Integration') {
+                if (!$('#liIntegrations').hasClass('active')) {
+                    $('#liIntegrations').addClass('active');
 
-                    }
                 }
-                    //insertation start 09/08/2016 kausha #2492.
-                else if ('@ViewBag.ModuleTitle' == 'Currency') {
-                    if (!$('#liCurrency').hasClass('active')) {
-                        $('#liCurrency').addClass('active');
+            }
+                //insertation start 09/08/2016 kausha #2492.
+            else if ('@ViewBag.ModuleTitle' == 'Currency') {
+                if (!$('#liCurrency').hasClass('active')) {
+                    $('#liCurrency').addClass('active');
 
-                    }
                 }
-                //insertation End 09/08/2016 kausha #2492.
-           
+            }
+            //insertation End 09/08/2016 kausha #2492.
+
         }
             );
 </script>

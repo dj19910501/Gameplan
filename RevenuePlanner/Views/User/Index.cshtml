@@ -118,7 +118,7 @@
                         <tbody>
                             @foreach (var item in Model)
                             {
-                                <tr id="@item.UserId" class="userRow">
+                                <tr id="@item.UserGuid" class="userRow">
                                     <td title="@item.FirstName">
                                         @Html.DisplayFor(model => item.FirstName)
                                     </td>
@@ -138,14 +138,14 @@
                                             @if (item.IsManager == false)    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                                             {
                                                
-                                                <a onclick="DeleteUser('@item.UserId.ToString()');">
+                                                <a onclick="DeleteUser('@item.UserGuid.ToString()');">
                                                     <span class="x-icon hide pull-right" title="Delete Member"></span>
                                                 </a>
                                             }
                                             @* Start -- Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
                                             else
                                             {
-                                                <a onclick="DeleteOnEdit('@item.UserId.ToString()');">
+                                                <a onclick="DeleteOnEdit('@item.UserGuid.ToString()');">
                                                     <span class="x-icon hide pull-right" title="Delete Member"></span>
                                                 </a>
                                             }
@@ -192,7 +192,7 @@
                                     <tbody>
                                         @foreach (var item in (List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers)
                                         {
-                                            <tr id="@item.ID">
+                                            <tr id="@item.UserId">
                                                 <td class="Inactive OtherUserList" title="@item.FirstName">
                                                     @Html.DisplayFor(model => item.FirstName)
                                                 </td>
@@ -303,7 +303,7 @@
                     var queryStringArr = [];
                     queryStringArr.push(
                      {
-                         key:'id',
+                         key: 'UserGuid',
                          Value: userId
                      });
 
@@ -321,7 +321,7 @@
                     type: "GET",
                     async: false,
                     url: '@Url.Content("~/User/CheckAssociatedTactics")',
-                    data: { UserId: userId },
+                    data: { UserGuid: userId },
                     success: function (IsTacticOwned) {
                         IsTacticAssociated = IsTacticOwned;
                     }
@@ -333,13 +333,11 @@
 
             @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
             $('.assignUser').click(function () {
-
-                $('.sbHolder').each(function () {
+                 $('.sbHolder').each(function () {
                     if ($(this).hasClass("selectBoxError")) {
                         $(this).removeClass("selectBoxError");
                     }
                 });
-
                 var row = $(this).parent().parent();
                 var UserId = row.attr('id'); //row.find('#item_UserId').val();
                 var ddlRoleId = row.find('#item_RoleId').val();
@@ -356,7 +354,7 @@
                     type: "GET",
                     cache: false,
                     url: '@Url.Content("~/User/AssignUser")',
-                    data: { UserId: UserId, RoleId: ddlRoleId },
+                    data: { UserGuid: UserId, RoleId: ddlRoleId },
                     success: function (data) {
                         if (data == 'success') {
                             window.location.reload(true);
@@ -383,7 +381,7 @@
                 $("#errorMessage").slideUp(1);
                 $.ajax({
                     url: '@Url.Content("~/user/EditUserDetails")', type: "GET",
-                    data: { usrid: userid, src: 'myteam' },
+                    data: { UserGuid: userid, src: 'myteam' },
                     async: false,
                     contentType: "application/json; charset=utf-8",
                     success: function (data) {
@@ -417,8 +415,8 @@
             //Load Team Member profile image
             function LoadUserImage(userid) {
                 $.ajax({
-                    url: '@Url.Content("~/user/LoadUserImage")', type: "GET",
-                    data: { id: userid, width: 60, height: 60, src: 'myteam' },
+                    url: '@Url.Content("~/user/LoadUserImageForPrefrence")', type: "GET",
+                    data: { UserGuid: userid, width: 60, height: 60, src: 'myteam' },
                     async: false,
                     cache: false,
                     contentType: "application/json; charset=utf-8",

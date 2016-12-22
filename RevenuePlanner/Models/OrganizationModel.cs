@@ -45,6 +45,7 @@ namespace RevenuePlanner.Models
             public string Phone { get; set; }
             public Guid? ManagerId { get; set; }
             public IList<UserHierarchyModel> subUsers { get; set; }
+            public Guid UserGuid { get; set; }
         }
 
 }

@@ -19,10 +19,17 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class UserControllerTest
     {
+        BDSServiceClient objBDSServiceClient = new BDSServiceClient();
+        UserController objUserController = new UserController();
+        MRPEntities db = new MRPEntities();
         [TestInitialize]
         public void LoadCacheMessage()
         {
             HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
+            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
         }
         #region Team Member Listing.
         /// <summary>
@@ -35,16 +42,8 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("Team Member Listing.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
+           
+         
             var result = objUserController.Index() as ViewResult;
             Assert.IsNotNull(result.Model);
             var serializedData = new RouteValueDictionary(result.Model);
@@ -65,16 +64,8 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Change Password Form.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+          
          
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-           
             var result = objUserController.ChangePassword() as ViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result :" + result.ViewName);
             Assert.IsNotNull(result.ViewData);
@@ -92,17 +83,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Change Password Save.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-           
-            int PlanId = DataHelper.GetDeletedPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);           
-           
+          
             UserChangePassword form = new UserChangePassword();
             form.UserId = 0;
             form.CurrentPassword = "Test@123";
@@ -132,16 +113,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("Save Budget Allocation.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();          
-
-            int PlanId = DataHelper.GetDeletedPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
+          
             string currentPassword = "Test@12345";
           
             var result = objUserController.CheckCurrentPassword(currentPassword) as JsonResult;
@@ -161,16 +133,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("Create User Form.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-
+          
             var result = objUserController.Create() as ViewResult;
             Assert.IsNotNull(result.ViewName);
             var serializedData = new RouteValueDictionary(result.ViewData);
@@ -191,17 +154,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("Save New User.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            int PlanId = DataHelper.GetDeletedPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
-
+          
             UserModel form = new UserModel();
             form.DisplayName = "Test@Hive9";
             form.FirstName = "Test";
@@ -235,17 +188,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Check Email Exist or Not with new emailId.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            int PlanId = DataHelper.GetDeletedPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
-
+         
             string Email = "UnitTest@Hive9.com";
             var result = objUserController.IsEmailExist(Email) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -262,17 +205,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Check Email Exist or Not with existing emailId.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(Sessions.User.ID, Sessions.ApplicationId);            
             if (objUser != null)
             {
@@ -298,17 +231,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Edit User Form.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
-
+           
             var result = objUserController.Edit() as ViewResult;
             Assert.IsNotNull(result.ViewName);
             var serializedData = new RouteValueDictionary(result.ViewData);
@@ -331,23 +254,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Edit User.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objUserController.Url = new UrlHelper(
-  new RequestContext(
-      objUserController.HttpContext, new RouteData()
-  ),
-  routes
-);
-            //objUserController.ControllerContext.HttpContext.Request.UrlReferrer.AbsolutePath = "";
-            
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
+           
             UserModel form = new UserModel();
             form.DisplayName = "Test@Hive9";
             form.FirstName = "Test";
@@ -380,22 +287,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Load Notification.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objUserController.Url = new UrlHelper(
-  new RequestContext(
-      objUserController.HttpContext, new RouteData()
-  ),
-  routes
-);
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);           
+          
             
             var result = objUserController.Notifications() as ViewResult;
             Assert.IsNotNull(result.Model);
@@ -420,22 +312,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Save Notification.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objUserController.Url = new UrlHelper(
-  new RequestContext(
-      objUserController.HttpContext, new RouteData()
-  ),
-  routes
-);
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
+           
             int NotificationId = db.Notifications.Select(no => no.NotificationId).FirstOrDefault();
             string strNotification = NotificationId.ToString();
             try
@@ -463,23 +340,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Get Managers List withosut passing ClientId and UserId.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objUserController.Url = new UrlHelper(
-  new RequestContext(
-      objUserController.HttpContext, new RouteData()
-  ),
-  routes
-);
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
-
+          
             var result = objUserController.GetManagers() as JsonResult;
             Assert.IsNotNull(result.Data);
             var serializedData = new RouteValueDictionary(result.Data);
@@ -499,23 +360,8 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Get Managers List withosut passing ClientId.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objUserController.Url = new UrlHelper(
-  new RequestContext(
-      objUserController.HttpContext, new RouteData()
-  ),
-  routes
-);
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
-            int UserId = Sessions.User.ID;
+            
+            Guid UserId = Sessions.User.UserId;
             var result = objUserController.GetManagers(0,UserId) as JsonResult;
             Assert.IsNotNull(result.Data);
             var serializedData = new RouteValueDictionary(result.Data);
@@ -534,23 +380,8 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Get Managers List with passing All Parameter.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objUserController.Url = new UrlHelper(
-  new RequestContext(
-      objUserController.HttpContext, new RouteData()
-  ),
-  routes
-);
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID = DataHelper.GetUserId(PlanId);
-            int UserId = Sessions.User.ID;
+           
+            Guid UserId = Sessions.User.UserId;
             int ClientId = Sessions.User.CID;
             var result = objUserController.GetManagers(ClientId, UserId) as JsonResult;
             Assert.IsNotNull(result.Data);
@@ -573,21 +404,11 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("Assign Other Application User.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();           
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanId);
-            Sessions.PlanId = PlanId;
-            Sessions.User.ID= DataHelper.GetUserId(PlanId);
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+           
             var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(Sessions.User.ID, Sessions.ApplicationId);
             if (objUser != null)
             {
-                int userId = objUser.ID;
+                Guid userId = objUser.UserId;
                 string RoleId = objUser.RoleId.ToString();
                 var result = objUserController.AssignUser(userId, RoleId) as JsonResult;
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -607,14 +428,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetAlertRuleList()
         {
-           
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-
+       
             var result = objUserController.GetAlertRuleList() as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.IsNotNull(result.Model);
@@ -631,12 +445,6 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchListEntity()
         {
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             string SearchTerm = "plan test";
             var result = objUserController.ListEntity(SearchTerm) as JsonResult;
@@ -656,11 +464,7 @@ namespace RevenuePlanner.Test.Controllers
         public void DeleteAlertrule()
         {
 
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+           
             AlertRuleDetail objRule = new AlertRuleDetail();
             int ruleId = 0;
             int entityid = (DataHelper.GetPlanId());
@@ -692,13 +496,6 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void EnableDisableAlertrule()
         {
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
             int ruleId = DataHelper.GetAlertruleId(Sessions.User.ID);
             bool turnOff = true;
             var result = objUserController.DisableAlertRule(ruleId, turnOff) as JsonResult;
@@ -717,12 +514,7 @@ namespace RevenuePlanner.Test.Controllers
         public void GetAlertSummary()
         {
 
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
+           
 
             var result = objUserController.GetAlertNotificationSummary() as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
@@ -742,10 +534,7 @@ namespace RevenuePlanner.Test.Controllers
         {
 
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            UserController objUserController = new UserController();
-            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+         
             AlertRuleDetail objRule = new AlertRuleDetail();
             objRule.RuleId = 0;
             objRule.EntityID = Convert.ToString(DataHelper.GetPlanId());

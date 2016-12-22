@@ -105,7 +105,7 @@
             return false;
         }
         else {
-            var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            var uId = '@Sessions.User.UserId';    
             $.ajax({
                 url: '@Url.Content("~/Organization/DeleteRole/")',
                 data: {

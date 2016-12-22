@@ -262,7 +262,8 @@ namespace RevenuePlanner.Controllers
                     Sessions.User = obj;
                     // Add By Nishant Sheth Set Cache for exchange rate #2496
                     objCurrency.SetUserCurrencyCache(Sessions.User.CID, Sessions.User.ID);
-
+                    //set session for list of user for client #2899
+                    Sessions.ClientUsers = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
                     //Start Manoj Limbachiya : 11/23/2013 - Menu filling and Role Permission
                     //Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
 

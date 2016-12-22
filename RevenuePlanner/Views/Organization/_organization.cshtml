@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 @{
     string varUrlnew = Url.Action("vieweditpermission", "Organization");
-    string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.ID + "&Mode=MyPermission";
+    string ViewPermissionURL = varUrlnew + "?UserGuid=" + Sessions.User.UserId + "&Mode=MyPermission";
 }
 
 <div class="padding-right70">

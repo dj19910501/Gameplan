@@ -308,17 +308,16 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value. in jsonresult</returns>
         [HttpPost]
-        public JsonResult DeleteRole(Guid delroleid, Guid reassignroleid, int LoginId = 0)
+        public JsonResult DeleteRole(Guid delroleid, Guid reassignroleid, Guid LoginId = new Guid()) // change type of parameter userid from interger to guid #2953 
         {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-            if (LoginId != 0)
-            {
-                if (!Sessions.User.ID.Equals(LoginId))
+           
+                if (!Sessions.User.UserId.Equals(LoginId))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
-            }
+            
             // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
             if (reassignroleid == null)
@@ -370,19 +369,18 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
-        public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission, int LoginId = 0)
+        public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission, Guid LoginId = new Guid())// change type of parameter LoginId from interger to guid #2953 
         {
             try
             {
                 // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-                if (LoginId != 0)
-                {
-                    if (Sessions.User.ID != LoginId)
+                
+                    if (Sessions.User.UserId != LoginId)
                     {
                         TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                         return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                     }
-                }
+                
                 // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
                 string permissionID = checkbox.ToString();
@@ -426,17 +424,16 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
-        public JsonResult CopyRole(string copyroledesc, Guid originalroleid, int LoginId = 0)
+        public JsonResult CopyRole(string copyroledesc, Guid originalroleid, Guid LoginId = new Guid())// change type of parameter LoginId from interger to guid #2953 
         {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-            if (LoginId != 0)
+
+            if (Sessions.User.UserId != LoginId)
             {
-                if (Sessions.User.ID != LoginId)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-                }
+                TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
             }
+            
             // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
             if (!string.IsNullOrEmpty(copyroledesc))
@@ -566,11 +563,12 @@ namespace RevenuePlanner.Controllers
             string JobTitle = objUserHierarchy.JobTitle;
             string Phone = objUserHierarchy.Phone;
             Guid? ManagerId = objUserHierarchy.ManagerId;
+            Guid UserGuid = objUserHierarchy.UserId;
             var subUsers = GetSubUsers(lstUserHierarchy, userid)
               .Select(r => CreateUserHierarchy(lstUserHierarchy, r))
               .ToList();
             // Modified by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-            return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers };
+            return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, Phone = Phone, ManagerId = ManagerId,UserGuid=UserGuid, subUsers = subUsers };
         }
         #endregion
 
@@ -581,9 +579,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="Id">UserId</param>
         /// <param name="Mode">UserPermission mode</param>
         /// </summary>
-        public ActionResult ViewEditPermission(int Id, string Mode)
+        public ActionResult ViewEditPermission(Guid UserGuid, string Mode)// change type of parameter UserId from interger to guid #2953 
         {
             List<UserActivityPermissionModel> userActivityPermissionList = new List<UserActivityPermissionModel>();
+            int Id = 0;
             try
             {
                 //// Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
@@ -594,6 +593,9 @@ namespace RevenuePlanner.Controllers
                 if ((bool)ViewBag.IsUserAdminAuthorized == false && Mode.ToLower() != Enums.UserPermissionMode.View.ToString().ToLower() && Mode.ToLower() != Enums.UserPermissionMode.MyPermission.ToString().ToLower())
                     return RedirectToAction("Index", "NoAccess");
 
+                //called method to get interger userid from GUID
+                Id = Common.GetIntegerUserId(UserGuid);
+                
                 //// End - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
                 BDSService.User objUser = objBDSServiceClient.GetTeamMemberDetailsEx(Id, Sessions.ApplicationId); //This is cross client check, #2878 Security - Account Creation – Client Id and User Id
                 if (objUser.CID != Sessions.User.CID) //here we check the cross client data edit
@@ -605,15 +607,14 @@ namespace RevenuePlanner.Controllers
                 int UserId = Id;
                 if (UserId != 0)
                 {
-                    ViewBag.userId = UserId;
-                    var userDetails = objBDSServiceClient.GetTeamMemberDetailsEx(UserId, Sessions.ApplicationId);
+                    ViewBag.userId = UserGuid;
 
                     //// Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                    var roleColorCode = objBDSServiceClient.GetAllRoleListEx(Sessions.ApplicationId, Sessions.User.CID).Where(rol => rol.RoleId == userDetails.RoleId).FirstOrDefault().ColorCode;
+                    var roleColorCode = objBDSServiceClient.GetAllRoleListEx(Sessions.ApplicationId, Sessions.User.CID).Where(rol => rol.RoleId == objUser.RoleId).FirstOrDefault().ColorCode;
 
                     ViewBag.RoleColorCode = roleColorCode;
-                    ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
-                    ViewBag.RoleName = userDetails.RoleTitle;
+                    ViewBag.Name = objUser.FirstName + " " + objUser.LastName;
+                    ViewBag.RoleName = objUser.RoleTitle;
 
                     var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId, true);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
                     var allActivity = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);
@@ -751,31 +752,30 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
-        public JsonResult SaveUserPermission(string permissionIds, int userId, int LoginId = 0)
+        public JsonResult SaveUserPermission(string permissionIds, Guid UserGuid, Guid LoginId = new Guid())// change type of parameter UserId from interger to guid #2953 
         {
             //// Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-            if (LoginId != 0)
-            {
-                if (!Sessions.User.ID.Equals(LoginId))
+            int userId = 0;
+                if (!Sessions.User.UserId.Equals(LoginId))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                    return Json(new { returnURL = '#', status = false }, JsonRequestBehavior.AllowGet);
                 }
-            }
+            
             //// End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
             try
             {
                 string[] arrPermissionId = permissionIds.Split(',');
                 int CurrentUserID = Sessions.User.ID;
-
+                //called method to get interger userid from GUID
+                userId = Common.GetIntegerUserId(UserGuid);
                 //// Start - Added/Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
                 //// Save User Activity Permissions
                 if (userId != 0)
                 {
                     //first, let's check if the user being managed belong to the same client as managing user for security reason -zz
                     ValidateUser(userId);
-
                     List<string> activityPermissions = arrPermissionId.Where(permission => (permission.ToLower().Contains("yes") || permission.ToLower().Contains("no"))).ToList();
                     int activityPermissionsResult = 0;
                     if (activityPermissions.Count > 0)
@@ -834,11 +834,11 @@ namespace RevenuePlanner.Controllers
             return Json(new { status = false }, JsonRequestBehavior.AllowGet);  //// Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
 
-        private void ValidateUser(int UserId)
+        private  void ValidateUser(int UserId)
         {
             User u = objBDSServiceClient.GetUserDetailsByIdEx(UserId);
             if (u == null || u.CID != Sessions.User.CID) throw new Exception(string.Format("UserId: {0} not valid", UserId));
-        }
+        }    
 
         #endregion
 
@@ -851,23 +851,22 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
-        public JsonResult ResetToRoleDefault(int userId, int LoginId = 0)
+        public JsonResult ResetToRoleDefault(Guid UserGuid, Guid LoginId = new Guid())// change type of parameter UserId from interger to guid #2953 
         {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-            if (LoginId != 0)
-            {
-                if (Sessions.User.ID != LoginId)
+            int userId = 0;
+                if (Sessions.User.UserId != LoginId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
-            }
+            
             // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
             try
             {
+                userId = Common.GetIntegerUserId(UserGuid);//called method to get interger userid from GUID
                 ValidateUser(userId);
-
                 int creatorId = Sessions.User.ID;
 
                 //// Reset Default Role settings.
@@ -1031,6 +1030,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+       
         #endregion
     }
 }

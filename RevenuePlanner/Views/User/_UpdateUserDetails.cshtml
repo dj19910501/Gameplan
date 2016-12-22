@@ -2,7 +2,7 @@
 @using RevenuePlanner.Helpers
 @{
     var srcval = (string)ViewBag.SourceValue;
-    int currentUserId = ViewBag.CurrentUserId;
+    Guid currentUserId = ViewBag.CurrentUserId;
 }
 <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
@@ -11,15 +11,14 @@
             {
         @Html.ValidationSummary(true)
 
-                <div class="cf inputs-aligned-horizontal">
+         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.FirstName)
-            @if (Model.UserId == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
-                    {
-                                                            @Html.TextBoxFor(model => model.FirstName, new { @class = "input-small", id = "txtFirstName" })
+            @if (Model.UserGuid == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
+            {
+                @Html.TextBoxFor(model => model.FirstName, new { @class = "input-small", id = "txtFirstName" })
                 @Html.ValidationMessageFor(model => model.FirstName)
-                                                            @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblFNameInvalid", For = "txtFirstName", style="display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
-
-                    }
+                @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblFNameInvalid", For = "txtFirstName", style="display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+            }
                     else
                     {
                 @Html.TextBox("txtFirstName", Model.FirstName, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.FirstName })
@@ -29,7 +28,7 @@
         </div>
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.LastName)
-            @if (Model.UserId == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) // || permRoleCodesForDel.Contains(Model.RoleCode))
+            @if (Model.UserGuid == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) // || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                                                             @Html.TextBoxFor(model => model.LastName, new { id = "txtLastName" })
                 @Html.ValidationMessageFor(model => model.LastName)
@@ -54,7 +53,7 @@
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.Phone)
-            @if (Model.UserId == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)
+            @if (Model.UserGuid == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)
                     {
                 @Html.TextBoxFor(model => model.Phone)
                 @Html.ValidationMessageFor(model => model.Phone)
@@ -69,7 +68,7 @@
                     
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.JobTitle)
-            @if ((Model.UserId == currentUserId) || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
+            @if ((Model.UserGuid == currentUserId) || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                                                                     @Html.TextBoxFor(model => model.JobTitle, new { id = "txtJobTitle" })
                 @Html.ValidationMessageFor(model => model.JobTitle)
@@ -89,7 +88,7 @@
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.ProfilePhoto)
             <div class="container-img">
-                <img id="userImage" src="@Url.Action("LoadUserImage", "User", new { id = Model.UserId, width = 60, height = 60 })" class="pull-left">
+                <img id="userImage" src="@Url.Action("LoadUserImageForPrefrence", "User", new { UserGuid = Model.UserGuid, width = 60, height = 60 })" class="pull-left">
                 <div class="pull-left">
                     <div class="btn-group">
                         <input name="file" id="filePrev" type="file" style="display: inline-block; width: 200px;" />
@@ -130,7 +129,7 @@
 
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.RoleId)
-            @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Model.UserId)
+            @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Model.UserGuid)
                     {
                         //Modified by :- Sohel on 27 March 2014 for ticket #334
                 <div class="selectBox UserProfile" id="ddlRoleIdSelectBox">
@@ -149,7 +148,7 @@
                 
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517   
         <div class="cf inputs-aligned-horizontal" id="divManager">
-            @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Model.UserId)
+            @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Model.UserGuid)
                         {
                 @Html.Label("Manager")
                 <div class="selectBox UserProfile" id="ddlManagerIdSelectBox">
@@ -173,8 +172,8 @@
                         }
         </div>
                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517   
-                
-                if (currentUserId != Model.UserId)
+
+                if (currentUserId != Model.UserGuid)
                 {
                     if ((bool)ViewBag.IsUserAdminAuthorized) //permRoleCodesForDel.Contains(Model.RoleCode))
                     {
@@ -229,7 +228,7 @@
                     }
                 }
 
-                if (Model.UserId == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)//isViewOnly != "true")
+                if (Model.UserGuid == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)
                 {
         <div class="cf inputs-aligned-horizontal">
             <div class="container-button">
@@ -432,7 +431,7 @@
         // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
         function loadManagers(clientId) {
             if (clientId != "" && clientId != "0" && clientId != "null") {
-                $.getJSON("@Url.Content("~/User/GetManagers")", { id: clientId, UserId: $('#UserId').val() },
+                $.getJSON("@Url.Content("~/User/GetManagers")", { id: clientId, UserGuid: $('#UserId').val() },
                 function (managerData) {
                     var select = $("#ManagerId");
                     select.empty();
@@ -582,7 +581,7 @@
     // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
     function loadNewManagers(clientId) {
         if (clientId != "" && clientId != "0" && clientId != "null") {
-            $.getJSON("@Url.Content("~/User/GetManagers")", { id: clientId, UserId: $('#UserId').val() },
+            $.getJSON("@Url.Content("~/User/GetManagers")", { id: clientId, UserGuid: $('#UserId').val() },
                 function (managerData) {
                     var select = $("#NewManagerId");
                     select.empty();

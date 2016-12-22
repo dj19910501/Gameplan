@@ -8887,13 +8887,13 @@ namespace RevenuePlanner.Helpers
                 if (Type == Convert.ToString(Enums.ActivePlanTab.Grid)) // find childern for plan grid
                 {
                     lstGridSelectedData = DataList.Cast<GridDefaultModel>().ToList();
-                     lstChilderData = lstGridSelectedData.Where(a => a.ParentTaskId != null && a.ParentTaskId.Contains(obj.TaskId)).Select(a => a.TaskId).ToList();
+                    lstChilderData = lstGridSelectedData.Where(a => a.ParentTaskId != null && a.ParentTaskId.Contains(obj.TaskId)).Select(a => a.TaskId).ToList();
                 }
                 else if (Type == Convert.ToString(Enums.ActivePlanTab.Calendar))// find childern for Calendar
                 {
                     lstCalSelectedData = DataList.Cast<calendarDataModel>().ToList();
                     lstChilderData = lstCalSelectedData.Where(a => a.parent != null && a.parent.Contains(obj.TaskId)).Select(a => a.id).ToList();
-                   
+
                 }
                 else if (Type == Convert.ToString(Enums.ActivePlanTab.Budget))// find childern for Budget
                 {
@@ -8930,6 +8930,21 @@ namespace RevenuePlanner.Helpers
                 value = string.Format("{0} {1}", owner.FirstName, owner.LastName)
             }).OrderBy(tactype => tactype.value).ToList();
         }
+
+        //Method to convert user guid to user integer id pl ticket #2899
+        public static int GetIntegerUserId(Guid UserGuid)
+        {
+            int UserId = 0;
+            List<BDSService.User> UserList = Sessions.ClientUsers;
+
+            if (UserList != null && UserList.Count > 0)
+            {
+                UserId = UserList.Where(u => u.UserId == UserGuid).Select(a => a.ID).FirstOrDefault();
+                
+            }
+            return UserId;
+        }
+       
     }
 
     /// <summary>
@@ -9037,6 +9052,6 @@ namespace RevenuePlanner.Helpers
     }
     #endregion
 
-    
+
 
 }

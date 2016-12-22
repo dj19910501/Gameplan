@@ -7,7 +7,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var emptyGuidId = Guid.Empty;
     string varUrl = Url.Action("vieweditpermission", "Organization");
-    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.ID + "&Mode=MyPermission";
+    string ViewPermissionURL = varUrl + "?UserGuid=" + Sessions.User.UserId + "&Mode=MyPermission";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     ViewBag.PageTitle = "ManageRole";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
    ViewBag.ModuleTitle = "Organization";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
@@ -278,7 +278,7 @@
             $("#spanErrorMessageRolecopy").text(msgspan);
         }
         else {
-            var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            var uId = '@Sessions.User.UserId';     
                 $.ajax({
                     url: '@Url.Content("~/Organization/CopyRole/")',
                     data: {

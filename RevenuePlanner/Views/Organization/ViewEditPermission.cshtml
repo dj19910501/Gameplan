@@ -12,7 +12,7 @@
     //// End - Added by Sohel Pathan on 15/01/2015 for PL ticket #1139
     var cDashboardList = ViewData["CustomDashboardList"] != null ? ViewData["CustomDashboardList"] as List<RevenuePlanner.Models.CustomDashboardModel> : new List<RevenuePlanner.Models.CustomDashboardModel>();
     string varUrl = Url.Action("vieweditpermission", "Organization");
-    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.ID + "&Mode=MyPermission"; 
+    string ViewPermissionURL = varUrl + "?UserGuid=" + Sessions.User.UserId + "&Mode=MyPermission"; 
     //Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     if (ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
     {
@@ -451,13 +451,13 @@ else
         });
 
         var userId = '@ViewBag.UserId';
-        var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+        var uId = '@Sessions.User.UserId';  
         $.ajax({
             url: '@Url.Content("~/Organization/SaveUserPermission/")',
             data: {
                 permissionIds: ids.toString(),
-                UserId: userId,
-                LoginId: uId        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                UserGuid: userId,
+                LoginId: uId      
             },
             type: 'POST',
             cache: false,
@@ -489,11 +489,11 @@ else
 
     $('#proceedDefault').click(function () {
         var userId = '@ViewBag.UserId';
-        var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+        var uId = '@Sessions.User.UserId';    
         $.ajax({
             url: '@Url.Content("~/Organization/ResetToRoleDefault/")',
             data: {
-                UserId: userId,
+                UserGuid: userId,
                 creatorId: '@ViewBag.CreatorId',
                 LoginId: uId        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             },
@@ -513,7 +513,7 @@ else
                 else {
                 // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                     if (result.status == true) {
-                        url = '@Url.Content("~/Organization/ViewEditPermission?Id=" + ViewBag.UserId + "&Mode=Edit")';
+                        url = '@Url.Content("~/Organization/ViewEditPermission?UserGuid=" + ViewBag.UserId + "&Mode=Edit")';
                         window.location.href = url;
                     }
                     else {
