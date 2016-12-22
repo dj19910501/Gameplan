@@ -315,7 +315,6 @@
     <Compile Include="Controllers\Filters\ApiAuthorizeUser.cs" />
     <Compile Include="Controllers\Filters\ApiExceptionFilter.cs" />
     <Compile Include="Controllers\BoostController.cs" />
-    <Compile Include="Controllers\Filters\CSRFTokenFilter.cs" />
     <Compile Include="Controllers\PlanPickerController.cs" />
     <Compile Include="Controllers\TransactionController.cs" />
     <Compile Include="Controllers\ColumnViewController.cs" />
