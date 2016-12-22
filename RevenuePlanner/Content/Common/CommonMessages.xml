@@ -1265,4 +1265,10 @@
 		<value>A BudgetId less than or equal to zero is invalid, and likely indicates the BudgetId was not set properly.</value>
 	</Field>
 	<!--End for #2801 Message-->
+  <!--Added by kausha Somaiya for #2894 to display error Message when request is invalid-->
+  <Field>
+    <Name>InValidRequestIdMessage</Name>
+    <value>Request is invalid.</value>
+  </Field>
+  <!--End for #2894 Message-->
 </Messages>

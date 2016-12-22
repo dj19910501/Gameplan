@@ -3194,6 +3194,19 @@ namespace RevenuePlanner.Helpers
                 _InvalidBudgetId = value;
             }
         }
+        //Added Error Message for invalid requestId.
+        private string _InValidRequestIdMessage;
+        public string InValidRequestIdMessage
+        {
+            get
+            {
+                return _InValidRequestIdMessage;
+            }
+            set
+            {
+                _InValidRequestIdMessage = value;
+            }
+        }
         #endregion
 
         #region  Functions
@@ -4201,6 +4214,9 @@ namespace RevenuePlanner.Helpers
                                             _InvalidBudgetId = strMsgValue;
                                             break;
                                         //End #2801
+                                        case "InValidRequestIdMessage":
+                                            _InValidRequestIdMessage = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;

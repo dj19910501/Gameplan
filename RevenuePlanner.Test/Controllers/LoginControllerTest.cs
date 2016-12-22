@@ -258,21 +258,32 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            LoginController objLoginController = new LoginController();
-            objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
-            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            
             int PlanId = DataHelper.GetPlanId();
             Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.User.ID = DataHelper.GetUserId(PlanId);
+            
+            BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+            objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
+            objPasswordResetRequest.UserId = Sessions.User.UserId;
+            objPasswordResetRequest.AttemptCount = 0;
+            objPasswordResetRequest.CreatedDate = DateTime.Now;
+
+            string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+                      LoginController objLoginController = new LoginController();
+            objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
+
+            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objLoginController.ControllerContext.HttpContext.Session.Add("RequestId",Guid.Parse(PasswordResetRequestId));
             ResetPasswordModel form = new ResetPasswordModel();
-            form.UserId = Sessions.User.ID;
+            form.RequestId = new Guid(PasswordResetRequestId);
             form.NewPassword = Convert.ToString(ConfigurationManager.AppSettings["Password"]); 
             form.ConfirmNewPassword = Convert.ToString(ConfigurationManager.AppSettings["Password"]); 
             var result = objLoginController.ResetPassword(form) as ViewResult;
             var serializedData = new RouteValueDictionary(result.Model);
-            var resultvalue = serializedData["UserId"];
+            var resultvalue = serializedData["RequestId"];
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            Assert.AreEqual(Sessions.User.ID.ToString(), resultvalue.ToString());
+            Assert.AreEqual(PasswordResetRequestId, Convert.ToString(resultvalue));
          
         }
         #endregion
@@ -297,11 +308,18 @@ namespace RevenuePlanner.Test.Controllers
             int PlanId = DataHelper.GetPlanId();
             Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.User.ID = DataHelper.GetUserId(PlanId);
-            string currentPassword = Convert.ToString(ConfigurationManager.AppSettings["Password"]); 
-            var result = objLoginController.CheckCurrentPassword(currentPassword, Sessions.User.ID) as JsonResult;
+            string currentPassword = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
+            BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+            objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
+            objPasswordResetRequest.UserId = Sessions.User.UserId;
+            objPasswordResetRequest.AttemptCount = 0;
+            objPasswordResetRequest.CreatedDate = DateTime.Now;
+
+            string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+            var result = objLoginController.CheckCurrentPassword(currentPassword, Guid.Parse(PasswordResetRequestId)) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
-            
+
         }
         #endregion
 

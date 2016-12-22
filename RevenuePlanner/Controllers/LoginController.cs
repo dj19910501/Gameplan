@@ -237,7 +237,15 @@ namespace RevenuePlanner.Controllers
                                 Sessions.User = obj;
                                 ViewBag.Expired = Common.objCached.PasswordExpired;
                                 ResetPasswordModel ObjResetPwd = new ResetPasswordModel();
-                                ObjResetPwd.UserId = obj.ID;
+                                //Following Code is added to generate requestid and maintain in to session for Security.
+                                BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+                                objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
+                                objPasswordResetRequest.UserId = Sessions.User.UserId;
+                                objPasswordResetRequest.AttemptCount = 0;
+                                objPasswordResetRequest.CreatedDate = DateTime.Now;                               
+                                string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+                                ObjResetPwd.RequestId = new Guid(PasswordResetRequestId);
+                                Session["RequestId"] = PasswordResetRequestId;
                                 return View("ResetPassword", ObjResetPwd);
                             }
                         }
@@ -977,7 +985,8 @@ namespace RevenuePlanner.Controllers
             {
                 //Changes made by Komal rawal for #1328
                 Guid PasswordResetRequestId = Guid.Parse(id);
-
+                //Assign this request id in to Session to match it when user change password to handle security.
+                Session["RequestId"] = PasswordResetRequestId;
                 SecurityQuestionModel objSecurityQuestionModel = new SecurityQuestionModel();
 
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
@@ -1033,8 +1042,8 @@ namespace RevenuePlanner.Controllers
                             TempData["UserId"] = null;
 
                             ResetPasswordModel objResetPasswordModel = new ResetPasswordModel();
-
-                            objResetPasswordModel.UserId = UserId;
+                            objResetPasswordModel.RequestId = PasswordResetRequestId;
+                            // objResetPasswordModel.UserId = UserId;
 
                             return View(objResetPasswordModel);
                         }
@@ -1073,39 +1082,50 @@ namespace RevenuePlanner.Controllers
             try
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
-                var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(form.UserId, applicationId);
+                //Check RequestId of Session and passed on change password event is same or not, if not same then eror message will be appear.
 
-                /* ------------------------------- single hash current password ------------------------------*/
-                string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
-                /*--------------------------------------------------------------------------------------------*/
-
-                if (objBDSServiceClient.CheckCurrentPasswordEx(form.UserId, SingleHash_CurrentPassword))
+                if (string.Compare(Convert.ToString(Session["RequestId"]), Convert.ToString(form.RequestId), true) == 0)
                 {
-                    ModelState.AddModelError("", "New and current password cannot be same.");
+
+                    //Get User Data using Password RequestId
+                    RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(form.RequestId);
+                    Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+                    var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(objPasswordResetRequest.UID, applicationId);
+
+                    /* ------------------------------- single hash current password ------------------------------*/
+                    string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
+                    /*--------------------------------------------------------------------------------------------*/
+
+                    if (objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID, SingleHash_CurrentPassword))
+                    {
+                        ModelState.AddModelError("", "New and current password cannot be same.");
+                    }
+                    else
+                    {
+                        /* ------------------ Single hash password ----------------------*/
+                        string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
+                        /* ---------------------------------------------------------------*/
+                        //Added By Maitri Gandhi on 8/4/2016 for #2105
+                        //string returnMessage = objBDSServiceClient.CreatePasswordHistory(form.UserId, SingleHash_NewPassword, form.UserId);
+                        //Modified by Maitri Gandhi on 19/4/2016
+                        string returnMessage = objBDSServiceClient._ResetPasswordEx(objPasswordResetRequest.UID, SingleHash_NewPassword);
+                        if (returnMessage != "Success")
+                        {
+                            ModelState.AddModelError("", returnMessage);
+                        }
+                        else if (returnMessage == "Success")
+                        {
+                            //objBDSServiceClient.ResetPassword(form.UserId, SingleHash_NewPassword);
+
+                            form.IsSuccess = true;
+                        }
+                    }
                 }
                 else
                 {
-                    /* ------------------ Single hash password ----------------------*/
-                    string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
-                    /* ---------------------------------------------------------------*/
-                    //Added By Maitri Gandhi on 8/4/2016 for #2105
-                    //string returnMessage = objBDSServiceClient.CreatePasswordHistory(form.UserId, SingleHash_NewPassword, form.UserId);
-                    //Modified by Maitri Gandhi on 19/4/2016
-                    string returnMessage = objBDSServiceClient._ResetPasswordEx(form.UserId, SingleHash_NewPassword);
-                    if (returnMessage != "Success")
-                    {
-                        ModelState.AddModelError("", returnMessage);
-                    }
-                    else if (returnMessage == "Success")
-                    {
-                        //objBDSServiceClient.ResetPassword(form.UserId, SingleHash_NewPassword);
-
-                        form.IsSuccess = true;
-                    }
+                    //If sessions requestid and passed requestid will not be match then following error message will be appear.
+                    ModelState.AddModelError("", Common.objCached.InValidRequestIdMessage);
                 }
-
-
                 return View(form);
             }
             catch (Exception ex)
@@ -1134,37 +1154,49 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="currentPassword">current password</param>
         /// <returns>Returns true if the operation is successful, 0 otherwise.</returns>
-        public ActionResult CheckCurrentPassword(string currentPassword, int userId)
+        public ActionResult CheckCurrentPassword(string currentPassword, Guid requestId)
         {
             bool isValid = false;
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            /* ------------------------------- single hash current password ------------------------------*/
-            string SingleHash_CurrentPassword = Common.ComputeSingleHash(currentPassword.ToString().Trim());
-            /*--------------------------------------------------------------------------------------------*/
-            try
+            //Check RequestId of Session and passed on change password event is same or not, if not same then eror message will be appear.
+            if (string.Compare(Convert.ToString(Session["RequestId"]), Convert.ToString(requestId), true) == 0)
             {
-                isValid = objBDSServiceClient.CheckCurrentPasswordEx(userId, SingleHash_CurrentPassword);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                if (e is System.ServiceModel.EndpointNotFoundException)
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                //Get User Data using Password RequestId
+                RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(requestId);
+                /* ------------------------------- single hash current password ------------------------------*/
+                string SingleHash_CurrentPassword = Common.ComputeSingleHash(currentPassword.ToString().Trim());
+                /*--------------------------------------------------------------------------------------------*/
+                try
                 {
-                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                    isValid = objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID, SingleHash_CurrentPassword);
                 }
-            }
-            if (isValid)
-            {
-                return Json("0", JsonRequestBehavior.AllowGet);
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                if (isValid)
+                {
+                    return Json("0", JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json("1", JsonRequestBehavior.AllowGet);
+                }
             }
             else
             {
-                return Json("1", JsonRequestBehavior.AllowGet);
+                //If RequestId will be invalid then eror message will be appear.
+                return Json("2", JsonRequestBehavior.AllowGet);
             }
+          
         }
 
         #endregion

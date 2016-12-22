@@ -39,8 +39,9 @@ namespace RevenuePlanner.Models
     //For Reset Password
     public class ResetPasswordModel
     {
-        public int UserId { get; set; }
-                
+        //Password RequestId 
+        public Guid RequestId { get; set; }
+
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "New Password")]
