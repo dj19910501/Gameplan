@@ -786,12 +786,23 @@ function formSubmitEvent(url, queryStringArr) {
         }
     }
 
+    formHtml += getAntiForgeryInput();
+
     formHtml += '</form>';
     var form = $(formHtml);
     $('body').append(form);
     form.submit();
 }
 /*End - Added by Mitesh Vaishnav*/
+
+function getAntiForgeryInput() {
+    var elements = document.getElementsByName("__RequestVerificationToken");
+    if (elements == null || elements.length == 0) {
+        return '';
+    } else {
+        return elements[0].outerHTML;
+    }
+}
 
 /* Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1061 */
 function numberFormatWithoutPeriod(e) {

@@ -9,6 +9,7 @@
 <div class="span10 content-colum-info-user">
     @using (Html.BeginForm("Edit", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
+        @Html.AntiForgeryToken()
         @Html.ValidationSummary(true)
 
          <div class="cf inputs-aligned-horizontal">

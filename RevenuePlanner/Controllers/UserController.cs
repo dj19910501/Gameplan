@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using RevenuePlanner.Services;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 
 /*
  *  Author: Kuber Joshi
@@ -339,6 +340,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">user to be deleted</param>
         /// <returns> Redirect to Index Action</returns>
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(Guid UserGuid)// change type of parameter UserId from interger to guid #2953 
         {
             try
@@ -472,6 +474,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return Create View</returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
+        [ValidateAntiForgeryToken]
         public ActionResult Create(UserModel form, HttpPostedFileBase file)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
@@ -829,6 +832,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>If Page request from "MyTeam" then redirect to "Index" or "Edit" View</returns>
         [HttpPost]
         [ValidateInput(false)]////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(UserModel form, HttpPostedFileBase file, FormCollection formcollection)//formcollection added by uday#555 )
         {
             if (TempData["CurrentEditingData"] != null) //checking if temp data is not null then assigning hidden filds values from temp data so no one can temper using developer tool

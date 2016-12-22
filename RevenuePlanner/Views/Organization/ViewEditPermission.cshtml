@@ -48,6 +48,8 @@
        
     </div>
 
+@Html.AntiForgeryToken()
+
     <!--error message-->
 
 @if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString() || ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
@@ -449,15 +451,17 @@ else
                 }
             });
         });
-
         var userId = '@ViewBag.UserId';
         var uId = '@Sessions.User.UserId';  
+        var token = $('[name=__RequestVerificationToken]').val();
+
         $.ajax({
             url: '@Url.Content("~/Organization/SaveUserPermission/")',
             data: {
                 permissionIds: ids.toString(),
                 UserGuid: userId,
-                LoginId: uId      
+                LoginId: uId,
+                __RequestVerificationToken: token
             },
             type: 'POST',
             cache: false,
@@ -489,13 +493,16 @@ else
 
     $('#proceedDefault').click(function () {
         var userId = '@ViewBag.UserId';
-        var uId = '@Sessions.User.UserId';    
+        var uId = '@Sessions.User.UserId';   
+        var token = $('[name=__RequestVerificationToken]').val();
+
         $.ajax({
             url: '@Url.Content("~/Organization/ResetToRoleDefault/")',
             data: {
                 UserGuid: userId,
                 creatorId: '@ViewBag.CreatorId',
-                LoginId: uId        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                LoginId: uId,        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                __RequestVerificationToken: token
             },
             type: 'POST',
             cache: false,

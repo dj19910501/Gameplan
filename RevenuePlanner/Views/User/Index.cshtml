@@ -26,6 +26,7 @@
 
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
+@Html.AntiForgeryToken();
 
 @section Sidebar {
     @Html.Partial("~/Views/shared/_preferences.cshtml")

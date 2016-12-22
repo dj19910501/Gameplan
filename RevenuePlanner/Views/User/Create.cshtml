@@ -68,6 +68,7 @@
             @using (Html.BeginForm("Create", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 @Html.ValidationSummary(true)
+                @Html.AntiForgeryToken()
 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.FirstName)

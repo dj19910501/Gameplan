@@ -7,6 +7,8 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Net;
 using System.Web.SessionState;
+using System.Web.Helpers;
+using System.Security.Claims;
 
 namespace RevenuePlanner
 {
@@ -27,6 +29,7 @@ namespace RevenuePlanner
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AuthConfig.RegisterAuth();
+            AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimsIdentity.DefaultNameClaimType;
         }
         /// <summary>
         /// When application throw any error, it will set the Context variable to display the error details

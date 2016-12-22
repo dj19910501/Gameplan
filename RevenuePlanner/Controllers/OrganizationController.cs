@@ -308,6 +308,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value. in jsonresult</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult DeleteRole(Guid delroleid, Guid reassignroleid, Guid LoginId = new Guid()) // change type of parameter userid from interger to guid #2953 
         {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
@@ -369,6 +370,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission, Guid LoginId = new Guid())// change type of parameter LoginId from interger to guid #2953 
         {
             try
@@ -424,6 +426,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult CopyRole(string copyroledesc, Guid originalroleid, Guid LoginId = new Guid())// change type of parameter LoginId from interger to guid #2953 
         {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
@@ -752,6 +755,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult SaveUserPermission(string permissionIds, Guid UserGuid, Guid LoginId = new Guid())// change type of parameter UserId from interger to guid #2953 
         {
             //// Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
@@ -851,6 +855,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult ResetToRoleDefault(Guid UserGuid, Guid LoginId = new Guid())// change type of parameter UserId from interger to guid #2953 
         {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check

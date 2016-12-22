@@ -11,6 +11,8 @@
     <div id="cSuccess"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
 </div>
 
+@Html.AntiForgeryToken()
+
 <!--div to display pop up for Delete role-->
 <div id="DivPartialShareTacticCheck"> 
     <div class="all-height DivResetDefaults" id="DivShareTacticPopupMainDel">
