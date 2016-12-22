@@ -55,7 +55,7 @@
         </div>
         <div style="float:left;" id="drpParentMain">
             <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
-                @Html.DropDownList("ddlParentFinanceMain", new SelectList(Model.ListofBudgets, "Value", "Text"))
+                @Html.DropDownList("ddlParentFinanceMain", new SelectList(Model.ListofBudgets, "Value", "Text", ViewBag.BudgetSelected))
                 <div class="nl-overlay"></div>
             </div>
         </div>
@@ -86,12 +86,12 @@
 
         <span class="selectBox quarter_selection" id="ddlMainTimeFrameSelectBox">
             <label id="" for="Time_Frame:">Time Frame:</label>
-            @Html.DropDownList("ddlMainGridTimeFrame", new SelectList(Model.TimeFrame, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
+            @Html.DropDownList("ddlMainGridTimeFrame", new SelectList(Model.TimeFrame, "Value", "Text", ViewBag.TimeFrameSelected), new { @class = "ddlStyleReport quarterly_btn" })
         </span>
       
         <span class="selectBox quarter_selection" id="ddlColumnSetFrameBox">
             <label id="" for="View by:">View by:</label>
-            @Html.DropDownList("ddlColumnSet", new SelectList(Model.Columnset, "Value", "Text"), new { @class = "ddlStyleReport quarterly_btn" })
+            @Html.DropDownList("ddlColumnSet", new SelectList(Model.Columnset, "Value", "Text", ViewBag.Columnset), new { @class = "ddlStyleReport quarterly_btn" })
         </span>
 
         <div id="ddlColumnsFrameBox" class="filter-columns selectBox">

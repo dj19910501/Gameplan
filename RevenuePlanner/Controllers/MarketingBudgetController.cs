@@ -81,6 +81,28 @@ namespace RevenuePlanner.Controllers
             }
             #endregion
 
+            #region Set all dropdown if user already set columns to view.
+            //Start - Added by Preet Shah on 22/12/2016. For ticket 2848
+            bool isSelectall = false;
+            List<ColumnAttributeDetail> AttributeDetail = _MarketingBudget.GetUserColumnView(Sessions.User.ID, out isSelectall);
+
+            if (isSelectall){
+                MarketingActivities.FilterColumns.Where(l => l.Text != "Forecast").Select(c => { c.IsChecked = true; return c; }).ToList();
+            }
+            else if (AttributeDetail != null && AttributeDetail.Count() > 0 && !isSelectall)
+            {
+                if (MarketingActivities.ListofBudgets != null && MarketingActivities.ListofBudgets.Count > 0)
+                    ViewBag.BudgetSelected = AttributeDetail.Where(a => MarketingActivities.ListofBudgets.Any(x => x.Value == a.AttributeId)).Select(l => l.AttributeId).FirstOrDefault();
+                if (MarketingActivities.TimeFrame != null && MarketingActivities.TimeFrame.Count > 0)
+                    ViewBag.TimeFrameSelected = AttributeDetail.Where(a => MarketingActivities.TimeFrame.Any(x => x.Value == a.AttributeId)).Select(l => l.AttributeId).FirstOrDefault();
+                if (MarketingActivities.Columnset != null && MarketingActivities.Columnset.Count > 0)
+                    ViewBag.Columnset = AttributeDetail.Where(a => MarketingActivities.Columnset.Any(x => x.Value == a.AttributeId)).Select(l => l.AttributeId).FirstOrDefault();
+                if (MarketingActivities.FilterColumns != null && MarketingActivities.FilterColumns.Count > 0)
+                    MarketingActivities.FilterColumns.Where(l => AttributeDetail.Any(x => x.AttributeId == l.Text)).Select(c => { c.IsChecked = true; return c; }).ToList();
+            }
+            //End
+            #endregion
+
             return View(MarketingActivities);
         }
 
@@ -129,6 +151,15 @@ namespace RevenuePlanner.Controllers
             List<BindDropdownData> lstColumns = GetFilterColumnList(BudgetColumns); //Get Filter Columns list data.
 
             List<string> StandardTimeFrameColumns = GetStandardColumnList(BudgetColumns); //Get standard Columns list data.
+
+            #region Set all dropdown if user already set columns to view.
+            //Start - Added by Preet Shah on 22/12/2016. For ticket 2848
+            bool isSelectall = false;
+            List<ColumnAttributeDetail> AttributeDetail = _MarketingBudget.GetUserColumnView(Sessions.User.ID, out isSelectall);
+            if (lstColumns != null && lstColumns.Count > 0)
+                lstColumns.Where(l => AttributeDetail.Any(x => x.AttributeId == l.Text)).Select(c => { c.IsChecked = true; return c; }).ToList();
+            //End
+            #endregion
 
             return Json(new { Columnlist = lstColumns, standardlist = StandardTimeFrameColumns }, JsonRequestBehavior.AllowGet);
         }
@@ -755,6 +786,35 @@ namespace RevenuePlanner.Controllers
                 return Json(true, JsonRequestBehavior.AllowGet);
             }
             return Json(false, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region method to save user column view for marketing budget
+        /// <summary>
+        /// Function to Save User selected column view.
+        /// Added By: Preet Shah on 22/12/2016. For Ticket 2848
+        /// </summary>
+        /// <param name="AttributeDetail">List of column attribute contains attribute type and value</param>
+        /// <returns>Json with Success or Failure</returns>
+        [HttpPost]
+        public JsonResult SaveColumnView(List<ColumnAttributeDetail> AttributeDetail)
+        {
+            try
+            {
+                if (AttributeDetail != null && AttributeDetail.Count > 0)
+                {
+                    int viewid = _MarketingBudget.SaveUserColumnView(AttributeDetail, Sessions.User.ID);
+                    return Json(new { Success = true }, JsonRequestBehavior.AllowGet);
+                }
+                return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+
+            }
         }
         #endregion
     }

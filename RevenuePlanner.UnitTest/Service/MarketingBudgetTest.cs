@@ -267,6 +267,43 @@ namespace RevenuePlanner.UnitTest.Service
             var res = _marketingBudget.GetBudgetColumn(ClientId);
             Assert.IsTrue(res.Count > 0);
         }
+
+        [TestMethod]
+        public void Test_MarketingBudget_SaveUserColumnView()
+        {
+            List<ColumnAttributeDetail> lstattribute = new List<ColumnAttributeDetail>();
+            ColumnAttributeDetail columnAttribute = new ColumnAttributeDetail();
+            columnAttribute.AttributeId = "Planned";
+            columnAttribute.AttributeType = "Column";
+            columnAttribute.ColumnOrder = " ";
+            lstattribute.Add(columnAttribute);
+            ColumnAttributeDetail timeFrameAttribute = new ColumnAttributeDetail();
+            timeFrameAttribute.AttributeId = "quarters";
+            timeFrameAttribute.AttributeType = "TimeFrame";
+            timeFrameAttribute.ColumnOrder = " ";
+            lstattribute.Add(timeFrameAttribute);
+            ColumnAttributeDetail budgetAttribute = new ColumnAttributeDetail();
+            budgetAttribute.AttributeId = "1";
+            budgetAttribute.AttributeType = "BudgetId";
+            budgetAttribute.ColumnOrder = " ";
+            lstattribute.Add(budgetAttribute);
+            ColumnAttributeDetail viewByAttribute = new ColumnAttributeDetail();
+            viewByAttribute.AttributeId = "4";
+            viewByAttribute.AttributeType = "ViewBy";
+            viewByAttribute.ColumnOrder = " ";
+            lstattribute.Add(viewByAttribute);
+            int count = _marketingBudget.SaveUserColumnView(lstattribute, UserId);
+            Assert.IsTrue(count > 0);
+        }
+
+        [TestMethod]
+        public void Test_MarketingBudget_GetUserColumnView()
+        {
+            List<ColumnAttributeDetail> lstattribute = new List<ColumnAttributeDetail>();
+            bool isSelectAll = false;
+            lstattribute = _marketingBudget.GetUserColumnView(UserId, out isSelectAll);
+            Assert.IsTrue(lstattribute.Count >= 0);
+        }
     }
     
 

@@ -195,6 +195,7 @@ namespace RevenuePlanner.Services.MarketingBudget
     {
         public string Text { get; set; }
         public string Value { get; set; }
+        public bool IsChecked { get; set; } // Use for checkbox value
     }
 
     public class BudgetDetailforDeletion
@@ -269,7 +270,13 @@ namespace RevenuePlanner.Services.MarketingBudget
         public BudgetGridModel LineItemGridData { get; set; }
         public bool childLineItemCount { get; set; }
     }
-   
+    //Use for User Column Attribute
+    public class ColumnAttributeDetail
+    {
+        public string AttributeType { get; set; }
+        public string AttributeId { get; set; }
+        public string ColumnOrder { get; set; }
+    }
     /// <summary>
     /// Operational interface for budget related data retrieval or manipulations 
     /// </summary>
@@ -331,6 +338,8 @@ namespace RevenuePlanner.Services.MarketingBudget
         List<BDSService.User> GetAllUserList(int ClientId, int UserId, Guid ApplicationId);
         void DeleteUserForBudget(List<int> BudgetDetailIds, int UserID);
         void SaveUSerPermission(List<UserBudgetPermissionDetail> UserData, string ChildItems, string ParentID, int UserId);
+        int SaveUserColumnView(List<ColumnAttributeDetail> AttributeDetail, int UserId);
+        List<ColumnAttributeDetail> GetUserColumnView(int UserId, out bool IsSelectall);
         //end
     }
 }

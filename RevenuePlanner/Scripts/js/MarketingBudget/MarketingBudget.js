@@ -87,6 +87,7 @@ $('#proceed-button_DeleteItem').on("click", function () {
 $("#ddlMainGridTimeFrame").change(function () {
     ShowHideSuccessDiv();   // Hide "Success" message if it's already appeared on screen.
     if (gridpage == "MainGrid") {
+        SaveUserColumnView();//Added by Preet Shah on 22/12/2016. For #2848
         GetGridData();          // Load data to Grid on timeframe value change
     }
     else if (gridpage == "LineItemGrid") // load line item grid as per time frame
@@ -161,35 +162,36 @@ function BindFilterColumnsAndCheckUncheck(data) {
 
     // Set 'Forecast' item to uncheck.
     if (ColumnsCheckBox != null && ColumnsCheckBox != 'undefined' && ColumnsCheckBox.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].IsChecked == true) {
         // select all "filter columns" list checkboxes.
-        ColumnsCheckBox.find("input").attr("aria-selected", "true").attr("checked", "checked");
-
-        // Get "Forecast" column checkbox record from "filter columns" list
-        var objForecast = ColumnsCheckBox.find('input[id="ui-multiselect-Forecast"]');
-
-        // check whether "Forecast" column exist or not.
-        if (objForecast != null && objForecast != 'undefined') {
-
-            // Uncheck "Forecast" column from "filter columns" list.
-            objForecast.removeAttr('checked');
-            objForecast.attr("aria-selected", "false");
+                $(ColumnsCheckBox[i]).find("input").attr("aria-selected", "true").attr("checked", "checked");
+            }
+            else {
+                $(ColumnsCheckBox[i]).find("input").removeAttr('checked');
+                $(ColumnsCheckBox[i]).find("input").attr("aria-selected", "false");
+            }
         }
+        
     }
 
     // Select/UnSelect specific columns while user click on that specific column under "filter columns" dropdown list.
     $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').click(function () {
+        SaveUserColumnView();//Added by Preet Shah on 22/12/2016. For #2848
         HideShowColumns();
     });
 
     // Select every columns while user click on "Select All" option under "filter columns" dropdown list.
     $("#selectAll_budget-select").click(function () {
         $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input").prop('checked', 'checked');
+        SaveUserColumnView();//Added by Preet Shah on 22/12/2016. For #2848
         HideShowColumns();
     });
 
     // Deselect every columns while user click on "Deselect All" option under "filter columns" dropdown list.
     $("#deselectAll_budget-select").click(function () {
         $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input").removeAttr('checked');
+        SaveUserColumnView();//Added by Preet Shah on 22/12/2016. For #2848
         HideShowColumns();
     });
 
@@ -1363,6 +1365,7 @@ function SaveNewBudget(budgetName) {
 // Desc: Change event of column set dropdown.
 $("#ddlColumnSet").change(function () {
     var Columnsetval = $("#ddlColumnSet").val();
+    SaveUserColumnView();//Added by Preet Shah on 22/12/2016. For #2848
     BindColumnsfilter(Columnsetval); // bind the columns dropdown as per column set selected
 });
 // function to show hide controls for marketing budget when move to user permission and lineitems
@@ -1656,4 +1659,57 @@ function AttachIcons()
             $(this).html(imgString);
         }
     });
+}
+//Added by Preet Shah on 22/12/2016. For #2848
+//method to save user column view 
+function SaveUserColumnView() {
+    _ColumnView = [];
+    var ColumnsCheckBox = $("#multipleselect_budget-select label[class^=ui-corner-all] input:checked");
+    if (ColumnsCheckBox != null && ColumnsCheckBox != 'undefined' && ColumnsCheckBox.length > 0) {
+        ColumnsCheckBox.each(function () {
+            _ColumnView.push({
+                AttributeType: 'Column',
+                AttributeId: $(this).parent().find('span').attr('title').toString(),
+                ColumnOrder: " "
+            });
+
+        });
+    }
+    var TimeFrame = $('#ddlMainGridTimeFrame option:selected').val();
+    _ColumnView.push({
+        AttributeType: 'TimeFrame',
+        AttributeId: TimeFrame.toString(),
+        ColumnOrder: " "
+    });
+    var budgetIDMain = $("#ddlParentFinanceMain").val();
+    _ColumnView.push({
+        AttributeType: 'BudgetId',
+        AttributeId: budgetIDMain.toString(),
+        ColumnOrder: " "
+    });
+    var Viewbyval = $("#ddlColumnSet").val();
+    _ColumnView.push({
+        AttributeType: 'ViewBy',
+        AttributeId: Viewbyval.toString(),
+        ColumnOrder: " "
+    });
+
+    if (_ColumnView != null && _ColumnView.length > 0 && _ColumnView != undefined) {
+        _ColumnView = JSON.stringify(_ColumnView);
+        $.ajax({
+
+            url: urlContent + "MarketingBudget/SaveColumnView/",
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: "{'AttributeDetail':" + (_ColumnView) + "}",
+            success: function (data) {
+                if (data.Success != null && data.Success == true) {
+                    // LoadLineItemGrid(budgetIDMain);
+
+                }
+
+            }
+        });
+    }
 }

@@ -20,7 +20,7 @@
           <Property Name="QueryText" Type="nvarchar(max)" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9Plan.dbo.AggregationQueries' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'MRPDev.dbo.AggregationQueries' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AggregationQueries">
           <Key>
             <PropertyRef Name="id" />
@@ -30,7 +30,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.AggregationQueries' does not have a 
           <Property Name="QueryToRun" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9Plan.dbo.AggregationStatus' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AggregationStatus">
           <Key>
             <PropertyRef Name="StatusCode" />
@@ -38,7 +38,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.AggregationStatus' does not have a p
           <Property Name="StatusCode" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9Plan.dbo.AggregationSteps' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'MRPDev.dbo.AggregationSteps' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AggregationSteps">
           <Key>
             <PropertyRef Name="id" />
@@ -83,11 +83,11 @@ warning 6002: The table/view 'Hive9Plan.dbo.AggregationSteps' does not have a pr
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="UniqueRuleCode" Type="nvarchar" MaxLength="500" />
+          <Property Name="UserEmail" Type="nvarchar" MaxLength="255" />
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="ClientId" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="ModifiedBy" Type="int" Nullable="false" />
-          <Property Name="UserEmail" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Alerts">
           <Key>
@@ -100,13 +100,13 @@ warning 6002: The table/view 'Hive9Plan.dbo.AggregationSteps' does not have a pr
           <Property Name="ReadDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="DisplayDate" Type="datetime" Nullable="false" />
-          <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="IsEmailSent" Type="nvarchar" MaxLength="50" />
           <Property Name="CurrentGoal" Type="float" />
           <Property Name="ActualGoal" Type="float" />
+          <Property Name="UserId" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9Plan.dbo.AttrPositionConfig' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'MRPDev.dbo.AttrPositionConfig' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AttrPositionConfig">
           <Key>
             <PropertyRef Name="XValue" />
@@ -235,7 +235,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.AttrPositionConfig' does not have a 
           <Property Name="ObjectId" Type="int" />
           <Property Name="ParentObjectId" Type="int" />
           <Property Name="ComponentId" Type="int" />
-          <Property Name="ComponentTitle" Type="nvarchar" MaxLength="1000" />
+          <Property Name="ComponentTitle" Type="nvarchar" MaxLength="256" />
           <Property Name="ComponentType" Type="nvarchar" MaxLength="50" />
           <Property Name="ActionName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="ActionSuffix" Type="nvarchar(max)" />
@@ -515,7 +515,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.AttrPositionConfig' does not have a 
           <Property Name="DashboardContentId" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9Plan.dbo.DynamicDimension' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'MRPDev.dbo.DynamicDimension' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="DynamicDimension">
           <Key>
             <PropertyRef Name="id" />
@@ -544,7 +544,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.DynamicDimension' does not have a pr
           <Property Name="TimeUtc" Type="datetime" Nullable="false" />
           <Property Name="Sequence" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AllXml" Type="ntext" Nullable="false" />
-          <Property Name="Client" Type="nvarchar" MaxLength="50" />
+          <Property Name="Client" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="EntityIntegration_Attribute">
           <Key>
@@ -563,8 +563,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.DynamicDimension' does not have a pr
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="EntityType" Type="nvarchar" MaxLength="50" />
-          <Property Name="ColorCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="EntityType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ColorCode" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="FiscalQuarterYear">
           <Key>
@@ -747,9 +747,9 @@ warning 6002: The table/view 'Hive9Plan.dbo.DynamicDimension' does not have a pr
           <Property Name="CustomNamingPermission" Type="bit" Nullable="false" />
           <Property Name="IsFirstPullCW" Type="bit" Nullable="false" />
           <Property Name="ClientId" Type="int" Nullable="false" />
-          <Property Name="ForceSyncUser" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="ModifiedBy" Type="int" Nullable="false" />
+          <Property Name="ForceSyncUser" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -843,8 +843,6 @@ warning 6002: The table/view 'Hive9Plan.dbo.DynamicDimension' does not have a pr
           <Key>
             <PropertyRef Name="IntegrationInstancePlanLogEntityId" />
           </Key>
-          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
           <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
           <Property Name="EntityId" Type="int" Nullable="false" />
           <Property Name="EntityType" Type="varchar" MaxLength="50" />
@@ -853,6 +851,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.DynamicDimension' does not have a pr
           <Property Name="Status" Type="nvarchar" MaxLength="255" />
           <Property Name="ErrorDescription" Type="nvarchar(max)" />
           <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
+          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationInstanceSection">
@@ -866,7 +866,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.DynamicDimension' does not have a pr
           <Property Name="SyncStart" Type="datetime" Nullable="false" />
           <Property Name="SyncEnd" Type="datetime" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" />
-          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreateBy" Type="int" Nullable="false" />
         </EntityType>
@@ -1031,11 +1031,11 @@ warning 6002: The table/view 'Hive9Plan.dbo.DynamicDimension' does not have a pr
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="ModifiedBy" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'MRPDev.dbo.Logging' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Logging">
           <Key>
             <PropertyRef Name="id" />
@@ -1088,7 +1088,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="ComputeAllValuesFormula" Type="nvarchar" MaxLength="1000" />
           <Property Name="DrillDownWhereClause" Type="nvarchar" MaxLength="1000" />
           <Property Name="UseRowCountFromFormula" Type="bit" />
-          <Property Name="IsCurrency" Type="bit" />
+          <Property Name="IsCurrency" Type="bit" Nullable="false" />
           <Property Name="BaseCurrencyCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="MeasureOutputValue">
@@ -1144,8 +1144,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="IsBenchmarked" Type="bit" />
           <Property Name="ParentModelId" Type="int" />
+          <Property Name="IsBenchmarked" Type="bit" />
           <Property Name="EffectiveDate" Type="datetime" />
           <Property Name="IntegrationInstanceId" Type="int" />
           <Property Name="IntegrationInstanceIdINQ" Type="int" />
@@ -1179,6 +1179,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
             <PropertyRef Name="NotificationId" />
           </Key>
           <Property Name="NotificationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NotificationInternalUseOnly" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="NotificationType" Type="char" MaxLength="2" Nullable="false" />
@@ -1186,7 +1187,6 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="NotificationInternalUseOnly" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Subject" Type="varchar" MaxLength="255" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="ModifiedBy" Type="int" Nullable="false" />
@@ -1199,6 +1199,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="ModelId" Type="int" Nullable="false" />
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Version" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Year" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="Budget" Type="float" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
@@ -1206,7 +1207,6 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="Year" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="GoalType" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="GoalValue" Type="float" Nullable="false" />
           <Property Name="AllocatedBy" Type="varchar" MaxLength="50" Nullable="false" />
@@ -1325,8 +1325,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="IsSyncWorkFront" Type="bit" />
           <Property Name="IsSyncMarketo" Type="bit" />
           <Property Name="IntegrationInstanceMarketoID" Type="nvarchar" MaxLength="50" />
-          <Property Name="ModifiedBy" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="ModifiedBy" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -1340,8 +1340,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="Actualvalue" Type="float" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="ModifiedBy" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual_MediaCode">
           <Key>
@@ -1408,8 +1408,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="LinkedLineItemId" Type="int" />
-          <Property Name="ModifiedBy" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="ModifiedBy" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Actual">
           <Key>
@@ -1792,11 +1792,11 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="ColorCode" Type="nvarchar" MaxLength="10" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModelId" Type="int" Nullable="false" />
           <Property Name="StageId" Type="int" />
           <Property Name="ProjectedRevenue" Type="float" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="PreviousTacticTypeId" Type="int" />
           <Property Name="IsDeleted" Type="bit" />
           <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
@@ -1805,8 +1805,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
           <Property Name="WorkFrontTemplateId" Type="int" />
           <Property Name="AssetType" Type="nvarchar" MaxLength="50" />
-          <Property Name="ModifiedBy" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="ModifiedBy" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="TransactionLineItemMapping">
           <Key>
@@ -1854,14 +1854,15 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
             <PropertyRef Name="ViewId" />
           </Key>
           <Property Name="ViewId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ViewName" Type="nvarchar" MaxLength="50" />
-          <Property Name="CreatedBy" Type="int" />
+          <Property Name="ViewName" Type="nvarchar" MaxLength="500" />
           <Property Name="CreatedDate" Type="datetime" />
-          <Property Name="ModifyBy" Type="int" />
           <Property Name="ModifyDate" Type="datetime" />
           <Property Name="IsDefault" Type="bit" />
           <Property Name="GridAttribute" Type="xml" />
           <Property Name="BudgetAttribute" Type="xml" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="ModifyBy" Type="int" Nullable="false" />
+          <Property Name="MarketingBudgetAttribute" Type="xml" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -1881,8 +1882,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           </Key>
           <Property Name="NotificationId" Type="int" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="ClientId" Type="int" />
         </EntityType>
         <EntityType Name="User_Notification_Messages">
@@ -1935,7 +1936,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="UserId" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9Plan.dbo.Versioning' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'MRPDev.dbo.Versioning' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Versioning">
           <Key>
             <PropertyRef Name="Id" />
@@ -1947,7 +1948,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.Versioning' does not have a primary 
           <Property Name="Version" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_EntityList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'MRPDev.dbo.vClientWise_EntityList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vClientWise_EntityList">
           <Key>
             <PropertyRef Name="EntityId" />
@@ -1968,7 +1969,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_EntityList' does not hav
           <Property Name="EntityOrder" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vClientWise_Tactic">
           <Key>
             <PropertyRef Name="PlanTacticId" />
@@ -2004,31 +2005,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Improveme__Impro__3F7150CD">
-          <End Role="ImprovementTacticType" Type="Self.ImprovementTacticType" Multiplicity="1" />
-          <End Role="ImprovementTacticType_Metric" Type="Self.ImprovementTacticType_Metric" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ImprovementTacticType">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Principal>
-            <Dependent Role="ImprovementTacticType_Metric">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Improveme__Impro__7DA38D70">
-          <End Role="ImprovementTacticType" Type="Self.ImprovementTacticType" Multiplicity="1" />
-          <End Role="ImprovementTacticType_Metric" Type="Self.ImprovementTacticType_Metric" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ImprovementTacticType">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Principal>
-            <Dependent Role="ImprovementTacticType_Metric">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Plan_Camp__PlanC__245D67DE">
+        <Association Name="FK__Plan_Camp__PlanC__43A1090D">
           <End Role="Plan_Campaign" Type="Self.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="Self.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -2040,7 +2017,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Plan_Camp__PlanP__236943A5">
+        <Association Name="FK__Plan_Camp__PlanP__42ACE4D4">
           <End Role="Plan_Campaign_Program" Type="Self.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="Self.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -2052,7 +2029,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanC__2645B050">
+        <Association Name="FK__Tactic_Sh__PlanC__4589517F">
           <End Role="Plan_Campaign" Type="Self.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="Self.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -2064,7 +2041,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanP__25518C17">
+        <Association Name="FK__Tactic_Sh__PlanP__44952D46">
           <End Role="Plan_Campaign_Program" Type="Self.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="Self.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -2073,30 +2050,6 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Principal>
             <Dependent Role="Tactic_Share">
               <PropertyRef Name="PlanProgramId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__TacticTyp__Stage__3E7D2C94">
-          <End Role="Stage" Type="Self.Stage" Multiplicity="0..1" />
-          <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Stage">
-              <PropertyRef Name="StageId" />
-            </Principal>
-            <Dependent Role="TacticType">
-              <PropertyRef Name="StageId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__TacticTyp__Stage__7CAF6937">
-          <End Role="Stage" Type="Self.Stage" Multiplicity="0..1" />
-          <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Stage">
-              <PropertyRef Name="StageId" />
-            </Principal>
-            <Dependent Role="TacticType">
-              <PropertyRef Name="StageId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2628,14 +2581,14 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ImprovementTacticType_ImprovementTacticType">
+        <Association Name="FK_ImprovementTacticType_Metric_ImprovementTacticType">
           <End Role="ImprovementTacticType" Type="Self.ImprovementTacticType" Multiplicity="1" />
-          <End Role="ImprovementTacticType1" Type="Self.ImprovementTacticType" Multiplicity="0..1" />
+          <End Role="ImprovementTacticType_Metric" Type="Self.ImprovementTacticType_Metric" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ImprovementTacticType">
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Principal>
-            <Dependent Role="ImprovementTacticType1">
+            <Dependent Role="ImprovementTacticType_Metric">
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -2784,18 +2737,6 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_IntegrationInstanceLog_IntegrationInstance">
-          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
-          <End Role="IntegrationInstanceLog" Type="Self.IntegrationInstanceLog" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="IntegrationInstanceLog">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstance">
           <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
           <End Role="IntegrationInstancePlanEntityLog" Type="Self.IntegrationInstancePlanEntityLog" Multiplicity="*" />
@@ -2820,18 +2761,6 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_IntegrationInstanceSection_IntegrationInstance">
-          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
-          <End Role="IntegrationInstanceSection" Type="Self.IntegrationInstanceSection" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="IntegrationInstanceSection">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_IntegrationInstanceSection_IntegrationInstanceLog">
           <End Role="IntegrationInstanceLog" Type="Self.IntegrationInstanceLog" Multiplicity="1" />
           <End Role="IntegrationInstanceSection" Type="Self.IntegrationInstanceSection" Multiplicity="*" />
@@ -2853,6 +2782,18 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Principal>
             <Dependent Role="IntegrationTypeAttribute">
               <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationWorkFrontProgram_Mapping_IntegrationWorkFrontPortfolios">
+          <End Role="IntegrationWorkFrontPortfolios" Type="Self.IntegrationWorkFrontPortfolios" Multiplicity="1" />
+          <End Role="IntegrationWorkFrontProgram_Mapping" Type="Self.IntegrationWorkFrontProgram_Mapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationWorkFrontPortfolios">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontProgram_Mapping">
+              <PropertyRef Name="PortfolioTableId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3117,6 +3058,18 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Principal>
             <Dependent Role="Model">
               <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_IntegrationInstance1">
+          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="0..1" />
+          <End Role="Model" Type="Self.Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceEloquaId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3756,6 +3709,30 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_TacticType_Model">
+          <End Role="Model" Type="Self.Model" Multiplicity="1" />
+          <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="TacticType">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_TacticType_Stage">
+          <End Role="Stage" Type="Self.Stage" Multiplicity="0..1" />
+          <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
+            </Principal>
+            <Dependent Role="TacticType">
+              <PropertyRef Name="StageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TacticType_TacticType_WorkFrontTemplateId">
           <End Role="IntegrationWorkFrontTemplates" Type="Self.IntegrationWorkFrontTemplates" Multiplicity="0..1" />
           <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
@@ -3801,18 +3778,6 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
             </Principal>
             <Dependent Role="User_Notification">
               <PropertyRef Name="NotificationId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_User_Permission_Dashboard">
-          <End Role="Dashboard" Type="Self.Dashboard" Multiplicity="0..1" />
-          <End Role="User_Permission" Type="Self.User_Permission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Dashboard">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="User_Permission">
-              <PropertyRef Name="DashboardId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3919,8 +3884,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
           <Parameter Name="ViewByValue" Type="nvarchar" Mode="In" />
           <Parameter Name="SubDashboardOtherDimensionTable" Type="int" Mode="In" />
           <Parameter Name="SubDashboardMainDimensionTable" Type="int" Mode="In" />
-          <Parameter Name="UserId" Type="int" Mode="In" />
-          <Parameter Name="RoleId" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="RoleId" Type="uniqueidentifier" Mode="In" />
         </Function>
         <Function Name="CorrelationCalculation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="QueryToRun" Type="varchar(max)" Mode="In" />
@@ -4256,8 +4221,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
           <Parameter Name="DateField" Type="nvarchar" Mode="In" />
           <Parameter Name="FilterValues" Type="nvarchar(max)" Mode="In" />
           <Parameter Name="ViewByValue" Type="nvarchar" Mode="In" />
-          <Parameter Name="UserId" Type="int" Mode="In" />
-          <Parameter Name="RoleId" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="RoleId" Type="uniqueidentifier" Mode="In" />
         </Function>
         <Function Name="GetLineItemList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PlanId" Type="nvarchar(max)" Mode="In" />
@@ -4466,8 +4431,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
           <Parameter Name="ViewByValue" Type="nvarchar" Mode="In" />
           <Parameter Name="SubDashboardOtherDimensionTable" Type="int" Mode="In" />
           <Parameter Name="SubDashboardMainDimensionTable" Type="int" Mode="In" />
-          <Parameter Name="UserId" Type="int" Mode="In" />
-          <Parameter Name="RoleId" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="RoleId" Type="uniqueidentifier" Mode="In" />
         </Function>
         <Function Name="GetWeight" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="float">
           <Parameter Name="ActivityDate" Type="datetime" Mode="In" />
@@ -4583,8 +4548,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
           <Parameter Name="SubDashboardOtherDimensionTable" Type="int" Mode="In" />
           <Parameter Name="SubDashboardMainDimensionTable" Type="int" Mode="In" />
           <Parameter Name="DisplayStatSignificance" Type="nvarchar" Mode="In" />
-          <Parameter Name="UserId" Type="int" Mode="In" />
-          <Parameter Name="RoleId" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="RoleId" Type="uniqueidentifier" Mode="In" />
         </Function>
         <Function Name="RunAggregation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="DEBUG" Type="bit" Mode="In" />
@@ -4985,37 +4950,21 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Budget_Detail" EntitySet="Budget_Detail" />
             <End Role="Budget_Permission" EntitySet="Budget_Permission" />
           </AssociationSet>
-          <AssociationSet Name="FK__Improveme__Impro__3F7150CD" Association="Self.FK__Improveme__Impro__3F7150CD">
-            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
-            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Improveme__Impro__7DA38D70" Association="Self.FK__Improveme__Impro__7DA38D70">
-            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
-            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Plan_Camp__PlanC__245D67DE" Association="Self.FK__Plan_Camp__PlanC__245D67DE">
+          <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="Self.FK__Plan_Camp__PlanC__43A1090D">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Plan_Camp__PlanP__236943A5" Association="Self.FK__Plan_Camp__PlanP__236943A5">
+          <AssociationSet Name="FK__Plan_Camp__PlanP__42ACE4D4" Association="Self.FK__Plan_Camp__PlanP__42ACE4D4">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanC__2645B050" Association="Self.FK__Tactic_Sh__PlanC__2645B050">
+          <AssociationSet Name="FK__Tactic_Sh__PlanC__4589517F" Association="Self.FK__Tactic_Sh__PlanC__4589517F">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanP__25518C17" Association="Self.FK__Tactic_Sh__PlanP__25518C17">
+          <AssociationSet Name="FK__Tactic_Sh__PlanP__44952D46" Association="Self.FK__Tactic_Sh__PlanP__44952D46">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
-          </AssociationSet>
-          <AssociationSet Name="FK__TacticTyp__Stage__3E7D2C94" Association="Self.FK__TacticTyp__Stage__3E7D2C94">
-            <End Role="Stage" EntitySet="Stage" />
-            <End Role="TacticType" EntitySet="TacticType" />
-          </AssociationSet>
-          <AssociationSet Name="FK__TacticTyp__Stage__7CAF6937" Association="Self.FK__TacticTyp__Stage__7CAF6937">
-            <End Role="Stage" EntitySet="Stage" />
-            <End Role="TacticType" EntitySet="TacticType" />
           </AssociationSet>
           <AssociationSet Name="FK_Alerts_Alert_Rules" Association="Self.FK_Alerts_Alert_Rules">
             <End Role="Alert_Rules" EntitySet="Alert_Rules" />
@@ -5193,9 +5142,9 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Homepage" EntitySet="Homepage" />
             <End Role="HomepageDimension" EntitySet="HomepageDimension" />
           </AssociationSet>
-          <AssociationSet Name="FK_ImprovementTacticType_ImprovementTacticType" Association="Self.FK_ImprovementTacticType_ImprovementTacticType">
+          <AssociationSet Name="FK_ImprovementTacticType_Metric_ImprovementTacticType" Association="Self.FK_ImprovementTacticType_Metric_ImprovementTacticType">
             <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
-            <End Role="ImprovementTacticType1" EntitySet="ImprovementTacticType" />
+            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
           </AssociationSet>
           <AssociationSet Name="FK_ImprovementTacticType_Metric_Stage" Association="Self.FK_ImprovementTacticType_Metric_Stage">
             <End Role="Stage" EntitySet="Stage" />
@@ -5245,10 +5194,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="IntegrationWorkFrontTemplates" EntitySet="IntegrationWorkFrontTemplates" />
           </AssociationSet>
-          <AssociationSet Name="FK_IntegrationInstanceLog_IntegrationInstance" Association="Self.FK_IntegrationInstanceLog_IntegrationInstance">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
-            <End Role="IntegrationInstanceLog" EntitySet="IntegrationInstanceLog" />
-          </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstance" Association="Self.FK_IntegrationInstancePlanEntityLog_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="IntegrationInstancePlanEntityLog" EntitySet="IntegrationInstancePlanEntityLog" />
@@ -5257,10 +5202,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="IntegrationInstanceSection" EntitySet="IntegrationInstanceSection" />
             <End Role="IntegrationInstancePlanEntityLog" EntitySet="IntegrationInstancePlanEntityLog" />
           </AssociationSet>
-          <AssociationSet Name="FK_IntegrationInstanceSection_IntegrationInstance" Association="Self.FK_IntegrationInstanceSection_IntegrationInstance">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
-            <End Role="IntegrationInstanceSection" EntitySet="IntegrationInstanceSection" />
-          </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstanceSection_IntegrationInstanceLog" Association="Self.FK_IntegrationInstanceSection_IntegrationInstanceLog">
             <End Role="IntegrationInstanceLog" EntitySet="IntegrationInstanceLog" />
             <End Role="IntegrationInstanceSection" EntitySet="IntegrationInstanceSection" />
@@ -5268,6 +5209,10 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <AssociationSet Name="FK_IntegrationTypeAttribute_IntegrationType" Association="Self.FK_IntegrationTypeAttribute_IntegrationType">
             <End Role="IntegrationType" EntitySet="IntegrationType" />
             <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttribute" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontProgram_Mapping_IntegrationWorkFrontPortfolios" Association="Self.FK_IntegrationWorkFrontProgram_Mapping_IntegrationWorkFrontPortfolios">
+            <End Role="IntegrationWorkFrontPortfolios" EntitySet="IntegrationWorkFrontPortfolios" />
+            <End Role="IntegrationWorkFrontProgram_Mapping" EntitySet="IntegrationWorkFrontProgram_Mapping" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId" Association="Self.FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
@@ -5354,6 +5299,10 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Model_Stage" EntitySet="Model_Stage" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_IntegrationInstance" Association="Self.FK_Model_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="Model" EntitySet="Model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_IntegrationInstance1" Association="Self.FK_Model_IntegrationInstance1">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="Model" EntitySet="Model" />
           </AssociationSet>
@@ -5569,6 +5518,14 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
+          <AssociationSet Name="fk_TacticType_Model" Association="Self.fk_TacticType_Model">
+            <End Role="Model" EntitySet="Model" />
+            <End Role="TacticType" EntitySet="TacticType" />
+          </AssociationSet>
+          <AssociationSet Name="fk_TacticType_Stage" Association="Self.fk_TacticType_Stage">
+            <End Role="Stage" EntitySet="Stage" />
+            <End Role="TacticType" EntitySet="TacticType" />
+          </AssociationSet>
           <AssociationSet Name="FK_TacticType_TacticType_WorkFrontTemplateId" Association="Self.FK_TacticType_TacticType_WorkFrontTemplateId">
             <End Role="IntegrationWorkFrontTemplates" EntitySet="IntegrationWorkFrontTemplates" />
             <End Role="TacticType" EntitySet="TacticType" />
@@ -5584,10 +5541,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <AssociationSet Name="FK_User_Notification_Notification" Association="Self.FK_User_Notification_Notification">
             <End Role="Notification" EntitySet="Notification" />
             <End Role="User_Notification" EntitySet="User_Notification" />
-          </AssociationSet>
-          <AssociationSet Name="FK_User_Permission_Dashboard" Association="Self.FK_User_Permission_Dashboard">
-            <End Role="Dashboard" EntitySet="Dashboard" />
-            <End Role="User_Permission" EntitySet="User_Permission" />
           </AssociationSet>
           <AssociationSet Name="FK_User_RestrictedDimensionValues_Dimension" Association="Self.FK_User_RestrictedDimensionValues_Dimension">
             <End Role="Dimension" EntitySet="Dimension" />
@@ -5698,8 +5651,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="ViewByValue" Mode="In" Type="String" />
             <Parameter Name="SubDashboardOtherDimensionTable" Mode="In" Type="Int32" />
             <Parameter Name="SubDashboardMainDimensionTable" Mode="In" Type="Int32" />
-            <Parameter Name="UserId" Mode="In" Type="Int32" />
-            <Parameter Name="RoleId" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
+            <Parameter Name="RoleId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="CorrelationCalculation">
           <Parameter Name="QueryToRun" Mode="In" Type="String" />
@@ -5863,8 +5816,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="DateField" Mode="In" Type="String" />
             <Parameter Name="FilterValues" Mode="In" Type="String" />
             <Parameter Name="ViewByValue" Mode="In" Type="String" />
-            <Parameter Name="UserId" Mode="In" Type="Int32" />
-            <Parameter Name="RoleId" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
+            <Parameter Name="RoleId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="GetLineItemList" ReturnType="Collection(MRPModel.GetLineItemList_Result)">
           <Parameter Name="PlanId" Mode="In" Type="String" />
@@ -5945,8 +5898,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="ViewByValue" Mode="In" Type="String" />
             <Parameter Name="SubDashboardOtherDimensionTable" Mode="In" Type="Int32" />
             <Parameter Name="SubDashboardMainDimensionTable" Mode="In" Type="Int32" />
-            <Parameter Name="UserId" Mode="In" Type="Int32" />
-            <Parameter Name="RoleId" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
+            <Parameter Name="RoleId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="IdentifyDimensions" IsComposable="true" ReturnType="Collection(MRPModel.IdentifyDimensions_Result)">
             <Parameter Name="ObjectId" Mode="In" Type="Int32" />
@@ -6022,8 +5975,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="SubDashboardOtherDimensionTable" Mode="In" Type="Int32" />
             <Parameter Name="SubDashboardMainDimensionTable" Mode="In" Type="Int32" />
             <Parameter Name="DisplayStatSignificance" Mode="In" Type="String" />
-            <Parameter Name="UserId" Mode="In" Type="Int32" />
-            <Parameter Name="RoleId" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
+            <Parameter Name="RoleId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="RunAggregation">
             <Parameter Name="DEBUG" Mode="In" Type="Boolean" />
@@ -7429,7 +7382,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="ObjectId" Type="Int32" />
           <Property Name="ParentObjectId" Type="Int32" />
           <Property Name="ComponentId" Type="Int32" />
-          <Property Name="ComponentTitle" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="ComponentTitle" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="ComponentType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ActionName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ActionSuffix" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -7740,7 +7693,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="TimeUtc" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Sequence" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="AllXml" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Client" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Client" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="EntityIntegration_Attribute">
           <Key>
@@ -7760,8 +7713,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="EntityType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="EntityType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <EntityType Name="FiscalQuarterYear">
           <Key>
@@ -8129,7 +8082,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="SyncStart" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="SyncEnd" Type="DateTime" Precision="3" />
           <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CreateBy" Type="Int32" Nullable="false" />
           <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstanceSection_IntegrationInstance" FromRole="IntegrationInstanceSection" ToRole="IntegrationInstance" />
@@ -8377,7 +8330,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="ComputeAllValuesFormula" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="DrillDownWhereClause" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="UseRowCountFromFormula" Type="Boolean" />
-          <Property Name="IsCurrency" Type="Boolean" />
+          <Property Name="IsCurrency" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Goals" Relationship="MRPModel.FK_Goal_Measure" FromRole="Measure" ToRole="Goal" />
           <NavigationProperty Name="GoalDistributions" Relationship="MRPModel.FK_GoalDistribution_Measure" FromRole="Measure" ToRole="GoalDistribution" />
           <NavigationProperty Name="KeyDatas" Relationship="MRPModel.FK_KeyData_Measure" FromRole="Measure" ToRole="KeyData" />
@@ -11227,14 +11180,15 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <PropertyRef Name="ViewId" />
           </Key>
           <Property Name="ViewId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ViewName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ViewName" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="ModifyDate" Type="DateTime" Precision="3" />
           <Property Name="IsDefault" Type="Boolean" />
           <Property Name="GridAttribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="BudgetAttribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedBy" Type="Int32" />
-          <Property Name="ModifyBy" Type="Int32" />
+          <Property Name="CreatedBy" Type="Int32" Nullable="false" />
+          <Property Name="ModifyBy" Type="Int32" Nullable="false" />
+          <Property Name="MarketingBudgetAttribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <ComplexType Name="GetCollaboratorId_Result">
           <Property Type="Int32" Name="PlanTacticCommentId" Nullable="false" />
@@ -13843,6 +13797,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="User_CoulmnView">
             <EntityTypeMapping TypeName="MRPModel.User_CoulmnView">
               <MappingFragment StoreEntitySet="User_CoulmnView">
+                <ScalarProperty Name="MarketingBudgetAttribute" ColumnName="MarketingBudgetAttribute" />
                 <ScalarProperty Name="ModifyBy" ColumnName="ModifyBy" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="BudgetAttribute" ColumnName="BudgetAttribute" />
