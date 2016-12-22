@@ -1,249 +1,247 @@
-﻿//function tooltipformatterBootStrap(budgetValue, cell, container, DecimalPlaces, MagnitudePlaces, symbolPreList) {
-//    if (budgetValue) {
-//        var decimalValue;
-//        var magnitudeValue;
-//        if (DecimalPlaces === undefined || DecimalPlaces == null) {
-//            decimalValue = 2;
-//        }
-//        else {
-//            decimalValue = DecimalPlaces;
-//        }
+﻿function ME_tooltipformatterBootStrap(budgetValue, cell, container, DecimalPlaces, MagnitudePlaces, symbolPreList) {
+    if (budgetValue) {
+        var decimalValue;
+        var magnitudeValue;
+        if (DecimalPlaces === undefined || DecimalPlaces == null) {
+            decimalValue = 2;
+        }
+        else {
+            decimalValue = DecimalPlaces;
+        }
 
-//        // Start - Added By Nandish Shah for Ticket #635 on 12/10/2015
-//        if (MagnitudePlaces === undefined || MagnitudePlaces == null) {
-//            magnitudeValue = 0;
-//        }
-//        else {
-//            magnitudeValue = MagnitudePlaces;
-//        }
-//        var isDollarAmout = false;
-//        var isPercentAmout = false;
-//        var isPostiveSign = false;
-//        var isNegativeSign = false;
-//        var CorrectBudgetVal = false;
-//        if (budgetValue.indexOf('%') > -1) {
-//            isPercentAmout = true;
-//        }
+        if (MagnitudePlaces === undefined || MagnitudePlaces == null) {
+            magnitudeValue = 0;
+        }
+        else {
+            magnitudeValue = MagnitudePlaces;
+        }
+        var isDollarAmout = false;
+        var isPercentAmout = false;
+        var isPostiveSign = false;
+        var isNegativeSign = false;
+        var CorrectBudgetVal = false;
+        if (budgetValue.indexOf('%') > -1) {
+            isPercentAmout = true;
+        }
 
-//        var StrAfterRemExtrChar = [];
-//        var SpChar = '';
-//        StrAfterRemExtrChar = RemoveExtraCharactersFromString(budgetValue, symbolPreList);
-//        budgetValue = StrAfterRemExtrChar[0];
-//        SpChar = StrAfterRemExtrChar[1];
-//        var remNumber = '';
+        var StrAfterRemExtrChar = [];
+        var SpChar = '';
+        StrAfterRemExtrChar = ME_RemoveExtraCharactersFromString(budgetValue, symbolPreList);
+        budgetValue = StrAfterRemExtrChar[0];
+        SpChar = StrAfterRemExtrChar[1];
+        var remNumber = '';
 
-//        var newremain = '';
+        var newremain = '';
 
-//        if (budgetValue.indexOf(".") != -1) {
-//            remNumber = budgetValue.substr(budgetValue.indexOf('.'));
-//            if (remNumber.length > 2)
-//                newremain = remNumber.substring(0, decimalValue + 1);
-//        }
-//        if (magnitudeValue != 0) {
-//            if (budgetValue > 999 && !isNaN(budgetValue)) {
-//                CorrectBudgetVal = true;
-//                // Start - Added By Nandish Shah for Ticket #635 on 12/10/2015
-//                var ActVal = GetAbberiviatedValue(budgetValue, decimalValue, magnitudeValue);
-//                if (isPercentAmout) {
-//                    $(cell).html(ActVal + ' %');
-//                    if (remNumber == '' && DecimalPlaces == null) {
-//                        $(cell).attr('data-original-title', number_format(budgetValue.toString(), 0, '.', ',') + ' %');
-//                    }
-//                    else if (remNumber == '') {
-//                        $(cell).attr('data-original-title', number_format(budgetValue.toString(), decimalValue, '.', ',') + ' %');
-//                    }
-//                    else {
-//                        $(cell).attr('data-original-title', number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') + ' %');
-//                    }
-//                }
-//                else {
-//                    $(cell).html(SpChar == '' ? ActVal : SpChar + ' ' + ActVal);
-//                    if (remNumber == '' && DecimalPlaces == null) {
-//                        $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.toString(), 0, '.', ',') : SpChar + ' ' + number_format(budgetValue.toString(), 0, '.', ','));
-//                    }
-//                    else if (remNumber == '') {
-//                        $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.toString(), decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue.toString(), decimalValue, '.', ','));
-//                    }
-//                    else {
-//                        $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ','));
-//                    }
-//                }
-//                $(cell).addClass('north');
-//                $(cell).attr('data-toggle', 'popover');
-//                $(cell).popover({
-//                    trigger: "hover",
-//                    placement: 'bottom',
-//                    container: container,
-//                    html: true,
-//                });
-//            }
-//            else if (budgetValue < -999 && !isNaN(budgetValue)) {
-//                CorrectBudgetVal = true;
-//                var ActVal = GetAbberiviatedValue(budgetValue, decimalValue, magnitudeValue);
-//                if (isPercentAmout) {
-//                    $(cell).html(ActVal + ' %');
-//                    if (remNumber == '' && DecimalPlaces == null) {
-//                        $(cell).attr('data-original-title', number_format(budgetValue.toString(), 0, '.', ',') + ' %');
-//                    }
-//                    else if (remNumber == '') {
-//                        $(cell).attr('data-original-title', number_format(budgetValue.toString(), decimalValue, '.', ',') + ' %');
-//                    }
-//                    else {
-//                        $(cell).attr('data-original-title', number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') + ' %');
-//                    }
-//                }
-//                else {
-//                    $(cell).html(SpChar == '' ? ActVal : SpChar + ' ' + ActVal);
-//                    if (remNumber == '' && DecimalPlaces == null) {
-//                        $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.toString(), 0, '.', ',') : SpChar + ' ' + number_format(budgetValue.toString(), 0, '.', ','));
-//                    }
-//                    else if (remNumber == '') {
-//                        $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.toString(), decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue.toString(), decimalValue, '.', ','));
-//                    }
-//                    else {
-//                        $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ','));
-//                    }
-//                }
-//                $(cell).addClass('north');
-//                $(cell).attr('data-toggle', 'popover');
-//                $(cell).popover({
-//                    trigger: "hover",
-//                    placement: 'bottom',
-//                    container: container,
-//                    html: true
-//                });
-//            }
-//            else {
-//                if (!isNaN(budgetValue)) {
-//                    CorrectBudgetVal = true;
-//                    var ActVal = GetAbberiviatedValue(budgetValue, decimalValue, magnitudeValue);
-//                    if (isPercentAmout) {
-//                        $(cell).html(ActVal + ' %');
-//                        if (remNumber == '' && DecimalPlaces == null) {
-//                            $(cell).attr('data-original-title', number_format(budgetValue.toString(), 0, '.', ',') + ' %');
-//                        }
-//                        else if (remNumber == '') {
-//                            $(cell).attr('data-original-title', number_format(budgetValue.toString(), decimalValue, '.', ',') + ' %');
-//                        }
-//                        else {
-//                            $(cell).attr('data-original-title', number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') + ' %');
-//                        }
-//                    }
-//                    else {
-//                        $(cell).html(SpChar == '' ? ActVal : SpChar + ' ' + ActVal);
-//                        if (remNumber == '' && DecimalPlaces == null) {
-//                            $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.toString(), 0, '.', ',') : SpChar + ' ' + number_format(budgetValue.toString(), 0, '.', ','));
-//                        }
-//                        else if (remNumber == '') {
-//                            $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.toString(), decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue.toString(), decimalValue, '.', ','));
-//                        }
-//                        else {
-//                            $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ','));
-//                        }
-//                    }
-//                    $(cell).addClass('north');
-//                    $(cell).attr('data-toggle', 'popover');
-//                    $(cell).popover({
-//                        trigger: "hover",
-//                        placement: 'bottom',
-//                        container: container,
-//                        html: true
-//                    });
-//                }
-//                else {
-//                    CorrectBudgetVal = false;
-//                    $(cell).html(budgetValue);
-//                    $(cell).attr('data-original-title', budgetValue);
-//                    $(cell).addClass('north');
-//                    $(cell).attr('data-toggle', 'popover');
-//                    $(cell).popover({
-//                        trigger: "hover",
-//                        placement: 'bottom',
-//                        container: container,
-//                        html: true
-//                    });
-//                }
-//            }
-//            if (!CorrectBudgetVal && !isNaN(budgetValue)) {
-//                if (isPercentAmout) {
-//                    $(cell).html(budgetValue.replace(/ /g, '') + ' %');
-//                    $(cell).attr('data-original-title', number_format(budgetValue.replace(/ /g, '').toString(), decimalValue, '.', ',') + ' %');
-//                }
-//                else {
-//                    $(cell).html(SpChar == '' ? budgetValue.replace(/ /g, '') : SpChar + ' ' + budgetValue.replace(/ /g, ''));
-//                    $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue.replace(/ /g, '').toString(), decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue.replace(/ /g, '').toString(), decimalValue, '.', ','));
-//                }
-//                $(cell).addClass('north');
-//                $(cell).attr('data-toggle', 'popover');
-//                $(cell).popover({
-//                    trigger: "hover",
-//                    placement: 'bottom',
-//                    container: container,
-//                    html: true
-//                });
-//            }
-//        }
-//        else {
-//            if (isNaN(budgetValue)) {
-//                if (isPercentAmout) {
-//                    $(cell).html(budgetValue + ' %');
-//                    $(cell).attr('data-original-title', budgetValue + ' %');
-//                }
-//                else {
-//                    $(cell).html(SpChar == '' ? budgetValue : SpChar + ' ' + budgetValue);
-//                    $(cell).attr('data-original-title', SpChar == '' ? budgetValue : SpChar + ' ' + budgetValue);
-//                }
-//            }
-//            else {
-//                if (isPercentAmout) {
-//                    if (DecimalPlaces == null) {
-//                        if (remNumber == '') {
-//                            $(cell).html(number_format(budgetValue, 0, '.', ',') + ' %');
-//                            $(cell).attr('data-original-title', number_format(budgetValue, 0, '.', ',') + ' %');
-//                        }
-//                        else {
-//                            $(cell).html(number_format(budgetValue, decimalValue, '.', ',') + ' %');
-//                            $(cell).attr('data-original-title', number_format(budgetValue, decimalValue, '.', ',') + ' %');
-//                        }
-//                    }
-//                    else {
-//                        $(cell).html(number_format(budgetValue, decimalValue, '.', ',') + ' %');
-//                        $(cell).attr('data-original-title', number_format(budgetValue, decimalValue, '.', ',') + ' %');
-//                    }
-//                }
-//                else {
-//                    if (DecimalPlaces == null) {
-//                        if (remNumber == '') {
-//                            $(cell).html(SpChar == '' ? number_format(budgetValue, 0, '.', ',') : SpChar + ' ' + number_format(budgetValue, 0, '.', ','));
-//                            $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue, 0, '.', ',') : SpChar + ' ' + number_format(budgetValue, 0, '.', ','));
-//                        }
-//                        else {
-//                            $(cell).html(SpChar == '' ? number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue, decimalValue, '.', ','));
-//                            $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue, decimalValue, '.', ','));
-//                        }
-//                    }
-//                    else {
-//                        $(cell).html(SpChar == '' ? number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue, decimalValue, '.', ','));
-//                        if (remNumber == '') {
-//                            $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue, decimalValue, '.', ','));
-//                        }
-//                        else {
-//                            $(cell).attr('data-original-title', SpChar == '' ? number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + number_format(budgetValue, decimalValue, '.', ','));
-//                        }
-//                    }
-//                }
-//            }
-//            $(cell).addClass('north');
-//            $(cell).attr('data-toggle', 'popover');
-//            $(cell).popover({
-//                trigger: "hover",
-//                placement: 'bottom',
-//                container: container,
-//                html: true
-//            });
-//        }
-//    }
-//}
+        if (budgetValue.indexOf(".") != -1) {
+            remNumber = budgetValue.substr(budgetValue.indexOf('.'));
+            if (remNumber.length > 2)
+                newremain = remNumber.substring(0, decimalValue + 1);
+        }
+        if (magnitudeValue != 0) {
+            if (budgetValue > 999 && !isNaN(budgetValue)) {
+                CorrectBudgetVal = true;
+                var ActVal = ME_GetAbberiviatedValue(budgetValue, decimalValue, magnitudeValue);
+                if (isPercentAmout) {
+                    $(cell).html(ActVal + ' %');
+                    if (remNumber == '' && DecimalPlaces == null) {
+                        $(cell).attr('data-original-title', ME_number_format(budgetValue.toString(), 0, '.', ',') + ' %');
+                    }
+                    else if (remNumber == '') {
+                        $(cell).attr('data-original-title', ME_number_format(budgetValue.toString(), decimalValue, '.', ',') + ' %');
+                    }
+                    else {
+                        $(cell).attr('data-original-title', ME_number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') + ' %');
+                    }
+                }
+                else {
+                    $(cell).html(SpChar == '' ? ActVal : SpChar + ' ' + ActVal);
+                    if (remNumber == '' && DecimalPlaces == null) {
+                        $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.toString(), 0, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.toString(), 0, '.', ','));
+                    }
+                    else if (remNumber == '') {
+                        $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.toString(), decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.toString(), decimalValue, '.', ','));
+                    }
+                    else {
+                        $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ','));
+                    }
+                }
+                //$(cell).addClass('north');
+                //$(cell).attr('data-toggle', 'popover');
+                //$(cell).popover({
+                //    trigger: "hover",
+                //    placement: 'bottom',
+                //    container: container,
+                //    html: true,
+                //});
+            }
+            else if (budgetValue < -999 && !isNaN(budgetValue)) {
+                CorrectBudgetVal = true;
+                var ActVal = ME_GetAbberiviatedValue(budgetValue, decimalValue, magnitudeValue);
+                if (isPercentAmout) {
+                    $(cell).html(ActVal + ' %');
+                    if (remNumber == '' && DecimalPlaces == null) {
+                        $(cell).attr('data-original-title', ME_number_format(budgetValue.toString(), 0, '.', ',') + ' %');
+                    }
+                    else if (remNumber == '') {
+                        $(cell).attr('data-original-title', ME_number_format(budgetValue.toString(), decimalValue, '.', ',') + ' %');
+                    }
+                    else {
+                        $(cell).attr('data-original-title', ME_number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') + ' %');
+                    }
+                }
+                else {
+                    $(cell).html(SpChar == '' ? ActVal : SpChar + ' ' + ActVal);
+                    if (remNumber == '' && DecimalPlaces == null) {
+                        $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.toString(), 0, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.toString(), 0, '.', ','));
+                    }
+                    else if (remNumber == '') {
+                        $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.toString(), decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.toString(), decimalValue, '.', ','));
+                    }
+                    else {
+                        $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ','));
+                    }
+                }
+                //$(cell).addClass('north');
+                //$(cell).attr('data-toggle', 'popover');
+                //$(cell).popover({
+                //    trigger: "hover",
+                //    placement: 'bottom',
+                //    container: container,
+                //    html: true
+                //});
+            }
+            else {
+                if (!isNaN(budgetValue)) {
+                    CorrectBudgetVal = true;
+                    var ActVal = ME_GetAbberiviatedValue(budgetValue, decimalValue, magnitudeValue);
+                    if (isPercentAmout) {
+                        $(cell).html(ActVal + ' %');
+                        if (remNumber == '' && DecimalPlaces == null) {
+                            $(cell).attr('data-original-title', ME_number_format(budgetValue.toString(), 0, '.', ',') + ' %');
+                        }
+                        else if (remNumber == '') {
+                            $(cell).attr('data-original-title', ME_number_format(budgetValue.toString(), decimalValue, '.', ',') + ' %');
+                        }
+                        else {
+                            $(cell).attr('data-original-title', ME_number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') + ' %');
+                        }
+                    }
+                    else {
+                        $(cell).html(SpChar == '' ? ActVal : SpChar + ' ' + ActVal);
+                        if (remNumber == '' && DecimalPlaces == null) {
+                            $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.toString(), 0, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.toString(), 0, '.', ','));
+                        }
+                        else if (remNumber == '') {
+                            $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.toString(), decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.toString(), decimalValue, '.', ','));
+                        }
+                        else {
+                            $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.toString(), decimalValue == 0 ? 2 : decimalValue, '.', ','));
+                        }
+                    }
+                    //$(cell).addClass('north');
+                    //$(cell).attr('data-toggle', 'popover');
+                    //$(cell).popover({
+                    //    trigger: "hover",
+                    //    placement: 'bottom',
+                    //    container: container,
+                    //    html: true
+                    //});
+                }
+                else {
+                    CorrectBudgetVal = false;
+                    $(cell).html(budgetValue);
+                    $(cell).attr('data-original-title', budgetValue);
+                    //$(cell).addClass('north');
+                    //$(cell).attr('data-toggle', 'popover');
+                    //$(cell).popover({
+                    //    trigger: "hover",
+                    //    placement: 'bottom',
+                    //    container: container,
+                    //    html: true
+                    //});
+                }
+            }
+            if (!CorrectBudgetVal && !isNaN(budgetValue)) {
+                if (isPercentAmout) {
+                    $(cell).html(budgetValue.replace(/ /g, '') + ' %');
+                    $(cell).attr('data-original-title', ME_number_format(budgetValue.replace(/ /g, '').toString(), decimalValue, '.', ',') + ' %');
+                }
+                else {
+                    $(cell).html(SpChar == '' ? budgetValue.replace(/ /g, '') : SpChar + ' ' + budgetValue.replace(/ /g, ''));
+                    $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue.replace(/ /g, '').toString(), decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue.replace(/ /g, '').toString(), decimalValue, '.', ','));
+                }
+                //$(cell).addClass('north');
+                //$(cell).attr('data-toggle', 'popover');
+                //$(cell).popover({
+                //    trigger: "hover",
+                //    placement: 'bottom',
+                //    container: container,
+                //    html: true
+                //});
+            }
+        }
+        else {
+            if (isNaN(budgetValue)) {
+                if (isPercentAmout) {
+                    $(cell).html(budgetValue + ' %');
+                    $(cell).attr('data-original-title', budgetValue + ' %');
+                }
+                else {
+                    $(cell).html(SpChar == '' ? budgetValue : SpChar + ' ' + budgetValue);
+                    $(cell).attr('data-original-title', SpChar == '' ? budgetValue : SpChar + ' ' + budgetValue);
+                }
+            }
+            else {
+                if (isPercentAmout) {
+                    if (DecimalPlaces == null) {
+                        if (remNumber == '') {
+                            $(cell).html(ME_number_format(budgetValue, 0, '.', ',') + ' %');
+                            $(cell).attr('data-original-title', ME_number_format(budgetValue, 0, '.', ',') + ' %');
+                        }
+                        else {
+                            $(cell).html(ME_number_format(budgetValue, decimalValue, '.', ',') + ' %');
+                            $(cell).attr('data-original-title', ME_number_format(budgetValue, decimalValue, '.', ',') + ' %');
+                        }
+                    }
+                    else {
+                        $(cell).html(ME_number_format(budgetValue, decimalValue, '.', ',') + ' %');
+                        $(cell).attr('data-original-title', ME_number_format(budgetValue, decimalValue, '.', ',') + ' %');
+                    }
+                }
+                else {
+                    if (DecimalPlaces == null) {
+                        if (remNumber == '') {
+                            $(cell).html(SpChar == '' ? ME_number_format(budgetValue, 0, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue, 0, '.', ','));
+                            $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue, 0, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue, 0, '.', ','));
+                        }
+                        else {
+                            $(cell).html(SpChar == '' ? ME_number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue, decimalValue, '.', ','));
+                            $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue, decimalValue, '.', ','));
+                        }
+                    }
+                    else {
+                        $(cell).html(SpChar == '' ? ME_number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue, decimalValue, '.', ','));
+                        if (remNumber == '') {
+                            $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue, decimalValue, '.', ','));
+                        }
+                        else {
+                            $(cell).attr('data-original-title', SpChar == '' ? ME_number_format(budgetValue, decimalValue, '.', ',') : SpChar + ' ' + ME_number_format(budgetValue, decimalValue, '.', ','));
+                        }
+                    }
+                }
+            }
+            //$(cell).addClass('north');
+            //$(cell).attr('data-toggle', 'popover');
+            //$(cell).popover({
+            //    trigger: "hover",
+            //    placement: 'bottom',
+            //    container: container,
+            //    html: true
+            //});
+        }
+    }
+}
 //function SetLabelFormaterWithoutTipsy(obj) {
 //    try {
 //        var isAmount = false;
@@ -407,32 +405,30 @@
 //        // hidePleaseWaitDialog();
 //    }
 //}
-//function RemoveExtraCharactersFromString(value, SpCharArr) {
-//    var symbolPreList = [];
-//    var SpChar = '';
-//    if (SpCharArr === undefined || SpCharArr == null) {
-//        symbolPreList = ['$', '₭', '%', 'NA', '£', '₹', 'Y', '¥'];
-//    }
-//    else {
-//        symbolPreList = SpCharArr;
-//    }
-//    try {
-//        for (var i = 0; i < symbolPreList.length; i++) {
-//            if (value.indexOf(symbolPreList[i]) != -1) {
-//                value = value.replace(symbolPreList[i], "");
-//                SpChar = symbolPreList[i];
-//                //break;
-//            }
-//        }
-//        value = value.replace(/[\,]+/g, "");
-//        return [value, SpChar];
-//    }
-//    catch (err) {
-//        if (arguments != null && arguments.callee != null && arguments.callee.trace)
-//            logError(err, arguments.callee.trace());
-//        //hidePleaseWaitDialog();
-//    }
-//}
+function ME_RemoveExtraCharactersFromString(value, SpCharArr) {
+    var symbolPreList = [];
+    var SpChar = '';
+    if (SpCharArr === undefined || SpCharArr == null) {
+        symbolPreList = ['$', '₭', '%', 'NA', '£', '₹', 'Y', '¥'];
+    }
+    else {
+        symbolPreList = SpCharArr;
+    }
+    try {
+        for (var i = 0; i < symbolPreList.length; i++) {
+            if (value.indexOf(symbolPreList[i]) != -1) {
+                value = value.replace(symbolPreList[i], "");
+                SpChar = symbolPreList[i];
+            }
+        }
+        value = value.replace(/[\,]+/g, "");
+        return [value, SpChar];
+    }
+    catch (err) {
+        if (arguments != null && arguments.callee != null && arguments.callee.trace)
+            logError(err, arguments.callee.trace());
+    }
+}
 //function ConvertToNum(value) {
 //    if (isNaN(value)) {
 //        if (value != null) {
@@ -510,7 +506,6 @@ function ME_GetAbberiviatedValue(value, DecimalPlaces, MagnitudePlaces) {
         var indexvalue = 0;
         var actualvalue;
 
-        // Start - Added By Nandish Shah for Ticket #635 on 12/10/2015
         if (DecimalPlaces === undefined || DecimalPlaces == null) {
             if (MagnitudePlaces === undefined || MagnitudePlaces == null) {
                 if (absValue < 1000) {
@@ -699,8 +694,6 @@ function ME_GetAbberiviatedValue(value, DecimalPlaces, MagnitudePlaces) {
     catch (err) {
         if (arguments != null && arguments.callee != null && arguments.callee.trace)
             logError(err, arguments.callee.trace());
-        //hidePleaseWaitDialog();
-
     }
 }
 function ME_number_format(number, decimals, dec_point, thousands_sep) {
@@ -715,7 +708,6 @@ function ME_number_format(number, decimals, dec_point, thousands_sep) {
                 var k = Math.pow(10, prec);
                 return '' + Math.round(n * k) / k;
             };
-        // Fix for IE parseFloat(0.55).toFixed(0) = 0;
         s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
         if (s[0].length > 3) {
             s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
@@ -729,7 +721,6 @@ function ME_number_format(number, decimals, dec_point, thousands_sep) {
     catch (err) {
         if (arguments != null && arguments.callee != null && arguments.callee.trace)
             logError(err, arguments.callee.trace());
-        //hidePleaseWaitDialog();
     }
 }
 function ME_GetSymbolforValues(value, symbolType) {
@@ -743,8 +734,7 @@ function ME_GetSymbolforValues(value, symbolType) {
     else if (symbolType != 'undefined' && symbolType != null && symbolType != ' ') {
         if (symbolType.toLowerCase() == "percentage") {
             if (!isNaN(value)) {
-                value = (value * 100) + ""
-                //value = parseFloat((value * 100)) + "%";
+                value = (value * 100) + "";
                 if (value.indexOf('.') != -1) {
                     var arr = value.split('.');
                     if (arr[1].length > 2)
@@ -851,6 +841,7 @@ function ManageViewAllIcon(obj,msgNoDataAvailable, msgGraphNotConfigure) {
             $("#" + id).show();
     }
 }
+var symbolPreListDefault = ['$', '₭', ' %', 'NA', '£', '₹', 'Y', '¥'];
 //Following function is created to bind report table in to dhtmlx grid.
 function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperName, isReportTable) {
   
@@ -862,6 +853,23 @@ function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperNa
     if (defaultSortOrder != 'asc')
         defaultSortOrder = 'des';
     var ShowFooterRow = $('#hdn_' + reportTableId).attr('ShowFooterRow');
+    var ReportSymbols = $('#hdn_' + reportTableId).attr('ReportSymbols');
+    var symbolPreList = [];
+    if (ReportSymbols != undefined && ReportSymbols != 'undefined' && ReportSymbols != "") {
+        symbolPreList = ReportSymbols.split(',');
+    }
+    
+    if (symbolPreList.length <= 1 && (symbolPreList[0] == "" || symbolPreList[0] == 'undefined')) {
+        symbolPreList = symbolPreListDefault;
+    }
+    if ($.inArray('%', symbolPreList) == -1) {
+        symbolPreList.push('%');
+    }
+    var TotalDecimalPlaces = $('#hdn_' + reportTableId).attr('TotalDecimalPlaces');
+    var DecimalPreList = [];
+    if (TotalDecimalPlaces != undefined && TotalDecimalPlaces != 'undefined' && TotalDecimalPlaces != "") {
+        DecimalPreList = TotalDecimalPlaces.split(',');
+    }
 
     $('#' + reportTableId + wrapperName).css('overflow-x', 'auto');
     $('#' + reportTableId + wrapperName).css('overflow-y', 'auto');
@@ -887,15 +895,26 @@ function LoadReportTable(DashboardContentId, divName, data, tableType, wrapperNa
             $(row).find('td').each(function (j, cell) {
                 if (j > columnCheckCount) {
                     try {
-                        var originalValue = $(cell).text();
-                     
-                        $(cell).text(ME_number_format(originalValue,2, '.', ','));
-                        $(cell).attr('title', (ME_number_format(originalValue,2, '.', ',')));
+                        var originalValue = " " + $(cell).text();
+                        if (Number(DecimalPreList[j]) > -1) {
+                            ME_tooltipformatterBootStrap(originalValue, cell, 'body', DecimalPreList[j], null, symbolPreList);
+                        }
+                        else {
+                            ME_tooltipformatterBootStrap(originalValue, cell, 'body', null, null, symbolPreList);
+                        }
+                        for (var i = 0; i < symbolPreList.length; i++) {
+                            originalValue = originalValue.replace(symbolPreList[i], '');
+                        }
+                        $(cell).removeAttr('title');
+                        $(cell).attr('data-sort', originalValue);
+
                         $(cell).addClass('north');
                         $(cell).attr('title', $(cell).attr('data-original-title'));
                         $(".north").tooltip({
-                            'container': 'body',
-                            'placement': 'bottom'
+                            trigger: "hover",
+                            container: 'body',
+                            placement: 'bottom',
+                            html: true,
                         });
                     } catch (e) {
                     }
