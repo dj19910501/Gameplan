@@ -31,6 +31,34 @@ namespace RevenuePlanner.Helpers
                 _UserDeleteRestrictionMessage = value;
             }
         }
+
+        //#2879 Added By Rahul Shah for Cross Client Check Role and Parameter
+        private string _RoleDeleteRestrictionMessage;
+        public string RoleDeleteRestrictionMessage
+        {
+            get
+            {
+                return _RoleDeleteRestrictionMessage;
+            }
+            set
+            {
+                _RoleDeleteRestrictionMessage = value;
+            }
+        }
+
+        private string _RoleCopyRestrictionMessage;
+        public string RoleCopyRestrictionMessage
+        {
+            get
+            {
+                return _RoleCopyRestrictionMessage;
+            }
+            set
+            {
+                _RoleCopyRestrictionMessage = value;
+            }
+        }
+
         private string _UserPermissionRestrictionMessage;
         public string UserPermissionRestrictionMessage
         {
@@ -4194,6 +4222,12 @@ namespace RevenuePlanner.Helpers
                                         case "UserDeleteRestrictionMessage":
                                             _UserDeleteRestrictionMessage = strMsgValue;
                                             break;
+                                        case "RoleDeleteRestrictionMessage":
+                                            _RoleDeleteRestrictionMessage = strMsgValue;
+                                            break;
+                                        case "RoleCopyRestrictionMessage":
+                                            _RoleCopyRestrictionMessage = strMsgValue;
+                                            break;                                            
                                         case "UserPermissionRestrictionMessage":
                                             _UserPermissionRestrictionMessage = strMsgValue;
                                             break;

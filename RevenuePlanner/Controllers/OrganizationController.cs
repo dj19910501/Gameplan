@@ -206,6 +206,17 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
+                //This is cross client check, #2879 Security - Role Deletion – Client Id and Role Id
+                if (roleid != null)
+                {
+                    Role objRole = new Role();
+                    objRole = objBDSServiceClient.GetRoleDetails(roleid);
+                    if (objRole.ClientId != Sessions.User.ClientId)
+                    {
+                        return Json(Common.objCached.RoleDeleteRestrictionMessage, JsonRequestBehavior.AllowGet);
+                    }
+                }
+
                 ViewData["users"] = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
                 //changed by uday for functional review point...3-7-2014;
 
@@ -318,6 +329,15 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
+            //This is cross client check, #2879 Security - Role Deletion – Client Id and Role Id
+            if (delroleid != null) {
+                Role objRole = new Role();
+                objRole = objBDSServiceClient.GetRoleDetails(delroleid);
+                if(objRole.ClientId != Sessions.User.ClientId)
+                {
+                    return Json(Common.objCached.RoleDeleteRestrictionMessage, JsonRequestBehavior.AllowGet);
+                }
+            }
             
             // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
@@ -437,6 +457,15 @@ namespace RevenuePlanner.Controllers
                 return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
             }
             
+            if (originalroleid != null)
+            {
+                Role objRole = new Role();
+                objRole = objBDSServiceClient.GetRoleDetails(originalroleid);
+                if (objRole.ClientId != Sessions.User.ClientId)
+                {
+                    return Json(Common.objCached.RoleCopyRestrictionMessage, JsonRequestBehavior.AllowGet);
+                }
+            }
             // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
             if (!string.IsNullOrEmpty(copyroledesc))

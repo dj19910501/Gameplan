@@ -144,7 +144,7 @@
                     @Html.LabelFor(model => model.ClientId)
 
                     @*Modified by Dharmraj for ticket #583 on 7th July 2014 *@
-                    @Html.Hidden("Client", client)
+                    @*@Html.Hidden("Client", client)*@
                     @Html.TextBox("txtClient", client, new { style = "background:#F2F2F2;", @readonly = "true", title = client })
 
                 </div>

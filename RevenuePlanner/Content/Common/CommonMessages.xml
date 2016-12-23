@@ -1236,7 +1236,7 @@
 	<Field>
 		<Name>UserDeleteRestrictionMessage</Name>
 		<value>You don't have permission to delete this user.</value>
-	</Field>
+	</Field>  
 	<Field>
 		<Name>UserAssignRestrictionMessage</Name>
 		<value>You don't have permission to assign this user.</value>
@@ -1258,7 +1258,7 @@
 	<Field>
 		<Name>ClientPermissionDeleteBudgetRestrictionMessage</Name>
 		<value>You don't have permission to delete this budget.</value>
-	</Field>
+	</Field>  
 	<!--Check Parameter BudgetId Should not be Zero or Equal to Zero-->
 	<Field>
 		<Name>InvalidBudgetId</Name>
@@ -1271,4 +1271,16 @@
     <value>Request is invalid.</value>
   </Field>
   <!--End for #2894 Message-->
+  <!--#2879 Added By Rahul Shah for Cross Client Check Role and Parameter-->
+  <Field>
+    <Name>RoleDeleteRestrictionMessage</Name>
+    <value>You don't have permission to delete this role.</value>
+  </Field>
+
+  <!--#2879 Added By Rahul Shah for Cross Client Check Role and Parameter-->
+  <Field>
+    <Name>RoleCopyRestrictionMessage</Name>
+    <value>You don't have permission to Copy this role.</value>
+  </Field>
+  
 </Messages>
