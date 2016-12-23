@@ -275,7 +275,7 @@ namespace RevenuePlanner.Controllers
                 {
                     PlanModel objPlanModel = new PlanModel();
                     objPlanModel.ModelId = model.ModelId;
-                    objPlanModel.ModelTitle = model.Title + " " + model.Version;
+                    objPlanModel.ModelTitle = string.Concat(HttpUtility.HtmlEncode(model.Title), " ", model.Version);
                     lstPlanModel.Add(objPlanModel);
                 }
             }

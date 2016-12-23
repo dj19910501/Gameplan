@@ -158,7 +158,7 @@ namespace RevenuePlanner.Controllers
                 }
                 List<RoleModel> listrolemodel = new List<RoleModel>();
                 IList<SelectListItem> RoleList = new List<SelectListItem>();
-                RoleList = rolelist.Select(role => new SelectListItem() { Text = role.Title, Value = role.RoleId.ToString(), Selected = false })
+                RoleList = rolelist.Select(role => new SelectListItem() { Text = System.Web.HttpUtility.HtmlEncode(role.Title), Value = role.RoleId.ToString(), Selected = false })
                                 .OrderBy(it => it.Text, new AlphaNumericComparer()).ToList();
 
                 //// Get Application Activity.

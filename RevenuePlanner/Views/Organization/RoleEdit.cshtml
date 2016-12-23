@@ -215,6 +215,11 @@
             $('#DivPartialShareTacticDel').hide();
         });
 
+        $('#nl-form .nl-field ul li').each(function () {
+            var EncodeString = $(this).text();
+            $(this).text(htmlDecode(EncodeString));
+        });
+
     });
     //Added by Rahul Shah on 17/02/2015 for PL #1973. display error message when Click on Save & Close button without checking any checkbox.
     function ShowError(value) {

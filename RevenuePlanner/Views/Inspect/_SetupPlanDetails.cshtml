@@ -182,6 +182,11 @@
             $('#revenueSign').hide();
             $('#conjuntionWord').html('to deliver ');
         }
+
+        $('#nl-form #divPlanDefinationEnabled .nl-field ul li').each(function () {
+            var EncodeString = $(this).text();
+            $(this).text(htmlDecode(EncodeString));
+        });
     });
 
     $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
