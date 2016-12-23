@@ -9,6 +9,7 @@ using System.Data.OleDb;
 using System.Linq;
 using System;
 using RevenuePlanner.Models;
+using System.Collections;
 
 
 namespace RevenuePlanner.UnitTest.Service
@@ -18,7 +19,7 @@ namespace RevenuePlanner.UnitTest.Service
     {
         private IMarketingBudget _marketingBudget;
 
-        #region Test Data 
+        #region Test Data
         private const int ClientId = 24; //demo client     
         private const string BudgetTitle = "ZebraAdmin";
         private const int BudgetId = 80;
@@ -115,7 +116,7 @@ namespace RevenuePlanner.UnitTest.Service
             }
         }
 
-			 /// <summary>
+        /// <summary>
         /// Test Case to save new budget.
         /// </summary>
         [TestMethod]
@@ -211,7 +212,7 @@ namespace RevenuePlanner.UnitTest.Service
 
         }
 
-        
+
         [TestMethod]
         public void Test_MarketingBudget_GetUserList()
         {
@@ -253,7 +254,7 @@ namespace RevenuePlanner.UnitTest.Service
             Assert.IsNotNull(Data);
             Assert.IsNotNull(Data.Email);
         }
-        
+
         [TestMethod]
         public void Test_MarketingBudget_GetParentLineItemBudgetDetailslist()
         {
@@ -267,45 +268,64 @@ namespace RevenuePlanner.UnitTest.Service
             var res = _marketingBudget.GetBudgetColumn(ClientId);
             Assert.IsTrue(res.Count > 0);
         }
-
+        
+        //This test method contains both save and get for User Column View.
         [TestMethod]
-        public void Test_MarketingBudget_SaveUserColumnView()
+        public void Test_MarketingBudget_SaveAndGetUserColumnView()
         {
-            List<ColumnAttributeDetail> lstattribute = new List<ColumnAttributeDetail>();
+            List<ColumnAttributeDetail> lstSaveAttribute = new List<ColumnAttributeDetail>();
             ColumnAttributeDetail columnAttribute = new ColumnAttributeDetail();
             columnAttribute.AttributeId = "Planned";
             columnAttribute.AttributeType = "Column";
             columnAttribute.ColumnOrder = " ";
-            lstattribute.Add(columnAttribute);
+            lstSaveAttribute.Add(columnAttribute);
             ColumnAttributeDetail timeFrameAttribute = new ColumnAttributeDetail();
             timeFrameAttribute.AttributeId = "quarters";
             timeFrameAttribute.AttributeType = "TimeFrame";
             timeFrameAttribute.ColumnOrder = " ";
-            lstattribute.Add(timeFrameAttribute);
+            lstSaveAttribute.Add(timeFrameAttribute);
             ColumnAttributeDetail budgetAttribute = new ColumnAttributeDetail();
             budgetAttribute.AttributeId = "1";
             budgetAttribute.AttributeType = "BudgetId";
             budgetAttribute.ColumnOrder = " ";
-            lstattribute.Add(budgetAttribute);
+            lstSaveAttribute.Add(budgetAttribute);
             ColumnAttributeDetail viewByAttribute = new ColumnAttributeDetail();
             viewByAttribute.AttributeId = "4";
             viewByAttribute.AttributeType = "ViewBy";
             viewByAttribute.ColumnOrder = " ";
-            lstattribute.Add(viewByAttribute);
-            int count = _marketingBudget.SaveUserColumnView(lstattribute, UserId);
+            lstSaveAttribute.Add(viewByAttribute);
+            int count = _marketingBudget.SaveUserColumnView(lstSaveAttribute, UserId);
+
+            //Get Method
+            List<ColumnAttributeDetail> lstGetAttribute = new List<ColumnAttributeDetail>();
+            bool isNoUserColumnView = false;
+            lstGetAttribute = _marketingBudget.GetUserColumnView(UserId, out isNoUserColumnView);
+
+            var comparer = new FooComparer();
+            CollectionAssert.AreEqual(lstSaveAttribute,lstGetAttribute, comparer);
             Assert.IsTrue(count > 0);
         }
+    }
 
-        [TestMethod]
-        public void Test_MarketingBudget_GetUserColumnView()
+    /// <summary>
+    /// Added By Preet Shah. For Comparing Two list
+    /// </summary>
+    public class FooComparer : IComparer, IComparer<ColumnAttributeDetail>
+    {
+        public int Compare(object x, object y)
         {
-            List<ColumnAttributeDetail> lstattribute = new List<ColumnAttributeDetail>();
-            bool isSelectAll = false;
-            lstattribute = _marketingBudget.GetUserColumnView(UserId, out isSelectAll);
-            Assert.IsTrue(lstattribute.Count >= 0);
+            var lhs = x as ColumnAttributeDetail;
+            var rhs = y as ColumnAttributeDetail;
+            if (lhs == null || rhs == null) throw new InvalidOperationException();
+            return Compare(lhs, rhs);
+        }
+
+        public int Compare(ColumnAttributeDetail x, ColumnAttributeDetail y)
+        {
+            int temp;
+            return (temp = x.AttributeId.CompareTo(y.AttributeId)) != 0 ? temp : x.AttributeType.CompareTo(y.AttributeType);
         }
     }
-    
 
 
     /// <summary>

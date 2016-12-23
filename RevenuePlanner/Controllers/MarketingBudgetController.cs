@@ -24,7 +24,7 @@ namespace RevenuePlanner.Controllers
         private bool _IsBudgetCreate_Edit = true;
         private bool _IsForecastCreate_Edit = true;
         #endregion
-        
+
         public ActionResult Index()
         {
             MarketingActivities MarketingActivities = new MarketingActivities();
@@ -83,22 +83,32 @@ namespace RevenuePlanner.Controllers
 
             #region Set all dropdown if user already set columns to view.
             //Start - Added by Preet Shah on 22/12/2016. For ticket 2848
-            bool isSelectall = false;
-            List<ColumnAttributeDetail> AttributeDetail = _MarketingBudget.GetUserColumnView(Sessions.User.ID, out isSelectall);
+            bool isNoUserColumnView = false;
+            List<ColumnAttributeDetail> AttributeDetail = _MarketingBudget.GetUserColumnView(Sessions.User.ID, out isNoUserColumnView);
 
-            if (isSelectall){
+            //defult filter columns for user, if user comes first time on this page.
+            if (isNoUserColumnView)
+            {
                 MarketingActivities.FilterColumns.Where(l => l.Text != "Forecast").Select(c => { c.IsChecked = true; return c; }).ToList();
             }
-            else if (AttributeDetail != null && AttributeDetail.Count() > 0 && !isSelectall)
+            else if (AttributeDetail != null && AttributeDetail.Count() > 0 && !isNoUserColumnView)
             {
                 if (MarketingActivities.ListofBudgets != null && MarketingActivities.ListofBudgets.Count > 0)
+                {
                     ViewBag.BudgetSelected = AttributeDetail.Where(a => MarketingActivities.ListofBudgets.Any(x => x.Value == a.AttributeId)).Select(l => l.AttributeId).FirstOrDefault();
+                }
                 if (MarketingActivities.TimeFrame != null && MarketingActivities.TimeFrame.Count > 0)
+                {
                     ViewBag.TimeFrameSelected = AttributeDetail.Where(a => MarketingActivities.TimeFrame.Any(x => x.Value == a.AttributeId)).Select(l => l.AttributeId).FirstOrDefault();
+                }
                 if (MarketingActivities.Columnset != null && MarketingActivities.Columnset.Count > 0)
+                {
                     ViewBag.Columnset = AttributeDetail.Where(a => MarketingActivities.Columnset.Any(x => x.Value == a.AttributeId)).Select(l => l.AttributeId).FirstOrDefault();
+                }
                 if (MarketingActivities.FilterColumns != null && MarketingActivities.FilterColumns.Count > 0)
+                {
                     MarketingActivities.FilterColumns.Where(l => AttributeDetail.Any(x => x.AttributeId == l.Text)).Select(c => { c.IsChecked = true; return c; }).ToList();
+                }
             }
             //End
             #endregion
@@ -116,7 +126,7 @@ namespace RevenuePlanner.Controllers
 
         }
 
-		/// <summary>
+        /// <summary>
         /// Added by Komal Rawal
         /// Returns Budget Data Hierarchy
         /// </summary>
@@ -132,7 +142,7 @@ namespace RevenuePlanner.Controllers
             BudgetGridModel objBudgetGridModel = new BudgetGridModel();
             try
             {
-            //Get all budget grid data.
+                //Get all budget grid data.
                 objBudgetGridModel = _MarketingBudget.GetBudgetGridData(budgetId, TimeFrame, Sessions.User.CID, Sessions.User.ID, Sessions.PlanExchangeRate, Sessions.PlanCurrencySymbol, Sessions.ClientUsers);
             }
             catch (Exception ex)
@@ -154,10 +164,17 @@ namespace RevenuePlanner.Controllers
 
             #region Set all dropdown if user already set columns to view.
             //Start - Added by Preet Shah on 22/12/2016. For ticket 2848
-            bool isSelectall = false;
-            List<ColumnAttributeDetail> AttributeDetail = _MarketingBudget.GetUserColumnView(Sessions.User.ID, out isSelectall);
-            if (lstColumns != null && lstColumns.Count > 0)
+            bool isNoUserColumnView = false;
+            List<ColumnAttributeDetail> AttributeDetail = _MarketingBudget.GetUserColumnView(Sessions.User.ID, out isNoUserColumnView);
+            //defult filter columns for user, if user comes first time on this page.
+            if (isNoUserColumnView)
+            {
+                lstColumns.Where(l => l.Text != "Forecast").Select(c => { c.IsChecked = true; return c; }).ToList();
+            }
+            else if (lstColumns != null && lstColumns.Count > 0)
+            {
                 lstColumns.Where(l => AttributeDetail.Any(x => x.AttributeId == l.Text)).Select(c => { c.IsChecked = true; return c; }).ToList();
+            }
             //End
             #endregion
 
@@ -204,9 +221,9 @@ namespace RevenuePlanner.Controllers
         {
             throw new NotImplementedException();
         }
-     
-        
-       /// <summary>
+
+
+        /// <summary>
         /// Function to deleting budget data and its child heirarchy.
         /// Added By: Rahul Shah on 11/30/2016.
         /// </summary>
@@ -230,9 +247,9 @@ namespace RevenuePlanner.Controllers
                 catch (Exception ex)
                 {
                     return Json(new { IsSuccess = false, ErrorMessage = Common.objCached.ClientPermissionDeleteBudgetRestrictionMessage }, JsonRequestBehavior.AllowGet);
-                    
+
                 }
-                
+
             }
         }
         #region Import Marketing Budget
@@ -276,7 +293,7 @@ namespace RevenuePlanner.Controllers
 
                             if (fileExtension == ".xls")
                             {
-                               ds= ReadXlSFile(fileLocation); //method to read xls file which uploaded
+                                ds= ReadXlSFile(fileLocation); //method to read xls file which uploaded
                                 if (ds != null && ds.Tables.Count > 0)
                                 {
                                     objImprtData = _MarketingBudget.GetXLSData(viewByType, ds, ClientId, BudgetDetailId, PlanExchangeRate, CurrencySymbol); // Read Data from excel 2003/(.xls) format file to xml
@@ -292,8 +309,8 @@ namespace RevenuePlanner.Controllers
                             }
                             if (objImprtData != null)
                             {
-                            dtColumns = objImprtData.MarketingBudgetColumns;
-                            xmlData = objImprtData.XmlData;
+                                dtColumns = objImprtData.MarketingBudgetColumns;
+                                xmlData = objImprtData.XmlData;
                             }
                             if (System.IO.File.Exists(fileLocation))
                             {
@@ -347,7 +364,7 @@ namespace RevenuePlanner.Controllers
             return ds;
         }
         #endregion
-    
+
         #region Header
         /// <summary>
         /// Get finance header values(Budget, Forecast, Planned and Actual)
@@ -397,7 +414,7 @@ namespace RevenuePlanner.Controllers
             int budgetId = 0;
             try
             {
-                 budgetId = _MarketingBudget.SaveNewBudget(budgetName,Sessions.User.CID,Sessions.User.ID);
+                budgetId = _MarketingBudget.SaveNewBudget(budgetName,Sessions.User.CID,Sessions.User.ID);
             }
             catch (Exception ex)
             {
@@ -514,7 +531,7 @@ namespace RevenuePlanner.Controllers
                             if (ColumnName.Split('_').Length > 1) {
                                 int.TryParse(ColumnName.Split('_')[1].ToString(),out CustomfieldId);
                             }
-                          
+
                             RevenuePlanner.Models.Budget_Columns objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false && a.CustomField.CustomFieldId == CustomfieldId).Select(a => a).FirstOrDefault();
 
                             if (objCustomColumns != null)
@@ -574,7 +591,7 @@ namespace RevenuePlanner.Controllers
 
             if (BudgetDetailId > 0)
             {
-            objParentDDLModel = _MarketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId, Sessions.User.CID);
+                objParentDDLModel = _MarketingBudget.GetParentLineItemBudgetDetailslist(BudgetDetailId, Sessions.User.CID);
             }
             return Json(objParentDDLModel, JsonRequestBehavior.AllowGet);
         }
@@ -587,7 +604,7 @@ namespace RevenuePlanner.Controllers
             }
             else
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
-           
+
         }
         /// <summary>
         /// Method to get all lineitem list foe budget as per time frame
@@ -600,12 +617,12 @@ namespace RevenuePlanner.Controllers
             LineItemDetail AlllineItemdetail = new LineItemDetail();
             if (BudgetDetailId > 0)
             {
-            #region "Set Create/Edit or View permission for Budget and Forecast to Global varialble."
-            _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
-            _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
-            #endregion
+                #region "Set Create/Edit or View permission for Budget and Forecast to Global varialble."
+                _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
+                _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
+                #endregion
                 AlllineItemdetail = _MarketingBudget.GetLineItemGrid(BudgetDetailId,Sessions.User.CID, TimeFrame, Sessions.PlanExchangeRate);
-            ViewBag.HasLineItems = AlllineItemdetail.childLineItemCount;
+                ViewBag.HasLineItems = AlllineItemdetail.childLineItemCount;
             }
             return PartialView("_LineItem", AlllineItemdetail.LineItemGridData);
         }
@@ -645,14 +662,14 @@ namespace RevenuePlanner.Controllers
                 lstUserDetail = _MarketingBudget.GetAllUserList(Sessions.User.CID, Sessions.User.ID, Sessions.ApplicationId);
                 if (Sessions.User != null)
                 {
-                lstUserDetail.Add(new BDSService.User
-                {
-                    UserId = Sessions.User.UserId,
-                    ID = Sessions.User.ID,
-                    FirstName = Sessions.User.FirstName,
-                    LastName = Sessions.User.LastName,
-                    JobTitle = Sessions.User.JobTitle
-                });
+                    lstUserDetail.Add(new BDSService.User
+                    {
+                        UserId = Sessions.User.UserId,
+                        ID = Sessions.User.ID,
+                        FirstName = Sessions.User.FirstName,
+                        LastName = Sessions.User.LastName,
+                        JobTitle = Sessions.User.JobTitle
+                    });
                 }
                 TempData["Userlist"] = lstUserDetail;
                 #endregion
@@ -780,7 +797,7 @@ namespace RevenuePlanner.Controllers
             //Modified by Komal Rawal for #2242 change child item permission on change of parent item
             if (UserData != null)
             {
-               _MarketingBudget.SaveUSerPermission(UserData,ChildItems,ParentID, Sessions.User.ID);
+                _MarketingBudget.SaveUSerPermission(UserData,ChildItems,ParentID, Sessions.User.ID);
 
                 //End
                 return Json(true, JsonRequestBehavior.AllowGet);

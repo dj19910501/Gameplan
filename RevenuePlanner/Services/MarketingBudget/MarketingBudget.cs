@@ -401,7 +401,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 command.Parameters.AddWithValue("@CurrencyRate", Exchangerate);
 
                 SqlDataAdapter adp = new SqlDataAdapter(command);
-                adp.Fill(EntityList);              
+                adp.Fill(EntityList);
             }
             //Added  try catch and finally block
             catch (Exception ex)
@@ -1277,7 +1277,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                     SqlDataAdapter adp = new SqlDataAdapter(command);
                     command.CommandTimeout = 0;
                     ExecuteCommand = command.ExecuteNonQuery();
-                }              
+                }
             }
             //Added  try catch and finally block
             catch (Exception ex)
@@ -2570,34 +2570,41 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <summary>
         /// Method to save user column view
         /// </summary>
-        /// <param name="AttributeDetail">list of selected attribute(column,timeframe,budget)</param>
-        /// <param name="UserId">logged in userid</param>
+        /// <param name="attributeDetail">list of selected attribute(column,timeframe,budget)</param>
+        /// <param name="userId">logged in userid</param>
         /// <returns>inserted/updated viewid after save</returns>
         /// 
-        public int SaveUserColumnView(List<ColumnAttributeDetail> AttributeDetail, int UserId)
+        public int SaveUserColumnView(List<ColumnAttributeDetail> attributeDetail, int userId)
         {
             int result = 0;
             string xmlElements = string.Empty;
 
-            User_CoulmnView columnview = new User_CoulmnView();
-            columnview = _database.User_CoulmnView.Where(a => a.ViewName == null && a.CreatedBy == UserId).FirstOrDefault();
-            if (AttributeDetail != null)
+            if (attributeDetail != null)
             {
-                XElement AttributexmlElements = new XElement("ViewDetail", AttributeDetail.Select(i => new XElement("attribute",
+                XElement attributexmlElements = new XElement("ViewDetail", attributeDetail.Select(i => new XElement("attribute",
                     new XAttribute("AttributeType", i.AttributeType),
                     new XAttribute("AttributeId", i.AttributeId),
                     new XAttribute("ColumnOrder", Convert.ToString(i.ColumnOrder))
                     )).ToList());
 
-                xmlElements = Convert.ToString(AttributexmlElements);
-
-                if (columnview != null)
+                if (attributexmlElements != null)
                 {
-                    result = AddUpdateColumnView(UserId, xmlElements, columnview);
-                }
-                else
-                {
-                    result = AddUpdateColumnView(UserId, xmlElements);
+                    xmlElements = Convert.ToString(attributexmlElements);
+                    if (!string.IsNullOrEmpty(xmlElements))
+                    {
+                        User_CoulmnView userColumnView = new User_CoulmnView();
+                        
+                        userColumnView = _database.User_CoulmnView.Where(a => a.ViewName == null && a.CreatedBy == userId).FirstOrDefault();
+                        
+                        if (userColumnView != null)
+                        {
+                            result = AddUpdateColumnView(userId, xmlElements, userColumnView);
+                        }
+                        else
+                        {
+                            result = AddUpdateColumnView(userId, xmlElements);
+                        }
+                    }
                 }
             }
             return result;
@@ -2605,33 +2612,33 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <summary>
         /// Method to add/update user column view into database
         /// </summary>
-        /// <param name="UserId">logged in userid</param>
+        /// <param name="userId">logged in userid</param>
         /// <param name="xmlElements">selected attribute in form of xml to store in db</param>
-        /// <param name="columnview">if already column view created then that object</param>
-        private int AddUpdateColumnView(int UserId, string xmlElements, User_CoulmnView columnview = null)
+        /// <param name="_userColumnView">if already column view created then that object</param>
+        private int AddUpdateColumnView(int userId, string xmlElements, User_CoulmnView _userColumnView = null)
         {
             int result = 0;
-            User_CoulmnView Usercolumnview = new User_CoulmnView();
+            User_CoulmnView userColumnView = new User_CoulmnView();
 
-            if (columnview != null)
+            if (_userColumnView != null)
             {
-                Usercolumnview = columnview;
-                Usercolumnview.ModifyBy = UserId;
-                Usercolumnview.ModifyDate = DateTime.Now;
-                Usercolumnview.IsDefault = true;
-                Usercolumnview.MarketingBudgetAttribute = xmlElements;
-                _database.Entry(Usercolumnview).State = EntityState.Modified;
+                userColumnView = _userColumnView;
+                userColumnView.ModifyBy = userId;
+                userColumnView.ModifyDate = DateTime.Now;
+                userColumnView.IsDefault = true;
+                userColumnView.MarketingBudgetAttribute = xmlElements;
+                _database.Entry(userColumnView).State = EntityState.Modified;
             }
             else
             {
-                Usercolumnview.CreatedBy = UserId;
-                Usercolumnview.CreatedDate = DateTime.Now;
-                Usercolumnview.IsDefault = true;
-                Usercolumnview.MarketingBudgetAttribute = xmlElements;
-                _database.Entry(Usercolumnview).State = EntityState.Added;
+                userColumnView.CreatedBy = userId;
+                userColumnView.CreatedDate = DateTime.Now;
+                userColumnView.IsDefault = true;
+                userColumnView.MarketingBudgetAttribute = xmlElements;
+                _database.Entry(userColumnView).State = EntityState.Added;
             }
             _database.SaveChanges();
-            result = Usercolumnview.ViewId;
+            result = userColumnView.ViewId;
             return result;
         }
 
@@ -2639,31 +2646,40 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// Method to get user column view
         /// </summary>
         /// <param name="userId">logged in userid</param>
-        /// <param name="isSelectall">out param if no entry has been found for logged in user</param>
+        /// <param name="isNoUserColumnView">out param if no entry has been found for logged in user</param>
         /// <returns></returns>
-        public List<ColumnAttributeDetail> GetUserColumnView(int userId, out bool isSelectall)
+        public List<ColumnAttributeDetail> GetUserColumnView(int userId, out bool isNoUserColumnView)
         {
             List<ColumnAttributeDetail> items = new List<ColumnAttributeDetail>();
             User_CoulmnView userView = _database.User_CoulmnView.Where(a => a.CreatedBy == userId).FirstOrDefault();
             string attributeXml = string.Empty;
             if (userView == null)
             {
-                isSelectall = true;
+                isNoUserColumnView = true;
             }
             else
             {
                 attributeXml = userView.MarketingBudgetAttribute;
-                //Getting xml data to list
-                XDocument doc = XDocument.Parse(attributeXml);
-                items = (from r in doc.Root.Elements("attribute")
-                         select new ColumnAttributeDetail
-                   {
-                       AttributeType = (string)r.Attribute("AttributeType"),
-                       AttributeId = (string)r.Attribute("AttributeId"),
-                       ColumnOrder = (string)r.Attribute("ColumnOrder")
-                   }).ToList();
-
-                isSelectall = false;
+                if (!string.IsNullOrEmpty(attributeXml))
+                {
+                    //Getting xml data to list
+                    XDocument doc = XDocument.Parse(attributeXml);
+                    if (doc != null)
+                    {
+                        items = (from r in doc.Root.Elements("attribute")
+                                 select new ColumnAttributeDetail
+                           {
+                               AttributeType = (string)r.Attribute("AttributeType"),
+                               AttributeId = (string)r.Attribute("AttributeId"),
+                               ColumnOrder = (string)r.Attribute("ColumnOrder")
+                           }).ToList();
+                    }
+                    isNoUserColumnView = false;
+                }
+                else
+                {
+                    isNoUserColumnView = true;
+                }
             }
             return items;
         }
