@@ -377,7 +377,7 @@ namespace RevenuePlanner.Controllers
             {
                 // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                 
-                    if (Sessions.User.UserId != LoginId)
+                if (!Sessions.User.UserId.Equals(LoginId))
                     {
                         TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                         return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -431,7 +431,7 @@ namespace RevenuePlanner.Controllers
         {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
-            if (Sessions.User.UserId != LoginId)
+            if (!Sessions.User.UserId.Equals(LoginId))
             {
                 TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                 return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -860,7 +860,7 @@ namespace RevenuePlanner.Controllers
         {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             int userId = 0;
-                if (Sessions.User.UserId != LoginId)
+            if (!Sessions.User.UserId.Equals(LoginId))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);

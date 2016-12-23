@@ -8935,11 +8935,11 @@ namespace RevenuePlanner.Helpers
         public static int GetIntegerUserId(Guid UserGuid)
         {
             int UserId = 0;
-            List<BDSService.User> UserList = Sessions.ClientUsers;
+            Dictionary<Guid,int> UserList = Sessions.dictUserIds;
 
-            if (UserList != null && UserList.Count > 0)
+            if (UserList != null && UserList.Count > 0 && UserList.Where(u => u.Key == UserGuid).Any())
             {
-                UserId = UserList.Where(u => u.UserId == UserGuid).Select(a => a.ID).FirstOrDefault();
+                UserId = UserList[UserGuid];
                 
             }
             return UserId;

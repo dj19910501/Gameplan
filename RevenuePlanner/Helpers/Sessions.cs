@@ -786,6 +786,25 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["ClientUsers"] = value;
             }
         }
-
+        /// <summary>
+        /// Added by Arpita Soni 
+        /// List of users for the specific client
+        /// </summary>
+        public static Dictionary<Guid,int> dictUserIds
+        {
+            get
+            {
+                Dictionary<Guid, int> lstUsers = new Dictionary<Guid, int>();
+                if (HttpContext.Current.Session["dictUserIds"] != null)
+                {
+                    lstUsers = (Dictionary<Guid, int>)(HttpContext.Current.Session["dictUserIds"]);
+                }
+                return lstUsers;
+            }
+            set
+            {
+                HttpContext.Current.Session["dictUserIds"] = value;
+            }
+        }
     }
 }
