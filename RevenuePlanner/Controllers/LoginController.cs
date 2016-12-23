@@ -234,13 +234,8 @@ namespace RevenuePlanner.Controllers
                                 Sessions.User = obj;
                                 ViewBag.Expired = Common.objCached.PasswordExpired;
                                 ResetPasswordModel ObjResetPwd = new ResetPasswordModel();
-                                //Following Code is added to generate requestid and maintain in to session for Security.
-                                BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
-                                objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
-                                objPasswordResetRequest.UserId = Sessions.User.UserId;
-                                objPasswordResetRequest.AttemptCount = 0;
-                                objPasswordResetRequest.CreatedDate = DateTime.Now;
-                                string passwordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+                                //get password requestid
+                                string passwordResetRequestId = GetRequestId();
                                 ObjResetPwd.RequestId = new Guid(passwordResetRequestId);
                                 Sessions.RequestId = ObjResetPwd.RequestId;
                                 return View("ResetPassword", ObjResetPwd);
@@ -555,7 +550,21 @@ namespace RevenuePlanner.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View(form);
         }
-
+        /// <summary>
+        /// Following method is created to get requestId for user
+        /// </summary>
+        /// <returns></returns>
+        private string GetRequestId()
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            //Following Code is added to generate requestid and maintain in to session for Security.
+            BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+            objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
+            objPasswordResetRequest.UserId = Sessions.User.UserId;
+            objPasswordResetRequest.AttemptCount = 0;
+            objPasswordResetRequest.CreatedDate = DateTime.Now;
+            return objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+        }
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
         /// Date: 06/18/2014

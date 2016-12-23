@@ -67,7 +67,7 @@ namespace RevenuePlanner.Helpers
                 {
                     return new Guid(Convert.ToString(HttpContext.Current.Session["RequestId"]));
                 }
-                return new Guid("");
+                return Guid.Empty;
             }
             set
             {
