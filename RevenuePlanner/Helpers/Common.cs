@@ -8976,8 +8976,8 @@ namespace RevenuePlanner.Helpers
             notificationShare = Enums.Custom_Notification.ResetPasswordLink.ToString();
             notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
 
-            var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
-            var PasswordResetLink = urlHelper.Action("ResetPassword", "Login", new { id = PasswordResetRequestId }, HttpContext.Current.Request.Url.Scheme);
+            UrlHelper urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
+            string PasswordResetLink = urlHelper.Action("ResetPassword", "Login", new { id = PasswordResetRequestId }, HttpContext.Current.Request.Url.Scheme);
             emailBody = notification.EmailContent.Replace("[PasswordResetLinkToBeReplaced]", "<a href='" + PasswordResetLink + "'>" + PasswordResetLink + "</a>")
                                                  .Replace("[ExpireDateToBeReplaced]", ResetRequestCreateDate.AddHours(int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"])).ToString());
 

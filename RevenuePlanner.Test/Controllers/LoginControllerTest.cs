@@ -47,7 +47,7 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(resultvalue.ToString());
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
-        
+
         }
         [TestMethod]
         public void Login_View_With_Error_Message()
@@ -62,7 +62,7 @@ namespace RevenuePlanner.Test.Controllers
             int PlanId = DataHelper.GetPlanId();
             Sessions.User.CID = DataHelper.GetClientId(PlanId);
             MockHelpers.MockHelpers.TestTempDataHttpContext tempDataHttpContext = new MockHelpers.MockHelpers.TestTempDataHttpContext();
-            objLoginController.TempData["ErrorMessage"] ="Unit";
+            objLoginController.TempData["ErrorMessage"] = "Unit";
             var result = objLoginController.Index() as ViewResult;
             var serializedData = new RouteValueDictionary(result.ViewData);
             var resultvalue = serializedData["ApplicationReleaseVersion"];
@@ -127,7 +127,7 @@ namespace RevenuePlanner.Test.Controllers
             string returnURL = string.Empty;// ConfigurationSettings.AppSettings["ReturnUrl"].ToString();//"https://172.30.17.111/gameplan/Home?activeMenu=Home";
             var result = objLoginController.Index(form, returnURL) as RedirectToRouteResult;
             Assert.AreEqual("Index", result.RouteValues["Action"]);
-            Assert.AreEqual("Home", result.RouteValues["Controller"]); 
+            Assert.AreEqual("Home", result.RouteValues["Controller"]);
         }
         [TestMethod]
         public void Index_Login_With_Wrong_Password()
@@ -154,7 +154,7 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region Load Support Partial On Login 
+        #region Load Support Partial On Login
         /// <summary>
         /// To Load Support Partial On Login .
         /// <author>Rahul Shah</author>
@@ -176,7 +176,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objLoginController.LoadSupportPartialOnLogin() as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
-           
+
         }
         #endregion
 
@@ -199,7 +199,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objLoginController.ForgotPassword() as ViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
-           
+
         }
         #endregion
 
@@ -219,7 +219,7 @@ namespace RevenuePlanner.Test.Controllers
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             LoginController objLoginController = new LoginController();
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
-            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();          
+            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var lstUser = objBDSServiceClient.GetTeamMemberListEx(Sessions.User.CID, Sessions.ApplicationId, Sessions.User.ID, true);
             if (lstUser != null && lstUser.Count > 0)
             {
@@ -235,7 +235,7 @@ namespace RevenuePlanner.Test.Controllers
                 var serializedData = new RouteValueDictionary(result.Model);
                 var resultvalue = serializedData["RequestId"];
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value resultvalue:  " + Convert.ToString(resultvalue));
-                Assert.AreEqual(passwordResetRequestId,Convert.ToString(resultvalue));               
+                Assert.AreEqual(passwordResetRequestId, Convert.ToString(resultvalue));
             }
         }
         #endregion
@@ -253,8 +253,8 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To Reset Password Post.\n");
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();                      
-           //Get Users Password Request
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            //Get Users Password Request
             BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
             objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
             objPasswordResetRequest.UserId = Sessions.User.UserId;
@@ -262,24 +262,24 @@ namespace RevenuePlanner.Test.Controllers
             objPasswordResetRequest.CreatedDate = DateTime.Now;
 
             string passwordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
-                      LoginController objLoginController = new LoginController();
+            LoginController objLoginController = new LoginController();
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
 
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objLoginController.ControllerContext.HttpContext.Session.Add("RequestId",Guid.Parse(passwordResetRequestId));
+            objLoginController.ControllerContext.HttpContext.Session.Add("RequestId", Guid.Parse(passwordResetRequestId));
             HttpContext.Current.Session["RequestId"] = passwordResetRequestId;
             ResetPasswordModel form = new ResetPasswordModel();
             form.RequestId = new Guid(passwordResetRequestId);
             //Set Users Password Request in to session which will be used in ResetPassword
             Sessions.RequestId = form.RequestId;
-            form.NewPassword = Convert.ToString(ConfigurationManager.AppSettings["Password"]); 
-            form.ConfirmNewPassword = Convert.ToString(ConfigurationManager.AppSettings["Password"]); 
+            form.NewPassword = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
+            form.ConfirmNewPassword = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
             var result = objLoginController.ResetPassword(form) as ViewResult;
             var serializedData = new RouteValueDictionary(result.Model);
             var resultvalue = serializedData["RequestId"];
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             Assert.AreEqual(passwordResetRequestId, Convert.ToString(resultvalue));
-         
+
         }
         #endregion
 
@@ -299,14 +299,14 @@ namespace RevenuePlanner.Test.Controllers
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             LoginController objLoginController = new LoginController();
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
-            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();          
+            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             string currentPassword = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
             //Get Users Password Request
             BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
             objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
             objPasswordResetRequest.UserId = Sessions.User.UserId;
             objPasswordResetRequest.AttemptCount = 0;
-            objPasswordResetRequest.CreatedDate = DateTime.Now;           
+            objPasswordResetRequest.CreatedDate = DateTime.Now;
             string passwordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
             //Set Users Password Request in to session which will be used in CheckCurrentPassword
             Sessions.RequestId = Guid.Parse(passwordResetRequestId);
@@ -320,7 +320,7 @@ namespace RevenuePlanner.Test.Controllers
         public void ForgotPassword_POST()
         {
 
-            var routes = new RouteCollection();
+            RouteCollection routes = new RouteCollection();
             Console.WriteLine("To POST Forgot Password View.\n");
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -328,9 +328,9 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             ForgotPasswordModel form = new ForgotPasswordModel();
             form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString();
-            var result = objLoginController.ForgotPassword(form);
+            var result = objLoginController.ForgotPassword(form) as ActionResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result);
-            Assert.AreEqual(result, false);
+            Assert.AreEqual(((RevenuePlanner.Models.ForgotPasswordModel)(((System.Web.Mvc.ViewResultBase)(result)).Model)).UserEmail, form.UserEmail);
 
         }
 
