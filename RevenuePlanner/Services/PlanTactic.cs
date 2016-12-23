@@ -220,11 +220,32 @@ namespace RevenuePlanner.Services
         /// </summary>
         private List<BudgetDHTMLXGridDataModel> BindFinalGridData(List<BudgetModel> model, string AllocatedBy)
         {
+            bool isTacticEditable = false;
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);                       
+            List<int> lstSubordinatesIds = new List<int>();
+
+            lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);
             List<BudgetDHTMLXGridDataModel> lstTacticRows = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel objTacticRows = new BudgetDHTMLXGridDataModel();
             // Get tactic model 
             BudgetModel tacticModel = model.Where(p => p.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
             string stylecolor, lockedstate;
+            if (tacticModel.CreatedBy.Equals(Sessions.User.ID)) 
+            {
+                isTacticEditable = true;
+            }
+            else if (IsPlanEditAllAuthorized)
+            {
+                isTacticEditable = true;
+            }
+            else if (IsPlanEditSubordinatesAuthorized)
+            {
+                if (lstSubordinatesIds.Contains(tacticModel.CreatedBy)) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                {
+                    isTacticEditable = true;
+                }
+            }
             if (tacticModel.isEditable)
             {
                 lockedstate = objHomeGridProperty.lockedstatezero;
@@ -253,10 +274,10 @@ namespace RevenuePlanner.Services
             objTacticData.style = stylecolor;
             lstTacticData.Add(objTacticData);
 
-            objTacticData = new Budgetdataobj();   
+            objTacticData = new Budgetdataobj();           
             //Modified by Rahul Shah to add '+' icon for tactic on lineitem tab of Tactic inspection window also made changes to move html code from controller to cshtml page.
             //objTacticData.value = Convert.ToString(BindIconsForLineItem(tacticModel));
-            if (tacticModel.isEditable)
+            if (isTacticEditable)
             {
                 objTacticData.value = string.Format("#GRIDACTION# {0}-{1}-{2}_{3}-{4}", ActivityType.ActivityTactic, tacticModel.LineItemTypeId, Convert.ToString(tacticModel.ParentActivityId), Convert.ToString(tacticModel.ActivityId), tacticModel.isEditable);                
             }
@@ -290,7 +311,7 @@ namespace RevenuePlanner.Services
 
             foreach (BudgetModel bml in model.Where(p => p.ActivityType == ActivityType.ActivityLineItem))
             {
-                lstLineItemRows.Add(BindGridJsonForLineItems(bml.Id, bml.ActivityName, bml.ActivityId, model, AllocatedBy, lockedstate, stylecolor));
+                lstLineItemRows.Add(BindGridJsonForLineItems(bml.Id, bml.ActivityName, bml.ActivityId, model, AllocatedBy, lockedstate, stylecolor, lstSubordinatesIds));
             }
             objTacticRows.rows = lstLineItemRows;
             lstTacticRows.Add(objTacticRows);
@@ -301,8 +322,11 @@ namespace RevenuePlanner.Services
         /// Bind data for each line item
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private BudgetDHTMLXGridDataModel BindGridJsonForLineItems(string LineItemId, string ActivityName, string ActivityId, List<BudgetModel> model, string AllocatedBy, string lockedstate, string stylecolor)
+        private BudgetDHTMLXGridDataModel BindGridJsonForLineItems(string LineItemId, string ActivityName, string ActivityId, List<BudgetModel> model, string AllocatedBy, string lockedstate, string stylecolor, List<int> lstSubordinatesIds)
         {
+            bool isLineItemEditable = false;
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             BudgetDHTMLXGridDataModel objLineItemRows = new BudgetDHTMLXGridDataModel();
 
             #region Add common columns to the allocation grid
@@ -313,6 +337,23 @@ namespace RevenuePlanner.Services
 
             Budgetdataobj objLineItemData = new Budgetdataobj();
             BudgetModel modelEntity = model.Where(pl => pl.ActivityType == ActivityType.ActivityLineItem && pl.ActivityId == ActivityId).ToList().FirstOrDefault();
+
+            if (modelEntity.CreatedBy.Equals(Sessions.User.ID)) 
+            {
+                isLineItemEditable = true;
+            }
+            else if (IsPlanEditAllAuthorized) 
+            {
+                isLineItemEditable = true;
+            }
+            else if (IsPlanEditSubordinatesAuthorized)
+            {
+                if (lstSubordinatesIds.Contains(modelEntity.CreatedBy))
+                {
+                    isLineItemEditable = true;
+                }
+            }
+
             objLineItemData.value = LineItemId; // Add LineItem Id to the column
             lstLineItemData.Add(objLineItemData);
 
@@ -333,7 +374,7 @@ namespace RevenuePlanner.Services
             objLineItemData = new Budgetdataobj();  // Add Icons to the column
             //also made changes to move html code from controller to cshtml page.
             //objLineItemData.value = modelEntity.LineItemTypeId != null ? Convert.ToString(BindIconsForLineItem(modelEntity)) : "";            
-            objLineItemData.value = string.Format("#GRIDACTION# {0}-{1}-{2}_{3}-{4}", ActivityType.ActivityLineItem, modelEntity.LineItemTypeId, Convert.ToString(modelEntity.ParentActivityId), Convert.ToString(modelEntity.ActivityId), modelEntity.isEditable);
+            objLineItemData.value = string.Format("#GRIDACTION# {0}-{1}-{2}_{3}-{4}", ActivityType.ActivityLineItem, modelEntity.LineItemTypeId, Convert.ToString(modelEntity.ParentActivityId), Convert.ToString(modelEntity.ActivityId), isLineItemEditable);
             lstLineItemData.Add(objLineItemData);
 
             objLineItemData = new Budgetdataobj();  // Add Planned Cost to the column
