@@ -15,7 +15,7 @@ using System.Web.Mvc;
 namespace RevenuePlanner.Test.QA
 {
     [TestClass]
-    public class FinanceReport
+    public class A5_FinanceReport
     {
         #region Variable Declaration
 
@@ -58,8 +58,11 @@ namespace RevenuePlanner.Test.QA
                     List<string> subHeader = objBudgetDHTMLXGridModel.AttachHeader;
                     string mainHeaderString = objBudgetDHTMLXGridModel.SetHeader;
                     string[] mainHeader = mainHeaderString.Split(',').ToArray();
+
                     VerifyHeaderValue(dt, MainTotalAllocated, MainTotalActual);
+                    Console.WriteLine("\n -------------- Summary - Table Number Validation --------------");
                     VerifyMonthlyData(dt, PlanData, mainHeader, subHeader, PercAllocated);
+
                     if (objBudgetDHTMLXGridModel.Grid.rows[1].rows != null && objBudgetDHTMLXGridModel.Grid.rows[1].rows.Count > 0)
                     {
                         var Campaign = objBudgetDHTMLXGridModel.Grid.rows[1].rows[0];
@@ -117,7 +120,7 @@ namespace RevenuePlanner.Test.QA
                         break;
                 }
                 string mHeader = "";
-               // int j = 0;
+                // int j = 0;
                 for (int i = 1; i <= data.Count() - 1; i++)
                 {
                     string htmlString = data[i].value;
@@ -128,7 +131,7 @@ namespace RevenuePlanner.Test.QA
                         if (i == 1)
                         {
                             Assert.AreEqual(dr[i - 1].ToString().Trim(), budgetValue.Trim());
-                            Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of " + mainHeader[i - 1] + " is " + dr[i - 1].ToString() + ".");
+                            Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + dr[i - 1].ToString() + ".");
                         }
                         else
                         {
@@ -146,7 +149,7 @@ namespace RevenuePlanner.Test.QA
                             }
 
                             Assert.AreEqual(Math.Round(Convert.ToDecimal(dr[i - 1].ToString()), 2), Math.Round(Convert.ToDecimal(budgetValue), 2));
-                            Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of " + subHeader[i] + " of " + dr[0].ToString() + " in " + mHeader + " is " + budgetValue + ".");
+                            Console.WriteLine("\n The assert value of " + subHeader[i] + " of " + dr[0].ToString() + " in " + mHeader + " is " + budgetValue + ". (The expected value is " + Math.Round(Convert.ToDecimal(dr[i - 1].ToString()), 2).ToString() + ".)");
                             if (PercAllocated != null && subHeader[i].ToLower() == "budget")
                             {
                                 decimal percentage = 0;
@@ -168,13 +171,14 @@ namespace RevenuePlanner.Test.QA
 
         public void VerifyHeaderValue(DataTable dt, string MainTotalAllocated, string MainTotalActual)
         {
+            Console.WriteLine("\n -------------- Header Number Validation --------------");
             if (dt != null && dt.Rows.Count > 0)
             {
                 DataRow dr = dt.Rows[0];
-                Assert.AreEqual(dr["Total Actual"].ToString(), MainTotalActual);
-                Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of total allocated amount is " + MainTotalAllocated + ".");
                 Assert.AreEqual(dr["Total Budget"].ToString(), MainTotalAllocated);
-                Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of total spent amount is " + MainTotalActual + ".");
+                Console.WriteLine("\n The assert value of total allocated amount is " + MainTotalAllocated + ". (The expected value is " + dr["Total Budget"].ToString() + ".)");
+                Assert.AreEqual(dr["Total Actual"].ToString(), MainTotalActual);
+                Console.WriteLine("\n The assert value of total spent amount is " + MainTotalActual + ". (The expected value is " + dr["Total Actual"].ToString() + ".)");
             }
 
         }
@@ -204,62 +208,62 @@ namespace RevenuePlanner.Test.QA
                 case "JAN":
                     data = Convert.ToDecimal(budgetMonth.BudgetY1);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "FEB":
                     data = Convert.ToDecimal(budgetMonth.BudgetY2);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "MAR":
                     data = Convert.ToDecimal(budgetMonth.BudgetY3);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "APR":
                     data = Convert.ToDecimal(budgetMonth.BudgetY4);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "MAY":
                     data = Convert.ToDecimal(budgetMonth.BudgetY5);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "JUN":
                     data = Convert.ToDecimal(budgetMonth.BudgetY6);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "JUL":
                     data = Convert.ToDecimal(budgetMonth.BudgetY7);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "AUG":
                     data = Convert.ToDecimal(budgetMonth.BudgetY8);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "SEP":
                     data = Convert.ToDecimal(budgetMonth.BudgetY9);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "OCT":
                     data = Convert.ToDecimal(budgetMonth.BudgetY10);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "NOV":
                     data = Convert.ToDecimal(budgetMonth.BudgetY11);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "DEC":
                     data = Convert.ToDecimal(budgetMonth.BudgetY12);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + month + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + month + " is " + Math.Round(Convert.ToDecimal(data), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
             }
 
@@ -300,7 +304,9 @@ namespace RevenuePlanner.Test.QA
                     List<string> subHeader = objBudgetDHTMLXGridModel.AttachHeader;
                     string mainHeaderString = objBudgetDHTMLXGridModel.SetHeader;
                     string[] mainHeader = mainHeaderString.Split(',').ToArray();
+
                     VerifyHeaderValue(dt, MainTotalAllocated, MainTotalActual);
+                    Console.WriteLine("\n -------------- Summary - Table Number Validation --------------");
                     VerifyQuaterlyData(dt, PlanData, mainHeader, subHeader, PercAllocated);
                     if (objBudgetDHTMLXGridModel.Grid.rows[1].rows != null && objBudgetDHTMLXGridModel.Grid.rows[1].rows.Count > 0)
                     {
@@ -372,7 +378,7 @@ namespace RevenuePlanner.Test.QA
                         if (i == 1)
                         {
                             Assert.AreEqual(dr[i - 1].ToString().Trim(), budgetValue.Trim());
-                            Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of " + mainHeader[i - 1] + " is " + dr[i - 1].ToString() + ".");
+                            Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + budgetValue.Trim() + ". (The expected value is " + dr[i - 1].ToString().Trim() + ".)");
                         }
                         else
                         {
@@ -385,7 +391,7 @@ namespace RevenuePlanner.Test.QA
                                 mHeader = mainHeader[i];
                             }
                             Assert.AreEqual(Math.Round(Convert.ToDecimal(dr[i - 1].ToString()), 2), Math.Round(Convert.ToDecimal(budgetValue), 2));
-                            Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of " + subHeader[i] + " of " + dr[0].ToString() + " in " + mHeader + " is " + budgetValue + ".");
+                            Console.WriteLine("\n The assert value of " + subHeader[i] + " of " + dr[0].ToString() + " in " + mHeader + " is " + budgetValue + ". (The expected value is " + Math.Round(Convert.ToDecimal(dr[i - 1].ToString()), 2).ToString() + ".)");
                             if (PercAllocated != null && subHeader[i].ToLower() == "budget")
                             {
                                 decimal percentage = 0;
@@ -413,22 +419,22 @@ namespace RevenuePlanner.Test.QA
                 case "Q1":
                     data = Convert.ToDecimal(budgetquarter.BudgetY1);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + quarter + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + quarter + " is " + data.ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "Q2":
                     data = Convert.ToDecimal(budgetquarter.BudgetY4);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + quarter + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + quarter + " is " + data.ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "Q3":
                     data = Convert.ToDecimal(budgetquarter.BudgetY7);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + quarter + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + quarter + " is " + data.ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "Q4":
                     data = Convert.ToDecimal(budgetquarter.BudgetY10);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + quarter + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + quarter + " is " + data.ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
 
             }
@@ -441,7 +447,7 @@ namespace RevenuePlanner.Test.QA
         #region  Monthly Finance Report With Attribute
 
         [TestMethod]
-        public void MonthlyFinanceReportWithAttribute()
+        public void MonthlyFinanceReportWithAudience()
         {
             try
             {
@@ -449,8 +455,10 @@ namespace RevenuePlanner.Test.QA
                 var IsLogin = ObjCommonFunctions.CheckLogin();
                 if (IsLogin != null)
                 {
-                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
-                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
+                    Console.WriteLine(" Testing LoginController - Index method");
+                    Console.WriteLine(" The assert value of action is " + IsLogin.RouteValues["Action"] + ". (The expected value is Index.)");
+                    Console.WriteLine("\n ----------------------------------------------------------------------");
+                    Console.WriteLine("\n Testing  ReportController - GetReportBudgetData Method");
 
                     ReportController objReportController = new ReportController();
                     ReportModel objReportModel = new ReportModel();
@@ -458,8 +466,12 @@ namespace RevenuePlanner.Test.QA
                     BudgetDHTMLXGridModel objBudgetDHTMLXGridModel = new BudgetDHTMLXGridModel();
                     ObjPlanCommonFunctions.SetSessionData();
 
+                    DataTable dtTactic = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Tactic$]").Tables[0];
+                    string viewByName = dtTactic.Rows[0]["ViewByName"].ToString();
+                    string viewById = dtTactic.Rows[0]["ViewById"].ToString();
+
                     DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[MonthlyFinance$]").Tables[0];
-                    var result = objReportController.GetReportBudgetData(currentYear, "months", "LineitemCustom315", "") as PartialViewResult;
+                    var result = objReportController.GetReportBudgetData(currentYear, "months", viewById, "") as PartialViewResult;
 
                     string MainTotalAllocated = result.ViewBag.MainTotalAllocated.ToString();
                     string MainTotalActual = result.ViewBag.MainTotalActual.ToString();
@@ -473,7 +485,8 @@ namespace RevenuePlanner.Test.QA
                     string[] mainHeader = mainHeaderString.Split(',').ToArray();
 
                     VerifyHeaderValueWithAttribute(dt, MainTotalAllocated, MainTotalActual);
-                    VerifyMonthlyDataWithAttribute(dt, AttributePlanData, mainHeader, subHeader, PercAllocated);
+                    Console.WriteLine("\n -------------- Summary - Table Number Validation --------------");
+                    VerifyMonthlyDataWithAttribute(dt, AttributePlanData, mainHeader, subHeader, PercAllocated, viewByName);
 
                     if (objBudgetDHTMLXGridModel.Grid.rows[1].rows != null && objBudgetDHTMLXGridModel.Grid.rows[1].rows.Count > 0)
                     {
@@ -509,7 +522,7 @@ namespace RevenuePlanner.Test.QA
 
         }
 
-        public void VerifyMonthlyDataWithAttribute(DataTable dt, List<Budgetdataobj> data, string[] mainHeader, List<string> subHeader, BudgetMonth PercAllocated = null)
+        public void VerifyMonthlyDataWithAttribute(DataTable dt, List<Budgetdataobj> data, string[] mainHeader, List<string> subHeader, BudgetMonth PercAllocated = null, string viewByName = null)
         {
             DataRow dr = dt.NewRow();
             if (data.Count > 0 && data != null)
@@ -544,10 +557,10 @@ namespace RevenuePlanner.Test.QA
                         if (i == 1)
                         {
                             if (data[0].value == "Plan")
-                                Assert.AreEqual("360 Partners", budgetValue.Trim());
+                                Assert.AreEqual(viewByName, budgetValue.Trim());
                             else
                                 Assert.AreEqual(dr[i - 1].ToString().Trim(), budgetValue.Trim());
-                            Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of " + mainHeader[i - 1] + " is " + dr[i - 1].ToString() + ".");
+                            Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + budgetValue.Trim() + ". The expected value is " + dr[i - 1].ToString().Trim() + ".)");
                         }
                         else
                         {
@@ -573,7 +586,7 @@ namespace RevenuePlanner.Test.QA
                             {
                                 Assert.AreEqual(Math.Round(Convert.ToDecimal(dr[i - 1].ToString()), 2), Math.Round(Convert.ToDecimal(budgetValue), 2));
                             }
-                            Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of " + subHeader[i] + " of " + dr[0].ToString() + " in " + mHeader + " is " + budgetValue + ".");
+                            Console.WriteLine("\n The assert value of " + subHeader[i] + " of " + dr[0].ToString() + " in " + mHeader + " is " + Math.Round(Convert.ToDecimal(budgetValue), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(dr[i - 1].ToString()), 2).ToString() + ".)");
                             if (PercAllocated != null && subHeader[i].ToLower() == "budget")
                             {
                                 decimal percentage = 0;
@@ -595,13 +608,15 @@ namespace RevenuePlanner.Test.QA
 
         public void VerifyHeaderValueWithAttribute(DataTable dt, string MainTotalAllocated, string MainTotalActual)
         {
+            Console.WriteLine("\n -------------- Header Number Validation --------------");
             if (dt != null && dt.Rows.Count > 0)
             {
                 DataRow dr = dt.Rows[0];
-                Assert.AreEqual(dr["Total Actual"].ToString(), MainTotalActual);
-                Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of total allocated amount is " + MainTotalAllocated + ".");
+              
                 Assert.AreEqual(dr["Planned Cost"].ToString(), MainTotalAllocated);
-                Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of total spent amount is " + MainTotalActual + ".");
+                Console.WriteLine("\n The assert value of total allocated amount is " + MainTotalAllocated + ". (The expected value is " + dr["Planned Cost"].ToString() + ".)");
+                Assert.AreEqual(dr["Total Actual"].ToString(), MainTotalActual);
+                Console.WriteLine("\n The assert value of total spent amount is " + MainTotalActual + ". (The expected value is " + dr["Total Actual"].ToString() + ".)");
             }
 
         }
@@ -611,7 +626,7 @@ namespace RevenuePlanner.Test.QA
         #region  Quarterly Finance Report With Attribute
 
         [TestMethod]
-        public void QuarterlyFinanceReportWithAttribute()
+        public void QuarterlyFinanceReportWithAudience()
         {
             try
             {
@@ -619,8 +634,10 @@ namespace RevenuePlanner.Test.QA
                 var IsLogin = ObjCommonFunctions.CheckLogin();
                 if (IsLogin != null)
                 {
-                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
-                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
+                    Console.WriteLine(" Testing LoginController - Index method");
+                    Console.WriteLine(" The assert value of action is " + IsLogin.RouteValues["Action"] + ". (The expected value is Index.)");
+                    Console.WriteLine("\n ----------------------------------------------------------------------");
+                    Console.WriteLine("\n Testing  ReportController - GetReportBudgetData Method");
 
                     ReportController objReportController = new ReportController();
                     ReportModel objReportModel = new ReportModel();
@@ -628,8 +645,12 @@ namespace RevenuePlanner.Test.QA
                     BudgetDHTMLXGridModel objBudgetDHTMLXGridModel = new BudgetDHTMLXGridModel();
                     ObjPlanCommonFunctions.SetSessionData();
 
+                    DataTable dtTactic = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Tactic$]").Tables[0];
+                    string viewByName = dtTactic.Rows[0]["ViewByName"].ToString();
+                    string viewById = dtTactic.Rows[0]["ViewById"].ToString();
+
                     DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[QuarterlyFinance$]").Tables[0];
-                    var result = objReportController.GetReportBudgetData(currentYear, "quarters", "LineitemCustom315", "") as PartialViewResult;
+                    var result = objReportController.GetReportBudgetData(currentYear, "quarters", viewById, "") as PartialViewResult;
 
                     string MainTotalAllocated = result.ViewBag.MainTotalAllocated.ToString();
                     string MainTotalActual = result.ViewBag.MainTotalActual.ToString();
@@ -643,7 +664,8 @@ namespace RevenuePlanner.Test.QA
                     string[] mainHeader = mainHeaderString.Split(',').ToArray();
 
                     VerifyHeaderValueWithAttribute(dt, MainTotalAllocated, MainTotalActual);
-                    VerifyQuaterlyDataWithAttribute(dt, AttributePlanData, mainHeader, subHeader, PercAllocated);
+                    Console.WriteLine("\n -------------- Summary - Table Number Validation --------------");
+                    VerifyQuaterlyDataWithAttribute(dt, AttributePlanData, mainHeader, subHeader, PercAllocated, viewByName);
 
                     if (objBudgetDHTMLXGridModel.Grid.rows[1].rows != null && objBudgetDHTMLXGridModel.Grid.rows[1].rows.Count > 0)
                     {
@@ -679,7 +701,7 @@ namespace RevenuePlanner.Test.QA
 
         }
 
-        public void VerifyQuaterlyDataWithAttribute(DataTable dt, List<Budgetdataobj> data, string[] mainHeader, List<string> subHeader, BudgetMonth PercAllocated = null)
+        public void VerifyQuaterlyDataWithAttribute(DataTable dt, List<Budgetdataobj> data, string[] mainHeader, List<string> subHeader, BudgetMonth PercAllocated = null, string viewByName = null)
         {
             DataRow dr = dt.NewRow();
             if (data.Count > 0 && data != null)
@@ -708,17 +730,17 @@ namespace RevenuePlanner.Test.QA
                 {
                     string htmlString = data[i].value;
                     string budgetValue = GetBudgetData(htmlString);
-                    
+
                     if (dr != null)
                     {
 
                         if (i == 1)
                         {
                             if (data[0].value == "Plan")
-                                Assert.AreEqual("360 Partners", budgetValue.Trim());
+                                Assert.AreEqual(viewByName, budgetValue.Trim());
                             else
                                 Assert.AreEqual(dr[i - 1].ToString().Trim(), budgetValue.Trim());
-                            Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of " + mainHeader[i - 1] + " is " + dr[i - 1].ToString() + ".");
+                            Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + budgetValue.Trim() + ". (The expected value is " + dr[i - 1].ToString() + ".)");
                         }
                         else
                         {
@@ -740,7 +762,7 @@ namespace RevenuePlanner.Test.QA
                             {
                                 Assert.AreEqual(Math.Round(Convert.ToDecimal(dr[i - 1].ToString()), 2), Math.Round(Convert.ToDecimal(budgetValue), 2));
                             }
-                            Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of " + subHeader[i] + " of " + dr[0].ToString() + " in " + mHeader + " is " + budgetValue + ".");
+                            Console.WriteLine("\n The assert value of " + subHeader[i] + " of " + dr[0].ToString() + " in " + mHeader + " is " + budgetValue + ". (The expected value is " + Math.Round(Convert.ToDecimal(dr[i - 1].ToString()), 2).ToString() + ".)");
                             if (PercAllocated != null && subHeader[i].ToLower() == "budget" && i < data.Count() - 1)
                             {
                                 decimal percentage = 0;
@@ -768,22 +790,22 @@ namespace RevenuePlanner.Test.QA
                 case "Q1":
                     data = Convert.ToDecimal(budgetquarter.BudgetY1);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + quarter + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + quarter + " is " + data.ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "Q2":
                     data = Convert.ToDecimal(budgetquarter.BudgetY4);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + quarter + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + quarter + " is " + data.ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "Q3":
                     data = Convert.ToDecimal(budgetquarter.BudgetY7);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + quarter + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + quarter + " is " + data.ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
                 case "Q4":
                     data = Convert.ToDecimal(budgetquarter.BudgetY10);
                     Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 2), Math.Round(Convert.ToDecimal(data), 2));
-                    Console.WriteLine("ReportController - GetReportBudgetData \n Report - Finance Report \n The assert value of percetage in " + quarter + " is " + data.ToString() + ".");
+                    Console.WriteLine("\n The assert value of percetage in " + quarter + " is " + data.ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(percentage), 2).ToString() + ".)");
                     break;
 
             }

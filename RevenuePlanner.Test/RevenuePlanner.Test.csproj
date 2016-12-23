@@ -103,7 +103,7 @@
     <Compile Include="MockHelpers\DataHelper.cs" />
     <Compile Include="MockHelpers\MockHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QA\5FinanceReport.cs" />
+    <Compile Include="QA\A5_FinanceReport.cs" />
     <Compile Include="QA\A4_WaterfallReport.cs" />
     <Compile Include="QA\A3_RevenueReport.cs" />
     <Compile Include="QA\A2_SummaryReport.cs" />

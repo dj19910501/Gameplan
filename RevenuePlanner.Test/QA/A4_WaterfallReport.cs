@@ -1381,6 +1381,7 @@ namespace RevenuePlanner.Test.QA
 
         public void VerifyHeaderValue(Projected_Goal objProjected_Goal, List<double> ActualList, List<double> GoalList, List<double> ProjectedList)
         {
+            Console.WriteLine("\n -------------- Header Number Validation --------------");
             #region Actual
             // Get actual projected value
             decimal GoalUpToCurrentMonth = 0; decimal actualPerecentage = 0; decimal SumOfProjected = 0; decimal TotalProjected = 0; decimal ProjectedPercentage = 0;
