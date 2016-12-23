@@ -37,8 +37,10 @@ namespace RevenuePlanner.Test.QA
                 var IsLogin = ObjCommonFunctions.CheckLogin();
                 if (IsLogin != null)
                 {
-                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
-                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
+                    Console.WriteLine(" Testing LoginController - Index method");
+                    Console.WriteLine(" The assert value of action is " + IsLogin.RouteValues["Action"] + ". (The expected value is Index.)");
+                    Console.WriteLine("\n ----------------------------------------------------------------------");
+                    Console.WriteLine("\n Testing  ReportController - GetReportBudgetData Method");
                     ReportController objReportController = new ReportController();
                     ReportModel objReportModel = new ReportModel();
                     BudgetDHTMLXGridDataModel objBudgetDHTMLXGridDataModel = new BudgetDHTMLXGridDataModel();
@@ -277,8 +279,10 @@ namespace RevenuePlanner.Test.QA
                 var IsLogin = ObjCommonFunctions.CheckLogin();
                 if (IsLogin != null)
                 {
-                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
-                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
+                    Console.WriteLine(" Testing LoginController - Index method");
+                    Console.WriteLine(" The assert value of action is " + IsLogin.RouteValues["Action"] + ". (The expected value is Index.)");
+                    Console.WriteLine("\n ----------------------------------------------------------------------");
+                    Console.WriteLine("\n Testing  ReportController - GetReportBudgetData Method");
                     ReportController objReportController = new ReportController();
                     ReportModel objReportModel = new ReportModel();
                     BudgetDHTMLXGridDataModel objBudgetDHTMLXGridDataModel = new BudgetDHTMLXGridDataModel();

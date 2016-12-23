@@ -104,10 +104,10 @@
     <Compile Include="MockHelpers\MockHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QA\5FinanceReport.cs" />
-    <Compile Include="QA\4WaterfallReport.cs" />
-    <Compile Include="QA\1Login.cs" />
-    <Compile Include="QA\3RevenueReport.cs" />
-    <Compile Include="QA\2SummaryReport.cs" />
+    <Compile Include="QA\A4_WaterfallReport.cs" />
+    <Compile Include="QA\A3_RevenueReport.cs" />
+    <Compile Include="QA\A2_SummaryReport.cs" />
+    <Compile Include="QA\A1_Login.cs" />
     <Compile Include="QA_Helpers\Hive9CommonFunctions.cs" />
     <Compile Include="QA_Helpers\PlanCommonFunctions.cs" />
     <Compile Include="QA_Helpers\QA_DataHelper.cs" />

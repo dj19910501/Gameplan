@@ -43,7 +43,7 @@ namespace RevenuePlanner.Test.QA
             try
             {
                 OleDbConnection ExcelConnection; DataSet ds; OleDbDataAdapter Command;
-                var ExcelPath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get(connectionString);
+                var ExcelPath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + ConfigurationManager.AppSettings.Get(connectionString);
                 var path = connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + ExcelPath + ";Extended Properties=\"Excel 8.0;HDR=YES;\"";
                 ExcelConnection = new OleDbConnection(path);
                 ExcelConnection.Open();
@@ -71,6 +71,11 @@ namespace RevenuePlanner.Test.QA
                 //Set user permission 
                 HttpContext.Current = QA_DataHelper.SetUserAndPermission(true, UserEmail, Password);
 
+                DataTable dt = GetExcelData("GamePlanExcelConn", "[Plan$]").Tables[0];
+                if (dt.Rows[0]["PlanId"].ToString() != "")
+                {
+                    PlanId = Convert.ToInt32(dt.Rows[0]["PlanId"].ToString());
+                }
                 Sessions.User = new BDSService.User();
                 Sessions.User.CID = DataHelper.GetClientId(PlanId);
                 string returnURL = string.Empty;

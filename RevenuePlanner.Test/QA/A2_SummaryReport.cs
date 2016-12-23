@@ -15,7 +15,7 @@ using System.Web.Mvc;
 namespace RevenuePlanner.Test.QA
 {
     [TestClass]
-    public class SummaryReport
+    public class A2_SummaryReport
     {
         #region Variable Declaration
 
@@ -40,7 +40,6 @@ namespace RevenuePlanner.Test.QA
         #region Waterfall Report
 
         [TestMethod]
-        [Priority(1)]
         public async Task INQSummaryReport()
         {
             try
@@ -108,7 +107,6 @@ namespace RevenuePlanner.Test.QA
         }
 
         [TestMethod]
-        [Priority(2)]
         public async Task TQLSummaryReport()
         {
             try
@@ -202,7 +200,6 @@ namespace RevenuePlanner.Test.QA
         }
 
         [TestMethod]
-        [Priority(3)]
         public async Task CWSummaryReport()
         {
             try
@@ -369,9 +366,9 @@ namespace RevenuePlanner.Test.QA
         #endregion
 
         #region Revenue Report
+
         [TestMethod()]
-        [Priority(1)]
-        public async Task RevenueSummaryReport()
+        public async Task A1_RevenueSummaryReport()
         {
             try
             {
@@ -379,37 +376,52 @@ namespace RevenuePlanner.Test.QA
                 if (IsLogin != null)
                 {
                     Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
-                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
-                    ObjPlanCommonFunctions.SetSessionData();
+                    Console.WriteLine(" Testing LoginController - Index method");
+                    Console.WriteLine(" The assert value of action is " + IsLogin.RouteValues["Action"] + ". (The expected value is Index.)");
+                    Console.WriteLine("\n ----------------------------------------------------------------------");
+                    Console.WriteLine("\n Testing  ReportController - GetOverviewData Method");
                     objReportController = new ReportController();
                     objReportModel = new ReportModel();
 
                     Sessions.PlanExchangeRate = 1.0;
+                    ObjPlanCommonFunctions.SetSessionData();
+                    var result1 = objReportController.GetRevenueData(currentYear, "Quarterly") as PartialViewResult;
+                    objReportModel = (ReportModel)(result1.ViewData.Model);
+                    RevenueToPlanModel objRevenueToPlanModel = objReportModel.RevenueToPlanModel;
+                    RevenueDataTable objReportDataTable = objRevenueToPlanModel.RevenueToPlanDataModel;
+                    List<double> QuaterlyActualList = objReportDataTable.ActualList;
+                    List<double> QuaterlyProjectedList = objReportDataTable.ProjectedList;
+                    List<double> QuaterlyGoalList = objReportDataTable.GoalList;
 
-                    var result = await objReportController.GetOverviewData("2016", "Quarterly") as PartialViewResult;
+                    var result = await objReportController.GetOverviewData(currentYear, "Quarterly") as PartialViewResult;
                     objReportOverviewModel = new ReportOverviewModel();
                     objReportOverviewModel = (ReportOverviewModel)result.Model;
 
                     List<sparkLineCharts> SparkLineChartsList = new List<sparkLineCharts>();
+                    lineChartData objlineChartData = new lineChartData();
                     SparkLineChartsList = objReportOverviewModel.revenueOverviewModel.SparkLineChartsData;
+                    objlineChartData = objReportOverviewModel.revenueOverviewModel.linechartdata;
+
                     if (objReportOverviewModel != null)
                     {
+                        #region Verify Data
                         objProjected_Goal = new Projected_Goal();
                         objProjected_Goal = objReportOverviewModel.revenueOverviewModel.projected_goal;
 
                         DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Actual Data$]").Tables[0];
                         TotalProjected = SetValuesForSummeryRevenueReport(dt);
-
+                        Console.WriteLine("\n Testing revenueOverviewModel Method");
                         Assert.AreEqual(Math.Round(TotalProjected, 2), Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2));
-                        Console.WriteLine("ReportController - revenueOverviewModel \n The assert value of actual projected is " + Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2).ToString() + ".");
+                        Console.WriteLine("\n The assert value of actual projected is " + Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2).ToString() + ". (The expected value is " + Math.Round(TotalProjected, 2).ToString() + ".)");
 
                         Assert.AreEqual(Math.Round(TacticRevenueAmount, 2), Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2));
-                        Console.WriteLine("ReportController - revenueOverviewModel \n The assert value of actual goal is  " + Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2).ToString() + ".");
+                        Console.WriteLine("\n The assert value of actual goal is  " + Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2).ToString() + ". (The expected value is " + Math.Round(TacticRevenueAmount, 2) + ".)");
 
                         decimal Percentage = ((TotalProjected - TacticRevenueAmount) / TacticRevenueAmount) * 100;
 
                         Assert.AreEqual(Math.Round(Percentage, 2), Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2));
-                        Console.WriteLine("ReportController - revenueOverviewModel \n The assert value of actual percentage  is " + Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2) + ".");
+                        Console.WriteLine("\n The assert value of actual percentage  is " + Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2) + ". (The expected value is " + Math.Round(Percentage, 2) + ".)");
+
 
                         if (SparkLineChartsList != null)
                         {
@@ -420,7 +432,7 @@ namespace RevenuePlanner.Test.QA
                                 string attributeName1 = sparkLineData.sparklinechartdata[0].Name.ToLower();
                                 string percentage = sparkLineData.sparklinechartdata[0].RevenueTypeValue;
                                 string Totalpercentage = sparkLineData.sparklinechartdata[1].RevenueTypeValue.ToLower();
-                                string attributeName2 = sparkLineData.sparklinechartdata[1].RevenueTypeValue.ToLower();
+                                string attributeName2 = sparkLineData.sparklinechartdata[1].Name.ToLower();
                                 string Header = sparkLineData.ChartHeader;
                                 if (sparkLineData.ChartHeader.ToLower() == "top revenue by")
                                 {
@@ -459,11 +471,42 @@ namespace RevenuePlanner.Test.QA
                                     Totalpercentage = Totalpercentage.Replace('%', '0');
                                 }
                                 Assert.AreEqual(Math.Round(Convert.ToDecimal(percentage), 1), Math.Round(Convert.ToDecimal(value), 1));
-                                Console.WriteLine("ReportController - revenueOverviewModel \n Report - Revenue Summery Report \n The assert value of " + attributeName1 + " in " + Header + " is " + Math.Round(Convert.ToDecimal(percentage), 2) + ".");
+                                Console.WriteLine("\n The assert value of " + attributeName1 + " in " + Header + " is " + Math.Round(Convert.ToDecimal(percentage), 1) + ". (The expected value is " + Math.Round(Convert.ToDecimal(value), 1).ToString() + ")");
                                 Assert.AreEqual(Math.Round(Convert.ToDecimal(Totalpercentage), 1), Math.Round(Convert.ToDecimal(value), 1));
-                                Console.WriteLine("ReportController - revenueOverviewModel \n Report - Revenue Summery Report \n The assert value of " + attributeName2 + " in " + Header + " is " + Math.Round(Convert.ToDecimal(Totalpercentage), 2) + ".");
+                                Console.WriteLine("\n The assert value of " + attributeName2 + " in " + Header + " is " + Math.Round(Convert.ToDecimal(Totalpercentage), 1) + ". (The expected value is " + Math.Round(Convert.ToDecimal(value), 1).ToString() + ")");
                             }
                         }
+                        #endregion
+
+                        #region Verify Graph Data
+                        Console.WriteLine("\n -------------- Graph Number Validation --------------");
+                        if (objlineChartData != null)
+                        {
+                            List<double?> ActualList = objlineChartData.series[0].data;
+                            List<double?> GoalList = objlineChartData.series[1].data;
+                            if (ActualList != null && ActualList.Count > 0)
+                            {
+                                decimal sumOfAcual = 0;
+                                for (int i = 0; i <= ActualList.Count - 1; i++)
+                                {
+                                    sumOfAcual = sumOfAcual + Convert.ToDecimal(QuaterlyActualList[i]) + Convert.ToDecimal(QuaterlyProjectedList[i]);
+                                    Assert.AreEqual(Math.Round(Convert.ToDecimal(ActualList[i]), 2), Math.Round(sumOfAcual, 2));
+                                    Console.WriteLine("\n The assert value of actual/projected cost in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(ActualList[i]), 2) + ". (The expected value is " + Math.Round(sumOfAcual, 2).ToString() + ")");
+
+                                }
+                            }
+                            if (GoalList != null && GoalList.Count > 0)
+                            {
+                                decimal sumOfGoal = 0;
+                                for (int i = 0; i <= GoalList.Count - 1; i++)
+                                {
+                                    sumOfGoal = sumOfGoal + Convert.ToDecimal(QuaterlyGoalList[i]);
+                                    Assert.AreEqual(Math.Round(Convert.ToDecimal(GoalList[i]), 2), Math.Round(sumOfGoal, 2));
+                                    Console.WriteLine("\n The assert value of goal in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(GoalList[i]), 2) + ". (The expected value is " + Math.Round(sumOfGoal, 2).ToString() + ")");
+                                }
+                            }
+                        }
+                        #endregion
                     }
                 }
             }
@@ -519,7 +562,6 @@ namespace RevenuePlanner.Test.QA
                         {
                             if (DateTime.Now.Month < i)
                             {
-                               
                                 int current = i - DateTime.Now.Month + currentMonthNo;
                                 decimal cal = (GoalAmount / MonthDiff) * current;
                                 var final = SumOfActual / DateTime.Now.Month;
@@ -531,6 +573,158 @@ namespace RevenuePlanner.Test.QA
                 }
             }
             return SumOfProjected + SumOfActual;
+        }
+
+        #endregion
+
+        #region Finance Report
+
+        [TestMethod()]
+        public async Task A3_FinanceSummaryReport()
+        {
+            try
+            {
+                var IsLogin = ObjCommonFunctions.CheckLogin();
+                if (IsLogin != null)
+                {
+                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
+                    Console.WriteLine(" Testing LoginController - Index method");
+                    Console.WriteLine(" The assert value of action is " + IsLogin.RouteValues["Action"] + ". (The expected value is Index.)");
+                    Console.WriteLine("\n ----------------------------------------------------------------------");
+                    Console.WriteLine("\n Testing  ReportController - GetOverviewData Method");
+                    ObjPlanCommonFunctions.SetSessionData();
+                    objReportController = new ReportController();
+                    objReportModel = new ReportModel();
+
+                    Sessions.PlanExchangeRate = 1.0;
+
+                    var result = await objReportController.GetOverviewData(currentYear, "Quarterly") as PartialViewResult;
+                    objReportOverviewModel = new ReportOverviewModel();
+                    objReportOverviewModel = (ReportOverviewModel)result.Model;
+                    FinancialOverviewModel objFinancialOverviewModel = new FinancialOverviewModel();
+                    objFinancialOverviewModel = objReportOverviewModel.financialOverviewModel;
+
+                    DataTable Financedt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[QuarterlyFinance$]").Tables[0];
+                    DataTable Plandt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Plan$]").Tables[0];
+
+                    if (Financedt != null && objFinancialOverviewModel != null)
+                    {
+                        List<double> actualList = objFinancialOverviewModel.MainActualCostList;
+                        List<double> plannedList = objFinancialOverviewModel.MainPlannedCostList;
+                        List<double> budgetList = objFinancialOverviewModel.MainBudgetCostList;
+                        double totalbudget = objFinancialOverviewModel.TotalBudgetAllocated;
+                        double unallocatedTotalbudget = objFinancialOverviewModel.TotalBudgetUnAllocated;
+                        double plannedCost = objFinancialOverviewModel.PlannedCostvsBudget;
+                        double actualCost = objFinancialOverviewModel.ActualCostvsBudet;
+
+
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(totalbudget), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Total Budget"].ToString()), 2));
+                        Console.WriteLine("\n The assert value of total budget is " + Math.Round(Convert.ToDecimal(totalbudget), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Total Budget"].ToString()), 2).ToString() + ")");
+
+                        decimal unallocatedBudget = Convert.ToDecimal(Plandt.Rows[0]["BudgetValue"].ToString()) - Convert.ToDecimal(totalbudget);
+
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(unallocatedTotalbudget), 2), Math.Round(unallocatedBudget, 2));
+                        Console.WriteLine("\n The assert value of unallocated cost is " + Math.Round(Convert.ToDecimal(unallocatedTotalbudget), 2).ToString() + ". (The expected value is " + Math.Round(unallocatedBudget, 2).ToString() + ")");
+
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(plannedCost), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Planned Cost"].ToString()), 2));
+                        Console.WriteLine("\n The assert value of planned cost vs. budget is " + Math.Round(Convert.ToDecimal(plannedCost), 2).ToString() + " / " + totalbudget + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Planned Cost"].ToString()), 2).ToString() + ")");
+
+                        Assert.AreEqual(Math.Round(Convert.ToDecimal(actualCost), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Total Actual"].ToString()), 2));
+                        Console.WriteLine("\n The assert value of actual cost vs. budget is " + Math.Round(Convert.ToDecimal(actualCost), 2).ToString() + " / " + totalbudget + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Total Actual"].ToString()), 2).ToString() + ")");
+
+                        #region Actual data
+                        for (int i = 0; i <= actualList.Count - 1; i++)
+                        {
+                            if (i == 0)
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(actualList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q1 - Actual"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of actual cost quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(actualList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q1 - Actual"].ToString()), 2).ToString() + ")");
+                            }
+                            else if (i == 1)
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(actualList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q2 - Actual"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of actual cost quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(actualList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q2 - Actual"].ToString()), 2).ToString() + ")");
+                            }
+                            else if (i == 2)
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(actualList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q3 - Actual"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of actual cost quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(actualList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q3 - Actual"].ToString()), 2).ToString() + ")");
+                            }
+                            else
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(actualList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Actual"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of actual cost quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(actualList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Actual"].ToString()), 2).ToString() + ")");
+
+                            }
+                        
+                        }
+                        #endregion
+
+                        #region Planned data
+                        for (int i = 0; i <= plannedList.Count - 1; i++)
+                        {
+                            if (i == 0)
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(plannedList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q1 - Planned"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of planned cost in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(plannedList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q1 - Planned"].ToString()), 2).ToString() + ")");
+                            }
+                            else if (i == 1)
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(plannedList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q2 - Planned"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of planned cost in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(plannedList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q2 - Planned"].ToString()), 2).ToString() + ")");
+                            }
+                            else if (i == 2)
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(plannedList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q3 - Planned"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of planned cost in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(plannedList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q3 - Planned"].ToString()), 2).ToString() + ")");
+                            }
+                            else
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(plannedList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Planned"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of planned cost in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(plannedList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Planned"].ToString()), 2).ToString() + ")");
+                            }
+                       
+                        }
+                        #endregion
+
+                        #region Budget data
+                        for (int i = 0; i <= budgetList.Count - 1; i++)
+                        {
+                            if (i == 0)
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(budgetList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q1 - Budget"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of budget in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(budgetList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q1 - Budget"].ToString()), 2).ToString() + ")");
+                            }
+                            else if (i == 1)
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(budgetList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q2 - Budget"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of budget in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(budgetList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q2 - Budget"].ToString()), 2).ToString() + ")");
+                            }
+                            else if (i == 2)
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(budgetList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q3 - Budget"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of budget in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(budgetList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q3 - Budget"].ToString()), 2).ToString() + ")");
+                            }
+                            else
+                            {
+                                Assert.AreEqual(Math.Round(Convert.ToDecimal(budgetList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Budget"].ToString()), 2));
+                                Console.WriteLine("\n The assert value of budget in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(budgetList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Budget"].ToString()), 2).ToString() + ")");
+                            }
+                        
+                        }
+                        #endregion
+
+                       
+
+
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         #endregion

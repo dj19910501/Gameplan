@@ -49,8 +49,14 @@ namespace RevenuePlanner.Test.IntegrationHelpers
             List<int> PlanIds = new List<int>();
             List<int> ReportOwnerIds = new List<int>();
             List<int> ReportTacticTypeIds = new List<int>();
+            int PlanId = 0; int ModelId = 0;
 
-            int PlanId = Convert.ToInt32(ConfigurationManager.AppSettings["PlanId"]);
+            DataTable dtPlan = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Plan$]").Tables[0];
+            if (dtPlan.Rows[0]["PlanId"].ToString() != "")
+            {
+                PlanId = Convert.ToInt32(dtPlan.Rows[0]["PlanId"].ToString());
+            }
+            // int PlanId = Convert.ToInt32(ConfigurationManager.AppSettings["PlanId"]);
             PlanIds.Add(PlanId);
             Sessions.ReportPlanIds = PlanIds;
 
@@ -58,7 +64,12 @@ namespace RevenuePlanner.Test.IntegrationHelpers
             ReportOwnerIds.Add(OwnerId);
             Sessions.ReportOwnerIds = ReportOwnerIds;
 
-            int ModelId = Convert.ToInt32(ConfigurationManager.AppSettings["ModelId"]);
+            DataTable dtModel = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Model$]").Tables[0];
+            if (dtModel.Rows[0]["ModelId"].ToString() != "")
+            {
+                ModelId = Convert.ToInt32(dtModel.Rows[0]["ModelId"].ToString());
+            }
+            //  int ModelId = Convert.ToInt32(ConfigurationManager.AppSettings["ModelId"]);
             ReportTacticTypeIds = QA_DataHelper.GetTacticTypeIds(ModelId);
             Sessions.ReportTacticTypeIds = ReportTacticTypeIds;
         }
