@@ -51,18 +51,6 @@
   <wsdl:message name="IBDSService__ChangePasswordEx_OutputMessage">
     <wsdl:part name="parameters" element="tns:_ChangePasswordExResponse" />
   </wsdl:message>
-  <wsdl:message name="IBDSService__ChangePasswordWithEmailEx_InputMessage">
-    <wsdl:part name="parameters" element="tns:_ChangePasswordWithEmailEx" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService__ChangePasswordWithEmailEx_OutputMessage">
-    <wsdl:part name="parameters" element="tns:_ChangePasswordWithEmailExResponse" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_CheckCurrentPasswordWithEmailEx_InputMessage">
-    <wsdl:part name="parameters" element="tns:CheckCurrentPasswordWithEmailEx" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_CheckCurrentPasswordWithEmailEx_OutputMessage">
-    <wsdl:part name="parameters" element="tns:CheckCurrentPasswordWithEmailExResponse" />
-  </wsdl:message>
   <wsdl:message name="IBDSService_CheckCurrentPasswordEx_InputMessage">
     <wsdl:part name="parameters" element="tns:CheckCurrentPasswordEx" />
   </wsdl:message>
@@ -351,18 +339,6 @@
   <wsdl:message name="IBDSService_GetCurrencyExchangeRateEx_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetCurrencyExchangeRateExResponse" />
   </wsdl:message>
-  <wsdl:message name="IBDSService_DeleteUserCustomrestriction_InputMessage">
-    <wsdl:part name="parameters" element="tns:DeleteUserCustomrestriction" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_DeleteUserCustomrestriction_OutputMessage">
-    <wsdl:part name="parameters" element="tns:DeleteUserCustomrestrictionResponse" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_resetToRoleDefault_InputMessage">
-    <wsdl:part name="parameters" element="tns:resetToRoleDefault" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_resetToRoleDefault_OutputMessage">
-    <wsdl:part name="parameters" element="tns:resetToRoleDefaultResponse" />
-  </wsdl:message>
   <wsdl:message name="IBDSService_CopyRoleWithoutPermission_InputMessage">
     <wsdl:part name="parameters" element="tns:CopyRoleWithoutPermission" />
   </wsdl:message>
@@ -573,23 +549,11 @@
   <wsdl:message name="IBDSService__ChangePassword_OutputMessage">
     <wsdl:part name="parameters" element="tns:_ChangePasswordResponse" />
   </wsdl:message>
-  <wsdl:message name="IBDSService__ChangePasswordWithEmail_InputMessage">
-    <wsdl:part name="parameters" element="tns:_ChangePasswordWithEmail" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService__ChangePasswordWithEmail_OutputMessage">
-    <wsdl:part name="parameters" element="tns:_ChangePasswordWithEmailResponse" />
-  </wsdl:message>
   <wsdl:message name="IBDSService_CheckCurrentPassword_InputMessage">
     <wsdl:part name="parameters" element="tns:CheckCurrentPassword" />
   </wsdl:message>
   <wsdl:message name="IBDSService_CheckCurrentPassword_OutputMessage">
     <wsdl:part name="parameters" element="tns:CheckCurrentPasswordResponse" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_CheckCurrentPasswordWithEmail_InputMessage">
-    <wsdl:part name="parameters" element="tns:CheckCurrentPasswordWithEmail" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_CheckCurrentPasswordWithEmail_OutputMessage">
-    <wsdl:part name="parameters" element="tns:CheckCurrentPasswordWithEmailResponse" />
   </wsdl:message>
   <wsdl:message name="IBDSService_GetMenu_InputMessage">
     <wsdl:part name="parameters" element="tns:GetMenu" />
@@ -879,6 +843,18 @@
   <wsdl:message name="IBDSService_DeleteUserActivityPermission_OutputMessage">
     <wsdl:part name="parameters" element="tns:DeleteUserActivityPermissionResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_DeleteUserCustomrestriction_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteUserCustomrestriction" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_DeleteUserCustomrestriction_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteUserCustomrestrictionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_resetToRoleDefault_InputMessage">
+    <wsdl:part name="parameters" element="tns:resetToRoleDefault" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_resetToRoleDefault_OutputMessage">
+    <wsdl:part name="parameters" element="tns:resetToRoleDefaultResponse" />
+  </wsdl:message>
   <wsdl:portType name="IBDSService">
     <wsdl:operation name="ValidateUserByClientEx">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSServiceEx/ValidateUserByClientEx" message="tns:IBDSService_ValidateUserByClientEx_InputMessage" />
@@ -907,14 +883,6 @@
     <wsdl:operation name="_ChangePasswordEx">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSServiceEx/_ChangePasswordEx" message="tns:IBDSService__ChangePasswordEx_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSServiceEx/_ChangePasswordExResponse" message="tns:IBDSService__ChangePasswordEx_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="_ChangePasswordWithEmailEx">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSServiceEx/_ChangePasswordWithEmailEx" message="tns:IBDSService__ChangePasswordWithEmailEx_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSServiceEx/_ChangePasswordWithEmailExResponse" message="tns:IBDSService__ChangePasswordWithEmailEx_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="CheckCurrentPasswordWithEmailEx">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordWithEmailEx" message="tns:IBDSService_CheckCurrentPasswordWithEmailEx_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordWithEmailExResponse" message="tns:IBDSService_CheckCurrentPasswordWithEmailEx_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="CheckCurrentPasswordEx">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordEx" message="tns:IBDSService_CheckCurrentPasswordEx_InputMessage" />
@@ -1108,14 +1076,6 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSServiceEx/GetCurrencyExchangeRateEx" message="tns:IBDSService_GetCurrencyExchangeRateEx_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSServiceEx/GetCurrencyExchangeRateExResponse" message="tns:IBDSService_GetCurrencyExchangeRateEx_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="DeleteUserCustomrestriction">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/DeleteUserCustomrestriction" message="tns:IBDSService_DeleteUserCustomrestriction_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/DeleteUserCustomrestrictionResponse" message="tns:IBDSService_DeleteUserCustomrestriction_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="resetToRoleDefault">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/resetToRoleDefault" message="tns:IBDSService_resetToRoleDefault_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/resetToRoleDefaultResponse" message="tns:IBDSService_resetToRoleDefault_OutputMessage" />
-    </wsdl:operation>
     <wsdl:operation name="CopyRoleWithoutPermission">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CopyRoleWithoutPermission" message="tns:IBDSService_CopyRoleWithoutPermission_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CopyRoleWithoutPermissionResponse" message="tns:IBDSService_CopyRoleWithoutPermission_OutputMessage" />
@@ -1256,17 +1216,9 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/_ChangePassword" message="tns:IBDSService__ChangePassword_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/_ChangePasswordResponse" message="tns:IBDSService__ChangePassword_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="_ChangePasswordWithEmail">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/_ChangePasswordWithEmail" message="tns:IBDSService__ChangePasswordWithEmail_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/_ChangePasswordWithEmailResponse" message="tns:IBDSService__ChangePasswordWithEmail_OutputMessage" />
-    </wsdl:operation>
     <wsdl:operation name="CheckCurrentPassword">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CheckCurrentPassword" message="tns:IBDSService_CheckCurrentPassword_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CheckCurrentPasswordResponse" message="tns:IBDSService_CheckCurrentPassword_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="CheckCurrentPasswordWithEmail">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CheckCurrentPasswordWithEmail" message="tns:IBDSService_CheckCurrentPasswordWithEmail_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CheckCurrentPasswordWithEmailResponse" message="tns:IBDSService_CheckCurrentPasswordWithEmail_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetMenu">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetMenu" message="tns:IBDSService_GetMenu_InputMessage" />
@@ -1460,6 +1412,14 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/DeleteUserActivityPermission" message="tns:IBDSService_DeleteUserActivityPermission_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/DeleteUserActivityPermissionResponse" message="tns:IBDSService_DeleteUserActivityPermission_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="DeleteUserCustomrestriction">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/DeleteUserCustomrestriction" message="tns:IBDSService_DeleteUserCustomrestriction_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/DeleteUserCustomrestrictionResponse" message="tns:IBDSService_DeleteUserCustomrestriction_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="resetToRoleDefault">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/resetToRoleDefault" message="tns:IBDSService_resetToRoleDefault_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/resetToRoleDefaultResponse" message="tns:IBDSService_resetToRoleDefault_OutputMessage" />
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IBDSService" type="tns:IBDSService">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -1519,24 +1479,6 @@
     </wsdl:operation>
     <wsdl:operation name="_ChangePasswordEx">
       <soap:operation soapAction="http://tempuri.org/IBDSServiceEx/_ChangePasswordEx" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="_ChangePasswordWithEmailEx">
-      <soap:operation soapAction="http://tempuri.org/IBDSServiceEx/_ChangePasswordWithEmailEx" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="CheckCurrentPasswordWithEmailEx">
-      <soap:operation soapAction="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordWithEmailEx" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1976,24 +1918,6 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="DeleteUserCustomrestriction">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/DeleteUserCustomrestriction" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="resetToRoleDefault">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/resetToRoleDefault" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="CopyRoleWithoutPermission">
       <soap:operation soapAction="http://tempuri.org/IBDSService/CopyRoleWithoutPermission" style="document" />
       <wsdl:input>
@@ -2309,26 +2233,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="_ChangePasswordWithEmail">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/_ChangePasswordWithEmail" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="CheckCurrentPassword">
       <soap:operation soapAction="http://tempuri.org/IBDSService/CheckCurrentPassword" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="CheckCurrentPasswordWithEmail">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/CheckCurrentPasswordWithEmail" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -2761,6 +2667,24 @@
     </wsdl:operation>
     <wsdl:operation name="DeleteUserActivityPermission">
       <soap:operation soapAction="http://tempuri.org/IBDSService/DeleteUserActivityPermission" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteUserCustomrestriction">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/DeleteUserCustomrestriction" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="resetToRoleDefault">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/resetToRoleDefault" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

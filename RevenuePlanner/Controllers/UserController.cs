@@ -178,7 +178,7 @@ namespace RevenuePlanner.Controllers
 
                     //returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.ID, SingleHash_NewPassword, Sessions.User.ID);
                     //Modified by Maitri Gandhi on 19/4/2016
-                    returnMessage = objBDSServiceClient._ChangePasswordEx(Sessions.User.ID, SingleHash_NewPassword, SingleHash_CurrentPassword);
+                    returnMessage = objBDSServiceClient._ChangePasswordWithEmailEx(Sessions.User.ID, Sessions.User.Email, SingleHash_NewPassword, SingleHash_CurrentPassword);
                     if (returnMessage == "CurrentUserPasswordNotCorrect")
                     {
                         TempData["ErrorMessage"] = Common.objCached.CurrentUserPasswordNotCorrect;
@@ -246,7 +246,8 @@ namespace RevenuePlanner.Controllers
                 try
                 {
                     //// Verify Current Password by UserId.
-                    isValid = objBDSServiceClient.CheckCurrentPasswordEx(Sessions.User.ID, SingleHash_CurrentPassword);
+                    isValid = objBDSServiceClient.CheckCurrentPasswordWithEmailEx(Sessions.User.ID, Sessions.User.Email, SingleHash_CurrentPassword);
+                    
                 }
                 catch (Exception e)
                 {

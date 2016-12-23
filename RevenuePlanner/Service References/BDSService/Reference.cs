@@ -3362,6 +3362,18 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_ChangePasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_ChangePasswordExResponse")]
         System.Threading.Tasks.Task<string> _ChangePasswordExAsync(int userId, string newPassword, string currPassword);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_ChangePasswordWithEmailEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_ChangePasswordWithEmailExResponse")]
+        string _ChangePasswordWithEmailEx(int userId, string UserEmail, string newPassword, string currPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_ChangePasswordWithEmailEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_ChangePasswordWithEmailExResponse")]
+        System.Threading.Tasks.Task<string> _ChangePasswordWithEmailExAsync(int userId, string UserEmail, string newPassword, string currPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordWithEmailEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordWithEmailExResponse")]
+        bool CheckCurrentPasswordWithEmailEx(int userId, string UserEmail, string currentPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordWithEmailEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordWithEmailExResponse")]
+        System.Threading.Tasks.Task<bool> CheckCurrentPasswordWithEmailExAsync(int userId, string UserEmail, string currentPassword);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordExResponse")]
         bool CheckCurrentPasswordEx(int userId, string currentPassword);
         
@@ -3652,6 +3664,18 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetCurrencyExchangeRateEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetCurrencyExchangeRateExResponse")]
         System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateExAsync(int clientId, int UserId);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteUserCustomrestriction", ReplyAction="http://tempuri.org/IBDSService/DeleteUserCustomrestrictionResponse")]
+        int DeleteUserCustomrestriction(System.Guid userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteUserCustomrestriction", ReplyAction="http://tempuri.org/IBDSService/DeleteUserCustomrestrictionResponse")]
+        System.Threading.Tasks.Task<int> DeleteUserCustomrestrictionAsync(System.Guid userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/resetToRoleDefault", ReplyAction="http://tempuri.org/IBDSService/resetToRoleDefaultResponse")]
+        int resetToRoleDefault(System.Guid userId, System.Guid CretorId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/resetToRoleDefault", ReplyAction="http://tempuri.org/IBDSService/resetToRoleDefaultResponse")]
+        System.Threading.Tasks.Task<int> resetToRoleDefaultAsync(System.Guid userId, System.Guid CretorId, System.Guid applicationId);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CopyRoleWithoutPermission", ReplyAction="http://tempuri.org/IBDSService/CopyRoleWithoutPermissionResponse")]
         System.Guid CopyRoleWithoutPermission(string copyroledesc, System.Guid originalid, System.Guid applicationid, System.Guid createdby, System.Guid ClientId);
         
@@ -3862,11 +3886,23 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_ChangePassword", ReplyAction="http://tempuri.org/IBDSService/_ChangePasswordResponse")]
         System.Threading.Tasks.Task<string> _ChangePasswordAsync(System.Guid userId, string newPassword, string currPassword);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_ChangePasswordWithEmail", ReplyAction="http://tempuri.org/IBDSService/_ChangePasswordWithEmailResponse")]
+        string _ChangePasswordWithEmail(System.Guid userId, string UserEmail, string newPassword, string currPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_ChangePasswordWithEmail", ReplyAction="http://tempuri.org/IBDSService/_ChangePasswordWithEmailResponse")]
+        System.Threading.Tasks.Task<string> _ChangePasswordWithEmailAsync(System.Guid userId, string UserEmail, string newPassword, string currPassword);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CheckCurrentPassword", ReplyAction="http://tempuri.org/IBDSService/CheckCurrentPasswordResponse")]
         bool CheckCurrentPassword(System.Guid userId, string currentPassword);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CheckCurrentPassword", ReplyAction="http://tempuri.org/IBDSService/CheckCurrentPasswordResponse")]
         System.Threading.Tasks.Task<bool> CheckCurrentPasswordAsync(System.Guid userId, string currentPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CheckCurrentPasswordWithEmail", ReplyAction="http://tempuri.org/IBDSService/CheckCurrentPasswordWithEmailResponse")]
+        bool CheckCurrentPasswordWithEmail(System.Guid userId, string userEmail, string currentPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CheckCurrentPasswordWithEmail", ReplyAction="http://tempuri.org/IBDSService/CheckCurrentPasswordWithEmailResponse")]
+        System.Threading.Tasks.Task<bool> CheckCurrentPasswordWithEmailAsync(System.Guid userId, string userEmail, string currentPassword);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMenu", ReplyAction="http://tempuri.org/IBDSService/GetMenuResponse")]
         System.Collections.Generic.List<RevenuePlanner.BDSService.Menu> GetMenu(System.Guid ApplicationId, System.Guid RoleId);
@@ -4155,18 +4191,6 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteUserActivityPermission", ReplyAction="http://tempuri.org/IBDSService/DeleteUserActivityPermissionResponse")]
         System.Threading.Tasks.Task<int> DeleteUserActivityPermissionAsync(System.Guid userId, System.Guid applicationId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteUserCustomrestriction", ReplyAction="http://tempuri.org/IBDSService/DeleteUserCustomrestrictionResponse")]
-        int DeleteUserCustomrestriction(System.Guid userId, System.Guid applicationId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteUserCustomrestriction", ReplyAction="http://tempuri.org/IBDSService/DeleteUserCustomrestrictionResponse")]
-        System.Threading.Tasks.Task<int> DeleteUserCustomrestrictionAsync(System.Guid userId, System.Guid applicationId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/resetToRoleDefault", ReplyAction="http://tempuri.org/IBDSService/resetToRoleDefaultResponse")]
-        int resetToRoleDefault(System.Guid userId, System.Guid CretorId, System.Guid applicationId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/resetToRoleDefault", ReplyAction="http://tempuri.org/IBDSService/resetToRoleDefaultResponse")]
-        System.Threading.Tasks.Task<int> resetToRoleDefaultAsync(System.Guid userId, System.Guid CretorId, System.Guid applicationId);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -4250,6 +4274,22 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<string> _ChangePasswordExAsync(int userId, string newPassword, string currPassword) {
             return base.Channel._ChangePasswordExAsync(userId, newPassword, currPassword);
+        }
+        
+        public string _ChangePasswordWithEmailEx(int userId, string UserEmail, string newPassword, string currPassword) {
+            return base.Channel._ChangePasswordWithEmailEx(userId, UserEmail, newPassword, currPassword);
+        }
+        
+        public System.Threading.Tasks.Task<string> _ChangePasswordWithEmailExAsync(int userId, string UserEmail, string newPassword, string currPassword) {
+            return base.Channel._ChangePasswordWithEmailExAsync(userId, UserEmail, newPassword, currPassword);
+        }
+        
+        public bool CheckCurrentPasswordWithEmailEx(int userId, string UserEmail, string currentPassword) {
+            return base.Channel.CheckCurrentPasswordWithEmailEx(userId, UserEmail, currentPassword);
+        }
+        
+        public System.Threading.Tasks.Task<bool> CheckCurrentPasswordWithEmailExAsync(int userId, string UserEmail, string currentPassword) {
+            return base.Channel.CheckCurrentPasswordWithEmailExAsync(userId, UserEmail, currentPassword);
         }
         
         public bool CheckCurrentPasswordEx(int userId, string currentPassword) {
@@ -4636,6 +4676,22 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.GetCurrencyExchangeRateExAsync(clientId, UserId);
         }
         
+        public int DeleteUserCustomrestriction(System.Guid userId, System.Guid applicationId) {
+            return base.Channel.DeleteUserCustomrestriction(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<int> DeleteUserCustomrestrictionAsync(System.Guid userId, System.Guid applicationId) {
+            return base.Channel.DeleteUserCustomrestrictionAsync(userId, applicationId);
+        }
+        
+        public int resetToRoleDefault(System.Guid userId, System.Guid CretorId, System.Guid applicationId) {
+            return base.Channel.resetToRoleDefault(userId, CretorId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<int> resetToRoleDefaultAsync(System.Guid userId, System.Guid CretorId, System.Guid applicationId) {
+            return base.Channel.resetToRoleDefaultAsync(userId, CretorId, applicationId);
+        }
+        
         public System.Guid CopyRoleWithoutPermission(string copyroledesc, System.Guid originalid, System.Guid applicationid, System.Guid createdby, System.Guid ClientId) {
             return base.Channel.CopyRoleWithoutPermission(copyroledesc, originalid, applicationid, createdby, ClientId);
         }
@@ -4916,12 +4972,28 @@ namespace RevenuePlanner.BDSService {
             return base.Channel._ChangePasswordAsync(userId, newPassword, currPassword);
         }
         
+        public string _ChangePasswordWithEmail(System.Guid userId, string UserEmail, string newPassword, string currPassword) {
+            return base.Channel._ChangePasswordWithEmail(userId, UserEmail, newPassword, currPassword);
+        }
+        
+        public System.Threading.Tasks.Task<string> _ChangePasswordWithEmailAsync(System.Guid userId, string UserEmail, string newPassword, string currPassword) {
+            return base.Channel._ChangePasswordWithEmailAsync(userId, UserEmail, newPassword, currPassword);
+        }
+        
         public bool CheckCurrentPassword(System.Guid userId, string currentPassword) {
             return base.Channel.CheckCurrentPassword(userId, currentPassword);
         }
         
         public System.Threading.Tasks.Task<bool> CheckCurrentPasswordAsync(System.Guid userId, string currentPassword) {
             return base.Channel.CheckCurrentPasswordAsync(userId, currentPassword);
+        }
+        
+        public bool CheckCurrentPasswordWithEmail(System.Guid userId, string userEmail, string currentPassword) {
+            return base.Channel.CheckCurrentPasswordWithEmail(userId, userEmail, currentPassword);
+        }
+        
+        public System.Threading.Tasks.Task<bool> CheckCurrentPasswordWithEmailAsync(System.Guid userId, string userEmail, string currentPassword) {
+            return base.Channel.CheckCurrentPasswordWithEmailAsync(userId, userEmail, currentPassword);
         }
         
         public System.Collections.Generic.List<RevenuePlanner.BDSService.Menu> GetMenu(System.Guid ApplicationId, System.Guid RoleId) {
@@ -5306,22 +5378,6 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<int> DeleteUserActivityPermissionAsync(System.Guid userId, System.Guid applicationId) {
             return base.Channel.DeleteUserActivityPermissionAsync(userId, applicationId);
-        }
-        
-        public int DeleteUserCustomrestriction(System.Guid userId, System.Guid applicationId) {
-            return base.Channel.DeleteUserCustomrestriction(userId, applicationId);
-        }
-        
-        public System.Threading.Tasks.Task<int> DeleteUserCustomrestrictionAsync(System.Guid userId, System.Guid applicationId) {
-            return base.Channel.DeleteUserCustomrestrictionAsync(userId, applicationId);
-        }
-        
-        public int resetToRoleDefault(System.Guid userId, System.Guid CretorId, System.Guid applicationId) {
-            return base.Channel.resetToRoleDefault(userId, CretorId, applicationId);
-        }
-        
-        public System.Threading.Tasks.Task<int> resetToRoleDefaultAsync(System.Guid userId, System.Guid CretorId, System.Guid applicationId) {
-            return base.Channel.resetToRoleDefaultAsync(userId, CretorId, applicationId);
         }
     }
 }

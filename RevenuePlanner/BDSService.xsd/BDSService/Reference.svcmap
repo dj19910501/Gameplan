@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="ecbd8af8-a860-49c2-b0ac-35689504277b" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.Generic.List`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:51731/bdsservice.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="bdsservice.xsd" MetadataType="Schema" ID="3dad6e69-34cf-4ab0-af97-4ad8d5683880" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd4" />
+    <MetadataFile FileName="BDSService.wsdl" MetadataType="Wsdl" ID="4e69bc38-5004-4cb9-8f38-f602e2531c8f" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?wsdl" />
+    <MetadataFile FileName="bdsservice1.xsd" MetadataType="Schema" ID="345ec05e-aaae-492a-b6d4-da7935128300" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd2" />
+    <MetadataFile FileName="bdsservice2.xsd" MetadataType="Schema" ID="68d42248-d4cc-4c12-ad84-24803ee3a3b3" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd3" />
+    <MetadataFile FileName="bdsservice3.xsd" MetadataType="Schema" ID="4b63a470-67a0-4262-8498-b5389726128d" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd0" />
+    <MetadataFile FileName="bdsservice4.xsd" MetadataType="Schema" ID="5c3d5ebd-44a7-4144-a0f7-dd4914c1a42e" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?xsd=xsd1" />
+    <MetadataFile FileName="bdsservice.disco" MetadataType="Disco" ID="30b1809f-10cf-4ee8-a89d-537b40563ab4" SourceId="1" SourceUrl="http://localhost:51731/bdsservice.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
