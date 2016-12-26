@@ -466,7 +466,38 @@
                             </a>
                         </div>
                         <div class="span1 margin-top16">
-                            <input id="marketoIntegrationToggle" type="checkbox"  onchange="CheckboxChange(this);">
+                            <input id="marketoIntegrationToggle" type="checkbox"  onchange="toggleMarketoSettings(this);">
+                        </div>
+                        <div id="marketoSettings">
+                            <div class="span2" style="width:24%">
+                                <label id="MarketoProgramInitiationOption">Program Initiation Options</label>
+                                <div class="radio " style="width:100%; float:left;margin-left:20px">
+                                    <label class="font-size12">
+                                        <input type="radio" name="MarketoProgramInitiationOption" id="MarketoInitiationCreate" value="1)" checked="" onchange="toggleMarketoInitiationOptions(this)"> Create a New Program
+                                    </label>
+                                </div>
+                                <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                    <label class="font-size12">
+                                        <input id="MarketoInitiationClone" type="radio" name="MarketoProgramInitiationOption" value="2" onchange="toggleMarketoInitiationOptions(this)">Clone a Program
+                                    </label>
+                                </div>
+                                <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                    <label class="font-size12">
+                                        <input id="MarketoInitiationLink" type="radio" name="MarketoProgramInitiationOption" value="3" onchange="toggleMarketoInitiationOptions(this)">Link to a Program
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="span2" style="width:24%;margin-left:-40px">
+                                <label></label>
+                                <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                </div>
+                                <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                    <input class="hidden" id="MarketoInitiationCloneProgramId" type="text" value="@tacticReview.IntegrationInstanceMarketoID" />
+                                </div>
+                                <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                    <input class="hidden" id="MarketoInitiationLinkProgramId" type="text" value="@tacticReview.IntegrationInstanceMarketoID" />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -630,7 +661,11 @@
 </div>
 <script type="text/javascript">
     var strViewMode = 'View';
+
     $(document).ready(function () {
+        
+        InitializeMarketoProgramInitiationOptions();
+
         $('#EditForm').removeClass('SpanDisable');
         var el = document.getElementById('integrationInfo');
         if ($('#t_integration_status').hasClass("icon-check-blue")) {
@@ -914,6 +949,8 @@
             }
             // End - Added by Viral Kaidya for #2002 - Save Sync settings for Eloqua & SFDC on Sync button click
 
+            var marketoProgramInitiationOption = $('input[name="MarketoProgramInitiationOption"]:checked').val();
+
             // Start - Added by Viral Kaidya for #2002 - Save Sync settings for Workfront on Sync button click
             var wfTacticApproval = "undefined";
             var requestQueue = "undefined";
@@ -949,6 +986,8 @@
                     isSyncEloqua : isSyncEloqua,
                     isSyncWorkFront: isSyncWorkFront,
                     isSyncMarketo: isSyncMarketo,
+                    marketoProgramInitiationOption: marketoProgramInitiationOption,
+                    marketoProgramId: GetMarketoProgramId(marketoProgramInitiationOption),
                     approvalBehaviorWorkFront: wfTacticApproval,
                     requestQueueWF: requestQueue,
                     assigneeWF: assignee
@@ -1121,6 +1160,7 @@
                 });
             }
 
+            var marketoProgramInitiationOption = $('input[name="MarketoProgramInitiationOption"]:checked').val();
             var wfTacticApproval = "undefined";
             var requestQueue = "undefined";
             var assignee = "undefined";
@@ -1153,6 +1193,8 @@
                     isSyncEloqua: isSyncEloqua,
                     isSyncWorkFront: isSyncWorkFront,
                     isSyncMarketo: isSyncMarketo,
+                    marketoProgramInitiationOption: marketoProgramInitiationOption,
+                    marketoProgramId: GetMarketoProgramId(marketoProgramInitiationOption),
                     approvalBehaviorWorkFront: wfTacticApproval,
                     requestQueueWF: requestQueue,
                     assigneeWF: assignee
@@ -1262,6 +1304,91 @@
             }
         }
     }
+
+    function toggleMarketoSettings() {
+        var wfToggle = document.getElementById('marketoIntegrationToggle');
+        var wfChecked = wfToggle.checked;
+        var wfSettings = document.getElementById('marketoSettings');
+        if(wfChecked)
+        {
+
+            wfSettings.style.display = "block";
+            CheckboxChange(wfToggle);
+        }
+        else
+        {
+            wfSettings.style.display = "none";
+            CheckboxChange(wfToggle);
+        }
+    }
+
+    function toggleMarketoInitiationOptions(me) {
+        var clonePID = $("#MarketoInitiationCloneProgramId");
+        var linkPID = $("#MarketoInitiationLinkProgramId");
+
+        if (me.id == "MarketoInitiationCreate") {
+            //hide both inputs
+            if (clonePID.hasClass("show")) {
+                clonePID.removeClass("show");
+                clonePID.addClass("hidden");
+            }
+
+            if (linkPID.hasClass("show")) {
+                linkPID.removeClass("show");
+                linkPID.addClass("hidden");
+            }
+        }else{
+
+            //show only one of the two inputs
+            if (me.id == "MarketoInitiationClone") {
+                if (clonePID.hasClass("hidden")) {
+                    clonePID.removeClass("hidden");
+                    clonePID.addClass("show");
+                    clonePID.focus().select();
+                }
+                if (linkPID.hasClass("show")) {
+                    linkPID.removeClass("show");
+                    linkPID.addClass("hidden");
+                }
+            }else{
+                if (clonePID.hasClass("show")) {
+                    clonePID.removeClass("how");
+                    clonePID.addClass("hidden");
+                }
+                if (linkPID.hasClass("hidden")) {
+                    linkPID.removeClass("hidden");
+                    linkPID.addClass("show");
+                    linkPID.focus().select();
+                }
+            }
+        }
+    }
+
+    function GetMarketoProgramId(marketoProgramInitiationOption)
+    {
+        if (marketoProgramInitiationOption == 2 ){
+            return $("#MarketoInitiationCloneProgramId").val();
+        }else if (marketoProgramInitiationOption == 3){
+            return $("#MarketoInitiationLinkProgramId").val();
+        }else{
+            return '@tacticReview.IntegrationInstanceMarketoID';
+        }
+    }
+
+    function InitializeMarketoProgramInitiationOptions(){
+        if (@((int)tacticReview.MarketoInitialSyncOption) == 2)
+        {
+            $("#MarketoInitiationClone")[0].checked = true;
+            toggleMarketoInitiationOptions($("#MarketoInitiationClone")[0]);
+        }else if (@((int)tacticReview.MarketoInitialSyncOption) == 3){
+            $("#MarketoInitiationLink")[0].checked = true;
+            toggleMarketoInitiationOptions($("#MarketoInitiationLink")[0]);
+        }else{
+            $("#MarketoInitiationCreate")[0].checked = true;
+            toggleMarketoInitiationOptions($("#MarketoInitiationCreate")[0]);
+        }
+
+    }
     // Begin - Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919. Save Tactic Title, DeployToIntegration & Sync settings for Eloqua & Salesforce.
     // WorkFront information add 23/24 Jan 2016 by Brad Gray for PL#1921 & PL#1922
     function SaveReviewIntegrationInfo() {
@@ -1330,6 +1457,7 @@
             });
         }
 
+        var marketoProgramInitiationOption = $('input[name="MarketoProgramInitiationOption"]:checked').val();
         var wfTacticApproval = "undefined";
         var requestQueue = "undefined";
         var assignee = "undefined";
@@ -1357,8 +1485,18 @@
             type: 'POST',
             url: '@Url.Content("~/Inspect/SaveReviewIntegrationInfo/")',
             data: {
-                title: title, Id: planTacticId, isDeployToIntegration: isDeployToIntegration, isSyncSF: isSyncSF, isSyncEloqua: isSyncEloqua, isSyncWorkFront: isSyncWorkFront,
-                isSyncMarketo: isSyncMarketo, approvalBehaviorWorkFront: wfTacticApproval, requestQueueWF: requestQueue, assigneeWF: assignee
+                title: title,
+                Id: planTacticId,
+                isDeployToIntegration: isDeployToIntegration,
+                isSyncSF: isSyncSF,
+                isSyncEloqua: isSyncEloqua,
+                isSyncWorkFront: isSyncWorkFront,
+                isSyncMarketo: isSyncMarketo,
+                marketoProgramInitiationOption: marketoProgramInitiationOption,
+                marketoProgramId: GetMarketoProgramId(marketoProgramInitiationOption),
+                approvalBehaviorWorkFront: wfTacticApproval,
+                requestQueueWF: requestQueue,
+                assigneeWF: assignee
             },
             success: function (data) {
                 if (!data.IsDuplicate) {

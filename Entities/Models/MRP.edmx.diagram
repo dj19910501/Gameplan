@@ -78,7 +78,6 @@
         <EntityTypeShape EntityType="MRPModel.LineItemType" Width="1.5" PointX="7.5" PointY="68.75" />
         <EntityTypeShape EntityType="MRPModel.MarketoEntityValueMapping" Width="1.5" PointX="5.25" PointY="34.75" />
         <EntityTypeShape EntityType="MRPModel.MasterTacticType" Width="1.5" PointX="0.75" PointY="16.75" />
-        <EntityTypeShape EntityType="MRPModel.Measure" Width="1.5" PointX="19.625" PointY="10.625" />
         <EntityTypeShape EntityType="MRPModel.MeasureOutputValue" Width="1.5" PointX="22.5" PointY="6.25" />
         <EntityTypeShape EntityType="MRPModel.MeasureValue" Width="1.5" PointX="15.75" PointY="11.75" />
         <EntityTypeShape EntityType="MRPModel.MediaCodes_CustomField_Configuration" Width="1.5" PointX="8.25" PointY="35.5" />
@@ -92,7 +91,6 @@
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Budget" Width="1.5" PointX="12" PointY="75.375" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program" Width="1.5" PointX="12" PointY="78.5" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Budget" Width="1.5" PointX="14.25" PointY="79.875" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="2.75" PointX="13.375" PointY="61.125" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" Width="1.5" PointX="16.5" PointY="81.25" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual_MediaCode" Width="1.5" PointX="8.25" PointY="39.5" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Budget" Width="1.5" PointX="16.5" PointY="65.875" />
@@ -185,9 +183,7 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType" />
         <AssociationConnector Association="MRPModel.FK_GameplanDataTypePull_IntegrationType" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMappingPull_GameplanDataTypePull" />
-        <AssociationConnector Association="MRPModel.FK_Goal_Measure" />
         <AssociationConnector Association="MRPModel.FK_GoalDimension_Goal" />
-        <AssociationConnector Association="MRPModel.FK_GoalDistribution_Measure" />
         <AssociationConnector Association="MRPModel.FK_GraphRelation_ReportGraph" />
         <AssociationConnector Association="MRPModel.FK_GraphRelation_ReportGraph_1" />
         <AssociationConnector Association="MRPModel.FK_Homepage_HelpText" />
@@ -226,22 +222,12 @@
         <AssociationConnector Association="MRPModel.FK_PortfolioTableId" />
         <AssociationConnector Association="MRPModel.FK_Program_PortfolioTableId" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_WorkFrontUser" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" />
         <AssociationConnector Association="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId" />
-        <AssociationConnector Association="MRPModel.FK_KeyData_Measure" />
         <AssociationConnector Association="MRPModel.FK_KeyDataDimension_KeyData" />
         <AssociationConnector Association="MRPModel.FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1" />
         <AssociationConnector Association="MRPModel.FK_LineItemType_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" />
-        <AssociationConnector Association="MRPModel.FK_MeasureOutputValue_Measure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_Measure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_MonthMeasure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_QuarterMeasure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_WeekMeasure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_YearMeasure" />
-        <AssociationConnector Association="MRPModel.FK_ReportTableColumn_Measure" />
         <AssociationConnector Association="MRPModel.FK_Model_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Plan" />
         <AssociationConnector Association="MRPModel.FK_Model_Category_Stage_Stage" />
@@ -256,18 +242,6 @@
         <AssociationConnector Association="MRPModel.FK__Plan_Camp__PlanP__236943A5" />
         <AssociationConnector Association="MRPModel.FK__Tactic_Sh__PlanP__25518C17" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic_Budget" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
-        <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" />
-        <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_MediaCode_Tactic_MediaCodes" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" />
@@ -289,6 +263,32 @@
         <AssociationConnector Association="MRPModel.FK_TransactionLineItemMapping_Plan_Campaign_Program_Tactic_LineItem" />
         <EntityTypeShape EntityType="MRPModel.Transaction" Width="1.5" PointX="27.375" PointY="12.125" />
         <AssociationConnector Association="MRPModel.FK_TransactionLineItemMapping_Transactions" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="14.25" PointY="61" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic_Budget" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
+        <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" />
+        <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" />
+        <EntityTypeShape EntityType="MRPModel.Measure" Width="1.5" PointX="20" PointY="11.625" />
+        <AssociationConnector Association="MRPModel.FK_Goal_Measure" />
+        <AssociationConnector Association="MRPModel.FK_GoalDistribution_Measure" />
+        <AssociationConnector Association="MRPModel.FK_KeyData_Measure" />
+        <AssociationConnector Association="MRPModel.FK_MeasureOutputValue_Measure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_Measure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_MonthMeasure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_QuarterMeasure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_WeekMeasure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_YearMeasure" />
+        <AssociationConnector Association="MRPModel.FK_ReportTableColumn_Measure" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

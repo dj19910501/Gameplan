@@ -461,6 +461,14 @@ namespace RevenuePlanner.Helpers
             WorkFront,
 
         }
+
+        public enum MarketoProgramInitiationOption
+        {
+            Create = 1, 
+            Clone, 
+            Link
+        }
+
         public static Dictionary<string, string> IntegrationActivity = new Dictionary<string, string>()
         {
             {"IntegrationInstanceId","Push Tactic Data - Salesforce"},

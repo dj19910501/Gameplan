@@ -28,7 +28,7 @@ namespace RevenuePlanner.Models
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationWorkFrontRequestQueue IntegrationWorkFrontRequestQueue { get; set; }
-        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
         public virtual IntegrationWorkFrontUser IntegrationWorkFrontUser { get; set; }
+        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
     }
 }

@@ -1,4 +1,8 @@
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_name = 'Plan_Campaign_program_tactic' and CoLumn_name = 'MarketoProgramInitiationOption')
+ALTER TABLE dbo.Plan_Campaign_program_tactic
+ADD MarketoProgramInitiationOption INT NOT NULL DEFAULT(1)
 GO
+
 --Added By Preet Shah on 22/12/2016. For Save Marketing Budget Column Attribute
 IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_NAME = 'User_CoulmnView' AND COLUMN_NAME = 'MarketingBudgetAttribute')

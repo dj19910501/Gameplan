@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using RevenuePlanner.Helpers;
+using static RevenuePlanner.Helpers.Enums;
 
 namespace RevenuePlanner.Models
 {
@@ -194,6 +195,8 @@ namespace RevenuePlanner.Models
         public string Year { get; set; }
         public string AverageDealSize { get; set; }
         public double TotalAllocatedCampaignBudget { get; set; }
+        public string IntegrationInstanceMarketoID { get; set; }
+        public MarketoProgramInitiationOption MarketoInitialSyncOption { get; set; }
     }
 
     public class InspectReviewModel

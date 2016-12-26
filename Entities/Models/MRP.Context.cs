@@ -104,7 +104,6 @@ namespace RevenuePlanner.Models
         public DbSet<LineItemType> LineItemTypes { get; set; }
         public DbSet<MarketoEntityValueMapping> MarketoEntityValueMappings { get; set; }
         public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
-        public DbSet<Measure> Measures { get; set; }
         public DbSet<MeasureOutputValue> MeasureOutputValues { get; set; }
         public DbSet<MeasureValue> MeasureValues { get; set; }
         public DbSet<MediaCodes_CustomField_Configuration> MediaCodes_CustomField_Configuration { get; set; }
@@ -118,7 +117,6 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Budget> Plan_Campaign_Budget { get; set; }
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
         public DbSet<Plan_Campaign_Program_Budget> Plan_Campaign_Program_Budget { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual_MediaCode> Plan_Campaign_Program_Tactic_Actual_MediaCode { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Budget> Plan_Campaign_Program_Tactic_Budget { get; set; }
@@ -172,6 +170,8 @@ namespace RevenuePlanner.Models
         public DbSet<User_CoulmnView> User_CoulmnView { get; set; }
         public DbSet<TransactionLineItemMapping> TransactionLineItemMappings { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
+        public DbSet<Measure> Measures { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {
@@ -475,7 +475,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CopyOverAggregationPartial", dEBUGParameter);
         }
     
-        public virtual ObjectResult<CoRelationReportGraphResults_Result> CoRelationReportGraphResults(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<System.Guid> userId, Nullable<System.Guid> roleId)
+        public virtual ObjectResult<CoRelationReportGraphResults_Result> CoRelationReportGraphResults(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<int> userId, Nullable<int> roleId)
         {
             var reportGraphIDParameter = reportGraphID.HasValue ?
                 new ObjectParameter("ReportGraphID", reportGraphID) :
@@ -515,11 +515,11 @@ namespace RevenuePlanner.Models
     
             var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(System.Guid));
+                new ObjectParameter("UserId", typeof(int));
     
             var roleIdParameter = roleId.HasValue ?
                 new ObjectParameter("RoleId", roleId) :
-                new ObjectParameter("RoleId", typeof(System.Guid));
+                new ObjectParameter("RoleId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CoRelationReportGraphResults_Result>("CoRelationReportGraphResults", reportGraphIDParameter, dIMENSIONTABLENAMEParameter, sTARTDATEParameter, eNDDATEParameter, dATEFIELDParameter, filterValuesParameter, viewByValueParameter, subDashboardOtherDimensionTableParameter, subDashboardMainDimensionTableParameter, userIdParameter, roleIdParameter);
         }
@@ -1050,7 +1050,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetHelpText", reportDashboardIDParameter, graphTypeParameter);
         }
     
-        public virtual int GetKeyDataDetails(Nullable<int> keyDataId, string dimensionTableName, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, Nullable<System.DateTime> compStartDate, Nullable<System.DateTime> compEndDate, string dateField, string filterValues, string viewByValue, Nullable<System.Guid> userId, Nullable<System.Guid> roleId)
+        public virtual int GetKeyDataDetails(Nullable<int> keyDataId, string dimensionTableName, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, Nullable<System.DateTime> compStartDate, Nullable<System.DateTime> compEndDate, string dateField, string filterValues, string viewByValue, Nullable<int> userId, Nullable<int> roleId)
         {
             var keyDataIdParameter = keyDataId.HasValue ?
                 new ObjectParameter("KeyDataId", keyDataId) :
@@ -1090,11 +1090,11 @@ namespace RevenuePlanner.Models
     
             var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(System.Guid));
+                new ObjectParameter("UserId", typeof(int));
     
             var roleIdParameter = roleId.HasValue ?
                 new ObjectParameter("RoleId", roleId) :
-                new ObjectParameter("RoleId", typeof(System.Guid));
+                new ObjectParameter("RoleId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetKeyDataDetails", keyDataIdParameter, dimensionTableNameParameter, startDateParameter, endDateParameter, compStartDateParameter, compEndDateParameter, dateFieldParameter, filterValuesParameter, viewByValueParameter, userIdParameter, roleIdParameter);
         }
@@ -1347,7 +1347,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTacticTypeList_Result>("GetTacticTypeList", tacticIdsParameter);
         }
     
-        public virtual int GetTTestSignificance(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<System.Guid> userId, Nullable<System.Guid> roleId)
+        public virtual int GetTTestSignificance(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<int> userId, Nullable<int> roleId)
         {
             var reportGraphIDParameter = reportGraphID.HasValue ?
                 new ObjectParameter("ReportGraphID", reportGraphID) :
@@ -1387,11 +1387,11 @@ namespace RevenuePlanner.Models
     
             var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(System.Guid));
+                new ObjectParameter("UserId", typeof(int));
     
             var roleIdParameter = roleId.HasValue ?
                 new ObjectParameter("RoleId", roleId) :
-                new ObjectParameter("RoleId", typeof(System.Guid));
+                new ObjectParameter("RoleId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetTTestSignificance", reportGraphIDParameter, dIMENSIONTABLENAMEParameter, sTARTDATEParameter, eNDDATEParameter, dATEFIELDParameter, filterValuesParameter, viewByValueParameter, subDashboardOtherDimensionTableParameter, subDashboardMainDimensionTableParameter, userIdParameter, roleIdParameter);
         }
@@ -1610,7 +1610,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RebuildIndexes", dEBUGParameter);
         }
     
-        public virtual int ReportGraphResultsNew(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, string displayStatSignificance, Nullable<System.Guid> userId, Nullable<System.Guid> roleId)
+        public virtual int ReportGraphResultsNew(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, string displayStatSignificance, Nullable<int> userId, Nullable<int> roleId)
         {
             var reportGraphIDParameter = reportGraphID.HasValue ?
                 new ObjectParameter("ReportGraphID", reportGraphID) :
@@ -1654,11 +1654,11 @@ namespace RevenuePlanner.Models
     
             var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(System.Guid));
+                new ObjectParameter("UserId", typeof(int));
     
             var roleIdParameter = roleId.HasValue ?
                 new ObjectParameter("RoleId", roleId) :
-                new ObjectParameter("RoleId", typeof(System.Guid));
+                new ObjectParameter("RoleId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ReportGraphResultsNew", reportGraphIDParameter, dIMENSIONTABLENAMEParameter, sTARTDATEParameter, eNDDATEParameter, dATEFIELDParameter, filterValuesParameter, viewByValueParameter, subDashboardOtherDimensionTableParameter, subDashboardMainDimensionTableParameter, displayStatSignificanceParameter, userIdParameter, roleIdParameter);
         }

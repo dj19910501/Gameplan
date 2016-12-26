@@ -25,7 +25,7 @@ namespace RevenuePlanner.Models
         public Nullable<int> TotalDecimalPlaces { get; set; }
     
         public virtual Dimension Dimension { get; set; }
-        public virtual Measure Measure { get; set; }
         public virtual ReportTable ReportTable { get; set; }
+        public virtual Measure Measure { get; set; }
     }
 }

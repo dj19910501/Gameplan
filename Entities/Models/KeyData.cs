@@ -43,7 +43,7 @@ namespace RevenuePlanner.Models
         public virtual ICollection<DashboardContent> DashboardContents { get; set; }
         public virtual HelpText HelpText { get; set; }
         public virtual ICollection<HomepageContent> HomepageContents { get; set; }
-        public virtual Measure Measure { get; set; }
         public virtual ICollection<KeyDataDimension> KeyDataDimensions { get; set; }
+        public virtual Measure Measure { get; set; }
     }
 }

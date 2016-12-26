@@ -30,7 +30,7 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> DateDeleted { get; set; }
         public Nullable<bool> IsFiscalGoal { get; set; }
     
-        public virtual Measure Measure { get; set; }
         public virtual ICollection<GoalDimension> GoalDimensions { get; set; }
+        public virtual Measure Measure { get; set; }
     }
 }
