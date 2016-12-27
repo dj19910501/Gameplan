@@ -366,6 +366,7 @@ function GetGridData(budgetId) {
                     y: budgetgrid.objBox.scrollTop,
                     x: budgetgrid.objBox.scrollLeft,
                 }
+                $.cookie("scrollstateY", budgetgrid.objBox.scrollTop);
                 ManageBorderBoxClass();
                 // Add icons on expand collapse
                 var imgString, imgDeleteString, rowid, ActionText, UserLink, Count, detailid
@@ -418,6 +419,16 @@ function GetGridData(budgetId) {
             else if (scrollstate != "0" && scrollstate != null && scrollstate != undefined) {
                 budgetgrid.objBox.scrollTop = scrollstate.y;
             }
+
+            //Added by Preet Shah for get values of scroll and selected row from cookies. PL #2848
+            if ($.cookie("scrollstateY")){
+            budgetgrid.objBox.scrollTop = $.cookie("scrollstateY");
+            }
+            if ($.cookie("selectedTaskID")) {
+                budgetgrid.selectRow(budgetgrid.getRowIndex($.cookie("selectedTaskID")), false, true, true);
+            }
+            // End
+
             budgetgrid.attachEvent("onScroll", onMainGridScroll);
             budgetgrid.attachEvent("onRowSelect", onGridRowSelect);
             //-----------------End--------------------------
@@ -672,13 +683,16 @@ function onMainGridScroll(sLeft, sTop) {
     $(".dhx_combo_select").css("display", "none");
     $("#popupType").css("display", "none");
     $(".tooltip").css("display", "none");
-
+    //Added by Preet Shah for set values of scroll in cookies. PL #2848
+    $.cookie("scrollstateY", sTop);
 }
 //For When Click On Row of Grid
 function onGridRowSelect(id, ind) {
     selectedTaskID = id;
     _NewGeneratedRowId = "";
     IsDelete = false;
+    //Added by Preet Shah for set values of selected row in cookies. PL #2848
+    $.cookie("selectedTaskID", selectedTaskID);
 }
 
 //Added by - Komal rawal
@@ -744,7 +758,7 @@ function DeleteBudgetIconClick(data) {
         y: budgetgrid.objBox.scrollTop,
         x: budgetgrid.objBox.scrollLeft,
     }
-
+    $.cookie("scrollstateY", budgetgrid.objBox.scrollTop);
    
     var rowid = $(data).attr('row-id');
     var Name = budgetgrid.cells(rowid, ColTaskNameIndex).getValue();
