@@ -8935,14 +8935,26 @@ namespace RevenuePlanner.Helpers
         public static int GetIntegerUserId(Guid UserGuid)
         {
             int UserId = 0;
-            List<BDSService.User> UserList = Sessions.ClientUsers;
+            Dictionary<Guid, int> UserList = Sessions.dictUserIds;
 
-            if (UserList != null && UserList.Count > 0)
+            if (UserList != null && UserList.Count > 0 && UserList.Where(u => u.Key == UserGuid).Any())
             {
-                UserId = UserList.Where(u => u.UserId == UserGuid).Select(a => a.ID).FirstOrDefault();
-                
+                UserId = UserList[UserGuid];
             }
             return UserId;
+        }
+        //Method to convert user integer id to user Guid pl ticket #2954
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Guid GetGuidUserId(int UserId)
+        {
+            Guid UserGuid = Guid.Empty;
+            Dictionary<Guid, int> UserList = Sessions.dictUserIds;
+            KeyValuePair<Guid, int> User = UserList.Where(u => u.Value == UserId).FirstOrDefault();
+            if (UserList != null && UserList.Count > 0 && !User.Equals((default(KeyValuePair<Guid, int>))))
+            {
+                UserGuid = User.Key;
+            }
+            return UserGuid;
         }
 
 
