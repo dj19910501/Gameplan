@@ -2,11 +2,12 @@
 @using RevenuePlanner.Helpers
 
 @{
-    var userId = Model.UserId;
-    var userLabelId = "spnUserName" + userId;
-    var hdnEmailId = "hdnEmail" + userId;
-    var hdnPhoneId = "hdnPhone" + userId;
-    var hdnJobTitleId = "hdnJobTitle" + userId;
+    var userId = Model.UserGuid;
+    var intuserId = Model.UserId;
+    var userLabelId = "spnUserName" + intuserId;
+    var hdnEmailId = "hdnEmail" + intuserId;
+    var hdnPhoneId = "hdnPhone" + intuserId;
+    var hdnJobTitleId = "hdnJobTitle" + intuserId;
     var stringClass = string.Empty;
     if (Model.subUsers.Count == 0)
     {
@@ -31,7 +32,7 @@
         <a class="btn btn-default" href='@EditURL'>Edit</a>
     }
     <a class="btn btn-default" href='@ViewURL'>View</a>
-    <a class="btn btn-default" onclick="showContactDetail('@userId');">Contact</a>
+    <a class="btn btn-default" onclick="showContactDetail('@intuserId');">Contact</a>
     <input type="hidden" id="@hdnEmailId" value="@Model.Email" />
     <input type="hidden" id="@hdnPhoneId" value="@Model.Phone" />
     <input type="hidden" id="@hdnJobTitleId" value="@Model.JobTitle" />
