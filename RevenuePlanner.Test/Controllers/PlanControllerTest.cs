@@ -1713,7 +1713,7 @@ namespace RevenuePlanner.Test.Controllers
             ),
             routes
             );
-            int PlanId = DataHelper.GetPlanId();
+            int PlanId = DataHelper.GetPlanIdforBudget();
             string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(PlanId));
             int ModelId = DataHelper.GetPlanModelId(PlanId);
             List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
@@ -1817,7 +1817,7 @@ namespace RevenuePlanner.Test.Controllers
             ),
             routes
             );
-            int PlanId = DataHelper.GetMultiYearPlanId();
+            int PlanId = DataHelper.GetPlanIdforBudget();
             string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(PlanId));
             int ModelId = DataHelper.GetPlanModelId(PlanId);
             List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
@@ -1828,7 +1828,7 @@ namespace RevenuePlanner.Test.Controllers
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
             string PlanYear = DataHelper.GetPlanYear(PlanId);
             string NextYear = Convert.ToString(Convert.ToInt32(PlanYear) + 1);
-            string SearchText = "tactic";
+            string SearchText = "test";
             string SearchBy = Enums.GlobalSearch.ActivityName.ToString();
             var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, PlanYear + "-" + NextYear, SearchText, SearchBy,true) as PartialViewResult;
 

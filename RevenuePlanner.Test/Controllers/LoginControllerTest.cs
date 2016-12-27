@@ -316,23 +316,23 @@ namespace RevenuePlanner.Test.Controllers
 
         }
 
-        [TestMethod]
-        public void ForgotPassword_POST()
-        {
+        //[TestMethod]
+        //public void ForgotPassword_POST()
+        //{
 
-            RouteCollection routes = new RouteCollection();
-            Console.WriteLine("To POST Forgot Password View.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            LoginController objLoginController = new LoginController();
-            objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
-            ForgotPasswordModel form = new ForgotPasswordModel();
-            form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString();
-            var result = objLoginController.ForgotPassword(form) as ActionResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result);
-            Assert.AreEqual(((RevenuePlanner.Models.ForgotPasswordModel)(((System.Web.Mvc.ViewResultBase)(result)).Model)).UserEmail, form.UserEmail);
+        //    RouteCollection routes = new RouteCollection();
+        //    Console.WriteLine("To POST Forgot Password View.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    LoginController objLoginController = new LoginController();
+        //    objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
+        //    ForgotPasswordModel form = new ForgotPasswordModel();
+        //    form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString();
+        //    var result = objLoginController.ForgotPassword(form) as ActionResult;
+        //    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result);
+        //    Assert.AreEqual(((RevenuePlanner.Models.ForgotPasswordModel)(((System.Web.Mvc.ViewResultBase)(result)).Model)).UserEmail, form.UserEmail);
 
-        }
+        //}
 
         #endregion
 

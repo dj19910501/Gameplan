@@ -112,6 +112,16 @@ namespace RevenuePlanner.Test.MockHelpers
             string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
             return db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.PlanId).FirstOrDefault();
         }
+
+        /// <summary>
+        /// Get single plan id for budget. 
+        /// </summary>
+        /// <returns></returns>
+        public static int GetPlanIdforBudget()
+        {
+
+            return db.Plans.Where(p => p.IsDeleted == false && p.Model.ClientId == Sessions.User.CID).Select(p => p.PlanId).FirstOrDefault();
+        }
         /// <summary>
         /// Get Budget Detail Id
         /// </summary>
