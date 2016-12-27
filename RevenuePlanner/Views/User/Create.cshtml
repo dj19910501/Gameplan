@@ -176,7 +176,12 @@
                 </div>
                 @*}*@
                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.Label("Please check the check box")
+                    <div class="g-recaptcha recaptcha" data-sitekey=@System.Web.Configuration.WebConfigurationManager.AppSettings["sitekey"] ></div>
+                    @Html.ValidationMessage("captcha", "You can't leave Captcha Code empty.", new { @class = "field-validation-error", id = "lblRecaptchaRequired" })
+                </div>
+                        <br />
                 <div class="cf inputs-aligned-horizontal">
                     <label></label>
                     @*<div class="container-button">*@ @* commented by Bhumika to align Save btn *@
@@ -194,7 +199,7 @@
         $('#lblClientIdRequired').hide();
         $('#lblRoleIdRequired').hide();
         $('#lblManagerIdRequired').hide();
-
+        $('#lblRecaptchaRequired').hide();
         //Added by :- Sohel on 27 March 2014 for ticket #334
         $(".selectBox select").selectbox();
 
@@ -263,6 +268,14 @@
                         $('#lblManagerIdRequired').hide();
                     }
             // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                    if (grecaptcha.getResponse().length === 0) {
+                        $('#lblRecaptchaRequired').show();
+                        isValid = false;
+                    }
+                    else
+                        {
+                        $('#lblRecaptchaRequired').hide();
+                    }
                     if (isValid == false) {
                         myApp.hidePleaseWait();
                     }
@@ -640,3 +653,4 @@
         }
     });
 </script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>

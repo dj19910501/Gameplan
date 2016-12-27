@@ -8999,7 +8999,38 @@ namespace RevenuePlanner.Helpers
 
 
         #endregion
+        /// <summary>
+        /// Below method validating reCaptcha.
+        /// </summary>
+        public static bool ValidateCaptcha()
+        {
+            var response = HttpContext.Current.Request["g-recaptcha-response"];
+            //secret that was generated in key value pair
+            string secret = WebConfigurationManager.AppSettings["secretkey"];
 
+            var client = new WebClient();
+            var reply =
+                client.DownloadString(
+                    string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secret, response));
+
+            var captchaResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<CaptchaResponse>(reply);
+
+            //when response is false check for the error message
+            if (!captchaResponse.Success)
+            {
+                if (captchaResponse.ErrorCodes.Count <= 0)
+                    return true;
+
+                var error = captchaResponse.ErrorCodes[0].ToLower();
+                if (!string.IsNullOrEmpty(error))
+                {
+                    return false;
+                }
+
+            }
+            return true;
+
+        }
     }
 
     /// <summary>
@@ -9037,7 +9068,7 @@ namespace RevenuePlanner.Helpers
             return secondIsNumber ? 1 : first != null ? first.CompareTo(second) : 0;
             // End
         }
-
+        
 
 
     }

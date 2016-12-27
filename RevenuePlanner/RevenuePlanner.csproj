@@ -312,6 +312,7 @@
     <Compile Include="App_Start\StructuremapMvc.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BAL\CustomDashboard.cs" />
+    <Compile Include="Controllers\CaptchaResponse.cs" />
     <Compile Include="Controllers\Filters\ApiAuthorizeUser.cs" />
     <Compile Include="Controllers\Filters\ApiExceptionFilter.cs" />
     <Compile Include="Controllers\BoostController.cs" />

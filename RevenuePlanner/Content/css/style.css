@@ -14085,6 +14085,20 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td {
    .MarketingBudget-tbl div.gridbox .objbox{-webkit-overflow: auto !important;}
 }
 
+/* Recaptcha css*/
+.recaptcha {
+    float: left;
+    padding-left: 20px;
+}
+.recaptcha > div{
+    height:130px !important;
+}
+.recaptcha  iframe{
+    height:120px !important;
+}
+
+
+
 /************************************************ Responsive css start here **********************************************************/
 
 @media (max-width: 1600px) {
@@ -15778,3 +15792,4 @@ tbody.column2 {
     flex: 0 0 auto;
     align-self: auto;
 }
+ 

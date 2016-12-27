@@ -483,7 +483,9 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                if (ModelState.IsValid)
+                if (Common.ValidateCaptcha())
+                {
+                    if (ModelState.IsValid)
                 {
                     if (file != null)
                     {
@@ -539,6 +541,7 @@ namespace RevenuePlanner.Controllers
                         TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                     }
                 }
+            }
                 LoadCreateModeComponents(Sessions.User.CID);
             }
             catch (Exception e)
@@ -872,7 +875,9 @@ namespace RevenuePlanner.Controllers
             // End By Nishant Sheth
             try
             {
-                if (ModelState.IsValid)
+                if (Common.ValidateCaptcha())
+                {
+                    if (ModelState.IsValid)
                 {
                     if (file != null)
                     {
@@ -1000,7 +1005,7 @@ namespace RevenuePlanner.Controllers
                         TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                     }
                 }
-
+            }
                 //// Check whether UserId is current loggined User or not.
                 if (form.UserId == Sessions.User.ID)
                 {
