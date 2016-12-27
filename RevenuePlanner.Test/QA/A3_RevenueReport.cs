@@ -41,8 +41,8 @@ namespace RevenuePlanner.Test.QA
         #endregion
 
         [TestMethod()]
-        [Priority(1)]
-        public void A2_MonthlyRevenueReport()
+        //[Priority(2)]
+        public void A1_MonthlyRevenueReport()
         {
             try
             {
@@ -450,8 +450,8 @@ namespace RevenuePlanner.Test.QA
         #endregion
 
         [TestMethod()]
-        [Priority(2)]
-        public void A1_QuarterlyRevenueReport()
+        //[Priority(1)]
+        public void A2_QuarterlyRevenueReport()
         {
             try
             {

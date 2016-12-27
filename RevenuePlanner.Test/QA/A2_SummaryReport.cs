@@ -40,17 +40,49 @@ namespace RevenuePlanner.Test.QA
         #region Waterfall Report
 
         [TestMethod]
+        public void A2_WaterfallSummaryReport()
+        {
+            try
+            {
+                var IsLogin = ObjCommonFunctions.CheckLogin();
+                if (IsLogin != null)
+                {
+                    Console.WriteLine(" Testing LoginController - Index method");
+                    Console.WriteLine(" The assert value of action is " + IsLogin.RouteValues["Action"] + ". (The expected value is Index.)");
+                    Console.WriteLine("\n ----------------------------------------------------------------------");
+                    Console.WriteLine("\n Testing ReportController - GetOverviewData Method");
+
+                    //Console.WriteLine("\n -------------- INQ Waterfall Report Number Validation --------------");
+                    //ObjPlanCommonFunctions.SetSessionData();
+                    //var task1 = Task.Run(async () => await INQSummaryReport());
+                    //task1.Wait();
+
+                    Console.WriteLine("\n ----------------------------------------------------------------------");
+                    Console.WriteLine("\n -------------- TQL Waterfall Report Number Validation --------------");
+                    ObjPlanCommonFunctions.SetSessionData();
+                    var task2 = Task.Run(async () => await TQLSummaryReport());
+                    task2.Wait();
+                    Console.WriteLine("\n ----------------------------------------------------------------------");
+                    Console.WriteLine("\n -------------- CW Waterfall Report Number Validation --------------");
+                    ObjPlanCommonFunctions.SetSessionData();
+                    var task3 = Task.Run(async () => await CWSummaryReport());
+                    task3.Wait();
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
         public async Task INQSummaryReport()
         {
             try
             {
-                //Call common function for login
                 var IsLogin = ObjCommonFunctions.CheckLogin();
                 if (IsLogin != null)
                 {
-                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
-                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
-                    ObjPlanCommonFunctions.SetSessionData();
+                    Console.WriteLine("\n Testing  ReportController - GetOverviewData Method");
                     SetValuesForReport(currentYear, "Monthly", "ProjectedStageValue");
                     decimal sumOfActual = 0; decimal sumOfProjected = 0;
 
@@ -74,8 +106,8 @@ namespace RevenuePlanner.Test.QA
                         }
                         INQTotalProjected = sumOfActual + sumOfProjected;
 
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2), Math.Round(INQTotalProjected, 2));
-                        Console.WriteLine("ReportController -> GetOverviewData \n Report - Waterfall Summary Report \n The assert value of projected INQ in volume section " + objProjected_Goal.Actual_Projected + ".");
+                        Assert.AreEqual(Math.Round(INQTotalProjected, 2), Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2));
+                        Console.WriteLine("\n The assert value of projected INQ in volume section " + Math.Round(INQTotalProjected, 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2).ToString() + ".)");
                         #endregion
 
                         #region Actual Goal
@@ -84,8 +116,8 @@ namespace RevenuePlanner.Test.QA
 
                         INQGoal = Convert.ToDecimal(drModel["TACTIC_PROJECTED_STAGE"].ToString());
 
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2), Math.Round(INQGoal, 2));
-                        Console.WriteLine("ReportController -> GetOverviewData \n Report - Waterfall Summary Report \n The assert value of projected INQ goal in volume section " + objProjected_Goal.Goal + ".");
+                        Assert.AreEqual(Math.Round(INQGoal, 2), Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2));
+                        Console.WriteLine("\n The assert value of projected INQ goal in volume section " + Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2).ToString() + ". (The expected value is " + Math.Round(INQGoal, 2).ToString() + ".)");
 
                         #endregion
 
@@ -94,9 +126,10 @@ namespace RevenuePlanner.Test.QA
                         INQPercentage = ((INQTotalProjected - INQGoal) / INQGoal) * 100;
 
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2), Math.Round(INQPercentage, 2));
-                        Console.WriteLine("ReportController -> GetOverviewData \n Report - Waterfall Summary Report \n The assert value of projected INQ percentage in volume section " + objProjected_Goal.Percentage + ".");
+                        Console.WriteLine("\n The assert value of projected INQ percentage in volume section " + Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2).ToString() + ". (The expected value is " + Math.Round(INQPercentage, 2).ToString() + ".)");
 
                         #endregion
+
                     }
                 }
             }
@@ -106,31 +139,34 @@ namespace RevenuePlanner.Test.QA
             }
         }
 
-        [TestMethod]
         public async Task TQLSummaryReport()
         {
             try
             {
-                //Call common function for login
                 var IsLogin = ObjCommonFunctions.CheckLogin();
                 if (IsLogin != null)
                 {
-                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
-                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
-                    ObjPlanCommonFunctions.SetSessionData();
                     SetValuesForReport(currentYear, "Monthly", "MQL");
                     decimal sumOfActual = 0; decimal sumOfProjected = 0;
 
                     Sessions.PlanExchangeRate = 1.0;
+                    var result1 = objReportController.GetTopConversionToPlanByCustomFilter("Campaign", "", "", currentYear, "Quarterly", "MQL") as PartialViewResult;
+                    objConversionToPlanModel = (ConversionToPlanModel)(result1.ViewData.Model);
+                  
                     var result = await objReportController.GetOverviewData(currentYear, "Quarterly") as PartialViewResult;
+
                     objReportOverviewModel = new ReportOverviewModel();
                     objReportOverviewModel = (ReportOverviewModel)result.Model;
+
                     if (objReportOverviewModel != null)
                     {
+                        ConversionDataTable conversionDataTable = objConversionToPlanModel.ConversionToPlanDataTableModel;
                         objProjected_Goal = new Projected_Goal();
                         objProjected_Goal = objReportOverviewModel.conversionOverviewModel.Projected_LineChartList[1].projected_goal;
                         objConversion_Benchmark_Model = new Conversion_Benchmark_Model();
                         objConversion_Benchmark_Model = objReportOverviewModel.conversionOverviewModel.Projected_LineChartList[1].Stage_Benchmark;
+                        var graphActualList = objReportOverviewModel.conversionOverviewModel.Projected_LineChartList[1].linechartdata.series[0].data;
+                        var graphGoalList = objReportOverviewModel.conversionOverviewModel.Projected_LineChartList[1].linechartdata.series[1].data;
 
                         #region Actual Projected
                         foreach (double actual in ActualList)
@@ -142,8 +178,8 @@ namespace RevenuePlanner.Test.QA
                             sumOfProjected = sumOfProjected + Convert.ToDecimal(projected);
                         }
                         TQLTotalProjected = sumOfActual + sumOfProjected;
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2), Math.Round(TQLTotalProjected, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected TQL " + objProjected_Goal.Actual_Projected + ".");
+                        Assert.AreEqual(Math.Round(TQLTotalProjected, 2), Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2));
+                        Console.WriteLine("\n The assert value of projected TQL " + Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2).ToString() + ". (The expected value is " + Math.Round(TQLTotalProjected, 2).ToString() + ".)");
                         #endregion
 
                         #region Actual Goal
@@ -153,8 +189,8 @@ namespace RevenuePlanner.Test.QA
                         INQGoal = Convert.ToDecimal(drModel["TACTIC_PROJECTED_STAGE"].ToString());
                         TQLGoal = ObjPlanCommonFunctions.CalculationForTactic(drModel, INQGoal, "TQL");
 
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2), Math.Round(TQLGoal, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected TQL goal " + objProjected_Goal.Goal + ".");
+                        Assert.AreEqual(Math.Round(TQLGoal, 2), Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2));
+                        Console.WriteLine("\n The assert value of projected TQL goal " + Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2) + ". (The expected value is " + Math.Round(TQLGoal, 2).ToString() + ".)");
 
                         #endregion
 
@@ -162,34 +198,60 @@ namespace RevenuePlanner.Test.QA
 
                         TQLPercentage = ((TQLTotalProjected - TQLGoal) / TQLGoal) * 100;
 
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2), Math.Round(TQLPercentage, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected TQL percentage " + objProjected_Goal.Percentage + ".");
+                        Assert.AreEqual(Math.Round(TQLPercentage, 2), Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2));
+                        Console.WriteLine("\n The assert value of projected TQL percentage " + Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2) + ". (The expected value is " + Math.Round(TQLPercentage, 2).ToString() + ".)");
 
                         #endregion
 
                         #region TQL Stage Volume
 
                         decimal TQLConversionRate = CalculateConversionValues("TQL");
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.stageVolume), 2), Math.Round(TQLConversionRate, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected TQL percentage " + objConversion_Benchmark_Model.stageVolume + ".");
+                        Assert.AreEqual(Math.Round(TQLConversionRate, 2), Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.stageVolume), 2));
+                        Console.WriteLine("\n The assert value of projected TQL conversion percentage " + Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.stageVolume), 2) + ". (The expected value is " + Math.Round(TQLConversionRate, 2).ToString() + ".)");
 
                         #endregion
 
                         #region TQL Stage Goal
 
                         decimal TQLConversionGoal = (TQLGoal / INQGoal) * 100;
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.Benchmark), 2), Math.Round(TQLConversionGoal, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected TQL goal percentage " + objConversion_Benchmark_Model.Benchmark + ".");
+                        Assert.AreEqual(Math.Round(TQLConversionGoal, 2), Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.Benchmark), 2));
+                        Console.WriteLine("\n The assert value of projected TQL goal percentage " + Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.Benchmark), 2).ToString() + ". (The expected value is " + Math.Round(TQLConversionGoal, 2).ToString() + ".)");
 
                         #endregion
 
                         #region TQL Stage Percentage Difference
 
                         decimal TQLPercentageDiff = ((TQLConversionRate - TQLConversionGoal) / TQLConversionGoal) * 100;
-                        Assert.AreEqual(Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.PercentageDifference), 2), Math.Round(TQLPercentageDiff, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected TQL difference percentage " + objConversion_Benchmark_Model.PercentageDifference + ".");
+                        Assert.AreEqual(Math.Round(TQLPercentageDiff, 2), Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.PercentageDifference), 2));
+                        Console.WriteLine("\n The assert value of projected TQL percentage difference  " + Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.PercentageDifference), 2).ToString() + ". (The expected value is " + Math.Round(TQLPercentageDiff, 2).ToString() + ".)");
 
                         #endregion
+
+                        Console.WriteLine("\n -------------- TQL Waterfall Report Graph Number Validation --------------");
+
+                         List<double> QuaterlyActualList = conversionDataTable.ActualList;
+                        List<double> QuaterlyProjectedList = conversionDataTable.ProjectedList;
+                        List<double> QuaterlyGoalList = conversionDataTable.GoalList;
+                        if (QuaterlyActualList != null && QuaterlyProjectedList != null)
+                        {
+                            decimal actualTotal = 0;
+                            for (int i = 0; i <= QuaterlyActualList.Count - 1; i++)
+                            {                               
+                                actualTotal = actualTotal + Convert.ToDecimal(QuaterlyActualList[i]) + Convert.ToDecimal(QuaterlyProjectedList[i]);
+                                Assert.AreEqual(Math.Round(actualTotal, 2), Math.Round(Convert.ToDecimal(graphActualList[i].ToString()),2));
+                                Console.WriteLine("\n The assert value of actual/projected TQL in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(graphActualList[i].ToString()), 2).ToString() + ". (The expected value is " + Math.Round(actualTotal, 2).ToString() + ".)");
+                            }
+                        }
+                        if (QuaterlyGoalList != null)
+                        {
+                            decimal goalTotal = 0;
+                            for (int i = 0; i <= QuaterlyGoalList.Count - 1; i++)
+                            {                              
+                                goalTotal = goalTotal + Convert.ToDecimal(QuaterlyGoalList[i]);
+                                Assert.AreEqual(Math.Round(goalTotal, 2), Math.Round(Convert.ToDecimal(graphGoalList[i].ToString()), 2));
+                                Console.WriteLine("\n The assert value of goal TQL in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(graphGoalList[i].ToString()), 2).ToString() + ". (The expected value is " + Math.Round(goalTotal, 2).ToString() + ".)");
+                            }
+                        }
                     }
                 }
             }
@@ -199,22 +261,23 @@ namespace RevenuePlanner.Test.QA
             }
         }
 
-        [TestMethod]
         public async Task CWSummaryReport()
         {
             try
             {
-                //Call common function for login
                 var IsLogin = ObjCommonFunctions.CheckLogin();
                 if (IsLogin != null)
                 {
-                    Assert.AreEqual("Index", IsLogin.RouteValues["Action"]);
-                    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + IsLogin.RouteValues["Action"]);
                     ObjPlanCommonFunctions.SetSessionData();
                     SetValuesForReport(currentYear, "Monthly", "CW");
                     decimal sumOfActual = 0; decimal sumOfProjected = 0;
 
                     Sessions.PlanExchangeRate = 1.0;
+
+                    var result1 = objReportController.GetTopConversionToPlanByCustomFilter("Campaign", "", "", currentYear, "Quarterly", "CW") as PartialViewResult;
+                    objConversionToPlanModel = (ConversionToPlanModel)(result1.ViewData.Model);
+                    ConversionDataTable conversionDataTable = objConversionToPlanModel.ConversionToPlanDataTableModel;
+
                     var result = await objReportController.GetOverviewData(currentYear, "Quarterly") as PartialViewResult;
                     objReportOverviewModel = new ReportOverviewModel();
                     objReportOverviewModel = (ReportOverviewModel)result.Model;
@@ -225,6 +288,8 @@ namespace RevenuePlanner.Test.QA
 
                         objConversion_Benchmark_Model = new Conversion_Benchmark_Model();
                         objConversion_Benchmark_Model = objReportOverviewModel.conversionOverviewModel.Projected_LineChartList[2].Stage_Benchmark;
+                        var graphActualList = objReportOverviewModel.conversionOverviewModel.Projected_LineChartList[2].linechartdata.series[0].data;
+                        var graphGoalList = objReportOverviewModel.conversionOverviewModel.Projected_LineChartList[2].linechartdata.series[1].data;
 
                         #region Actual Projected
                         foreach (double actual in ActualList)
@@ -237,7 +302,7 @@ namespace RevenuePlanner.Test.QA
                         }
                         CWTotalProjected = sumOfActual + sumOfProjected;
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2), Math.Round(CWTotalProjected, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected CW is " + objProjected_Goal.Actual_Projected + ".");
+                        Console.WriteLine("\n The assert value of projected CW is " + Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2).ToString() + ". (The expected value is " + Math.Round(CWTotalProjected, 2).ToString() + ".)");
                         #endregion
 
                         #region Actual Goal
@@ -249,7 +314,7 @@ namespace RevenuePlanner.Test.QA
                         CWGoal = ObjPlanCommonFunctions.CalculationForTactic(drModel, TQLGoal, "CW");
 
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2), Math.Round(CWGoal, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected CW goal is " + objProjected_Goal.Goal + ".");
+                        Console.WriteLine("\n The assert value of projected CW goal is " + Math.Round(Convert.ToDecimal(objProjected_Goal.Goal), 2).ToString() + ". (The expected value is " + Math.Round(CWGoal, 2).ToString() + ".)");
 
                         #endregion
 
@@ -258,7 +323,7 @@ namespace RevenuePlanner.Test.QA
                         CWPercentage = ((CWTotalProjected - CWGoal) / CWGoal) * 100;
 
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2), Math.Round(CWPercentage, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected CW percentage is " + objProjected_Goal.Percentage + ".");
+                        Console.WriteLine("\n The assert value of projected CW percentage is " + Math.Round(Convert.ToDecimal(objProjected_Goal.Percentage), 2).ToString() + ". (The expected value is " + Math.Round(CWPercentage, 2).ToString() + ".)");
 
                         #endregion
 
@@ -266,7 +331,7 @@ namespace RevenuePlanner.Test.QA
 
                         decimal CWConversionRate = CalculateConversionValues("CW");
                         Assert.AreEqual(objConversion_Benchmark_Model.stageVolume, Math.Floor(CWConversionRate).ToString());
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected CW percentage " + objConversion_Benchmark_Model.stageVolume + ".");
+                        Console.WriteLine("\n The assert value of projected CW conversion percentage " + objConversion_Benchmark_Model.stageVolume + ". (The expected value is " + Math.Round(CWConversionRate, 2).ToString() + ".)");
 
                         #endregion
 
@@ -274,7 +339,7 @@ namespace RevenuePlanner.Test.QA
 
                         decimal CWConversionGoal = (CWGoal / TQLGoal) * 100;
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.Benchmark), 2), Math.Round(CWConversionGoal, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected CW goal percentage" + objConversion_Benchmark_Model.Benchmark + ".");
+                        Console.WriteLine("\n The assert value of projected CW goal percentage " + Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.Benchmark), 2).ToString() + ". (The expected value is " + Math.Round(CWConversionGoal, 2).ToString() + ".)");
 
                         #endregion
 
@@ -282,9 +347,35 @@ namespace RevenuePlanner.Test.QA
 
                         decimal CWPercentageDiff = ((Math.Floor(CWConversionRate) - CWConversionGoal) / CWConversionGoal) * 100;
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.PercentageDifference), 2), Math.Round(CWPercentageDiff, 2));
-                        Console.WriteLine("ReportController - GetOverviewData \n The assert value of projected CW difference percentage " + objConversion_Benchmark_Model.PercentageDifference + ".");
+                        Console.WriteLine("\n The assert value of projected CW percentage difference " + Math.Round(Convert.ToDecimal(objConversion_Benchmark_Model.PercentageDifference), 2).ToString() + ". (The expected value is " + Math.Round(CWPercentageDiff, 2).ToString() + ".)");
 
                         #endregion
+
+                        Console.WriteLine("\n -------------- CW Waterfall Report Graph Number Validation --------------");
+
+                        List<double> QuaterlyActualList = conversionDataTable.ActualList;
+                        List<double> QuaterlyProjectedList = conversionDataTable.ProjectedList;
+                        List<double> QuaterlyGoalList = conversionDataTable.GoalList;
+                        if (QuaterlyActualList != null && QuaterlyProjectedList != null)
+                        {
+                            decimal actualTotal = 0;
+                            for (int i = 0; i <= QuaterlyActualList.Count - 1; i++)
+                            {
+                                actualTotal = actualTotal + Convert.ToDecimal(QuaterlyActualList[i]) + Convert.ToDecimal(QuaterlyProjectedList[i]);
+                                Assert.AreEqual(Math.Round(actualTotal, 2), Math.Round(Convert.ToDecimal(graphActualList[i].ToString()), 2));
+                                Console.WriteLine("\n The assert value of actual/projected CW in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(graphActualList[i].ToString()), 2).ToString() + ". (The expected value is " + Math.Round(actualTotal, 2).ToString() + ".)");
+                            }
+                        }
+                        if (QuaterlyGoalList != null)
+                        {
+                            decimal goalTotal = 0;
+                            for (int i = 0; i <= QuaterlyGoalList.Count - 1; i++)
+                            {
+                                goalTotal = goalTotal + Convert.ToDecimal(QuaterlyGoalList[i]);
+                                Assert.AreEqual(Math.Round(goalTotal, 2), Math.Round(Convert.ToDecimal(graphGoalList[i].ToString()), 2));
+                                Console.WriteLine("\n The assert value of goal CW in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(graphGoalList[i].ToString()), 2).ToString() + ". (The expected value is " + Math.Round(goalTotal, 2).ToString() + ".)");
+                            }
+                        }
                     }
                 }
             }
@@ -363,6 +454,11 @@ namespace RevenuePlanner.Test.QA
 
         }
 
+        //public void VerifyData()
+        //{
+        //    var result1 = objReportController.GetTopConversionToPlanByCustomFilter("Campaign", "", "", currentYear, "Quarterly", "MQL") as PartialViewResult;
+        //}
+
         #endregion
 
         #region Revenue Report
@@ -401,7 +497,7 @@ namespace RevenuePlanner.Test.QA
                     lineChartData objlineChartData = new lineChartData();
                     SparkLineChartsList = objReportOverviewModel.revenueOverviewModel.SparkLineChartsData;
                     objlineChartData = objReportOverviewModel.revenueOverviewModel.linechartdata;
-
+                    Console.WriteLine("\n -------------- Number Validation --------------");
                     if (objReportOverviewModel != null)
                     {
                         #region Verify Data
@@ -410,7 +506,6 @@ namespace RevenuePlanner.Test.QA
 
                         DataTable dt = ObjCommonFunctions.GetExcelData("GamePlanExcelConn", "[Actual Data$]").Tables[0];
                         TotalProjected = SetValuesForSummeryRevenueReport(dt);
-                        Console.WriteLine("\n Testing revenueOverviewModel Method");
                         Assert.AreEqual(Math.Round(TotalProjected, 2), Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2));
                         Console.WriteLine("\n The assert value of actual projected is " + Math.Round(Convert.ToDecimal(objProjected_Goal.Actual_Projected), 2).ToString() + ". (The expected value is " + Math.Round(TotalProjected, 2).ToString() + ".)");
 
@@ -592,6 +687,7 @@ namespace RevenuePlanner.Test.QA
                     Console.WriteLine(" The assert value of action is " + IsLogin.RouteValues["Action"] + ". (The expected value is Index.)");
                     Console.WriteLine("\n ----------------------------------------------------------------------");
                     Console.WriteLine("\n Testing  ReportController - GetOverviewData Method");
+
                     ObjPlanCommonFunctions.SetSessionData();
                     objReportController = new ReportController();
                     objReportModel = new ReportModel();
@@ -617,6 +713,7 @@ namespace RevenuePlanner.Test.QA
                         double plannedCost = objFinancialOverviewModel.PlannedCostvsBudget;
                         double actualCost = objFinancialOverviewModel.ActualCostvsBudet;
 
+                        Console.WriteLine("\n -------------- Number Validation --------------");
 
                         Assert.AreEqual(Math.Round(Convert.ToDecimal(totalbudget), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Total Budget"].ToString()), 2));
                         Console.WriteLine("\n The assert value of total budget is " + Math.Round(Convert.ToDecimal(totalbudget), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Total Budget"].ToString()), 2).ToString() + ")");
@@ -656,7 +753,7 @@ namespace RevenuePlanner.Test.QA
                                 Console.WriteLine("\n The assert value of actual cost quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(actualList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Actual"].ToString()), 2).ToString() + ")");
 
                             }
-                        
+
                         }
                         #endregion
 
@@ -683,7 +780,7 @@ namespace RevenuePlanner.Test.QA
                                 Assert.AreEqual(Math.Round(Convert.ToDecimal(plannedList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Planned"].ToString()), 2));
                                 Console.WriteLine("\n The assert value of planned cost in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(plannedList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Planned"].ToString()), 2).ToString() + ")");
                             }
-                       
+
                         }
                         #endregion
 
@@ -710,13 +807,9 @@ namespace RevenuePlanner.Test.QA
                                 Assert.AreEqual(Math.Round(Convert.ToDecimal(budgetList[i]), 2), Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Budget"].ToString()), 2));
                                 Console.WriteLine("\n The assert value of budget in quarter " + (i + 1).ToString() + " is " + Math.Round(Convert.ToDecimal(budgetList[i]), 2).ToString() + ". (The expected value is " + Math.Round(Convert.ToDecimal(Financedt.Rows[0]["Q4 - Budget"].ToString()), 2).ToString() + ")");
                             }
-                        
+
                         }
                         #endregion
-
-                       
-
-
 
                     }
                 }

@@ -29,7 +29,7 @@ namespace RevenuePlanner.Test.QA
         #region  Monthly Finance Report
 
         [TestMethod]
-        public void MonthlyFinanceReport()
+        public void A1_MonthlyFinanceReport()
         {
             try
             {
@@ -275,7 +275,7 @@ namespace RevenuePlanner.Test.QA
         #region  Quarterly Finance Report
 
         [TestMethod]
-        public void QuarterlyFinanceReport()
+        public void A2_QuarterlyFinanceReport()
         {
             try
             {
@@ -447,7 +447,7 @@ namespace RevenuePlanner.Test.QA
         #region  Monthly Finance Report With Attribute
 
         [TestMethod]
-        public void MonthlyFinanceReportWithAudience()
+        public void A3_MonthlyFinanceReportWithAudience()
         {
             try
             {
@@ -557,10 +557,16 @@ namespace RevenuePlanner.Test.QA
                         if (i == 1)
                         {
                             if (data[0].value == "Plan")
+                            {
                                 Assert.AreEqual(viewByName, budgetValue.Trim());
+                                Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + budgetValue.Trim() + ". The expected value is " + viewByName.Trim() + ".)");
+                            }
                             else
+                            {
                                 Assert.AreEqual(dr[i - 1].ToString().Trim(), budgetValue.Trim());
-                            Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + budgetValue.Trim() + ". The expected value is " + dr[i - 1].ToString().Trim() + ".)");
+                                Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + budgetValue.Trim() + ". The expected value is " + dr[i - 1].ToString().Trim() + ".)");
+
+                            }
                         }
                         else
                         {
@@ -612,7 +618,7 @@ namespace RevenuePlanner.Test.QA
             if (dt != null && dt.Rows.Count > 0)
             {
                 DataRow dr = dt.Rows[0];
-              
+
                 Assert.AreEqual(dr["Planned Cost"].ToString(), MainTotalAllocated);
                 Console.WriteLine("\n The assert value of total allocated amount is " + MainTotalAllocated + ". (The expected value is " + dr["Planned Cost"].ToString() + ".)");
                 Assert.AreEqual(dr["Total Actual"].ToString(), MainTotalActual);
@@ -626,7 +632,7 @@ namespace RevenuePlanner.Test.QA
         #region  Quarterly Finance Report With Attribute
 
         [TestMethod]
-        public void QuarterlyFinanceReportWithAudience()
+        public void A4_QuarterlyFinanceReportWithAudience()
         {
             try
             {
@@ -733,14 +739,18 @@ namespace RevenuePlanner.Test.QA
 
                     if (dr != null)
                     {
-
                         if (i == 1)
                         {
                             if (data[0].value == "Plan")
+                            {
                                 Assert.AreEqual(viewByName, budgetValue.Trim());
+                                Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + budgetValue.Trim() + ". (The expected value is " + viewByName.Trim() + ".)");
+                            }
                             else
+                            {
                                 Assert.AreEqual(dr[i - 1].ToString().Trim(), budgetValue.Trim());
-                            Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + budgetValue.Trim() + ". (The expected value is " + dr[i - 1].ToString() + ".)");
+                                Console.WriteLine("\n The assert value of " + mainHeader[i - 1] + " is " + budgetValue.Trim() + ". (The expected value is " + dr[i - 1].ToString() + ".)");
+                            }
                         }
                         else
                         {

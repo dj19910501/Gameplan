@@ -25,7 +25,7 @@ namespace RevenuePlanner.Test.QA
                 
                 //Call common function for login
                 var result = ObjCommonFunctions.CheckLogin();
-                Console.WriteLine("Testing LoginController - Index With Parameters method");
+                Console.WriteLine(" Testing LoginController - Index With Parameters method");
                 if (result != null)
                 {
                     Assert.AreEqual("Index", result.RouteValues["Action"]);
