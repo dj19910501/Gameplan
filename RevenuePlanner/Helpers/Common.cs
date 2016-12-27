@@ -8915,8 +8915,8 @@ namespace RevenuePlanner.Helpers
         /// <param name="ClientId">Client Id</param>
         /// <param name="ApplicationId">Application Id</param>
         /// <param name="lstUsers">List of users for current client</param>
-        /// <returns>Returns list of PlanOptions contains user ids and names</returns>
-        public static List<PlanOptions> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers)
+        /// <returns>Returns list of SelectListItem contains user ids and names</returns>
+        public static List<SelectListItem> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers)
         {
             IBDSService objAuthService = new BDSServiceClient();
 
@@ -8924,22 +8924,22 @@ namespace RevenuePlanner.Helpers
             // Following method is called to match user with user application table and 
             // also checked Deleted user should not be return in this list.   
             lstClientUsers = objAuthService.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, ApplicationId).Select(w => w.ID).ToList();
-            return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new PlanOptions
+            return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new SelectListItem
             {
-                id = owner.ID,
-                value = string.Format("{0} {1}", owner.FirstName, owner.LastName)
-            }).OrderBy(tactype => tactype.value).ToList();
+                Value  = owner.UserId.ToString(),
+                Text = HttpUtility.HtmlEncode(string.Format("{0} {1}", owner.FirstName, owner.LastName))
+            }).OrderBy(tactype => tactype.Value).ToList();
         }
 
         //Method to convert user guid to user integer id pl ticket #2899
         public static int GetIntegerUserId(Guid UserGuid)
         {
             int UserId = 0;
-            Dictionary<Guid,int> UserList = Sessions.dictUserIds;
+            List<BDSService.User> UserList = Sessions.ClientUsers;
 
-            if (UserList != null && UserList.Count > 0 && UserList.Where(u => u.Key == UserGuid).Any())
+            if (UserList != null && UserList.Count > 0)
             {
-                UserId = UserList[UserGuid];
+                UserId = UserList.Where(u => u.UserId == UserGuid).Select(a => a.ID).FirstOrDefault();
                 
             }
             return UserId;

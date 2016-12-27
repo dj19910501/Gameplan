@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Web.Mvc;
 using System.Xml;
 
 namespace RevenuePlanner.Services.MarketingBudget
@@ -24,7 +25,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
     public class UserBudgetPermissionDetail
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public int PermisssionCode { get; set; }
         public int BudgetDetailId { get; set; }
     }
@@ -264,6 +265,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         public int Permission { get; set; }
         public string createdby { get; set; }
         public bool IsOwner { get; set; }
+        public Guid UserGuid { get; set; }
     }
     public class LineItemDetail
     {
@@ -295,7 +297,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate,List<BDSService.User> lstUser,bool IsLineItem=false); // Header values
         List<BDSService.User> GetUserListByClientId(int ClientID); // List of users for specific client
-        List<PlanOptions> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers); // Owner list for current client
+        List<SelectListItem> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers); // Owner list for current client
         /// <summary>
         /// Update budget data only!
         /// Planned and actuals are NOT updated through this interface

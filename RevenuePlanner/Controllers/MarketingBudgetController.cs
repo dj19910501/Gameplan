@@ -503,7 +503,7 @@ namespace RevenuePlanner.Controllers
                     if (string.Compare(ColumnName, Enums.DefaultGridColumn.Owner.ToString(), true) == 0)
                     {
                         int OwnerId = 0;
-                        int.TryParse(nValue, out OwnerId);
+                        OwnerId = Common.GetIntegerUserId(new Guid(nValue));//call method to get interger userid from Guid #2956
                         if (OwnerId <= 0)
                         {
                             return Json(new { IsSuccess = false, ErrorMsg = "Owner is not valid" }, JsonRequestBehavior.AllowGet);
@@ -724,7 +724,7 @@ namespace RevenuePlanner.Controllers
                         var searchresult=lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || (user.JobTitle!=null && user.JobTitle.ToLower().Contains(term.ToLower()))).ToList();
                         if(searchresult!=null && searchresult.Count>0)
                         {
-                            Getvalue = searchresult.Select(user => new RevenuePlanner.Models.UserModel { UserId = user.ID, JobTitle = Convert.ToString(user.JobTitle), DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                            Getvalue = searchresult.Select(user => new RevenuePlanner.Models.UserModel { UserId = user.ID, JobTitle = Convert.ToString(user.JobTitle), DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName), UserGuid=user.UserId }).ToList();
                         }
                         string[] keepList = UserIds.Split(',');
                         Getvalue = Getvalue.Where(i => !keepList.Contains(i.UserId.ToString())).ToList();
@@ -743,9 +743,10 @@ namespace RevenuePlanner.Controllers
         /// Added by Nandish Shah
         /// Get specific of user record on selection of dropdown list
         /// </summary>
-        public JsonResult GetuserRecord(int Id)
+        public JsonResult GetuserRecord(Guid UserGuid)//change parameter from int to Guid userid for Guid #2956
         {
             RevenuePlanner.Models.UserModel objUserModel = new RevenuePlanner.Models.UserModel();
+            int Id = Common.GetIntegerUserId(UserGuid);
             try
             {
                 objUserModel = _MarketingBudget.GetuserRecord(Id, Sessions.User.ID, Sessions.ApplicationId);
@@ -763,8 +764,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">contains user's Id</param>
         /// <returns>If success than return true</returns>
         [HttpPost]
-        public JsonResult DeleteUser(int id, int budgetId, string ChildItems)
+        public JsonResult DeleteUser(Guid UserGuid, int budgetId, string ChildItems)//change parameter from int to Guid userid for Guid #2956
         {
+            int id = Common.GetIntegerUserId(UserGuid);//call method to get interger userid from Guid #2956
             List<string> ListItems = new List<string>();
             List<int> BudgetDetailIds = new List<int>();
             if (ChildItems != "" && ChildItems != null)

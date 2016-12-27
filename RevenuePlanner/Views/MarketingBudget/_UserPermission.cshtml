@@ -67,7 +67,7 @@
                         foreach (var item in Model.Userpermission)
                         {
                         <tr class="userrow">
-                            <td title="@item.UserId" class="selectrec" style="display: none">@Html.DisplayFor(model => item.UserId)</td>
+                            <td title="@item.UserGuid" class="selectrec" style="display: none">@Html.DisplayFor(model => item.UserGuid)</td>
                             <td id="IsOwner" title="Owner" class="selectrec" style="display: none">@item.IsOwner</td>
                             <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
                             <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
@@ -77,13 +77,13 @@
                                      <td class="userDelete" >
                                           
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.UserId" checked="checked" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserGuid" checked="checked" name="@item.UserGuid" par="0"><label for="vew-edit_@item.UserGuid">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.UserId"  name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserGuid"  name="@item.UserGuid" par="1"><label for="view-only_@item.UserGuid">View Only</label>
                                     </p>
                                          <p>
-                                             <input type="radio" id="None_@item.UserId" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                             <input type="radio" id="None_@item.UserGuid" name="@item.UserGuid" par="2"><label for="None_@item.UserGuid">None</label>
                                          </p>
                                     <a href="#">
                                         @*<span title="Delete Member" class="x-icon hide pull-right"></span>*@
@@ -94,14 +94,14 @@
                               {
                                  <td class="userDelete" >
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.UserId"  name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserGuid"  name="@item.UserGuid" par="0"><label for="vew-edit_@item.UserGuid">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.UserId" checked="checked" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
-                                        <input type="radio" id="view-only_@item.UserId" checked="checked" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserGuid" checked="checked" name="@item.UserGuid" par="1"><label for="view-only_@item.UserGuid">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserGuid" checked="checked" name="@item.UserGuid" par="1"><label for="view-only_@item.UserGuid">View Only</label>
                                     </p>
                                      <p>
-                                         <input type="radio" id="None_@item.UserId" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                         <input type="radio" id="None_@item.UserGuid" name="@item.UserGuid" par="2"><label for="None_@item.UserGuid">None</label>
                                      </p>
                                     <a href="#">
                                        @* <span title="Delete Member" class="x-icon hide pull-right"></span>*@
@@ -113,13 +113,13 @@
                               {
                                 <td class="userDelete">
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.UserId" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserGuid" name="@item.UserGuid" par="0"><label for="vew-edit_@item.UserGuid">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.UserId" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserGuid" name="@item.UserGuid" par="1"><label for="view-only_@item.UserGuid">View Only</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="None_@item.UserId" checked="checked" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                        <input type="radio" id="None_@item.UserGuid" checked="checked" name="@item.UserGuid" par="2"><label for="None_@item.UserGuid">None</label>
                                     </p>
                                     <a href="#">
                                         @* <span title="Delete Member" class="x-icon hide pull-right"></span>*@
@@ -137,7 +137,7 @@
                         {
                         <tr class="userrow">
                           
-                            <td title="UserID" class="selectrec" style="display: none">@Html.DisplayFor(model => item.UserId)</td>
+                            <td title="UserID" class="selectrec" style="display: none">@Html.DisplayFor(model => item.UserGuid)</td>
                             <td title="CreatedBy" class="selectrec" style="display: none">@Html.DisplayFor(model => item.createdby)</td>
                             <td id="IsOwner" title="Owner" class="selectrec" style="display: none">@item.IsOwner</td>
                             <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
@@ -148,15 +148,15 @@
                             {
                                 <td class="userDelete" style="border-right:none">
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.UserId" class="redinput" checked="checked" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserGuid" class="redinput" checked="checked" name="@item.UserGuid" par="0"><label for="vew-edit_@item.UserGuid">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.UserId" class="redinput" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserGuid" class="redinput" name="@item.UserGuid" par="1"><label for="view-only_@item.UserGuid">View Only</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="None_@item.UserId" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                        <input type="radio" id="None_@item.UserGuid" name="@item.UserGuid" par="2"><label for="None_@item.UserGuid">None</label>
                                     </p>
-                                    <a href="#" onclick="DeleteUsers('@item.UserId','@item.budgetID','@item.FirstName','@item.LastName');">
+                                    <a href="#" onclick="DeleteUsers('@item.UserGuid','@item.budgetID','@item.FirstName','@item.LastName');">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
                                     </a>
                                 </td>
@@ -166,15 +166,15 @@
                                 
                                 <td class="userDelete" style="border-right:none">
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.UserId"  name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserGuid"  name="@item.UserGuid" par="0"><label for="vew-edit_@item.UserGuid">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.UserId" checked="checked" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserGuid" checked="checked" name="@item.UserGuid" par="1"><label for="view-only_@item.UserGuid">View Only</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="None_@item.UserId"  name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                        <input type="radio" id="None_@item.UserGuid"  name="@item.UserGuid" par="2"><label for="None_@item.UserGuid">None</label>
                                     </p>
-                                    <a href="#" onclick="DeleteUsers('@item.UserId','@item.budgetID','@item.FirstName','@item.LastName');">
+                                    <a href="#" onclick="DeleteUsers('@item.UserGuid','@item.budgetID','@item.FirstName','@item.LastName');">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
                                     </a>
 
@@ -185,15 +185,15 @@
                             {
                             <td class="userDelete">
                                 <p>
-                                    <input type="radio" id="vew-edit_@item.UserId" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
+                                    <input type="radio" id="vew-edit_@item.UserGuid" name="@item.UserGuid" par="0"><label for="vew-edit_@item.UserGuid">View/Edit</label>
                                 </p>
                                 <p>
-                                    <input type="radio" id="view-only_@item.UserId" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                    <input type="radio" id="view-only_@item.UserGuid" name="@item.UserGuid" par="1"><label for="view-only_@item.UserGuid">View Only</label>
                                 </p>
                                 <p>
-                                    <input type="radio" id="None_@item.UserId" checked="checked" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
+                                    <input type="radio" id="None_@item.UserGuid" checked="checked" name="@item.UserGuid" par="2"><label for="None_@item.UserGuid">None</label>
                                 </p>
-                                <a href="#" onclick="DeleteUsers('@item.UserId','@item.budgetID','@item.FirstName','@item.LastName');">
+                                <a href="#" onclick="DeleteUsers('@item.UserGuid','@item.budgetID','@item.FirstName','@item.LastName');">
                                     <span title="Delete Member" class="x-icon hide pull-right"></span>
                                 </a>
 
@@ -326,17 +326,17 @@
                             for (var i = 0; i < data.length; i++) {
                                 var html = "";
                                 if (data[i].Permission == 0) {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" checked="checked" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserGuid + '" checked="checked" name="permission' + "_" + data[i].UserGuid + '"  par=0><label for="vew-edit_' + data[i].UserGuid + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=1 /><label for="view-only_' + data[i].UserGuid + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=2 /><label for="None_' + data[i].UserGuid + '">None</label></p>';
                                 }
                                 else if (data[i].Permission == 1) {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserGuid + '" name="permission' + "_" + data[i].UserGuid + '"  par=0><label for="vew-edit_' + data[i].UserGuid + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=1 /><label for="view-only_' + data[i].UserGuid + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=2 /><label for="None_' + data[i].UserGuid + '">None</label></p>';
                                 }
                                 else
                                 {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput"  checked="checked" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserGuid + '" name="permission' + "_" + data[i].UserGuid + '"  par=0><label for="vew-edit_' + data[i].UserGuid + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=1 /><label for="view-only_' + data[i].UserGuid + '">View Only</label></p><p> <input type="radio"  class="redinput"  checked="checked" id="None_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=2 /><label for="None_' + data[i].UserGuid + '">None</label></p>';
                                 }
-                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].UserId + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
-                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="MarketingBudget/DeleteUser/' + data[i].UserId + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].UserGuid + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="MarketingBudget/DeleteUser/' + data[i].UserGuid + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
                             }
                             $("#tableNoData").hide();
                             $(".user-table").show();
@@ -352,18 +352,18 @@
                             for (var i = 0; i < data.length; i++) {
                                 var html = "";
                                 if (data[i].Permission == 0) {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" checked="checked" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserGuid + '" checked="checked" name="permission' + "_" + data[i].UserGuid + '"  par=0><label for="vew-edit_' + data[i].UserGuid + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=1 /><label for="view-only_' + data[i].UserGuid + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=2 /><label for="None_' + data[i].UserGuid + '">None</label></p>';
                                 }
                                 else if (data[i].Permission == 1) {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserGuid + '" name="permission' + "_" + data[i].UserGuid + '"  par=0><label for="vew-edit_' + data[i].UserGuid + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=1 /><label for="view-only_' + data[i].UserGuid + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=2 /><label for="None_' + data[i].UserGuid + '">None</label></p>';
                                 }
                                 else
                                 {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput"  id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" checked="checked" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserGuid + '" name="permission' + "_" + data[i].UserGuid + '"  par=0><label for="vew-edit_' + data[i].UserGuid + '">View/Edit</label></p><p> <input type="radio" class="redinput"  id="view-only_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=1 /><label for="view-only_' + data[i].UserGuid + '">View Only</label></p><p> <input type="radio"  class="redinput" checked="checked" id="None_' + data[i].UserGuid + '"  name="permission' + "_" + data[i].UserGuid + '" par=2 /><label for="None_' + data[i].UserGuid + '">None</label></p>';
 
                                 }
-                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].UserId + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
-                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="MarketingBudget/DeleteUser/' + data[i].UserId + '")"></a></td></tr>');
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].UserGuid + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="MarketingBudget/DeleteUser/' + data[i].UserGuid + '")"></a></td></tr>');
                             }
                             $("#DivFilterPer").show();
                             $(".user-list").hide();
@@ -456,7 +456,7 @@
                                         $("#NoSearch").hide();
                                         myApp.hidePleaseWait();
                                         response($.map(data, function (item) {
-                                            return { label: item.UserId, value: item.DisplayName, title: item.JobTitle };
+                                            return { label: item.UserGuid, value: item.DisplayName, title: item.JobTitle };
                                         }))
                                     }
                                     else {
@@ -508,12 +508,12 @@
                     url: '@Url.Content("~/MarketingBudget//GetuserRecord/")',
                     type: 'POST',
                     dataType: "json",
-                    data: { Id: _userid },
+                    data: { UserGuid: _userid },
                     success: function (data) {
                         $("#SaveMsg").hide();
                         $("#Selectuser").val('');
-                        $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data.UserId + '</td><td titile="CreatedBy" class="selectrec" style="display:none">' + '@Sessions.User.UserId' + '</td><td title=' + data.FirstName + '>' + data.FirstName + '</td><td title=' + data.LastName + '>' + data.LastName + '</td><td>' + data.RoleTitle +
-                            '</td><td class="userDelete" style="border-right:none"> <p><input type="radio" id="vew-edit_' + data.UserId + '" class="redinput" checked="checked" name="permission' + "_" + data.UserId + '"  par=0><label for="vew-edit_' + data.UserId + '">View/Edit</label></p><p> <input type="radio"  class="redinput" id="view-only_' + data.UserId + '"  name="permission' + "_" + data.UserId + '" par=1 /><label for="view-only_' + data.UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data.UserId + '"  name="permission' + "_" + data.UserId + '" par=2 /><label for="None_' + data.UserId + '">None</label></p><a href="MarketingBudget/DeleteUser/' + data.UserId + '"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                        $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data.UserGuid + '</td><td titile="CreatedBy" class="selectrec" style="display:none">' + '@Sessions.User.UserId' + '</td><td title=' + data.FirstName + '>' + data.FirstName + '</td><td title=' + data.LastName + '>' + data.LastName + '</td><td>' + data.RoleTitle +
+                            '</td><td class="userDelete" style="border-right:none"> <p><input type="radio" id="vew-edit_' + data.UserGuid + '" class="redinput" checked="checked" name="permission' + "_" + data.UserGuid + '"  par=0><label for="vew-edit_' + data.UserGuid + '">View/Edit</label></p><p> <input type="radio"  class="redinput" id="view-only_' + data.UserGuid + '"  name="permission' + "_" + data.UserGuid + '" par=1 /><label for="view-only_' + data.UserGuid + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data.UserGuid + '"  name="permission' + "_" + data.UserGuid + '" par=2 /><label for="None_' + data.UserGuid + '">None</label></p><a href="MarketingBudget/DeleteUser/' + data.UserGuid + '"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
                         InspectBudgetPermissionRow();
                         GetIds();
 
@@ -656,7 +656,7 @@
         $.ajax({
             url: '@Url.Action("DeleteUser", "MarketingBudget")',
             type: 'POST',
-            data: { id: id, budgetID: budgetID, ChildItems : ChildItems },
+            data: { UserGuid: id, budgetID: budgetID, ChildItems: ChildItems },
             success: function (data) {
                 if (data.Flag) {
                     $("#userTable tbody tr").each(function () {

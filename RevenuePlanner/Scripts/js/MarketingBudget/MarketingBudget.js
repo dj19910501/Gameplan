@@ -508,10 +508,10 @@ function OnEditMainGridCell(stage, rId, cInd, nValue, oValue) {
             var combo = budgetgrid.getCombo(colOwnerNameIndex);
             combo.clear();
             $.each(Ownerlist, function (i, item) {
-                combo.put(item.id, item.value);
-                if(item.value == ValidOldValue)
+                combo.put(item.Value, htmlDecode(item.Text));
+                if (item.Text == ValidOldValue)
                 {
-                    ValidOldID = item.id;
+                    ValidOldID = item.Value;
                 }
             });
         }

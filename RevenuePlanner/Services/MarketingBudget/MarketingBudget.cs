@@ -14,8 +14,7 @@ using System.Runtime.CompilerServices;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Xml.Linq;
-
-
+using System.Web.Mvc;
 
 namespace RevenuePlanner.Services.MarketingBudget
 {
@@ -243,7 +242,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 }
                 else if (ColumnName == Enums.DefaultGridColumn.Owner.ToString())
                 {
-                    BindColumnDataatend.Add(lstUser.Where(a => a.ID == Convert.ToInt32(row[ColumnName])).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault());
+                    BindColumnDataatend.Add(lstUser.Where(a => a.ID == Convert.ToInt32(row[ColumnName])).Select(a => HttpUtility.HtmlEncode(a.FirstName + " " + a.LastName)).FirstOrDefault()); // added html encoding to resolved html tags issue in dropdown list
                 }
                 else
                 {
@@ -739,7 +738,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="ApplicationId">Application Id</param>
         /// <param name="lstUsers">List of users for current client</param>
         /// <returns>Returns list of PlanOptions contains user ids and names</returns>
-        public List<PlanOptions> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers)
+        public List<SelectListItem> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers)
         {
             return Common.GetOwnerListForDropdown(ClientId, ApplicationId, lstUsers);
         }
@@ -2340,7 +2339,7 @@ namespace RevenuePlanner.Services.MarketingBudget
         public List<Budget_Permission> GetUserList(int BudgetId)
         {
             List<Budget_Permission> UserList = (from c in _database.Budget_Permission
-                                                where c.BudgetDetailId == BudgetId
+                                                where c.BudgetDetailId == BudgetId && c.UserId!=0
                                                 orderby c.UserId
                                                 select c).GroupBy(g => g.UserId).Select(x => x.FirstOrDefault()).ToList();
             return UserList;
@@ -2359,6 +2358,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 user = new UserPermission();
                 user.budgetID = BudgetId;
                 user.UserId = BDSuserList[i].ID;
+                user.UserGuid = BDSuserList[i].UserId;
                 user.FirstName = BDSuserList[i].FirstName;
                 user.LastName = BDSuserList[i].LastName;
                 user.Role = BDSuserList[i].RoleTitle;
@@ -2421,6 +2421,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 objUser = _ServiceDatabase.GetTeamMemberDetailsEx(UserList[i].UserId, ApplicationId);
                 user.budgetID = BudgetId;
                 user.UserId = objUser.ID;
+                user.UserGuid = objUser.UserId;
                 user.FirstName = objUser.FirstName;
                 user.LastName = objUser.LastName;
                 user.Role = objUser.RoleTitle;
@@ -2455,6 +2456,7 @@ namespace RevenuePlanner.Services.MarketingBudget
                 objUserModel.JobTitle = objUser.JobTitle;
                 objUserModel.LastName = objUser.LastName;
                 objUserModel.UserId = objUser.ID;
+                objUserModel.UserGuid = objUser.UserId;
                 objUserModel.RoleTitle = objUser.RoleTitle;
             }
             return objUserModel;
@@ -2519,29 +2521,29 @@ namespace RevenuePlanner.Services.MarketingBudget
 
             try
             {
-                for (int i = 0; i < FinalUserData.Count; i++)
+                for (int j = 0; j < FinalUserData.Count; j++)
                 {
                     _database.Configuration.AutoDetectChangesEnabled = false;
                     objBudget_Permission = new Budget_Permission();
-                    int id = FinalUserData[i].UserId;
-                    CurrentobjBudget_Permission = BudgetDetailList.Where(t => t.BudgetDetailId.Equals(FinalUserData[i].BudgetDetailId) && t.UserId.Equals(id)).FirstOrDefault();
+                    int id = Common.GetIntegerUserId(FinalUserData[j].UserId); //call method to get integer userid from guid
+                    CurrentobjBudget_Permission = BudgetDetailList.Where(t => t.BudgetDetailId.Equals(FinalUserData[j].BudgetDetailId) && t.UserId.Equals(id)).FirstOrDefault();
                     if (CurrentobjBudget_Permission == null)
                     {
-                        objBudget_Permission.UserId = FinalUserData[i].UserId;
-                        objBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
+                        objBudget_Permission.UserId = id;
+                        objBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[j].BudgetDetailId);
                         objBudget_Permission.CreatedBy = UserId;
                         objBudget_Permission.CreatedDate = DateTime.Now;
-                        objBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
+                        objBudget_Permission.PermisssionCode = FinalUserData[j].PermisssionCode;
                         _database.Entry(objBudget_Permission).State = EntityState.Added;
                     }
                     else
                     {
                         if (!CurrentobjBudget_Permission.IsOwner)
                         {
-                            CurrentobjBudget_Permission.UserId = FinalUserData[i].UserId;
-                            CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
+                            CurrentobjBudget_Permission.UserId = id;
+                            CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[j].BudgetDetailId);
                             CurrentobjBudget_Permission.CreatedDate = DateTime.Now;
-                            CurrentobjBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
+                            CurrentobjBudget_Permission.PermisssionCode = FinalUserData[j].PermisssionCode;
                             _database.Entry(CurrentobjBudget_Permission).State = EntityState.Modified;
                         }
 
