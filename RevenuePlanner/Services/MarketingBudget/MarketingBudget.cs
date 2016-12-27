@@ -435,7 +435,7 @@ namespace RevenuePlanner.Services.MarketingBudget
             string Editable = "ed";
             string Combo = "coro"; // combo type in the grid
             string ColumnId = "Id";
-            string TaskName = "Task Name";
+            string TaskName = "Name";
             string aligncenter = "center";
             string sort = "na";
             List<int> colIndexes = new List<int>(); //List index of column used for given numberformat to rollup columns and also used in aggregation in unallocated columns

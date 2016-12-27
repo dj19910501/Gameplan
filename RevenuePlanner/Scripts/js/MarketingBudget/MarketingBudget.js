@@ -967,7 +967,7 @@ function HideShowColumns() {
     var Title = "";
     var Showcol = []; // this array contains the list of columns which needs to be displayed
     var ColumnsCheckBox = $("#multipleselect_budget-select label[class^=ui-corner-all] input:checked"); // get list of columns that are checked in the dropdown
-    var TaskName = "Task Name";
+    var TaskName = "Name";
     var LineItems = "Line Items";
     var TimeFrame = $("#ddlMainGridTimeFrame").val();
     for (var i = 0; i < budgetgrid.getColumnsNum() ; i++) { // loop through the columns
@@ -1318,7 +1318,7 @@ function OnEditCell(stage, id, index, newVal, oldVal) {
 
     if (stage == 1) {
 
-        if (ColumnName == "Task Name") {
+        if (ColumnName == "Name") {
             $(".dhx_combo_edit").off("keydown");
             $(".dhx_combo_edit").on('keydown', (
             newTreeGrid.editor.obj.onkeypress = function (event) {
