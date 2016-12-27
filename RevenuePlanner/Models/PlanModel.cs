@@ -62,6 +62,7 @@ namespace RevenuePlanner.Models
         public string Description { get; set; }
         public string Owner { get; set; }
         public int OwnerId { get; set; }
+        public Guid OwnerGuid { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         //public long? INQs { get; set; }
@@ -89,6 +90,7 @@ namespace RevenuePlanner.Models
         public string Description { get; set; }
         public string Owner { get; set; }
         public int OwnerId { get; set; }
+        public Guid OwnerGuid { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         //public long? INQs { get; set; }
@@ -163,6 +165,7 @@ namespace RevenuePlanner.Models
 
         public string Owner { get; set; }
         public int OwnerId { get; set; }
+        public Guid OwnerGuid { get; set; }
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -231,6 +234,7 @@ namespace RevenuePlanner.Models
         public bool IsLineItemAddEdit { get; set; }
         public List<SelectListUser> OwnerList { get; set; }
         public int OwnerId { get; set; }
+        public Guid OwnerGuid { get; set; }
       
     }
 
@@ -580,7 +584,7 @@ namespace RevenuePlanner.Models
 
     public class SelectListUser
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
     }
     public class SPPlan

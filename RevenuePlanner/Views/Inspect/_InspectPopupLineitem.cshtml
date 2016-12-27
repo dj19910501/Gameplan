@@ -636,7 +636,7 @@
              if (confirm('@Common.objCached.ConfirmationForDeleteLineItem')) {
                  isDataModified = true;
                  var ProgramId = $("#hdnPlanLineItemID").val();
-                 var uId = $(window).attr('name');
+                 var uId = '@Sessions.User.UserId';
                  var arrClosedTaskString = null;
                  if (typeof arrClosedTask != 'undefined') {
                      arrClosedTaskString = arrClosedTask.toString();
@@ -647,7 +647,7 @@
                      data: {
                          ID: ProgramId
                          , DeleteType: '@Enums.DuplicationModule.LineItem'
-                              , UserId: uId
+                              , UserGuid: uId
                               , closedTask: arrClosedTaskString
                               , CalledFromBudget: '@CalledFromBudget'
                                  , IsIndex: '@isIndex'

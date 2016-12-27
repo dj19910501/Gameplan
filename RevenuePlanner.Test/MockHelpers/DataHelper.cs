@@ -80,7 +80,9 @@ namespace RevenuePlanner.Test.MockHelpers
             HttpContext.Current = MockHelpers.FakeHttpContext();
 
             HttpContext.Current.Session["User"] = objBDSServiceClient.ValidateUser(applicationId, userName, singlehash);
-            HttpContext.Current.Session["ClientUsers"] = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ToList();
+
+            List<BDSService.User> ClientUsers = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
+            HttpContext.Current.Session["dictUserIds"] = ClientUsers.ToDictionary(a => a.UserId, a => a.ID);
 
             HttpContext.Current.Session["Permission"] = objBDSServiceClient.GetPermission(applicationId, ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).RoleId);
             Message msg = new Message();

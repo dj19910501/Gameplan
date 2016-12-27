@@ -31,158 +31,7 @@ namespace RevenuePlanner.Test.Controllers
             objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
         }
-        // Test Methods according to Old UI
-        #region PL #975 Plans need to be able to have a goal of 0
-
-        #region Save plan with zero goal value
-        /// <summary>
-        /// To check to save plan with 0 goal value
-        /// <author>Sohel Pathan</author>
-        /// <createdDate>10Dec2014</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Save_Plan_With_Zero_Goal_Value()
-        {
-            Console.WriteLine("To check to save plan with 0 goal value\n");
-            //Set the PlanModel with data
-            PlanModel plan = new PlanModel();
-            plan.Title = "test plan #975";
-            plan.GoalType = Enums.PlanGoalType.MQL.ToString();
-            plan.GoalValue = "0";
-            plan.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-            plan.Budget = 120000;
-            plan.ModelId = DataHelper.GetModelId();
-            plan.Year = DateTime.Now.Year.ToString();
-
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            var result = controller.SavePlan(plan) as JsonResult;
-
-            // data object should not be null in json result
-            Assert.IsNotNull(result.Data);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            int planId = result.GetValue<int>("id");
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value planid:  " + planId);
-            Assert.IsTrue(Convert.ToBoolean(planId));
-
-
-
-        }
-        #endregion
-
-        #region Save plan with some goal value other than zero
-        /// <summary>
-        /// To check to save plan with some goal value other than zero
-        /// <author>Sohel Pathan</author>
-        /// <createdDate>10Dec2014</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Save_Plan_Without_Zero_Goal_Value()
-        {
-            Console.WriteLine("To check to save plan with some goal value other than zero.\n");
-            //Set the PlanModel with data
-            PlanModel plan = new PlanModel();
-            plan.Title = "test plan #975";
-            plan.GoalType = Enums.PlanGoalType.MQL.ToString();
-            plan.GoalValue = Convert.ToString(1500);
-            plan.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-            plan.Budget = 1200000000000;
-            plan.ModelId = DataHelper.GetModelId();
-            plan.Year = DateTime.Now.Year.ToString();
-
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            var result = controller.SavePlan(plan) as JsonResult;
-
-            // data object should not be null in json result
-            Assert.IsNotNull(result.Data);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            int planId = result.GetValue<int>("id");
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value planid:  " + planId);
-            Assert.IsTrue(Convert.ToBoolean(planId));
-
-
-        }
-        #endregion
-
-        #endregion
-        //End
-
-        #region SavePlanDefination with Zero Goal Value
-        /// <summary>
-        /// To check to save plan with 0 goal value
-        /// <author>Komal Rawal</author>
-        /// <createdDate>11thAugust2015</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void SavePlanDefination_With_Zero_Goal_Value()
-        {
-            Console.WriteLine("To check to save plan with 0 goal value.\n");
-            //Set the PlanModel with data
-            PlanModel plan = new PlanModel();
-            plan.Title = "test plan #975";
-            plan.GoalType = Enums.PlanGoalType.MQL.ToString();
-            plan.GoalValue = "0";
-            plan.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-            plan.Budget = 120000;
-            plan.ModelId = DataHelper.GetModelId();
-            plan.Year = DateTime.Now.Year.ToString();
-
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            var result = controller.SavePlanDefination(plan) as JsonResult;
-
-            Assert.IsNotNull(result.Data);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            int planId = result.GetValue<int>("id");
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value planid:  " + planId);
-            Assert.IsTrue(Convert.ToBoolean(planId));
-
-        }
-
-        #endregion
-
-        #region Save plan Defination with some goal value other than zero
-        /// <summary>
-        /// To check to save plan without 0 goal value
-        /// <author>Komal Rawal</author>
-        /// <createdDate>11thAugust2015</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void SavePlanDefination_Without_Zero_Goal_Value()
-        {
-            Console.WriteLine("To check to save plan without 0 goal value.\n");
-            //Set the PlanModel with data
-            PlanModel plan = new PlanModel();
-            plan.Title = "test plan #975";
-            plan.GoalType = Enums.PlanGoalType.MQL.ToString();
-            plan.GoalValue = Convert.ToString(1500);
-            plan.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-            plan.Budget = 1200000000000;
-            plan.ModelId = DataHelper.GetModelId();
-            plan.Year = DateTime.Now.Year.ToString();
-
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            var result = controller.SavePlanDefination(plan) as JsonResult;
-
-            Assert.IsNotNull(result.Data);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            int planId = result.GetValue<int>("id");
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value planid:  " + planId);
-            Assert.IsTrue(Convert.ToBoolean(planId));
-
-        }
-        #endregion
-
+             
         #region Publish Plan
         /// <summary>
         /// To Publish Plan
@@ -197,7 +46,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             Sessions.PlanId = DataHelper.GetPlanId();
-            var result = controller.PublishPlan(Sessions.User.ID) as JsonResult;
+            var result = controller.PublishPlan(Sessions.User.UserId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             // data object should not be null in json result
             Assert.IsNotNull(result.Data);
@@ -503,8 +352,6 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
-
-
         #region NoModel
         /// <summary>
         /// To check to No Model Method.
@@ -528,34 +375,6 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(result);
         }
 
-        #endregion
-
-        #region Calculate Budget
-
-        /// <summary>
-        /// To check to Calculate Budget for plan with passing all parameters
-        /// <author>Rahul Shah</author>
-        /// <createddate>29June2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void Calculate_Budget_With_All_Params()
-        {
-            Console.WriteLine("To check to Calculate Budget for plan with passing all parameters\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            var PlanData = db.Plans.Where(plan => plan.PlanId == PlanId).FirstOrDefault();
-            string goalType = PlanData.GoalType;
-            string goalValue = PlanData.GoalValue.ToString();
-            int ModelId = PlanData.ModelId;
-            var result = objPlanController.CalculateBudget(ModelId, goalType, goalValue) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-
-        }
         #endregion
 
         #region Get Plan List
@@ -621,7 +440,6 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        
         #region "Check Permission By Owner for Entity owner upation"
         /// <summary>
         /// To Check Permission By Owner for Entity owner upation

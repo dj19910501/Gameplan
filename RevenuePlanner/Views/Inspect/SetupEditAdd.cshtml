@@ -181,7 +181,7 @@
             @if (IsTackticAddEdit)
             {
                 <span style="min-width: 100%; position: relative; display: block;">
-                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)Model.OwnerList, "Id", "Name"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                    @Html.DropDownListFor(model => model.OwnerGuid, new SelectList((System.Collections.IEnumerable)Model.OwnerList, "Id", "Name"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
             else
@@ -921,13 +921,13 @@
         document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
         document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
         document.getElementById("Description").value = htmlEncode($('#Description').val());
-        var uId = $(window).attr('name');
+        var uId = '@Sessions.User.UserId';
         var isUpdate = $("#hdnPlanTacticId").val();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Inspect/SetupSaveTactic")',
             async: false,
-            data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&resubmission=' + resubmission,
+            data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserGuid=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&resubmission=' + resubmission,
             success: function (data) {                
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';

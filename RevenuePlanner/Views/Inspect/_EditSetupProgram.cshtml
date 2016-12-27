@@ -96,7 +96,7 @@
                 @if (IsProgramEdit)
                 {
                     <span style="min-width: 100%; position: relative;display:block;">
-                        @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                        @Html.DropDownListFor(model => model.OwnerGuid, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                     </span>
                 }
                 else
@@ -651,13 +651,13 @@
         });
         _customFieldValues = JSON.stringify(_customFieldValues);
 
-        var uId = $(window).attr('name');
+        var uId = '@Sessions.User.UserId';
         var _planProgramId = $("#hdnPlanProgramId").val();
         $.ajax({
             type: 'POST',
             async: false,
             url: '@Url.Content("~/Inspect/SetupSaveProgram")',
-            data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserId=' + uId + '&title=' + escape(title),
+            data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserGuid=' + uId + '&title=' + escape(title),
             success: function (data) {
                 if (data.IsSaved) {
                     isDataModified = true;

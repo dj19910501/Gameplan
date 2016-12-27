@@ -1181,7 +1181,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="height">height of photo</param>
         /// <param name="src">Load Team Member Image</param>
         /// <returns>Return User Image file</returns>
-        public ActionResult LoadUserImageForPrefrence(Guid UserGuid = new Guid(), int width = 35, int height = 35, string src = null)
+        public ActionResult LoadUserImage(Guid UserGuid = new Guid(), int width = 35, int height = 35, string src = null)
         {
             int userId = 0;
             byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
@@ -1251,83 +1251,6 @@ namespace RevenuePlanner.Controllers
             return View();
         }
 
-
-        /// <summary>
-        /// To load user profile photo
-        /// </summary>
-        /// <param name="id">user</param>
-        /// <param name="width">width of photo</param>
-        /// <param name="height">height of photo</param>
-        /// <param name="src">Load Team Member Image</param>
-        /// <returns>Return User Image file</returns>
-        public ActionResult LoadUserImage(int id = 0, int width = 35, int height = 35, string src = null)
-        {
-            int userId = 0;
-            byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
-            try
-            {
-                if (id != 0)
-                {
-                    userId = id;
-                    BDSService.User objUser = new BDSService.User();
-                    //// Get User profile photo.
-                    objUser = objBDSServiceClient.GetTeamMemberDetailsEx(userId, Sessions.ApplicationId);
-                    if (objUser != null)
-                    {
-                        if (objUser.CID != Sessions.User.CID)//This is cross client check, #2878 Security - Account Creation – Client Id and User Id
-                        {
-                            objUser.ProfilePhoto = null;
-                        }
-                        if (objUser.ProfilePhoto != null)
-                        {
-                            imageBytes = objUser.ProfilePhoto;
-                        }
-                    }
-                }
-                if (imageBytes != null)
-                {
-                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-                    {
-                        ms.Write(imageBytes, 0, imageBytes.Length);
-                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                        image = Common.ImageResize(image, width, height, true, false);
-                        imageBytes = Common.ImageToByteArray(image);
-                        // Modified by Viral Kadiya on 11/06/2014 for PL Ticket #917 to load team member profile image.
-                        if (src == "myteam")
-                            return Json(new { base64imgage = Convert.ToBase64String(imageBytes) }, JsonRequestBehavior.AllowGet);   // if src "myteam" then return json result for ajax query to display team member image.
-                        return File(imageBytes, "image/jpg");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    ErrorSignal.FromCurrentContext().Raise(e);
-                    imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
-                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-                    {
-                        ms.Write(imageBytes, 0, imageBytes.Length);
-                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                        image = Common.ImageResize(image, width, height, true, false);
-                        imageBytes = Common.ImageToByteArray(image);
-                        // Modified by Viral Kadiya on 11/06/2014 for PL Ticket #917 to load team member profile image.
-                        if (src == "myteam")
-                            return Json(new { base64imgage = Convert.ToBase64String(imageBytes) }, JsonRequestBehavior.AllowGet);   // if src "myteam" then return json result for ajax query to display team member image.
-                        return File(imageBytes, "image/jpg");
-                    }
-                }
-            }
-            return View();
-        }
         /// <summary>
         /// To display user profile photo
         /// </summary>

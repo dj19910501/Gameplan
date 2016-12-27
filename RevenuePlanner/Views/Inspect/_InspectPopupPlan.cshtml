@@ -492,7 +492,7 @@
     $("#deletePlan").click(function () {
         if (confirm('@Common.objCached.PlanDeleteConfirmMessage')) {
             var planId = $("#hdnPlanId").val();
-            var uId = $(window).attr('name');
+            var uId = '@Sessions.User.UserId';
             var arrClosedTaskString = null;
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
@@ -503,7 +503,7 @@
                 data: {
                     ID: planId,
                     DeleteType: '@Enums.DuplicationModule.Plan',
-                    UserId: uId,
+                    UserGuid: uId,
                     closedTask: arrClosedTaskString,
                     CalledFromBudget: '@CalledFromBudget',
                     IsIndex: '@isIndex',
@@ -564,13 +564,13 @@
     });
 
     function publishPlan() {
-        var uId = $(window).attr('name');
+        var uId = '@Sessions.User.UserId';
         var planId = $("#hdnPlanId").val();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/PublishPlan/")',
             data: {
-                UserId: uId,
+                UserGuid: uId,
                 PlanId: planId
             },
             success: function (data) {

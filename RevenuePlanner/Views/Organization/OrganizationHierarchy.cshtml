@@ -230,7 +230,6 @@
     //Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112
 
     function OnTeamMemberClick(userid) {
-        debugger;
         $('#SuccMsg').val('');
         $('#ErrMsg').val('');
         $("#successMessage").slideUp(1);
@@ -271,7 +270,7 @@
     //Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112
     function LoadUserImage(userid) {
         $.ajax({
-            url: '@Url.Content("~/user/LoadUserImageForPrefrence")', type: "GET",
+            url: '@Url.Content("~/user/LoadUserImage")', type: "GET",
             data: { UserGuid: userid, width: 60, height: 60, src: 'myteam' },
             async: false,
             cache: false,

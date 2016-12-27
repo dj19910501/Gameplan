@@ -706,11 +706,12 @@
 
     }
 
-    $("#deleteCampaign").click(function () {
+
+$("#deleteCampaign").click(function () {
         if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
             isDataModified = true;
             var campaignId = $("#hdnPlanCampaignId").val();
-            var uId = $(window).attr('name');
+            var uId = '@Sessions.User.UserId';
             var arrClosedTaskString = null;
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
@@ -721,7 +722,7 @@
                 data: {
                     ID: campaignId
                     , DeleteType: '@Enums.DuplicationModule.Campaign'
-                     , UserId: uId
+                     , UserGuid: uId
                      , closedTask: arrClosedTaskString
                      , CalledFromBudget: '@CalledFromBudget'
                         , IsIndex: '@isIndex'

@@ -115,6 +115,8 @@ namespace RevenuePlanner.Models
 
         public int OwnerId { get; set; }
 
+        public Guid OwnerGuid { get; set; }
+
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
@@ -214,6 +216,7 @@ namespace RevenuePlanner.Models
         public string CommentedBy { get; set; }
 
         public int CreatedBy { get; set; }
+        public Guid CreatedByGuid { get; set; }
 
     }
 

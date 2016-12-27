@@ -14,7 +14,7 @@
     @if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myteam")
         {
             <div class="span2 content-colum-left content-img-user">
-                <img src="@Url.Action("LoadUserImageForPrefrence", "User", new { UserGuid = Model.UserGuid, width = 60, height = 60 })" class="img-user" style="height:140px; width:140px;">
+                <img src="@Url.Action("LoadUserImage", "User", new { UserGuid = Model.UserGuid, width = 60, height = 60 })" class="img-user" style="height:140px; width:140px;">
             </div>
         }
     else 

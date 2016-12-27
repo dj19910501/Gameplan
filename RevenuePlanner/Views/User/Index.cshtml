@@ -416,7 +416,7 @@
             //Load Team Member profile image
             function LoadUserImage(userid) {
                 $.ajax({
-                    url: '@Url.Content("~/user/LoadUserImageForPrefrence")', type: "GET",
+                    url: '@Url.Content("~/user/LoadUserImage")', type: "GET",
                     data: { UserGuid: userid, width: 60, height: 60, src: 'myteam' },
                     async: false,
                     cache: false,

@@ -110,7 +110,7 @@
                         @if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
                         {
                             <span style="min-width: 100%; position: relative;display:block;">
-                                @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { datadefault = "SelectOwner", @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                                @Html.DropDownListFor(model => model.OwnerGuid, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { datadefault = "SelectOwner", @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                             </span>
                         }
                         else
@@ -354,12 +354,12 @@
             $("#txtBudget").val(ReplaceCC($("#txtBudget").val()));
             var formData = $("form").serialize();
             var RedirectType = "";
-            var uId = $(window).attr('name');
+            var uId = '@Sessions.User.UserId';
             $.ajax({
                 type: 'POST',
                 async: false,
                 url: '@Url.Content("~/Inspect/SavePlanDetails")',
-                data: formData + '&UserId=' + uId,
+                data: formData + '&UserGuid=' + uId,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';

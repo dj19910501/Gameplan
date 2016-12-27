@@ -100,7 +100,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             List<int> PlanIds = new List<int>();
@@ -135,7 +135,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             string Title = db.Plan_Campaign.Where(id => id.PlanId == PlanID).Select(campaign => campaign.Title).FirstOrDefault();
@@ -169,9 +169,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
             int PlanID = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanID);
-            Sessions.User.ID = DataHelper.GetUserId(PlanID);
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             Sessions.PlanId = PlanID;
             List<int> PlanIds = new List<int>();
             PlanIds.Add(PlanID);
@@ -288,9 +286,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanID = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanID);
-            Sessions.User.ID = DataHelper.GetUserId(PlanID);
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             string Title = "Test Program" + "_ " + DateTime.Now;
             Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
@@ -325,14 +321,13 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
             int PlanID = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanID);
-            Sessions.User.ID = DataHelper.GetUserId(PlanID);
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             string Title = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.Title).FirstOrDefault();
             Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
             Form.PlanProgramId = 0;
             Form.OwnerId = Sessions.User.ID;
+            Form.OwnerGuid = Sessions.User.UserId;
             Form.Title = Title;
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.Now;
@@ -362,9 +357,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int PlanID = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(PlanID);
-            Sessions.User.ID = DataHelper.GetUserId(PlanID);
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             List<int> PlanIds = new List<int>();
             PlanIds.Add(PlanID);
@@ -478,7 +471,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
-            int UserID = Sessions.User.ID; ;
+            Guid UserID = Sessions.User.UserId;
 
             int PlanID = DataHelper.GetPlanId();
             int ModelId = db.Plans.Where(pl => pl.PlanId == PlanID).Select(pl => pl.ModelId).FirstOrDefault();
@@ -496,6 +489,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.PlanProgramId = PlanProgramId;
             Form.PlanCampaignId = PlanCampaignId;
             Form.OwnerId = Sessions.User.ID;
+            Form.OwnerGuid = Sessions.User.UserId;
             Form.TacticTypeId = TacticTypeId;
             Form.StageId = Convert.ToInt32(StageId);
             Form.TacticTitle = "Test Tactic" + "_ " + DateTime.Now;
@@ -519,7 +513,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             var planTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted == false && a.LinkedTacticId != null).FirstOrDefault();
 
             int PlanID = planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
@@ -539,6 +533,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.PlanProgramId = PlanProgramId;
             Form.PlanCampaignId = PlanCampaignId;
             Form.OwnerId = Sessions.User.ID;
+            Form.OwnerGuid = Sessions.User.UserId;
             Form.TacticTypeId = TacticTypeId;
             Form.StageId = Convert.ToInt32(StageId);
             Form.TacticTitle = "Test Tactic" + "_ " + DateTime.Now;
@@ -740,7 +735,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
@@ -750,6 +745,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.PlanProgramId = PlanProgramId;
             Form.PlanCampaignId = PlanCampaignId;
             Form.OwnerId = Sessions.User.ID;
+            Form.OwnerGuid = Sessions.User.UserId;
             Form.TacticTitle = Title;
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.Now;
@@ -781,7 +777,7 @@ namespace RevenuePlanner.Test.Controllers
 
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
 
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int ModelId = DataHelper.GetModelId();
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
@@ -797,6 +793,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.PlanProgramId = PlanProgramId;
             Form.PlanCampaignId = PlanCampaignId;
             Form.OwnerId = Sessions.User.ID;
+            Form.OwnerGuid = Sessions.User.UserId;
             Form.TacticTypeId = TacticTypeId;
             Form.StageId = Convert.ToInt32(StageId);
             Form.TacticTitle = Title;
@@ -950,7 +947,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.IsDeleted == false && id.LinkedTacticId != null).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
             int LineitemTypeId = db.LineItemTypes.Where(id => id.ModelId == ModelId).Select(Lineitem => Lineitem.LineItemTypeId).FirstOrDefault();
             List<int> PlanIds = new List<int>();
@@ -982,7 +979,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             //int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
             //int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             //int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
@@ -1028,7 +1025,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
@@ -1068,7 +1065,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
-            int UserID = Sessions.User.ID;
+            Guid UserID = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();

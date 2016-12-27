@@ -164,7 +164,8 @@ namespace RevenuePlanner.Controllers
                 if (lstUserDetails.Count > 0)
                 {
                     lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                    var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.ID, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                    // Changed UserId integer to Guid Ticket #2954
+                    var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
                     ViewBag.OwnerList = lstPreparedOwners;
                 }
                 else
@@ -296,8 +297,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param> Added by Sohel Pathan on 07/08/2014 for PL ticket #672
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SavePlanDetails(InspectModel objPlanModel, int UserId = 0)
+        public JsonResult SavePlanDetails(InspectModel objPlanModel, Guid UserGuid = new Guid())
         {
+            // Get UserId Integer Id from Guid Ticket #2954
+            int UserId = Common.GetIntegerUserId(UserGuid);
             //// check whether UserId is current loggined user or not.
             if (UserId != 0)
             {
@@ -311,6 +314,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    objPlanModel.OwnerId = Common.GetIntegerUserId(objPlanModel.OwnerGuid);
                     Plan plan = new Plan();
                     PlanExchangeRate = Sessions.PlanExchangeRate;
                     //// Get Plan Updated message.
@@ -448,7 +452,7 @@ namespace RevenuePlanner.Controllers
                     string planDraftStatus = Enums.PlanStatusValues.FirstOrDefault(status => status.Key.Equals(Convert.ToString(Enums.PlanStatus.Draft))).Value;
                     plan.Status = planDraftStatus;
                     plan.CreatedDate = System.DateTime.Now;
-                    plan.CreatedBy = Sessions.User.ID;
+                    plan.CreatedBy = objPlanModel.OwnerId;
                     plan.IsActive = true;
                     plan.IsDeleted = false;
                     double version = 0;
@@ -796,7 +800,9 @@ namespace RevenuePlanner.Controllers
                                        Comment = tc.Comment,
                                        CommentDate = tc.CreatedDate,
                                        CommentedBy = userName.Where(u => u.ID == tc.CreatedBy).Any() ? userName.Where(u => u.ID == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.ID == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
-                                       CreatedBy = tc.CreatedBy
+                                       CreatedBy = tc.CreatedBy,
+                                       // Get UserId Guid from Integer Id Ticket #2954
+                                       CreatedByGuid = Common.GetGuidUserId(tc.CreatedBy)
                                    }).OrderByDescending(x => x.CommentDate).ToList(); //Modified By komal Rawal for 2043 resort comment in desc order
             //// Get Owner name by OwnerId from Username list.
             var ownername = (from user in userName
@@ -975,6 +981,8 @@ namespace RevenuePlanner.Controllers
             pc.CampaignBudget = 0;
             pc.AllocatedBy = objPlan.AllocatedBy;
             pc.OwnerId = Sessions.User.ID;
+            // Get UserId Guid from Integer Id Ticket #2954
+            pc.OwnerGuid = Common.GetGuidUserId(Sessions.User.ID);
             #region "Calculate Plan remaining budget by plan Id"
             var lstAllCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanId == planId && campaign.IsDeleted == false).ToList();
             double allCampaignBudget = lstAllCampaign.Sum(campaign => campaign.CampaignBudget);
@@ -1056,6 +1064,8 @@ namespace RevenuePlanner.Controllers
             pcm.StartDate = pc.StartDate;
             pcm.EndDate = pc.EndDate;
             pcm.OwnerId = pc.CreatedBy;
+            // Get UserId Guid from Integer Id Ticket #2954
+            pcm.OwnerGuid = Common.GetGuidUserId(pcm.OwnerId);
             pcm.Status = pc.Status;
 
 
@@ -1158,8 +1168,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="planId"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string title, string customFieldInputs, int UserId = 0, int planId = 0)
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string title, string customFieldInputs, Guid UserGuid = new Guid(), int planId = 0)
         {
+            // Get UserId Integer Id from Guid Ticket #2954
+            int UserId = Common.GetIntegerUserId(UserGuid);
             //// check whether UserId is current loggined user or not.
             if (UserId != 0)
             {
@@ -1173,6 +1185,8 @@ namespace RevenuePlanner.Controllers
             {
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
                 PlanExchangeRate = Sessions.PlanExchangeRate;
+                // Get UserId Integer Id from Guid Ticket #2954
+                form.OwnerId = Common.GetIntegerUserId(form.OwnerGuid);
                 //// Add New Record
                 if (form.PlanCampaignId == 0)
                 {
@@ -1628,6 +1642,8 @@ namespace RevenuePlanner.Controllers
             pcpm.Title = HttpUtility.HtmlDecode(pcp.Title);
             pcpm.Description = HttpUtility.HtmlDecode(pcp.Description);
             pcpm.OwnerId = pcp.CreatedBy;
+            // Get UserId Guid from Integer Id Ticket #2954
+            pcpm.OwnerGuid = Common.GetGuidUserId(pcp.CreatedBy);
             pcpm.StartDate = pcp.StartDate;
             pcpm.EndDate = pcp.EndDate;
             pcpm.CStartDate = pcp.Plan_Campaign.StartDate;
@@ -1722,9 +1738,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="title">Title of Program.</param>
         /// <returns>Returns Save/Error message.</returns>
         [HttpPost]
-        public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, int UserId = 0, string title = "")
+        public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, Guid UserGuid = new Guid(), string title = "")
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
+            // Get UserId Integer Id from Guid Ticket #2954
+            int UserId = Common.GetIntegerUserId(UserGuid);
             if (UserId != 0)
             {
                 if (Sessions.User.ID != UserId)
@@ -1739,7 +1757,8 @@ namespace RevenuePlanner.Controllers
                 int campaignId = form.PlanCampaignId;
 
                 int planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == campaignId && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
-
+                // Get UserId Integer Id from Guid Ticket #2954
+                form.OwnerId = Common.GetIntegerUserId(form.OwnerGuid);
                 //// if programId null then insert new record.
                 if (form.PlanProgramId == 0)
                 {
@@ -2193,7 +2212,9 @@ namespace RevenuePlanner.Controllers
                                        Comment = tc.Comment,
                                        CommentDate = tc.CreatedDate,
                                        CommentedBy = userName.Where(u => u.ID == tc.CreatedBy).Any() ? userName.Where(u => u.ID == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.ID == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
-                                       CreatedBy = tc.CreatedBy
+                                       CreatedBy = tc.CreatedBy,
+                                       // Get UserId Guid from Integer Id Ticket #2954
+                                       CreatedByGuid = Common.GetGuidUserId(tc.CreatedBy)
                                    }).OrderByDescending(x => x.CommentDate).ToList(); //Modified By komal Rawal for 2043 resort comment in desc order
 
             //// Set Owner name to InspectModel.
@@ -2380,6 +2401,8 @@ namespace RevenuePlanner.Controllers
             pcpm.ProgramBudget = 0;
             pcpm.AllocatedBy = objPlan.AllocatedBy;
             pcpm.OwnerId = Sessions.User.ID;
+            // Get UserId Guid from Integer Id Ticket #2954
+            pcpm.OwnerGuid = Common.GetGuidUserId(Sessions.User.ID);
             #endregion
 
             ViewBag.IsOwner = true;
@@ -2523,7 +2546,9 @@ namespace RevenuePlanner.Controllers
                                        Comment = tc.Comment,
                                        CommentDate = tc.CreatedDate,
                                        CommentedBy = userName.Where(u => u.ID == tc.CreatedBy).Any() ? userName.Where(u => u.ID == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.ID == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
-                                       CreatedBy = tc.CreatedBy
+                                       CreatedBy = tc.CreatedBy,
+                                       // Get UserId Guid from Integer Id Ticket #2954
+                                       CreatedByGuid = Common.GetGuidUserId(tc.CreatedBy)
                                    }).OrderByDescending(x => x.CommentDate).ToList(); //Modified By komal Rawal for 2043 resort comment in desc order
 
             //// Get Owner name by OwnerId from Username list.
@@ -3183,13 +3208,13 @@ namespace RevenuePlanner.Controllers
                 // Desc :: #1765 - add period condition to get value
                 var ActualData = db.Plan_Campaign_Program_Tactic_Actual.AsEnumerable().Where(pcpta => pcpta.PlanTacticId == id) //Modified by Rahul Shah for PL #2511 to apply multi currency
                     .Select(tacActual => new
-                {
-                    id = tacActual.PlanTacticId,
-                    stageTitle = tacActual.StageTitle,
-                    period = tacActual.Period,
-                    //actualValue = tacActual.Actualvalue
-                    actualValue = GetRevenueValueByExchangeRate(tacActual.StageTitle, tacActual.Actualvalue) //Modified by Rahul Shah for PL #2511 to apply multi currency
-                }).ToList().Where(pcpta => (tacticMonth != null ? tacticMonth.Contains(pcpta.period) : pcpta.period.Contains(pcpta.period))).ToList();
+                    {
+                        id = tacActual.PlanTacticId,
+                        stageTitle = tacActual.StageTitle,
+                        period = tacActual.Period,
+                        //actualValue = tacActual.Actualvalue
+                        actualValue = GetRevenueValueByExchangeRate(tacActual.StageTitle, tacActual.Actualvalue) //Modified by Rahul Shah for PL #2511 to apply multi currency
+                    }).ToList().Where(pcpta => (tacticMonth != null ? tacticMonth.Contains(pcpta.period) : pcpta.period.Contains(pcpta.period))).ToList();
 
                 ////// start-Added by Mitesh Vaishnav for PL ticket #571
                 //// Actual cost portion added exact under "lstMonthly" array because Actual cost portion is independent from the monthly/quarterly selection made by the user at the plan level.
@@ -3832,6 +3857,8 @@ namespace RevenuePlanner.Controllers
             ippctm.TacticTypeId = pcpt.TacticTypeId;
             ippctm.Description = HttpUtility.HtmlDecode(pcpt.Description);
             ippctm.OwnerId = pcpt.CreatedBy;
+            // Get UserId Guid from Integer Id Ticket #2954
+            ippctm.OwnerGuid = Common.GetGuidUserId(pcpt.CreatedBy);
             ippctm.StartDate = pcpt.StartDate;
             ippctm.EndDate = pcpt.EndDate;
             ippctm.PStartDate = planprogramobj.StartDate;
@@ -3997,7 +4024,7 @@ namespace RevenuePlanner.Controllers
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.ID, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
 
                         ippctm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
 
@@ -4045,10 +4072,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="strDescription"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, int UserId = 0, string strDescription = "", bool resubmission = false)
+        public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, Guid UserGuid = new Guid(), string strDescription = "", bool resubmission = false)
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
-
+            // Get UserId Integer Id from Guid Ticket #2954
+            int UserId = Common.GetIntegerUserId(UserGuid);
             //// check whether UserId is current loggined user or not.
             if (UserId != 0)
             {
@@ -4066,6 +4094,8 @@ namespace RevenuePlanner.Controllers
                 int pid = form.PlanProgramId;
                 var customFields = JsonConvert.DeserializeObject<List<CustomFieldStageWeight>>(customFieldInputs);
                 form.Cost = objCurrency.SetValueByExchangeRate(form.Cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
+                // Get UserId Integer Id from Guid Ticket #2954
+                form.OwnerId = Common.GetIntegerUserId(form.OwnerGuid);
                 //// if PlanTacticId is null then Insert New record.
                 if (form.PlanTacticId == 0)
                 {
@@ -5016,6 +5046,8 @@ namespace RevenuePlanner.Controllers
             pcptm.RedirectType = false;
             pcptm.Year = db.Plans.Single(p => p.PlanId.Equals(PlanId)).Year;
             pcptm.OwnerId = Sessions.User.ID;
+            // Get UserId Guid from Integer Id Ticket #2954
+            pcptm.OwnerGuid = Common.GetGuidUserId(Sessions.User.ID);
 
             #endregion
 
@@ -5042,7 +5074,7 @@ namespace RevenuePlanner.Controllers
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.ID, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
                         pcptm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
                     }
                     else
@@ -5505,23 +5537,23 @@ namespace RevenuePlanner.Controllers
             return null;
         }
 
-        public JsonResult SaveReviewIntegrationInfo(string title = "", 
-            string Id = "", string isDeployToIntegration = "", 
-            string isSyncSF = "", 
-            string isSyncEloqua = "", 
-            string isSyncWorkFront = "", 
-            string isSyncMarketo = "", 
-            Enums.MarketoProgramInitiationOption marketoProgramInitiationOption = Enums.MarketoProgramInitiationOption.Create, 
+        public JsonResult SaveReviewIntegrationInfo(string title = "",
+            string Id = "", string isDeployToIntegration = "",
+            string isSyncSF = "",
+            string isSyncEloqua = "",
+            string isSyncWorkFront = "",
+            string isSyncMarketo = "",
+            Enums.MarketoProgramInitiationOption marketoProgramInitiationOption = Enums.MarketoProgramInitiationOption.Create,
             string marketoProgramId = "",
-            string approvalBehaviorWorkFront = "", 
-            string requestQueueWF = "", 
+            string approvalBehaviorWorkFront = "",
+            string requestQueueWF = "",
             string assigneeWF = "")
         {
-            bool IsSyncSF = false, 
-                IsSyncEloqua = false, 
-                IsSyncWorkFront = false, 
-                IsDeployToIntegration = false, 
-                IsDuplicate = false, 
+            bool IsSyncSF = false,
+                IsSyncEloqua = false,
+                IsSyncWorkFront = false,
+                IsDeployToIntegration = false,
+                IsDuplicate = false,
                 IsSyncMarketo = false; // Declare local variables.
             try
             {
@@ -5541,16 +5573,16 @@ namespace RevenuePlanner.Controllers
                     IsSyncMarketo = !string.IsNullOrEmpty(isSyncMarketo) ? bool.Parse(isSyncMarketo) : false;                         // Parse isSyncMarketo value
 
                     //save to tactic 
-                    SaveIntegrationSettings(marketoProgramInitiationOption, 
-                        marketoProgramId, 
-                        approvalBehaviorWorkFront, 
-                        requestQueueWF, 
-                        assigneeWF, 
-                        IsSyncSF, 
-                        IsSyncEloqua, 
-                        IsSyncWorkFront, 
-                        IsDeployToIntegration, 
-                        IsSyncMarketo, 
+                    SaveIntegrationSettings(marketoProgramInitiationOption,
+                        marketoProgramId,
+                        approvalBehaviorWorkFront,
+                        requestQueueWF,
+                        assigneeWF,
+                        IsSyncSF,
+                        IsSyncEloqua,
+                        IsSyncWorkFront,
+                        IsDeployToIntegration,
+                        IsSyncMarketo,
                         objTactic);
 
                     #region "Update linked Tactic Integration Settings"
@@ -6123,7 +6155,9 @@ namespace RevenuePlanner.Controllers
                                        Comment = tc.Comment,
                                        CommentDate = tc.CreatedDate,
                                        CommentedBy = userName.Where(u => u.ID == tc.CreatedBy).Any() ? userName.Where(u => u.ID == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.ID == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
-                                       CreatedBy = tc.CreatedBy
+                                       CreatedBy = tc.CreatedBy,
+                                       // Get UserId Guid from Integer Id Ticket #2954
+                                       CreatedByGuid = Common.GetGuidUserId(tc.CreatedBy)
                                    }).OrderByDescending(x => x.CommentDate).ToList(); //Modified By komal Rawal for 2043 resort comment in desc order
 
             var ownername = (from u in userName
@@ -6597,6 +6631,8 @@ namespace RevenuePlanner.Controllers
             pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
             pcptlm.IsLineItemAddEdit = true;
             pcptlm.OwnerId = pcptl.CreatedBy;
+            // Get UserId Guid from Integer Id Ticket #2954
+            pcptlm.OwnerGuid = Common.GetGuidUserId(pcptl.CreatedBy);
             // Added by Arpita Soni for Ticket #2212 on 05/24/2016 
             pcptlm.PlanId = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
             User userName = new User();
@@ -6621,7 +6657,7 @@ namespace RevenuePlanner.Controllers
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.ID, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
 
                         pcptlm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
                     }
@@ -6662,10 +6698,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="title"></param>
         /// <returns>Returns Partial View Of edit Setup Tab.</returns>
         [HttpPost]
-
-        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues, string customFieldInputs, int UserId = 0, int tacticId = 0)
+        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues, string customFieldInputs, Guid UserGuid = new Guid(), int tacticId = 0)
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
+            // Get UserId Integer Id from Guid Ticket #2954
+            int UserId = Common.GetIntegerUserId(UserGuid);
             //// Check whether current user is loggined user or not.
             if (UserId != 0)
             {
@@ -6722,7 +6759,7 @@ namespace RevenuePlanner.Controllers
                 }
                 if (LinkedTacticId != null && LinkedTacticId > 0)
                 {
-                   
+
                     ObjLinkedTactic = TblTactic.Where(id => id.PlanTacticId == LinkedTacticId).ToList().FirstOrDefault();
                     if (ObjLinkedTactic != null)
                     {
@@ -6738,6 +6775,8 @@ namespace RevenuePlanner.Controllers
 
                 //// if  PlanLineItemId is null then insert new record to table.
                 form.Cost = objCurrency.SetValueByExchangeRate(form.Cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
+                // Get UserId Integer Id from Guid Ticket #2954
+                form.OwnerId = Common.GetIntegerUserId(form.OwnerGuid);
                 if (form.PlanLineItemId == 0)
                 {
                     using (MRPEntities mrp = new MRPEntities())
@@ -7010,8 +7049,8 @@ namespace RevenuePlanner.Controllers
                                     Plan_Campaign_Program_Tactic objTacticData = new Plan_Campaign_Program_Tactic();
                                     objTacticData = TblTactic.FirstOrDefault(id => id.PlanTacticId == LinkedTacticId);
                                     List<Plan_Campaign_Program_Tactic_Cost> linkedTacticCostData = new List<Plan_Campaign_Program_Tactic_Cost>();
-                                    if(objTacticData != null)
-                                        linkedTacticCostData= objTacticData.Plan_Campaign_Program_Tactic_Cost.ToList();
+                                    if (objTacticData != null)
+                                        linkedTacticCostData = objTacticData.Plan_Campaign_Program_Tactic_Cost.ToList();
                                     //List<Plan_Campaign_Program_Tactic_Cost> tblTacticData = db.Plan_Campaign_Program_Tactic_Cost.Where(id => id.PlanTacticId == form.PlanTacticId || id.PlanTacticId == LinkedTacticId).ToList();
                                     //List<Plan_Campaign_Program_Tactic_Cost> TacticData = db.Plan_Campaign_Program_Tactic_Cost.Where(id => id.PlanTacticId == form.PlanTacticId).ToList();
 
@@ -7669,6 +7708,8 @@ namespace RevenuePlanner.Controllers
             pc.AllocatedBy = objPlan.AllocatedBy;
             pc.IsLineItemAddEdit = true;//modified by Rahul Shah on 17/03/2016 for PL #2032 
             pc.OwnerId = Sessions.User.ID;
+            // Get UserId Guid from Integer Id Ticket #2954
+            pc.OwnerGuid = Common.GetGuidUserId(Sessions.User.ID);
             #endregion
             //Added by Rahul Shah on 17/03/2016 for PL #2032 
             #region "Owner List"
@@ -7687,7 +7728,7 @@ namespace RevenuePlanner.Controllers
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.ID, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
                         pc.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
                     }
                     else
@@ -8608,17 +8649,17 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Tactic Id.</param>
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="IsDeployedToIntegration">bool value</param>
-        public JsonResult SaveSyncToIntegration(int id, 
-            string section, 
-            string isDeployToIntegration = "", 
-            string isSyncSF = "", 
-            string isSyncEloqua = "", 
-            string isSyncWorkFront = "", 
-            string isSyncMarketo = "", 
+        public JsonResult SaveSyncToIntegration(int id,
+            string section,
+            string isDeployToIntegration = "",
+            string isSyncSF = "",
+            string isSyncEloqua = "",
+            string isSyncWorkFront = "",
+            string isSyncMarketo = "",
             Enums.MarketoProgramInitiationOption marketoProgramInitiationOption = Enums.MarketoProgramInitiationOption.Create,
             string marketoProgramId = "",
-            string approvalBehaviorWorkFront = "", 
-            string requestQueueWF = "", 
+            string approvalBehaviorWorkFront = "",
+            string requestQueueWF = "",
             string assigneeWF = "")
         {
             bool returnValue = false;
@@ -8836,39 +8877,41 @@ namespace RevenuePlanner.Controllers
                     Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
 
                     imodel = new InspectModel()
-                              {
-                                  // Added by Arpita Soni for Ticket #2212 on 05/24/2016 
-                                  PlanId = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId,
-                                  PlanTacticId = pcpt.PlanTacticId,
-                                  TacticTitle = pcpt.Title,
-                                  TacticTypeTitle = pcpt.TacticType.Title,
-                                  CampaignTitle = pcpt.Plan_Campaign_Program.Plan_Campaign.Title,
-                                  ProgramTitle = pcpt.Plan_Campaign_Program.Title,
-                                  Status = pcpt.Status,
-                                  TacticTypeId = pcpt.TacticTypeId,
-                                  ColorCode = TacticColor,
-                                  Description = pcpt.Description,
-                                  PlanCampaignId = pcpt.Plan_Campaign_Program.PlanCampaignId,
-                                  PlanProgramId = pcpt.PlanProgramId,
-                                  OwnerId = pcpt.CreatedBy,
-                                  //Modified By : Kalpesh Sharma #864 Add Actuals: Unable to update actuals % 864_Actuals.jpg %
-                                  // If tactic has a line item at that time we have consider Project cost as sum of all the active line items
-                                  // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
-                                  Cost = pcpt.Cost,
-                                  StartDate = pcpt.StartDate,
-                                  EndDate = pcpt.EndDate,
-                                  CostActual = 0,
-                                  IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
-                                  LastSyncDate = pcpt.LastSyncDate,
-                                  StageId = pcpt.StageId,
-                                  StageTitle = pcpt.Stage.Title,
-                                  StageLevel = pcpt.Stage.Level,
-                                  ProjectedStageValue = pcpt.ProjectedStageValue,
-                                  TacticCustomName = pcpt.TacticCustomName,
-                                  ROIType = pcpt.TacticType.AssetType,
-                                  IntegrationInstanceMarketoID = pcpt.IntegrationInstanceMarketoID, 
-                                  MarketoInitialSyncOption = (Enums.MarketoProgramInitiationOption)pcpt.MarketoProgramInitiationOption
-                              };
+                    {
+                        // Added by Arpita Soni for Ticket #2212 on 05/24/2016 
+                        PlanId = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId,
+                        PlanTacticId = pcpt.PlanTacticId,
+                        TacticTitle = pcpt.Title,
+                        TacticTypeTitle = pcpt.TacticType.Title,
+                        CampaignTitle = pcpt.Plan_Campaign_Program.Plan_Campaign.Title,
+                        ProgramTitle = pcpt.Plan_Campaign_Program.Title,
+                        Status = pcpt.Status,
+                        TacticTypeId = pcpt.TacticTypeId,
+                        ColorCode = TacticColor,
+                        Description = pcpt.Description,
+                        PlanCampaignId = pcpt.Plan_Campaign_Program.PlanCampaignId,
+                        PlanProgramId = pcpt.PlanProgramId,
+                        OwnerId = pcpt.CreatedBy,
+                        // Get UserId Guid from Integer Id Ticket #2954
+                        OwnerGuid = Common.GetGuidUserId(pcpt.CreatedBy),
+                        //Modified By : Kalpesh Sharma #864 Add Actuals: Unable to update actuals % 864_Actuals.jpg %
+                        // If tactic has a line item at that time we have consider Project cost as sum of all the active line items
+                        // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
+                        Cost = pcpt.Cost,
+                        StartDate = pcpt.StartDate,
+                        EndDate = pcpt.EndDate,
+                        CostActual = 0,
+                        IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
+                        LastSyncDate = pcpt.LastSyncDate,
+                        StageId = pcpt.StageId,
+                        StageTitle = pcpt.Stage.Title,
+                        StageLevel = pcpt.Stage.Level,
+                        ProjectedStageValue = pcpt.ProjectedStageValue,
+                        TacticCustomName = pcpt.TacticCustomName,
+                        ROIType = pcpt.TacticType.AssetType,
+                        IntegrationInstanceMarketoID = pcpt.IntegrationInstanceMarketoID,
+                        MarketoInitialSyncOption = (Enums.MarketoProgramInitiationOption)pcpt.MarketoProgramInitiationOption
+                    };
 
 
                     TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(pcpt, false);
@@ -8934,6 +8977,8 @@ namespace RevenuePlanner.Controllers
                     imodel.PlanCampaignId = objPlan_Campaign_Program.PlanCampaignId;
                     imodel.PlanProgramId = objPlan_Campaign_Program.PlanProgramId;
                     imodel.OwnerId = objPlan_Campaign_Program.CreatedBy;
+                    // Get UserId Guid from Integer Id Ticket #2954
+                    imodel.OwnerGuid = Common.GetGuidUserId(objPlan_Campaign_Program.CreatedBy);
                     imodel.Cost = Common.CalculateProgramCost(objPlan_Campaign_Program.PlanProgramId); //objPlan_Campaign_Program.Cost; // Modified for PL#440 by Dharmraj
                     imodel.StartDate = objPlan_Campaign_Program.StartDate;
                     imodel.EndDate = objPlan_Campaign_Program.EndDate;
@@ -8993,6 +9038,8 @@ namespace RevenuePlanner.Controllers
                     imodel.Description = objPlan_Campaign.Description;
                     imodel.PlanCampaignId = objPlan_Campaign.PlanCampaignId;
                     imodel.OwnerId = objPlan_Campaign.CreatedBy;
+                    // Get UserId Guid from Integer Id Ticket #2954
+                    imodel.OwnerGuid = Common.GetGuidUserId(objPlan_Campaign.CreatedBy);
                     imodel.Cost = Common.CalculateCampaignCost(objPlan_Campaign.PlanCampaignId); //objPlan_Campaign.Cost; // Modified for PL#440 by Dharmraj
                     imodel.StartDate = objPlan_Campaign.StartDate;
                     imodel.EndDate = objPlan_Campaign.EndDate;
@@ -9045,6 +9092,8 @@ namespace RevenuePlanner.Controllers
                     imodel.ColorCode = PlanColor;
                     imodel.Description = objPlan.Description;
                     imodel.OwnerId = objPlan.CreatedBy;
+                    // Get UserId Guid from Integer Id Ticket #2954
+                    imodel.OwnerGuid = Common.GetGuidUserId(objPlan.CreatedBy);
                     imodel.Title = objPlan.Title;
                     imodel.ModelId = objPlan.ModelId;
                     imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Model.Version;
@@ -9231,8 +9280,8 @@ namespace RevenuePlanner.Controllers
             string isSyncMarketo = "",
             Enums.MarketoProgramInitiationOption marketoProgramInitiationOption = Enums.MarketoProgramInitiationOption.Create,
             string marketoProgramId = "",
-            string approvalBehaviorWorkFront = "", 
-            string requestQueueWF = "", 
+            string approvalBehaviorWorkFront = "",
+            string requestQueueWF = "",
             string assigneeWF = "")
         {
             int planid = 0;
@@ -10179,8 +10228,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="IsIndex"></param>
         /// <param name="RedirectType"></param>
         /// <returns></returns>
-        public ActionResult DeleteSection(int id = 0, string DeleteType = "", int UserId = 0, string closedTask = null, string CalledFromBudget = "", bool IsIndex = false, bool RedirectType = false)
+        public ActionResult DeleteSection(int id = 0, string DeleteType = "", Guid UserGuid = new Guid(), string closedTask = null, string CalledFromBudget = "", bool IsIndex = false, bool RedirectType = false)
         {
+            // Get UserId Integer Id from Guid Ticket #2954
+            int UserId = Common.GetIntegerUserId(UserGuid);
             //// check whether UserId is currently loggined user or not.
             if (UserId != 0)
             {
@@ -10226,7 +10277,7 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.PlanTaskDelete(Enums.Section.Plan.ToString(), id);
                             if (returnValue != 0)
                             {
-                                List<Plan_UserSavedViews> UserSavedViews = db.Plan_UserSavedViews.Where(a => a.Userid==Sessions.User.ID).ToList();
+                                List<Plan_UserSavedViews> UserSavedViews = db.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.ID).ToList();
                                 UserSavedViews.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 db.SaveChanges();
                                 Sessions.PlanUserSavedViews = null;
@@ -10359,7 +10410,7 @@ namespace RevenuePlanner.Controllers
                                     Common.ChangeCampaignStatus(LinkedPlanCampaignId, false);
                                 }
                             }
-                            if(IsPlan)
+                            if (IsPlan)
                             {
                                 Sessions.PlanPlanIds = null;
                             }
@@ -10838,19 +10889,19 @@ namespace RevenuePlanner.Controllers
                 //  List<CustomFieldModel> customFieldList = Common.GetCustomFields(tacticId, section, Status);
                 var mainlist = db.Tactic_MediaCodes.Where(a => a.TacticId == tacticId && a.IsDeleted == false).ToList().OrderByDescending(a => a.CreatedDate);
                 List<TacticMediaCodeCustomField> MediaCodecustomFieldList = mainlist.Select(a => new TacticMediaCodeCustomField
+                {
+                    TacticId = a.TacticId,
+
+                    MediaCodeId = a.MediaCodeId,
+                    MediaCode = Convert.ToString(a.MediaCode),
+                    CustomFieldList = a.Tactic_MediaCodes_CustomFieldMapping.Where(aa => aa.TacticId == a.TacticId).Select(aa => new CustomeFieldList
                     {
-                        TacticId = a.TacticId,
+                        CustomFieldId = aa.CustomFieldId != null ? Convert.ToInt32(aa.CustomFieldId) : 0,
+                        CustomFieldValue = aa.CustomFieldValue
 
-                        MediaCodeId = a.MediaCodeId,
-                        MediaCode = Convert.ToString(a.MediaCode),
-                        CustomFieldList = a.Tactic_MediaCodes_CustomFieldMapping.Where(aa => aa.TacticId == a.TacticId).Select(aa => new CustomeFieldList
-                        {
-                            CustomFieldId = aa.CustomFieldId != null ? Convert.ToInt32(aa.CustomFieldId) : 0,
-                            CustomFieldValue = aa.CustomFieldValue
+                    }).ToList()
 
-                        }).ToList()
-
-                    }).ToList();
+                }).ToList();
                 var lstmediaCodeCustomfield = (List<TacticCustomfieldConfig>)objCache.Returncache(Enums.CacheObject.MediaCodeCustomfieldConfiguration.ToString());
                 if (lstmediaCodeCustomfield == null)
                 {
@@ -10986,10 +11037,10 @@ namespace RevenuePlanner.Controllers
 
                         coltype = "coro";
                         viewoptionlist = item.Option.Select(a => new PlanOptions
-                       {
-                           id = a.CustomFieldOptionId,
-                           value = a.CustomFieldOptionValue
-                       }).ToList();
+                        {
+                            id = a.CustomFieldOptionId,
+                            value = a.CustomFieldOptionValue
+                        }).ToList();
 
                         isRequire = item.IsRequired;
 

@@ -100,7 +100,7 @@
                                                                                         @if (IsCampaignEdit)
                                                                                         {
                                                                                             <span style="min-width: 100%; position: relative;display:block;">
-                                                                                                @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                                                                                                @Html.DropDownListFor(model => model.OwnerGuid, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                                                                                             </span>
                                                                                         }
                                                                                         else
@@ -704,14 +704,14 @@
         $("#lblCampaignTitle").html(htmlEncode($('#txtTitle').val())); //Modified for #1324
         document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
         var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-        var uId = $(window).attr('name');
+        var uId = '@Sessions.User.UserId';
         var isUpdate = $("#PlanCampaignId").val();
 
         $.ajax({
             type: 'POST',
             async: false,
             url: '@Url.Content("~/Inspect/SaveCampaign")',
-            data: formData + '&UserId=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues) + '&planId=@Model.PlanId',
+            data: formData + '&UserGuid=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues) + '&planId=@Model.PlanId',
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

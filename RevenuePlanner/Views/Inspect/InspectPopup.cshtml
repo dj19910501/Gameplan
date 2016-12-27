@@ -1043,7 +1043,7 @@
         if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
             isDataModified = true;
             var ProgramId = $("#hdnPlanTacticId").val();
-            var uId = $(window).attr('name');
+            var uId = '@Sessions.User.UserId';
             var arrClosedTaskString = null;
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
@@ -1054,7 +1054,7 @@
                 data: {
                     ID: ProgramId
                     , DeleteType: '@Enums.DuplicationModule.Tactic'
-                     , UserId: uId
+                     , UserGuid: uId
                      , closedTask: arrClosedTaskString
                      , CalledFromBudget: '@CalledFromBudget'
                         , IsIndex: '@isIndex'

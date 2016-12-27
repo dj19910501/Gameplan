@@ -104,7 +104,7 @@
             @if (IsLineItemAddEdit)
             {
                 <span style="min-width: 100%; position: relative; display: block;">
-                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)Model.OwnerList, "Id", "Name"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                    @Html.DropDownListFor(model => model.OwnerGuid, new SelectList((System.Collections.IEnumerable)Model.OwnerList, "Id", "Name"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
             else
@@ -833,7 +833,7 @@
         }
         $("#txtLineItemCost").val(ReplaceCC($("#txtLineItemCost").val()));
         document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
-        var uId = $(window).attr('name');
+        var uId = '@Sessions.User.UserId';
 
         document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
         var isUpdate = $("#PlanLineItemId").val();
@@ -841,7 +841,7 @@
             type: 'POST',
             async: false,
             url: '@Url.Content("~/Inspect/SaveLineitem")',
-            data: $("form").serialize() + '&title=' + escape(lineItemTitle) + '&FieldMappingValues=' + escape(_FieldMappingValues) + '&customFieldInputs=' + escape(_customFieldValues) + '&tacticId=@Model.PlanTacticId' + '&UserId=' + uId,
+            data: $("form").serialize() + '&title=' + escape(lineItemTitle) + '&FieldMappingValues=' + escape(_FieldMappingValues) + '&customFieldInputs=' + escape(_customFieldValues) + '&tacticId=@Model.PlanTacticId' + '&UserGuid=' + uId,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

@@ -6302,7 +6302,7 @@ namespace RevenuePlanner.Helpers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return returnValue;
             }
