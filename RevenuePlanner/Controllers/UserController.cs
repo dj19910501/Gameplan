@@ -186,7 +186,8 @@ namespace RevenuePlanner.Controllers
                     else if (returnMessage != "Success")
                     {
                         TempData["ErrorMessage"] = returnMessage;
-                        return View(form);
+                        //return View(form);
+                        return RedirectToAction("ChangePassword", "User");
                     }
                     else if (returnMessage == "Success")
                     {
@@ -225,7 +226,8 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
-            return View(form);
+            //return View(form);
+            return RedirectToAction("ChangePassword", "User");
         }
 
         /// <summary>
