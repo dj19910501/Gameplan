@@ -6005,11 +6005,11 @@ input.icon-check-blue {
 	word-wrap: break-word;
 }
 #SuccessMessageContactSupportPopup, #errorMessageContactSupportPopup {
-	margin-left: 5px;
-	width: calc(96% - 44px) !important;
-	margin-bottom: 10px !important;
-	text-align: left;
-}
+    margin-bottom: 10px !important;
+    margin-left: 5px;
+    text-align: left;
+    width: 97% !important;
+} 
 .btn-gray {
 	padding: 5px 15px;
 }

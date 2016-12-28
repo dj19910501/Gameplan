@@ -3,6 +3,7 @@
 @{
     var srcval = (string)ViewBag.SourceValue;
     Guid currentUserId = ViewBag.CurrentUserId;
+    string SiteKey = Common.SiteKeyRecaptcha;
 }
 <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
@@ -73,15 +74,15 @@
             @Html.LabelFor(model => model.JobTitle)
             @if ((Model.UserGuid == currentUserId) || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
                     {
-                                                                    @Html.TextBoxFor(model => model.JobTitle, new { id = "txtJobTitle" })
-                @Html.ValidationMessageFor(model => model.JobTitle)
-                                                                    @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblJobtitleInvalid", For = "txtJobTitle", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+                        @Html.TextBoxFor(model => model.JobTitle, new { id = "txtJobTitle" })
+                        @Html.ValidationMessageFor(model => model.JobTitle)
+                        @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblJobtitleInvalid", For = "txtJobTitle", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
 
                     }
                     else
                     {
-                @Html.TextBox("txtJobTitle", Model.JobTitle, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.JobTitle })
-                                                                    @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblJobtitleInvalid", For = "txtJobTitle", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+                        @Html.TextBox("txtJobTitle", Model.JobTitle, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.JobTitle })
+                        @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblJobtitleInvalid", For = "txtJobTitle", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
 
                     }
 
@@ -233,13 +234,16 @@
 
                         if (Model.UserGuid == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)
                         {
+                            if (!string.IsNullOrEmpty(SiteKey))
+                            {
                             <div class="cf inputs-aligned-horizontal">
                                 @Html.Label("Please check the check box")
-                                <div id="reCaptcha" class="g-recaptcha recaptcha" data-callback="recaptchaCallback" data-sitekey=@System.Web.Configuration.WebConfigurationManager.AppSettings["sitekey"]></div>
+                                <div id="reCaptcha" class="g-recaptcha recaptcha" data-callback="recaptchaCallback" data-sitekey=@SiteKey></div>
                                 @Html.ValidationMessage("captcha", "You can't leave Captcha Code empty.", new { @class = "field-validation-error", id = "lblRecaptchaRequired" })
                                 <br />
                             </div>
                             <br />
+                            }
         <div class="cf inputs-aligned-horizontal">
             <div class="container-button">
                 <input id="btnSubmit" type="submit" value="Save" title="save" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 215px;" /> @*/* Margin Edited for #2219 - Bhumika */*@		

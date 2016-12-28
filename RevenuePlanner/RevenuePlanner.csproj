@@ -419,7 +419,7 @@
     <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Content\css\reportcss.css" />
-    <Content Include="Content\css\style_min_Dec_27.css" />
+    <Content Include="Content\css\style_min_Dec_28.css" />
     <Content Include="Scripts\js\MarketingBudget\MarketingBudget.js" />
     <Content Include="Properties\DataSources\Integration.BDSService.AppConfiguration.datasource" />
     <Content Include="Properties\DataSources\Integration.BDSService.ApplicationActivity.datasource" />

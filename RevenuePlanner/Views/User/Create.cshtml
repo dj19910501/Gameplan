@@ -13,7 +13,7 @@
     @Html.Hidden("hdnLoggedInUserRole", Sessions.User.RoleCode.ToString());     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
     //ViewBag.ModuleTitle = "MyProfile";   Commented by Rahul Shah on 11/09/2015 fo PL Ticket #1112*
     ViewBag.ModuleTitle = "Organization";   //Added by Rahul Shah on 11/09/2015 fo PL Ticket #1112*
-    
+    string SiteKey = Common.SiteKeyRecaptcha;
 }
 
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
@@ -97,7 +97,7 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.Password)
 
-                    @Html.TextBoxFor(model => model.Password, new { maxlength = "50",placeholder = "Password (8 char. min)", type = "password" })
+                    @Html.TextBoxFor(model => model.Password, new { maxlength = "50", placeholder = "Password (8 char. min)", type = "password" })
                     <span id="result"></span>
                     @Html.ValidationMessageFor(model => model.Password)
                 </div>
@@ -105,7 +105,7 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.ConfirmPassword)
 
-                    @Html.TextBoxFor(model => model.ConfirmPassword, new { maxlength = "50",placeholder = "Confirm Password (8 char. min)", type = "password" })
+                    @Html.TextBoxFor(model => model.ConfirmPassword, new { maxlength = "50", placeholder = "Confirm Password (8 char. min)", type = "password" })
                     <span id="match"></span>
                     @Html.ValidationMessageFor(model => model.ConfirmPassword)
                 </div>
@@ -176,12 +176,14 @@
                 </div>
                 @*}*@
                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                if (!string.IsNullOrEmpty(SiteKey)) { 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.Label("Please check the check box")
-                    <div class="g-recaptcha recaptcha" data-sitekey=@System.Web.Configuration.WebConfigurationManager.AppSettings["sitekey"] ></div>
+                    <div class="g-recaptcha recaptcha" data-sitekey=@SiteKey></div>
                     @Html.ValidationMessage("captcha", "You can't leave Captcha Code empty.", new { @class = "field-validation-error", id = "lblRecaptchaRequired" })
                 </div>
                         <br />
+                }
                 <div class="cf inputs-aligned-horizontal">
                     <label></label>
                     @*<div class="container-button">*@ @* commented by Bhumika to align Save btn *@

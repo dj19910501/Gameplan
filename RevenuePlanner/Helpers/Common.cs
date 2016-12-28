@@ -60,6 +60,7 @@ namespace RevenuePlanner.Helpers
         public static readonly string EvoKey = System.Configuration.ConfigurationManager.AppSettings.Get("EvoKey");
         public static readonly string FromSupportMail = System.Configuration.ConfigurationManager.AppSettings.Get("FromSupportMail");
         public static readonly bool IsOffline = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["IsOffline"]); ////Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page
+        public static readonly string SiteKeyRecaptcha = System.Web.Configuration.WebConfigurationManager.AppSettings["sitekey"];
 
         public const string OptionTextRegex = "^[^<>]+";
         public const string MessageForOptionTextRegex = "<> characters are not allowed";
@@ -590,7 +591,7 @@ namespace RevenuePlanner.Helpers
                 email = EmailIds.ElementAt(i);
                 Username = CollaboratorUserName.ElementAt(i);
                 //Common.SendMailToMultipleUser(EmailIds, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High));
-                ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
+                ThreadStart threadStart = delegate () { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
                 Thread thread = new Thread(threadStart);
                 thread.Start();
             }
@@ -657,7 +658,7 @@ namespace RevenuePlanner.Helpers
                     emailBody = emailBody.Replace("[lineitemname]", LineItemName);
                 }
                 email = EmailIds.ElementAt(i);
-                ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
+                ThreadStart threadStart = delegate () { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
                 Thread thread = new Thread(threadStart);
                 thread.Start();
             }
@@ -7251,7 +7252,7 @@ namespace RevenuePlanner.Helpers
                         string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
 
                         lstEntityIds = objDB.CustomField_Entity.Where(customFieldEntity => lstCustomFieldIds.Contains(customFieldEntity.CustomFieldId) &&
-                            //customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) && 
+                                                                    //customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) && 
                                                                     customFieldEntity.CustomField.EntityType == EntityTypeTactic && customFieldEntity.CustomField.CustomFieldType.Name == DropDownList &&
                                                                         lstCustomFieldOptionIds.Contains(customFieldEntity.Value))
                                                                 .Select(customFieldEntity => customFieldEntity.EntityId).ToList();
@@ -7305,7 +7306,7 @@ namespace RevenuePlanner.Helpers
                         string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
 
                         lstEntityIds = objDB.CustomField_Entity.Where(customFieldEntity => lstCustomFieldIds.Contains(customFieldEntity.CustomFieldId) &&
-                            //customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) &&
+                                                                    //customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) &&
                                                                     customFieldEntity.CustomField.EntityType == EntityTypeTactic && customFieldEntity.CustomField.CustomFieldType.Name == DropDownList &&
                                                                     lstCustomFieldOptionIds.Contains(customFieldEntity.Value) && lstTacticId.Contains(customFieldEntity.EntityId))
                                                                 .Select(customFieldEntity => customFieldEntity.EntityId).ToList();
@@ -8926,7 +8927,7 @@ namespace RevenuePlanner.Helpers
             lstClientUsers = objAuthService.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, ApplicationId).Select(w => w.ID).ToList();
             return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new SelectListItem
             {
-                Value  = owner.UserId.ToString(),
+                Value = owner.UserId.ToString(),
                 Text = HttpUtility.HtmlEncode(string.Format("{0} {1}", owner.FirstName, owner.LastName))
             }).OrderBy(tactype => tactype.Value).ToList();
         }
@@ -8958,7 +8959,7 @@ namespace RevenuePlanner.Helpers
         }
 
 
-        
+
         #region Methods for Forgot Password Added By Jaymin Modi for PL #2895
 
         /// <summary>
@@ -9004,32 +9005,40 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         public static bool ValidateCaptcha()
         {
-            var response = HttpContext.Current.Request["g-recaptcha-response"];
+            string response = HttpContext.Current.Request["g-recaptcha-response"];
             //secret that was generated in key value pair
             string secret = WebConfigurationManager.AppSettings["secretkey"];
-
-            var client = new WebClient();
-            var reply =
-                client.DownloadString(
-                    string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secret, response));
-
-            var captchaResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<CaptchaResponse>(reply);
-
-            //when response is false check for the error message
-            if (!captchaResponse.Success)
+            //URL to load recaptcha
+            string URL = WebConfigurationManager.AppSettings["RecaptchaURL"];
+            string reply = string.Empty;
+            WebClient client = new WebClient();
+            if (!string.IsNullOrEmpty(response) && !string.IsNullOrEmpty(secret) && !string.IsNullOrEmpty(URL))
             {
-                if (captchaResponse.ErrorCodes.Count <= 0)
-                    return true;
+                URL = string.Format("{0}?secret={1}&response={2}", URL, secret, response);
+                reply = client.DownloadString(URL);
 
-                var error = captchaResponse.ErrorCodes[0].ToLower();
-                if (!string.IsNullOrEmpty(error))
+                if (!string.IsNullOrEmpty(reply))
                 {
-                    return false;
+                    CaptchaResponse captchaResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<CaptchaResponse>(reply);
+
+                    // when response is false check for the error message
+                    if (!captchaResponse.Success)
+                    {
+                        if (captchaResponse.ErrorCodes.Count <= 0)
+                        {
+                            return true;
+                        }
+
+                        string error = captchaResponse.ErrorCodes[0].ToLower();
+                        if (!string.IsNullOrEmpty(error))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
                 }
-
             }
-            return true;
-
+            return false;
         }
     }
 
@@ -9068,7 +9077,7 @@ namespace RevenuePlanner.Helpers
             return secondIsNumber ? 1 : first != null ? first.CompareTo(second) : 0;
             // End
         }
-        
+
 
 
     }
