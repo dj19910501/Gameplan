@@ -482,6 +482,14 @@
         });
         NumberFormatterTipsyTitle(".displaytitle", 31);
 
+        // Decode Dropdown Option Text
+        $('.ui-multiselect-menu ul li span').each(function () {
+            var EncodeString = $(this).text();
+            $(this).text(htmlDecode(EncodeString));
+        });
+        // ddlText - Owner Dropdown Text
+        var ddlText = $('#btnMultiselect_ddlOwner span:first-child').text();
+        $('#btnMultiselect_ddlOwner span:first-child').text(htmlDecode(ddlText));
     });
 
     function ShowError(value) {

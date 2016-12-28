@@ -670,6 +670,16 @@
                 ShowHideDataonBudgetScreen();
             }
         });
+
+        // Decode Dropdown Option Text
+        $('.ui-multiselect-menu ul li span').each(function () {
+            var EncodeString = $(this).text();
+            $(this).text(htmlDecode(EncodeString));
+        });
+
+        // ddlOwnText - Owner Dropdown Text
+        var ddlOwnText = $('#btnMultiselect_ddlOwner span:first-child').text();
+        $('#btnMultiselect_ddlOwner span:first-child').text(htmlDecode(ddlOwnText));
     });
 
     // Add By Nishant Sheth

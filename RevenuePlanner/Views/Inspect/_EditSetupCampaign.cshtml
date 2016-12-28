@@ -448,7 +448,16 @@
               $('#t_startdate').addClass('light-blue-background');  //Added By Maitri Gandhi foe #2109
               $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
           }
-          //End - Added by Viral Kadiya on 18/11/2014 to resolve PL ticket #947.
+          //End - Added by Viral Kadiya on 18/11/2014 to resolve PL ticket #947.          
+
+          // Decode Dropdown Option Text
+          $('.ui-multiselect-menu ul li span').each(function () {
+              var EncodeString = $(this).text();
+              $(this).text(htmlDecode(EncodeString));
+          });
+          // ddlText - Owner Dropdown Text
+          var ddlText = $('#btnMultiselect_ddlOwner span:first-child').text();
+          $('#btnMultiselect_ddlOwner span:first-child').text(htmlDecode(ddlText));
       });
     //<---  End Document.ready Event --->
 

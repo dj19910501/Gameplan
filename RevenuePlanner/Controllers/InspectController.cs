@@ -164,8 +164,9 @@ namespace RevenuePlanner.Controllers
                 if (lstUserDetails.Count > 0)
                 {
                     lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                    // Encode Owner Name Ticket# 2902
                     // Changed UserId integer to Guid Ticket #2954
-                    var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                    var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", HttpUtility.HtmlEncode(user.FirstName), HttpUtility.HtmlEncode(user.LastName)) }).ToList();
                     ViewBag.OwnerList = lstPreparedOwners;
                 }
                 else
@@ -3824,9 +3825,9 @@ namespace RevenuePlanner.Controllers
 
             ippctm.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcpt.Status);
 
-
+            // Encode Tactic Type Ticket# 2902
             foreach (var item in lstTactic)
-                item.Title = HttpUtility.HtmlDecode(item.Title);
+                item.Title = HttpUtility.HtmlEncode(item.Title);
 
 
             ippctm.ExtIntService = Common.CheckModelIntegrationExist(pcpt.TacticType.Model);
@@ -4002,8 +4003,10 @@ namespace RevenuePlanner.Controllers
                 Title = HttpUtility.HtmlDecode(c.Title)
             }).OrderBy(pc => pc.Title).ToList();    // added by dashrath prajapati for pl#1916 Ampersand
 
-            ippctm.PlanCampaignList = campaignList.Select(c => new SelectListValue { Id = c.PlanCampaignId, Title = c.Title }).ToList();
-            ippctm.CampaignProgramList = programList.Select(p => new SelectListValue { Id = p.PlanProgramId, Title = p.Title }).ToList();
+            // Encode Campaign Ticket# 2902
+            ippctm.PlanCampaignList = campaignList.Select(c => new SelectListValue { Id = c.PlanCampaignId, Title = HttpUtility.HtmlEncode(c.Title) }).ToList();
+            // Encode Program Ticket# 2902
+            ippctm.CampaignProgramList = programList.Select(p => new SelectListValue { Id = p.PlanProgramId, Title = HttpUtility.HtmlEncode(p.Title) }).ToList();
 
             try
             {
@@ -4025,8 +4028,8 @@ namespace RevenuePlanner.Controllers
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
                         var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
-
-                        ippctm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
+                        // Encode Owner Name Ticket# 2902
+                        ippctm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = HttpUtility.HtmlEncode(u.DisplayName), Id = u.UserId }).ToList();
 
                     }
                     else
@@ -6665,8 +6668,8 @@ namespace RevenuePlanner.Controllers
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
                         var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
-
-                        pcptlm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
+                        // Encode Owner Name Ticket# 2902
+                        pcptlm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = HttpUtility.HtmlEncode(u.DisplayName), Id = u.UserId }).ToList();
                     }
                     else
                     {

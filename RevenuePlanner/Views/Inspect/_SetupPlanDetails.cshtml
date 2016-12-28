@@ -187,6 +187,24 @@
             var EncodeString = $(this).text();
             $(this).text(htmlDecode(EncodeString));
         });
+
+        // Decode Dropdown Option Text
+        $('#nl-form #divPlanDefinationEnabled .nl-field a:first-child').each(function () {
+            var EncodeString = $(this).text();
+            $(this).text(htmlDecode(EncodeString));
+        });
+        // modelText - Model Dropdown Text
+        var modelText = $('#nl-form #divPlanDefinationEnabled .nl-field:first-child a:first-child').text();
+        $('#nl-form #divPlanDefinationEnabled .nl-field:first-child a:first-child').text(htmlDecode(modelText));
+
+        // Decode Dropdown Option Text
+        $('.ui-multiselect-menu ul li span').each(function () {
+            var EncodeString = $(this).text();
+            $(this).text(htmlDecode(EncodeString));
+        });
+        // ddlText - Owner Dropdown Text
+        var ddlText = $('#btnMultiselect_ddlOwner span:first-child').text();
+        $('#btnMultiselect_ddlOwner span:first-child').text(htmlDecode(ddlText));
     });
 
     $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {

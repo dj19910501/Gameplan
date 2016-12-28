@@ -623,7 +623,29 @@
           $('#txtTacticTitle').focus();
           var txtTactTitle = $('#txtTacticTitle').val();
           $('#txtTacticTitle').val('');
-          $('#txtTacticTitle').val(txtTactTitle);          
+          $('#txtTacticTitle').val(txtTactTitle);
+
+          // Decode Dropdown Option Text
+          $('.ui-multiselect-menu ul li span').each(function () {
+              var EncodeString = $(this).text();
+              $(this).text(htmlDecode(EncodeString));
+          });
+
+          // ddlOwnText - Owner Dropdown Text
+          var ddlOwnText = $('#btnMultiselect_ddlOwner span:first-child').text();
+          $('#btnMultiselect_ddlOwner span:first-child').text(htmlDecode(ddlOwnText));
+
+          // ddlTTText - Tactic Type Dropdown Text
+          var ddlTTText = $('#btnMultiselect_ddlTacticType span:first-child').text();
+          $('#btnMultiselect_ddlTacticType span:first-child').text(htmlDecode(ddlTTText));
+
+          // ddlCampText - Parent Campaign Dropdown Text
+          var ddlCampText = $('#btnMultiselect_ddlcampaign span:first-child').text();
+          $('#btnMultiselect_ddlcampaign span:first-child').text(htmlDecode(ddlCampText));
+
+          // ddlProgText - Parent Program Dropdown Text
+          var ddlProgText = $('#btnMultiselect_ddlProgram span:first-child').text();
+          $('#btnMultiselect_ddlProgram span:first-child').text(htmlDecode(ddlProgText));
       });
     function loadChildProgramList(parentOption, id) {
         $.ajax({
