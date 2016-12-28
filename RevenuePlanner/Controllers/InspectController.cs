@@ -5633,9 +5633,16 @@ namespace RevenuePlanner.Controllers
             if (IsSyncMarketo) //update marketo program initiation option and ID 
             {
                 objTactic.MarketoProgramInitiationOption = (int)marketoProgramInitiationOption;
-                if (marketoProgramInitiationOption != Enums.MarketoProgramInitiationOption.Create)
+                if (marketoProgramInitiationOption == Enums.MarketoProgramInitiationOption.Link)
                 {
-                    objTactic.IntegrationInstanceMarketoID = marketoProgramId;
+                    if (objTactic.IntegrationInstanceMarketoID == null)
+                    {
+                        // set integration ID only when it's null (not syced)
+                        objTactic.IntegrationInstanceMarketoID = marketoProgramId;
+                    }
+                } else if (marketoProgramInitiationOption == Enums.MarketoProgramInitiationOption.Clone)
+                {
+                        objTactic.MarketoInitialProgramID = marketoProgramId;
                 }
             }
 
@@ -8909,7 +8916,7 @@ namespace RevenuePlanner.Controllers
                         ProjectedStageValue = pcpt.ProjectedStageValue,
                         TacticCustomName = pcpt.TacticCustomName,
                         ROIType = pcpt.TacticType.AssetType,
-                        IntegrationInstanceMarketoID = pcpt.IntegrationInstanceMarketoID,
+                        MarketoInitialProgramID = pcpt.MarketoInitialProgramID,
                         MarketoInitialSyncOption = (Enums.MarketoProgramInitiationOption)pcpt.MarketoProgramInitiationOption
                     };
 

@@ -492,10 +492,10 @@
                                 <div class="radio" style="width:100%; float:left; margin-left:20px">
                                 </div>
                                 <div class="radio" style="width:100%; float:left; margin-left:20px">
-                                    <input class="hidden" id="MarketoInitiationCloneProgramId" type="text" value="@tacticReview.IntegrationInstanceMarketoID" />
+                                    <input class="hidden" id="MarketoInitiationCloneProgramId" type="text" value="@tacticReview.MarketoInitialProgramID" />
                                 </div>
                                 <div class="radio" style="width:100%; float:left; margin-left:20px">
-                                    <input class="hidden" id="MarketoInitiationLinkProgramId" type="text" value="@tacticReview.IntegrationInstanceMarketoID" />
+                                    <input class="hidden" id="MarketoInitiationLinkProgramId" type="text" value="@tacticReview.MarketoInitialProgramID" />
                                 </div>
                             </div>
                         </div>
@@ -1371,7 +1371,7 @@
         }else if (marketoProgramInitiationOption == 3){
             return $("#MarketoInitiationLinkProgramId").val();
         }else{
-            return '@tacticReview.IntegrationInstanceMarketoID';
+            return '@tacticReview.MarketoInitialProgramID';
         }
     }
 

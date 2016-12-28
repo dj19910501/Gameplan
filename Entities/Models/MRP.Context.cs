@@ -170,8 +170,8 @@ namespace RevenuePlanner.Models
         public DbSet<User_CoulmnView> User_CoulmnView { get; set; }
         public DbSet<TransactionLineItemMapping> TransactionLineItemMappings { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Measure> Measures { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

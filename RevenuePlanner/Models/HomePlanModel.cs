@@ -197,7 +197,7 @@ namespace RevenuePlanner.Models
         public string Year { get; set; }
         public string AverageDealSize { get; set; }
         public double TotalAllocatedCampaignBudget { get; set; }
-        public string IntegrationInstanceMarketoID { get; set; }
+        public string MarketoInitialProgramID { get; set; }
         public MarketoProgramInitiationOption MarketoInitialSyncOption { get; set; }
     }
 

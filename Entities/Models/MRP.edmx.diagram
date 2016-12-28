@@ -263,7 +263,18 @@
         <AssociationConnector Association="MRPModel.FK_TransactionLineItemMapping_Plan_Campaign_Program_Tactic_LineItem" />
         <EntityTypeShape EntityType="MRPModel.Transaction" Width="1.5" PointX="27.375" PointY="12.125" />
         <AssociationConnector Association="MRPModel.FK_TransactionLineItemMapping_Transactions" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="14.25" PointY="61" />
+        <EntityTypeShape EntityType="MRPModel.Measure" Width="1.5" PointX="20" PointY="11.625" />
+        <AssociationConnector Association="MRPModel.FK_Goal_Measure" />
+        <AssociationConnector Association="MRPModel.FK_GoalDistribution_Measure" />
+        <AssociationConnector Association="MRPModel.FK_KeyData_Measure" />
+        <AssociationConnector Association="MRPModel.FK_MeasureOutputValue_Measure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_Measure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_MonthMeasure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_QuarterMeasure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_WeekMeasure" />
+        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_YearMeasure" />
+        <AssociationConnector Association="MRPModel.FK_ReportTableColumn_Measure" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="14.25" PointY="60.875" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" />
@@ -278,17 +289,6 @@
         <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" />
         <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" />
-        <EntityTypeShape EntityType="MRPModel.Measure" Width="1.5" PointX="20" PointY="11.625" />
-        <AssociationConnector Association="MRPModel.FK_Goal_Measure" />
-        <AssociationConnector Association="MRPModel.FK_GoalDistribution_Measure" />
-        <AssociationConnector Association="MRPModel.FK_KeyData_Measure" />
-        <AssociationConnector Association="MRPModel.FK_MeasureOutputValue_Measure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_Measure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_MonthMeasure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_QuarterMeasure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_WeekMeasure" />
-        <AssociationConnector Association="MRPModel.FK_ReportGraphColumn_YearMeasure" />
-        <AssociationConnector Association="MRPModel.FK_ReportTableColumn_Measure" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

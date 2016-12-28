@@ -1327,6 +1327,7 @@ warning 6002: The table/view 'Hive9Plan.dbo.Logging' does not have a primary key
           <Property Name="ModifiedBy" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="MarketoProgramInitiationOption" Type="int" Nullable="false" />
+          <Property Name="MarketoInitialProgramID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -4380,6 +4381,8 @@ warning 6002: The table/view 'Hive9Plan.dbo.vClientWise_Tactic' does not have a 
                 <Property Name="CustomFieldId" Type="int" />
                 <Property Name="TacValue" Type="varchar(max)" />
                 <Property Name="SourceId" Type="int" />
+                <Property Name="ProgramInitiationOption" Type="int" />
+                <Property Name="InitialProgramId" Type="nvarchar" MaxLength="50" />
               </RowType>
             </CollectionType>
           </ReturnType>
@@ -6839,6 +6842,47 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Transaction" EntitySet="Transactions" />
             <End Role="TransactionLineItemMapping" EntitySet="TransactionLineItemMappings" />
           </AssociationSet>
+          <EntitySet Name="Measures" EntityType="MRPModel.Measure" />
+          <AssociationSet Name="FK_Goal_Measure" Association="MRPModel.FK_Goal_Measure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="Goal" EntitySet="Goals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GoalDistribution_Measure" Association="MRPModel.FK_GoalDistribution_Measure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="GoalDistribution" EntitySet="GoalDistributions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KeyData_Measure" Association="MRPModel.FK_KeyData_Measure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="KeyData" EntitySet="KeyDatas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MeasureOutputValue_Measure" Association="MRPModel.FK_MeasureOutputValue_Measure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="MeasureOutputValue" EntitySet="MeasureOutputValues" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportGraphColumn_Measure" Association="MRPModel.FK_ReportGraphColumn_Measure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportGraphColumn_MonthMeasure" Association="MRPModel.FK_ReportGraphColumn_MonthMeasure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportGraphColumn_QuarterMeasure" Association="MRPModel.FK_ReportGraphColumn_QuarterMeasure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportGraphColumn_WeekMeasure" Association="MRPModel.FK_ReportGraphColumn_WeekMeasure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportGraphColumn_YearMeasure" Association="MRPModel.FK_ReportGraphColumn_YearMeasure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportTableColumn_Measure" Association="MRPModel.FK_ReportTableColumn_Measure">
+            <End Role="Measure" EntitySet="Measures" />
+            <End Role="ReportTableColumn" EntitySet="ReportTableColumns" />
+          </AssociationSet>
           <EntitySet Name="Plan_Campaign_Program_Tactic" EntityType="MRPModel.Plan_Campaign_Program_Tactic" />
           <AssociationSet Name="FK_IntegrationWorkFrontRequests_TacticId" Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
@@ -6895,47 +6939,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <AssociationSet Name="FK_Tactic_Share_Plan_Campaign_Program_Tactic1" Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
-          </AssociationSet>
-          <EntitySet Name="Measures" EntityType="MRPModel.Measure" />
-          <AssociationSet Name="FK_Goal_Measure" Association="MRPModel.FK_Goal_Measure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="Goal" EntitySet="Goals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_GoalDistribution_Measure" Association="MRPModel.FK_GoalDistribution_Measure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="GoalDistribution" EntitySet="GoalDistributions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_KeyData_Measure" Association="MRPModel.FK_KeyData_Measure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="KeyData" EntitySet="KeyDatas" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MeasureOutputValue_Measure" Association="MRPModel.FK_MeasureOutputValue_Measure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="MeasureOutputValue" EntitySet="MeasureOutputValues" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ReportGraphColumn_Measure" Association="MRPModel.FK_ReportGraphColumn_Measure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ReportGraphColumn_MonthMeasure" Association="MRPModel.FK_ReportGraphColumn_MonthMeasure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ReportGraphColumn_QuarterMeasure" Association="MRPModel.FK_ReportGraphColumn_QuarterMeasure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ReportGraphColumn_WeekMeasure" Association="MRPModel.FK_ReportGraphColumn_WeekMeasure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ReportGraphColumn_YearMeasure" Association="MRPModel.FK_ReportGraphColumn_YearMeasure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="ReportGraphColumn" EntitySet="ReportGraphColumns" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ReportTableColumn_Measure" Association="MRPModel.FK_ReportTableColumn_Measure">
-            <End Role="Measure" EntitySet="Measures" />
-            <End Role="ReportTableColumn" EntitySet="ReportTableColumns" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Dimension">
@@ -11014,6 +11017,155 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Measure">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AggregationQuery" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="MeasureTableName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="AggregationType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DisplayColorIndication" Type="Boolean" />
+          <Property Name="ComputeAllValues" Type="Boolean" />
+          <Property Name="ComputeAllValuesFormula" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="DrillDownWhereClause" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="UseRowCountFromFormula" Type="Boolean" />
+          <Property Name="IsCurrency" Type="Boolean" />
+          <NavigationProperty Name="Goals" Relationship="MRPModel.FK_Goal_Measure" FromRole="Measure" ToRole="Goal" />
+          <NavigationProperty Name="GoalDistributions" Relationship="MRPModel.FK_GoalDistribution_Measure" FromRole="Measure" ToRole="GoalDistribution" />
+          <NavigationProperty Name="KeyDatas" Relationship="MRPModel.FK_KeyData_Measure" FromRole="Measure" ToRole="KeyData" />
+          <NavigationProperty Name="MeasureOutputValues" Relationship="MRPModel.FK_MeasureOutputValue_Measure" FromRole="Measure" ToRole="MeasureOutputValue" />
+          <NavigationProperty Name="ReportGraphColumns" Relationship="MRPModel.FK_ReportGraphColumn_Measure" FromRole="Measure" ToRole="ReportGraphColumn" />
+          <NavigationProperty Name="ReportGraphColumns1" Relationship="MRPModel.FK_ReportGraphColumn_MonthMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
+          <NavigationProperty Name="ReportGraphColumns2" Relationship="MRPModel.FK_ReportGraphColumn_QuarterMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
+          <NavigationProperty Name="ReportGraphColumns3" Relationship="MRPModel.FK_ReportGraphColumn_WeekMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
+          <NavigationProperty Name="ReportGraphColumns4" Relationship="MRPModel.FK_ReportGraphColumn_YearMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
+          <NavigationProperty Name="ReportTableColumns" Relationship="MRPModel.FK_ReportTableColumn_Measure" FromRole="Measure" ToRole="ReportTableColumn" />
+        </EntityType>
+        <Association Name="FK_Goal_Measure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
+          <End Type="MRPModel.Goal" Role="Goal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Goal">
+              <PropertyRef Name="MeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GoalDistribution_Measure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
+          <End Type="MRPModel.GoalDistribution" Role="GoalDistribution" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="GoalDistribution">
+              <PropertyRef Name="MeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_KeyData_Measure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
+          <End Type="MRPModel.KeyData" Role="KeyData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="KeyData">
+              <PropertyRef Name="MeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MeasureOutputValue_Measure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
+          <End Type="MRPModel.MeasureOutputValue" Role="MeasureOutputValue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="MeasureOutputValue">
+              <PropertyRef Name="MeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportGraphColumn_Measure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
+          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ReportGraphColumn">
+              <PropertyRef Name="MeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportGraphColumn_MonthMeasure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
+          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ReportGraphColumn">
+              <PropertyRef Name="MonthMeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportGraphColumn_QuarterMeasure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
+          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ReportGraphColumn">
+              <PropertyRef Name="QuarterMeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportGraphColumn_WeekMeasure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
+          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ReportGraphColumn">
+              <PropertyRef Name="WeekMeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportGraphColumn_YearMeasure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
+          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ReportGraphColumn">
+              <PropertyRef Name="YearMeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReportTableColumn_Measure">
+          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
+          <End Type="MRPModel.ReportTableColumn" Role="ReportTableColumn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Measure">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ReportTableColumn">
+              <PropertyRef Name="MeasureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="Plan_Campaign_Program_Tactic">
           <Key>
             <PropertyRef Name="PlanTacticId" />
@@ -11049,6 +11201,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="ModifiedBy" Type="Int32" Nullable="false" />
           <Property Name="CreatedBy" Type="Int32" Nullable="false" />
           <Property Name="MarketoProgramInitiationOption" Type="Int32" Nullable="false" />
+          <Property Name="MarketoInitialProgramID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontRequest" />
           <NavigationProperty Name="IntegrationWorkFrontTacticSettings" Relationship="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontTacticSetting" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program" />
@@ -11230,155 +11383,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             </Principal>
             <Dependent Role="Tactic_Share">
               <PropertyRef Name="PlanTacticId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="Measure">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="AggregationQuery" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
-          <Property Name="MeasureTableName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="AggregationType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="DisplayColorIndication" Type="Boolean" />
-          <Property Name="ComputeAllValues" Type="Boolean" />
-          <Property Name="ComputeAllValuesFormula" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
-          <Property Name="DrillDownWhereClause" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
-          <Property Name="UseRowCountFromFormula" Type="Boolean" />
-          <Property Name="IsCurrency" Type="Boolean" />
-          <NavigationProperty Name="Goals" Relationship="MRPModel.FK_Goal_Measure" FromRole="Measure" ToRole="Goal" />
-          <NavigationProperty Name="GoalDistributions" Relationship="MRPModel.FK_GoalDistribution_Measure" FromRole="Measure" ToRole="GoalDistribution" />
-          <NavigationProperty Name="KeyDatas" Relationship="MRPModel.FK_KeyData_Measure" FromRole="Measure" ToRole="KeyData" />
-          <NavigationProperty Name="MeasureOutputValues" Relationship="MRPModel.FK_MeasureOutputValue_Measure" FromRole="Measure" ToRole="MeasureOutputValue" />
-          <NavigationProperty Name="ReportGraphColumns" Relationship="MRPModel.FK_ReportGraphColumn_Measure" FromRole="Measure" ToRole="ReportGraphColumn" />
-          <NavigationProperty Name="ReportGraphColumns1" Relationship="MRPModel.FK_ReportGraphColumn_MonthMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
-          <NavigationProperty Name="ReportGraphColumns2" Relationship="MRPModel.FK_ReportGraphColumn_QuarterMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
-          <NavigationProperty Name="ReportGraphColumns3" Relationship="MRPModel.FK_ReportGraphColumn_WeekMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
-          <NavigationProperty Name="ReportGraphColumns4" Relationship="MRPModel.FK_ReportGraphColumn_YearMeasure" FromRole="Measure" ToRole="ReportGraphColumn" />
-          <NavigationProperty Name="ReportTableColumns" Relationship="MRPModel.FK_ReportTableColumn_Measure" FromRole="Measure" ToRole="ReportTableColumn" />
-        </EntityType>
-        <Association Name="FK_Goal_Measure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
-          <End Type="MRPModel.Goal" Role="Goal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Goal">
-              <PropertyRef Name="MeasureId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_GoalDistribution_Measure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
-          <End Type="MRPModel.GoalDistribution" Role="GoalDistribution" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="GoalDistribution">
-              <PropertyRef Name="MeasureId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_KeyData_Measure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
-          <End Type="MRPModel.KeyData" Role="KeyData" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="KeyData">
-              <PropertyRef Name="MeasureId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_MeasureOutputValue_Measure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
-          <End Type="MRPModel.MeasureOutputValue" Role="MeasureOutputValue" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="MeasureOutputValue">
-              <PropertyRef Name="MeasureId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ReportGraphColumn_Measure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
-          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ReportGraphColumn">
-              <PropertyRef Name="MeasureId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ReportGraphColumn_MonthMeasure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
-          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ReportGraphColumn">
-              <PropertyRef Name="MonthMeasureId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ReportGraphColumn_QuarterMeasure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
-          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ReportGraphColumn">
-              <PropertyRef Name="QuarterMeasureId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ReportGraphColumn_WeekMeasure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
-          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ReportGraphColumn">
-              <PropertyRef Name="WeekMeasureId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ReportGraphColumn_YearMeasure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="0..1" />
-          <End Type="MRPModel.ReportGraphColumn" Role="ReportGraphColumn" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ReportGraphColumn">
-              <PropertyRef Name="YearMeasureId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ReportTableColumn_Measure">
-          <End Type="MRPModel.Measure" Role="Measure" Multiplicity="1" />
-          <End Type="MRPModel.ReportTableColumn" Role="ReportTableColumn" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Measure">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="ReportTableColumn">
-              <PropertyRef Name="MeasureId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -13908,9 +13912,30 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Measures">
+            <EntityTypeMapping TypeName="MRPModel.Measure">
+              <MappingFragment StoreEntitySet="Measure">
+                <ScalarProperty Name="IsCurrency" ColumnName="IsCurrency" />
+                <ScalarProperty Name="UseRowCountFromFormula" ColumnName="UseRowCountFromFormula" />
+                <ScalarProperty Name="DrillDownWhereClause" ColumnName="DrillDownWhereClause" />
+                <ScalarProperty Name="ComputeAllValuesFormula" ColumnName="ComputeAllValuesFormula" />
+                <ScalarProperty Name="ComputeAllValues" ColumnName="ComputeAllValues" />
+                <ScalarProperty Name="DisplayColorIndication" ColumnName="DisplayColorIndication" />
+                <ScalarProperty Name="AggregationType" ColumnName="AggregationType" />
+                <ScalarProperty Name="MeasureTableName" ColumnName="MeasureTableName" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="AggregationQuery" ColumnName="AggregationQuery" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Plan_Campaign_Program_Tactic">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic">
+                <ScalarProperty Name="MarketoInitialProgramID" ColumnName="MarketoInitialProgramID" />
                 <ScalarProperty Name="MarketoProgramInitiationOption" ColumnName="MarketoProgramInitiationOption" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -13942,26 +13967,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
                 <ScalarProperty Name="TacticTypeId" ColumnName="TacticTypeId" />
                 <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
                 <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Measures">
-            <EntityTypeMapping TypeName="MRPModel.Measure">
-              <MappingFragment StoreEntitySet="Measure">
-                <ScalarProperty Name="IsCurrency" ColumnName="IsCurrency" />
-                <ScalarProperty Name="UseRowCountFromFormula" ColumnName="UseRowCountFromFormula" />
-                <ScalarProperty Name="DrillDownWhereClause" ColumnName="DrillDownWhereClause" />
-                <ScalarProperty Name="ComputeAllValuesFormula" ColumnName="ComputeAllValuesFormula" />
-                <ScalarProperty Name="ComputeAllValues" ColumnName="ComputeAllValues" />
-                <ScalarProperty Name="DisplayColorIndication" ColumnName="DisplayColorIndication" />
-                <ScalarProperty Name="AggregationType" ColumnName="AggregationType" />
-                <ScalarProperty Name="MeasureTableName" ColumnName="MeasureTableName" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="AggregationQuery" ColumnName="AggregationQuery" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

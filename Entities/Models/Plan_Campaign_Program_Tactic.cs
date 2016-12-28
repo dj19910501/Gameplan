@@ -59,6 +59,7 @@ namespace RevenuePlanner.Models
         public int ModifiedBy { get; set; }
         public int CreatedBy { get; set; }
         public int MarketoProgramInitiationOption { get; set; }
+        public string MarketoInitialProgramID { get; set; }
     
         public virtual ICollection<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
         public virtual ICollection<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
