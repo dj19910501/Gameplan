@@ -61,8 +61,8 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call view edit permission method
             var result = objOrganizationController.ViewEditPermission(Sessions.User.UserId, Enums.UserPermissionMode.View.ToString()) as ViewResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
-            Assert.IsNull(result);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("ViewEditPermission", result.ViewName);
 
         }
         #endregion
