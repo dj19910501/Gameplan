@@ -280,7 +280,7 @@
             $("#spanErrorMessageRolecopy").text(msgspan);
         }
         else {
-            var uId = '@Sessions.User.UserId';    
+            var uId = '@Sessions.User.UserId';
             var token = $('[name=__RequestVerificationToken]').val();
 
                 $.ajax({
@@ -288,7 +288,7 @@
                     data: {
                         copyroledesc:copyroledescription,
                         originalroleid: originalid,
-                        LoginId: uId,        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check 
+                        LoginId: uId,        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                         __RequestVerificationToken: token
                     },
                     type: 'POST',
@@ -313,7 +313,13 @@
                             window.location.href = url;
                         }
                         else {
-                            var msgspan = "@Common.objCached.RoleAlreadyExits";;
+                            var msgspan = "";
+                            if (result.status == false && result.ErrorMsg != undefined && result.ErrorMsg != "") {
+                                msgspan ="Error! " + result.ErrorMsg;
+                            }
+                            else {
+                                msgspan = "@Common.objCached.RoleAlreadyExits";
+                            }
                             $("#errorMessagecopy").css("display", "block");
                             $("#spanErrorMessageRolecopy").text(msgspan);
                         }

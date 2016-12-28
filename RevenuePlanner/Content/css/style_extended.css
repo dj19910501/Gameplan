@@ -2655,6 +2655,8 @@ label {
 
 #DivDeleteRolePopup .message-position {
     width: 310px;
+    float: none;
+    margin: 0 auto !important;
 }/*25-6-2014*/
 
     #DivDefaultRolePopup .form-inspect-share-button {

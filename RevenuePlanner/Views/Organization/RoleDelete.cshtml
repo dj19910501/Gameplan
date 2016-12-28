@@ -20,6 +20,12 @@
             <div class="span12">
                 <div id="DivDeleteRolePopup" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
                     <div style="padding-bottom: 20px;" class="login-wrapper">
+                        <!--error message-->
+                        <div id="errorMessagedel" class="alert hide alert-error message-position">
+                            <a class="close">×</a>
+                            <strong></strong><span id="spanErrorMessagedel"></span>
+                        </div>
+                        <!--error message-->
                         <h2 class="primary-title source-sans-proregular without-text-shadow">Deleting an existing role</h2>
                         <h4 class="source-sans-prolight">You are about to remove the role:</h4>
                         <h4 id="selectedrole" class="source-sans-prosemibold">@selectedroledisplay</h4>
@@ -44,12 +50,12 @@
                                 </span>
                             </div>
                             <br />
-                             <!--error message-->
+                             @*<!--error message-->
                           <div id="errorMessagedel" class="alert hide alert-error message-position">
                           <a class="close">×</a>
                          <strong></strong><span id="spanErrorMessagedel"></span>
                          </div>
-                         <!--error message-->
+                         <!--error message-->*@
                         }
                         <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="delbtn">Delete Role</button>
                         <button class="cancel-btn btn-link text-shadow-black" type="button" id="delcancelbtn">Cancel</button>
@@ -118,7 +124,7 @@
                 },
                 type: 'POST',
                 cache: false,
-                success: function (result) {
+                success: function (result) {                    
                     // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                     if (result.returnURL != 'undefined' && result.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';
@@ -137,9 +143,9 @@
                             window.location.href = url;
                         }
                         else {
-                            var msgspan = "Error!";
-                            $("#errorMessage").css("display", "block");
-                            $("#spanErrorMessageRole").text(msgspan);
+                            var msgspan = "Error! " + result.ErrorMsg;
+                            $("#errorMessagedel").css("display", "block");
+                            $("#spanErrorMessagedel").text(msgspan);
                         }
                     }
                 }
