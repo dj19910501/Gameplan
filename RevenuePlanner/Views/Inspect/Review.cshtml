@@ -1376,18 +1376,19 @@
     }
 
     function InitializeMarketoProgramInitiationOptions(){
-        if (@((int)tacticReview.MarketoInitialSyncOption) == 2)
-        {
-            $("#MarketoInitiationClone")[0].checked = true;
-            toggleMarketoInitiationOptions($("#MarketoInitiationClone")[0]);
-        }else if (@((int)tacticReview.MarketoInitialSyncOption) == 3){
-            $("#MarketoInitiationLink")[0].checked = true;
-            toggleMarketoInitiationOptions($("#MarketoInitiationLink")[0]);
-        }else{
-            $("#MarketoInitiationCreate")[0].checked = true;
-            toggleMarketoInitiationOptions($("#MarketoInitiationCreate")[0]);
+        if($("#MarketoInitiationClone").length > 0) {
+            if (@((int)tacticReview.MarketoInitialSyncOption) == 2)
+            {
+                $("#MarketoInitiationClone")[0].checked = true;
+                toggleMarketoInitiationOptions($("#MarketoInitiationClone")[0]);
+            }else if (@((int)tacticReview.MarketoInitialSyncOption) == 3){
+                $("#MarketoInitiationLink")[0].checked = true;
+                toggleMarketoInitiationOptions($("#MarketoInitiationLink")[0]);
+            }else{
+                $("#MarketoInitiationCreate")[0].checked = true;
+                toggleMarketoInitiationOptions($("#MarketoInitiationCreate")[0]);
+            }
         }
-
     }
     // Begin - Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919. Save Tactic Title, DeployToIntegration & Sync settings for Eloqua & Salesforce.
     // WorkFront information add 23/24 Jan 2016 by Brad Gray for PL#1921 & PL#1922
