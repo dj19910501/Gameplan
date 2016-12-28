@@ -743,10 +743,10 @@ namespace RevenuePlanner.Controllers
         /// Added by Nandish Shah
         /// Get specific of user record on selection of dropdown list
         /// </summary>
-        public JsonResult GetuserRecord(Guid UserGuid)//change parameter from int to Guid userid for Guid #2956
+        public JsonResult GetUserRecord(Guid userGuid)//change parameter from int to Guid userid for Guid #2956
         {
             RevenuePlanner.Models.UserModel objUserModel = new RevenuePlanner.Models.UserModel();
-            int Id = Common.GetIntegerUserId(UserGuid);
+            int Id = Common.GetIntegerUserId(userGuid);
             try
             {
                 objUserModel = _MarketingBudget.GetuserRecord(Id, Sessions.User.ID, Sessions.ApplicationId);
@@ -764,14 +764,14 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">contains user's Id</param>
         /// <returns>If success than return true</returns>
         [HttpPost]
-        public JsonResult DeleteUser(Guid UserGuid, int budgetId, string ChildItems)//change parameter from int to Guid userid for Guid #2956
+        public JsonResult DeleteUser(Guid userGuid, int budgetId, string childItems)//change parameter from int to Guid userid for Guid #2956
         {
-            int id = Common.GetIntegerUserId(UserGuid);//call method to get interger userid from Guid #2956
+            int id = Common.GetIntegerUserId(userGuid);//call method to get interger userid from Guid #2956
             List<string> ListItems = new List<string>();
             List<int> BudgetDetailIds = new List<int>();
-            if (ChildItems != "" && ChildItems != null)
+            if (childItems != "" && childItems != null)
             {
-                ListItems = ChildItems.Split(',').ToList();
+                ListItems = childItems.Split(',').ToList();
 
             }
             for (int i = 0; i < ListItems.Count; i++)

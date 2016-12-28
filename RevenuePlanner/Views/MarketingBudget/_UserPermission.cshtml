@@ -505,10 +505,10 @@
             }
             else {
                 $.ajax({
-                    url: '@Url.Content("~/MarketingBudget//GetuserRecord/")',
+                    url: '@Url.Content("~/MarketingBudget//GetUserRecord/")',
                     type: 'POST',
                     dataType: "json",
-                    data: { UserGuid: _userid },
+                    data: { userGuid: _userid },
                     success: function (data) {
                         $("#SaveMsg").hide();
                         $("#Selectuser").val('');
@@ -656,7 +656,7 @@
         $.ajax({
             url: '@Url.Action("DeleteUser", "MarketingBudget")',
             type: 'POST',
-            data: { UserGuid: id, budgetID: budgetID, ChildItems: ChildItems },
+            data: { userGuid: id, budgetID: budgetID, childItems: ChildItems },
             success: function (data) {
                 if (data.Flag) {
                     $("#userTable tbody tr").each(function () {

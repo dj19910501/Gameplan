@@ -297,7 +297,7 @@ namespace RevenuePlanner.Services.MarketingBudget
 
         MarketingBudgetHeadsUp GetFinanceHeaderValues(int BudgetId, double ExchangeRate,List<BDSService.User> lstUser,bool IsLineItem=false); // Header values
         List<BDSService.User> GetUserListByClientId(int ClientID); // List of users for specific client
-        List<SelectListItem> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers); // Owner list for current client
+        List<SelectListItem> GetOwnerListForDropdown(int clientId, Guid applicationId, List<BDSService.User> lstUsers); // Owner list for current client
         /// <summary>
         /// Update budget data only!
         /// Planned and actuals are NOT updated through this interface

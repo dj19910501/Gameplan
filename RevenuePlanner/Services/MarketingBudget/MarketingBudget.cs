@@ -738,9 +738,9 @@ namespace RevenuePlanner.Services.MarketingBudget
         /// <param name="ApplicationId">Application Id</param>
         /// <param name="lstUsers">List of users for current client</param>
         /// <returns>Returns list of PlanOptions contains user ids and names</returns>
-        public List<SelectListItem> GetOwnerListForDropdown(int ClientId, Guid ApplicationId, List<BDSService.User> lstUsers)
+        public List<SelectListItem> GetOwnerListForDropdown(int clientId, Guid applicationId, List<BDSService.User> lstUsers)
         {
-            return Common.GetOwnerListForDropdown(ClientId, ApplicationId, lstUsers);
+            return Common.GetOwnerListForDropdown(clientId, applicationId, lstUsers);
         }
 
         #region Method to convert number format
