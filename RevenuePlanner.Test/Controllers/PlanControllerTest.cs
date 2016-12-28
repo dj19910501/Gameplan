@@ -1799,43 +1799,43 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
 
         }
-        /// <summary>
-        /// To get budget grid data with search
-        /// <author>Devanshi gandhi</author>
-        /// <createddate>22 nov 2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Budget_Data_WithSearch()
-        {
-            var routes = new RouteCollection();
-            Console.WriteLine("Get Budget Data with Search .\n");
-            MRPEntities db = new MRPEntities();
-            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objPlanController.Url = new UrlHelper(
-            new RequestContext(
-            objPlanController.HttpContext, new RouteData()
-            ),
-            routes
-            );
-            int PlanId = DataHelper.GetPlanIdforBudget();
-            string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(PlanId));
-            int ModelId = DataHelper.GetPlanModelId(PlanId);
-            List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
-            string TacticTypeIds = string.Join(",", lstTacticTypeIds);
-            List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
-            string StatusIds = string.Join(",", lstStatus);
-            string viewby = PlanGanttTypes.Tactic.ToString();
-            string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
-            string PlanYear = DataHelper.GetPlanYear(PlanId);
-            string NextYear = Convert.ToString(Convert.ToInt32(PlanYear) + 1);
-            string SearchText = "test";
-            string SearchBy = Enums.GlobalSearch.ActivityName.ToString();
-            var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, PlanYear + "-" + NextYear, SearchText, SearchBy,true) as PartialViewResult;
+        ///// <summary>
+        ///// To get budget grid data with search
+        ///// <author>Devanshi gandhi</author>
+        ///// <createddate>22 nov 2016</createddate>
+        ///// </summary>
+        //[TestMethod]
+        //public void Test_Get_Budget_Data_WithSearch()
+        //{
+        //    var routes = new RouteCollection();
+        //    Console.WriteLine("Get Budget Data with Search .\n");
+        //    MRPEntities db = new MRPEntities();
+        //    objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+        //    objPlanController.Url = new UrlHelper(
+        //    new RequestContext(
+        //    objPlanController.HttpContext, new RouteData()
+        //    ),
+        //    routes
+        //    );
+        //    int PlanId = DataHelper.GetPlanIdforBudget();
+        //    string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(PlanId));
+        //    int ModelId = DataHelper.GetPlanModelId(PlanId);
+        //    List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
+        //    string TacticTypeIds = string.Join(",", lstTacticTypeIds);
+        //    List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
+        //    string StatusIds = string.Join(",", lstStatus);
+        //    string viewby = PlanGanttTypes.Tactic.ToString();
+        //    string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+        //    string PlanYear = DataHelper.GetPlanYear(PlanId);
+        //    string NextYear = Convert.ToString(Convert.ToInt32(PlanYear) + 1);
+        //    string SearchText = "test";
+        //    string SearchBy = Enums.GlobalSearch.ActivityName.ToString();
+        //    var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, PlanYear + "-" + NextYear, SearchText, SearchBy,true) as PartialViewResult;
 
-            Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+        //    Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
+        //    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
 
-        }
+        //}
         #endregion
 
 
