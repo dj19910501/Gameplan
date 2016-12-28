@@ -90,15 +90,14 @@ namespace RevenuePlanner.Test.Controllers
             form.NewPassword = "Test@1234";
             form.ConfirmNewPassword = "Test@1234";
 
-            var result = objUserController.ChangePassword(form) as ViewResult;
-            Assert.IsNotNull(result.Model);
-            var serializedData = new RouteValueDictionary(result.Model);
-            var resultvalue = serializedData["UserId"];
-            var resultvalue1 = serializedData["CurrentPassword"];
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + "UserID: " + resultvalue.ToString());
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue1:  " + "Password: " + resultvalue1.ToString());
-            Assert.IsNotNull(resultvalue.ToString());
-            Assert.IsNotNull(resultvalue1.ToString());
+
+            var result = objUserController.ChangePassword(form) as ActionResult;
+            Assert.IsNotNull(result);
+            var serializedData = new RouteValueDictionary(result);
+            var resultvalue = new RouteValueDictionary(serializedData.Keys);            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + resultvalue.ToString());                       
+            Assert.IsTrue(resultvalue.Count > 0);
+            
         }
         #endregion
 
