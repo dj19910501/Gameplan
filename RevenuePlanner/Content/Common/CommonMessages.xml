@@ -1276,6 +1276,12 @@
     <Name>RoleDeleteRestrictionMessage</Name>
     <value>You don't have permission to delete this role.</value>
   </Field>
+  
+  <!--#2879 Added By Rahul Shah for Cross Client Check Role and Parameter-->
+  <Field>
+    <Name>RoleEditViewRestrictionMessage</Name>
+    <value>You don't have permission to Edit/View this role.</value>
+  </Field>
 
   <!--#2879 Added By Rahul Shah for Cross Client Check Role and Parameter-->
   <Field>

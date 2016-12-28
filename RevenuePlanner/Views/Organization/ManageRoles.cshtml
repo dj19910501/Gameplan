@@ -15,6 +15,7 @@
 
 
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+@Html.Hidden("ErrMsg", TempData["ErrorMessageEdit"])
 
 @section Sidebar {
     @Html.Partial("~/Views/shared/_preferences.cshtml")
@@ -25,6 +26,11 @@
     <div id="cSuccess"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
 </div>
 
+<!--Error message-->
+<div id="ErrorMessageEdit" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <div id="cSuccess"><strong>Error.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessageEdit"]))</div>
+</div>
 @Html.AntiForgeryToken()
 
 @*<ul class="nav nav-tabs">
@@ -154,9 +160,15 @@
         else {
             $("#successMessage").slideDown(1200);
         }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#ErrorMessageEdit").slideUp(400);
+        }
+        else {
+            $("#ErrorMessageEdit").slideDown(1200);
+        }
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");//review point
     });
-
+    
     $('#addrole').click(function () {
         $('.newrole').val('');
         $(".newrole").removeClass("error");

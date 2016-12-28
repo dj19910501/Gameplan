@@ -46,6 +46,19 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        //#2879 Added By Rahul Shah for Cross Client Check Role and Parameter
+        private string _RoleEditViewRestrictionMessage;
+        public string RoleEditViewRestrictionMessage
+        {
+            get
+            {
+                return _RoleEditViewRestrictionMessage;
+            }
+            set
+            {
+                _RoleEditViewRestrictionMessage = value;
+            }
+        }
         private string _RoleCopyRestrictionMessage;
         public string RoleCopyRestrictionMessage
         {
@@ -4224,6 +4237,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "RoleDeleteRestrictionMessage":
                                             _RoleDeleteRestrictionMessage = strMsgValue;
+                                            break;
+                                        case "RoleEditViewRestrictionMessage":
+                                            _RoleEditViewRestrictionMessage = strMsgValue;
                                             break;
                                         case "RoleCopyRestrictionMessage":
                                             _RoleCopyRestrictionMessage = strMsgValue;

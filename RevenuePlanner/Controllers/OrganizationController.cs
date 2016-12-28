@@ -120,7 +120,7 @@ namespace RevenuePlanner.Controllers
             }
             return Json(false);
         }
-
+       
         /// <summary>
         /// Edit Role.
         /// <param name="roleId">Edit Role details by RoleId</param>
@@ -135,6 +135,16 @@ namespace RevenuePlanner.Controllers
 
             try
             {
+                if (roleId != null)
+                {
+                    Role objRole = new Role();
+                    objRole = objBDSServiceClient.GetRoleDetails(roleId);
+                    if (objRole.ClientId != Sessions.User.ClientId)
+                    {
+                        TempData["ErrorMessageEdit"] = Common.objCached.RoleEditViewRestrictionMessage;                        
+                        return RedirectToAction("ManageRoles");
+                    }
+                }
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
 
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
@@ -205,7 +215,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult RoleDelete(Guid roleid, string selectedrole)
         {
             try
-            {                
+            {
 
                 ViewData["users"] = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
                 //changed by uday for functional review point...3-7-2014;
