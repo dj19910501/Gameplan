@@ -139,7 +139,7 @@ namespace RevenuePlanner.Controllers
                 {
                     Role objRole = new Role();
                     objRole = objBDSServiceClient.GetRoleDetails(roleId);
-                    if (objRole.ClientId != Sessions.User.ClientId)
+                    if (objRole.ClientId != null && objRole.ClientId != Sessions.User.ClientId)
                     {
                         TempData["ErrorMessageEdit"] = Common.objCached.RoleEditViewRestrictionMessage;                        
                         return RedirectToAction("ManageRoles");
