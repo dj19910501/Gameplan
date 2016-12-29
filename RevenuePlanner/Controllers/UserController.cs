@@ -249,7 +249,7 @@ namespace RevenuePlanner.Controllers
                 {
                     //// Verify Current Password by UserId.
                     isValid = objBDSServiceClient.CheckCurrentPasswordWithEmailEx(Sessions.User.ID, Sessions.User.Email, SingleHash_CurrentPassword);
-                    
+
                 }
                 catch (Exception e)
                 {
@@ -394,7 +394,7 @@ namespace RevenuePlanner.Controllers
                 {
                     //check if the user owns any tactic.
                     IsTacticOwned = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.CreatedBy.Equals(UserId) && tactic.IsDeleted == false).Any();
-                   
+
                 }
             }
             catch (Exception ex)
@@ -488,62 +488,65 @@ namespace RevenuePlanner.Controllers
                 if (Common.ValidateCaptcha())
                 {
                     if (ModelState.IsValid)
-                {
-                    if (file != null)
                     {
-                        //To check JPG or PNG file formats only & size upto 1MB
-                        if ((!file.ContentType.ToLower().Contains("jpg") && !file.ContentType.ToLower().Contains("jpeg") && !file.ContentType.ToLower().Contains("png")) || (file.ContentLength > 1 * 1024 * 1024))
+                        if (file != null)
                         {
-                            TempData["ErrorMessage"] = Common.objCached.InvalidProfileImage;
-                            LoadCreateModeComponents(Sessions.User.CID);
-                            return View(form);
+                            //To check JPG or PNG file formats only & size upto 1MB
+                            if ((!file.ContentType.ToLower().Contains("jpg") && !file.ContentType.ToLower().Contains("jpeg") && !file.ContentType.ToLower().Contains("png")) || (file.ContentLength > 1 * 1024 * 1024))
+                            {
+                                TempData["ErrorMessage"] = Common.objCached.InvalidProfileImage;
+                                LoadCreateModeComponents(Sessions.User.CID);
+                                return View(form);
+                            }
                         }
-                    }
 
-                    BDSService.User objUser = new BDSService.User();
-                    objUser.FirstName = form.FirstName;
-                    objUser.LastName = form.LastName;
-                    var password = form.Password; // Here you can set default password for user
-                    objUser.Password = Common.ComputeSingleHash(password); //Single hash password
-                    objUser.Email = form.Email;
-                    objUser.Phone = form.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-                    objUser.JobTitle = form.JobTitle;
-                    objUser.CID = Sessions.User.CID;
-                    objUser.RoleId = form.RoleId;
-                    if (file != null)
-                    {
-                        using (MemoryStream target = new MemoryStream())
+                        BDSService.User objUser = new BDSService.User();
+                        objUser.FirstName = form.FirstName;
+                        objUser.LastName = form.LastName;
+                        var password = form.Password; // Here you can set default password for user
+                        objUser.Password = Common.ComputeSingleHash(password); //Single hash password
+                        objUser.Email = form.Email;
+                        objUser.Phone = form.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        objUser.JobTitle = form.JobTitle;
+                        objUser.CID = Sessions.User.CID;
+                        objUser.RoleId = form.RoleId;
+                        if (file != null)
                         {
-                            file.InputStream.CopyTo(target);
-                            byte[] data = target.ToArray();
-                            objUser.ProfilePhoto = data;
+                            using (MemoryStream target = new MemoryStream())
+                            {
+                                file.InputStream.CopyTo(target);
+                                byte[] data = target.ToArray();
+                                objUser.ProfilePhoto = data;
+                            }
                         }
-                    }
 
-                    objUser.MID = form.ManagerId;
+                        objUser.MID = form.ManagerId;
 
-                    //// Create User with default Permissions.
-                    //int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.ID);
-                    //Modified by Maitri Gandhi on 19/4/2016
-                    string retValMsg = objBDSServiceClient._CreateUserWithPermissionEx(objUser, Sessions.ApplicationId, Sessions.User.ID);
-                    if (retValMsg == "Success")
-                    {
-                        UserCreatedMail(objUser, password);
-                        //var UserDetails = objBDSServiceClient.GetUserDetails(objUser.Email);
-                        //objBDSServiceClient.CreatePasswordHistory(UserDetails.UserId, objUser.Password,Sessions.User.ID);
-                        TempData["SuccessMessage"] = Common.objCached.UserAdded;
-                        return RedirectToAction("Index");
-                    }
-                    else if (retValMsg == "UserDuplicate")
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.UserDuplicate;
-                    }
-                    else if (retValMsg == "Error")
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                        //// Create User with default Permissions.
+                        //int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.ID);
+                        //Modified by Maitri Gandhi on 19/4/2016
+                        string retValMsg = objBDSServiceClient._CreateUserWithPermissionEx(objUser, Sessions.ApplicationId, Sessions.User.ID);
+                        if (retValMsg == "Success")
+                        {
+                            //set session for list of user for client #2899
+                            List<BDSService.User> ClientUsers = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
+                            Sessions.dictUserIds = ClientUsers.ToDictionary(a => a.UserId, a => a.ID);
+                            UserCreatedMail(objUser, password);
+                            //var UserDetails = objBDSServiceClient.GetUserDetails(objUser.Email);
+                            //objBDSServiceClient.CreatePasswordHistory(UserDetails.UserId, objUser.Password,Sessions.User.ID);
+                            TempData["SuccessMessage"] = Common.objCached.UserAdded;
+                            return RedirectToAction("Index");
+                        }
+                        else if (retValMsg == "UserDuplicate")
+                        {
+                            TempData["ErrorMessage"] = Common.objCached.UserDuplicate;
+                        }
+                        else if (retValMsg == "Error")
+                        {
+                            TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                        }
                     }
                 }
-            }
                 LoadCreateModeComponents(Sessions.User.CID);
             }
             catch (Exception e)
@@ -880,134 +883,134 @@ namespace RevenuePlanner.Controllers
                 if (Common.ValidateCaptcha())
                 {
                     if (ModelState.IsValid)
-                {
-                    if (file != null)
                     {
-                        //To check JPG or PNG file formats only & size upto 1MB
-                        if ((!file.ContentType.ToLower().Contains("jpg") && !file.ContentType.ToLower().Contains("jpeg") && !file.ContentType.ToLower().Contains("png")) || (file.ContentLength > 1 * 1024 * 1024))
+                        if (file != null)
                         {
-                            TempData["ErrorMessage"] = Common.objCached.InvalidProfileImage;
-                            if (form.UserId == Sessions.User.ID)
+                            //To check JPG or PNG file formats only & size upto 1MB
+                            if ((!file.ContentType.ToLower().Contains("jpg") && !file.ContentType.ToLower().Contains("jpeg") && !file.ContentType.ToLower().Contains("png")) || (file.ContentLength > 1 * 1024 * 1024))
                             {
-                                LoadEditModeComponents(Sessions.User.CID, "myaccount");
+                                TempData["ErrorMessage"] = Common.objCached.InvalidProfileImage;
+                                if (form.UserId == Sessions.User.ID)
+                                {
+                                    LoadEditModeComponents(Sessions.User.CID, "myaccount");
+                                }
+                                else
+                                {
+                                    LoadEditModeComponents(Sessions.User.CID, "myteam");
+                                }
+                                return View(form);
                             }
-                            else
-                            {
-                                LoadEditModeComponents(Sessions.User.CID, "myteam");
-                            }
-                            return View(form);
                         }
-                    }
-                    BDSService.User objUser = new BDSService.User();
-                    objUser.ID = form.UserId;
-                    objUser.FirstName = form.FirstName;
-                    objUser.LastName = form.LastName;
-                    objUser.Email = form.Email;
-                    objUser.Phone = form.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-                    objUser.JobTitle = form.JobTitle;
-                    if (form.IsDeleted != null)
-                    {
-                        if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
-                        {
-                            objUser.IsDeleted = true;
-                            // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                            objUser.IsManager = form.IsManager;
-                            objUser.NewMID = form.NewManagerId;
-                            // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                        }
-                        else
-                        {
-                            objUser.IsDeleted = false;
-                        }
-                    }
-                    if (file != null)
-                    {
-                        using (MemoryStream target = new MemoryStream())
-                        {
-                            file.InputStream.CopyTo(target);
-                            byte[] data = target.ToArray();
-                            objUser.ProfilePhoto = data;
-                        }
-                    }
-                    else if (flag != null && flag != "false" && flag != "" && flag != string.Empty)//added by uday #555 
-                    {
-                        objUser.ProfilePhoto = null;
-                    }
-                    else
-                    {
-
-                        //// Get User Profile photo.
-                        BDSService.User objUsernew = objBDSServiceClient.GetTeamMemberDetailsEx(form.UserId, Sessions.ApplicationId);
-                        if (objUsernew != null)
-                        {
-                            objUser.ProfilePhoto = objUsernew.ProfilePhoto;
-                        }
-                    }
-                    objUser.CID = Sessions.User.CID;
-                    objUser.PreferredCurrencyCode = form.PreferredCurrencyCode;
-                    objUser.RoleId = form.RoleId;
-                    if (form.RoleId != null)
-                    {
-                        Role objRole = objBDSServiceClient.GetRoleDetails(form.RoleId);
-                        if (objRole != null)
-                        {
-                            objUser.RoleCode = objRole.Code;
-                            objUser.MID = form.ManagerId;
-                            // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                        }
-                    }
-
-                    // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
-                    if (form.ManagerId == 0)
-                        form.ManagerName = "N/A";
-
-                    //// Update User details.
-                    int retVal = objBDSServiceClient.UpdateUserEx(objUser, Sessions.ApplicationId, Sessions.User.ID);
-                    if (retVal == 1)
-                    {
-                        TempData["SuccessMessage"] = Common.objCached.UserEdited;
-                        if (form.UserId == Sessions.User.ID)
-                        {
-                            objUser = objBDSServiceClient.GetTeamMemberDetailsEx(form.UserId, Sessions.ApplicationId);
-                            if (objUser.PreferredCurrencyCode != Sessions.User.PreferredCurrencyCode)
-                            {
-                                TempData["SuccessMessage"] = Common.objCached.UserEditedWithCurrency;
-                            }
-                            if (objUser != null)
-                                Sessions.User = objUser;
-                        }
-
-                        //// Modified By Maninder Singh Wadhva to Address PL#203
-                        System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_photo");
-                        System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_name");
-                        System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_bu");//uday #416
-                        System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_jtitle");//uday #416
-
-                        //Start Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
+                        BDSService.User objUser = new BDSService.User();
+                        objUser.ID = form.UserId;
+                        objUser.FirstName = form.FirstName;
+                        objUser.LastName = form.LastName;
+                        objUser.Email = form.Email;
+                        objUser.Phone = form.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        objUser.JobTitle = form.JobTitle;
                         if (form.IsDeleted != null)
                         {
                             if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
                             {
-                                int retDelete = objBDSServiceClient.DeleteUserEx(form.UserId, Sessions.ApplicationId);
-                                return RedirectToAction("Index");   // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
+                                objUser.IsDeleted = true;
+                                // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                                objUser.IsManager = form.IsManager;
+                                objUser.NewMID = form.NewManagerId;
+                                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                            }
+                            else
+                            {
+                                objUser.IsDeleted = false;
                             }
                         }
-                        //End Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
-                    }
-                    else if (retVal == -2)
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.UserDuplicate;
-                    }
-                    else if (retVal == -1)
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.UserCantEdited;
-                    }
-                    else if (retVal == 0)
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                        if (file != null)
+                        {
+                            using (MemoryStream target = new MemoryStream())
+                            {
+                                file.InputStream.CopyTo(target);
+                                byte[] data = target.ToArray();
+                                objUser.ProfilePhoto = data;
+                            }
+                        }
+                        else if (flag != null && flag != "false" && flag != "" && flag != string.Empty)//added by uday #555 
+                        {
+                            objUser.ProfilePhoto = null;
+                        }
+                        else
+                        {
+
+                            //// Get User Profile photo.
+                            BDSService.User objUsernew = objBDSServiceClient.GetTeamMemberDetailsEx(form.UserId, Sessions.ApplicationId);
+                            if (objUsernew != null)
+                            {
+                                objUser.ProfilePhoto = objUsernew.ProfilePhoto;
+                            }
+                        }
+                        objUser.CID = Sessions.User.CID;
+                        objUser.PreferredCurrencyCode = form.PreferredCurrencyCode;
+                        objUser.RoleId = form.RoleId;
+                        if (form.RoleId != null)
+                        {
+                            Role objRole = objBDSServiceClient.GetRoleDetails(form.RoleId);
+                            if (objRole != null)
+                            {
+                                objUser.RoleCode = objRole.Code;
+                                objUser.MID = form.ManagerId;
+                                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                            }
+                        }
+
+                        // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
+                        if (form.ManagerId == 0)
+                            form.ManagerName = "N/A";
+
+                        //// Update User details.
+                        int retVal = objBDSServiceClient.UpdateUserEx(objUser, Sessions.ApplicationId, Sessions.User.ID);
+                        if (retVal == 1)
+                        {
+                            TempData["SuccessMessage"] = Common.objCached.UserEdited;
+                            if (form.UserId == Sessions.User.ID)
+                            {
+                                objUser = objBDSServiceClient.GetTeamMemberDetailsEx(form.UserId, Sessions.ApplicationId);
+                                if (objUser.PreferredCurrencyCode != Sessions.User.PreferredCurrencyCode)
+                                {
+                                    TempData["SuccessMessage"] = Common.objCached.UserEditedWithCurrency;
+                                }
+                                if (objUser != null)
+                                    Sessions.User = objUser;
+                            }
+
+                            //// Modified By Maninder Singh Wadhva to Address PL#203
+                            System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_photo");
+                            System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_name");
+                            System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_bu");//uday #416
+                            System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_jtitle");//uday #416
+
+                            //Start Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
+                            if (form.IsDeleted != null)
+                            {
+                                if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
+                                {
+                                    int retDelete = objBDSServiceClient.DeleteUserEx(form.UserId, Sessions.ApplicationId);
+                                    return RedirectToAction("Index");   // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
+                                }
+                            }
+                            //End Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
+                        }
+                        else if (retVal == -2)
+                        {
+                            TempData["ErrorMessage"] = Common.objCached.UserDuplicate;
+                        }
+                        else if (retVal == -1)
+                        {
+                            TempData["ErrorMessage"] = Common.objCached.UserCantEdited;
+                        }
+                        else if (retVal == 0)
+                        {
+                            TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                        }
                     }
                 }
-            }
                 //// Check whether UserId is current loggined User or not.
                 if (form.UserId == Sessions.User.ID)
                 {
@@ -1033,7 +1036,7 @@ namespace RevenuePlanner.Controllers
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
-                TempData["CurrentEditingData"] = null; 
+                TempData["CurrentEditingData"] = null;
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
@@ -1197,7 +1200,7 @@ namespace RevenuePlanner.Controllers
                 userId = Common.GetIntegerUserId(userGuid);//called method to get interger userid from GUID
                 if (userId != 0)
                 {
-                    
+
                     BDSService.User objUser = new BDSService.User();
                     //// Get User profile photo.
                     objUser = objBDSServiceClient.GetTeamMemberDetailsEx(userId, Sessions.ApplicationId);
@@ -1718,14 +1721,14 @@ namespace RevenuePlanner.Controllers
 
                     List<NotificationSummary> lstnotifications = AllNotification.Where(a => a.ActionName != "submitted").Take(5)
                                                                    .Select(a => new NotificationSummary
-                                                                    {
-                                                                        Description = ConvertString(a.Description),
-                                                                        NotificationCreatedDate = Common.TimeAgo(a.CreatedDate),
-                                                                        NotificationId = a.NotificationId,
-                                                                        ActionName = a.ActionName,
-                                                                        ComponentId = a.ComponentId,
-                                                                        EntityId = a.EntityId
-                                                                    }).ToList();
+                                                                   {
+                                                                       Description = ConvertString(a.Description),
+                                                                       NotificationCreatedDate = Common.TimeAgo(a.CreatedDate),
+                                                                       NotificationId = a.NotificationId,
+                                                                       ActionName = a.ActionName,
+                                                                       ComponentId = a.ComponentId,
+                                                                       EntityId = a.EntityId
+                                                                   }).ToList();
 
                     if (RequestList != null && RequestList.Count > 0)
                     {
