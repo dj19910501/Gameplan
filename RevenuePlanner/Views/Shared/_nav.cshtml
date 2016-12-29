@@ -67,6 +67,11 @@
                             else
                             {
                                 hrefLink = Url.Action(Convert.ToString(o.ActionName), Convert.ToString(o.ControllerName));
+                                if (o.Code.ToLower() == "measure")
+                                {
+                                    hrefLink = o.ActionName;
+                                }
+
                             }
                         }
                         string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
@@ -87,8 +92,15 @@
                         {
                             CustomCSS = o.CustomCss;
                         }
+                        //For meaure link we will navigate to measure application so we have used _blank target
+                        string target = "_self";
+                        if (o.Code.ToLower() == "measure")
+                            {
+                                target = "_blank";
+                            }
                         <li class="@classname" id="@LiId" DashFrom="@DashFrom">
-                            <a href="@hrefLink">
+                           
+                            <a href="@hrefLink"  target=@target>
                                 <span class="@CustomCSS"></span>@*Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016*@
                                 <span class="nav-text">@menuname.ToUpper()</span>
                                 @if (hasChildren)

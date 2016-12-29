@@ -174,23 +174,34 @@ namespace RevenuePlanner.Controllers
                 {
                     ErrorSignal.FromCurrentContext().Raise(ex);
                 }
-
-
-                if (Sessions.AppMenus != null)
+                //Added by kausha somaiya on 29/12/2016 for ticket no 2961
+                //We will get measure Application URL from webConfig and will redirect to that Url when click on Measure Tab
+                string measureApplicationUrl = string.Empty;
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["MeasureApplicationUrl"])))
                 {
-                    if (lstMenu != null && lstMenu.Count > 0)
-                    {
-                        Sessions.AppMenus.AddRange(lstMenu);
-                    }
-                    //foreach (var item in lstMenu)
-                    //{
+                    measureApplicationUrl = Convert.ToString(ConfigurationManager.AppSettings["MeasureApplicationUrl"]);
+                    Menu objMeasureMenu = new Menu();
+                    objMeasureMenu.Code = "measure";
+                    objMeasureMenu.Name = "Measure";
+                    objMeasureMenu.ActionName = string.Format("{0}login/MeasureReports", measureApplicationUrl);
+                    Sessions.AppMenus.Add(objMeasureMenu);
+                }
 
-                    //}
-                }
-                else
-                {
-                    Sessions.AppMenus = lstMenu;
-                }
+                //if (Sessions.AppMenus != null)
+                //{
+                //    if (lstMenu != null && lstMenu.Count > 0)
+                //    {
+                //        Sessions.AppMenus.AddRange(lstMenu);
+                //    }
+                //    //foreach (var item in lstMenu)
+                //    //{
+
+                //    //}
+                //}
+                //else
+                //{
+                //    Sessions.AppMenus = lstMenu;
+                //}
             }
             
             if (Sessions.AppMenus != null && Sessions.AppMenus.Count > 0)

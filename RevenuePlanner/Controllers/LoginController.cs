@@ -163,7 +163,7 @@ namespace RevenuePlanner.Controllers
                     obj = objBDSServiceClient.Validate_UserOverAll(form.UserEmail.Trim(), singlehash);
 
                     if (obj == null)
-                    {
+                    {                      
                         ModelState.AddModelError("", Common.objCached.InvalidLogin);
 
                         //Modified By komal rawal for password lockout feature #2107
@@ -256,6 +256,9 @@ namespace RevenuePlanner.Controllers
                     Sessions.User = obj;
                     // Add By Nishant Sheth Set Cache for exchange rate #2496
                     objCurrency.SetUserCurrencyCache(Sessions.User.CID, Sessions.User.ID);
+                    //Added hashKey in session for ticket no #2961 to get it in measure application
+                    Response.Cookies["hashkey"].Value = singlehash;
+                    Response.Cookies["useremaiid"].Value = obj.Email;
                     //set session for list of user for client #2899
                     List<BDSService.User> ClientUsers = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
                     Sessions.dictUserIds = ClientUsers.ToDictionary(a => a.UserId , a=>a.ID);
