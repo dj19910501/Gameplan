@@ -904,9 +904,17 @@ function ExportToExcel() {
     ShowHideSuccessDiv();
     budgetgrid.setColumnHidden(colIdIndex, false);
     budgetgrid.setColumnHidden(colIconIndex, true);
+    budgetgrid.expandAll();
     budgetgrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
     budgetgrid.setColumnHidden(colIdIndex, true);
     budgetgrid.setColumnHidden(colIconIndex, false);
+    var cookieBudgetgridState = dhtmlXGridObject.prototype.getCookie("budgetgridState", "gridOpen");
+    if (cookieBudgetgridState != null) {
+        budgetgrid.collapseAll()
+        budgetgrid.loadOpenStates("budgetgridState");
+    }
+   
+
 }
 
 // #2804 File input popup function for import finance marketing budget
