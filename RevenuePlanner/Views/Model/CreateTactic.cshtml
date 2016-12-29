@@ -216,7 +216,7 @@
         });
 
         $("#deleteTactic").click(function () {
-            var uId = $(window).attr('name');   // Added by Sohel Pathan on 19/06/2014 for PL ticket #536
+            var uId = '@Sessions.User.UserId';   // Added by Sohel Pathan on 19/06/2014 for PL ticket #536
             if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
                 var idTactic = $("#hdnTacticTypeId").val();
                 $.ajax({
@@ -224,7 +224,7 @@
                     url: '@Url.Content("~/Model/DeleteTactic")',
                     data: {
                         ID: idTactic
-                        , UserId: uId    // Added by Sohel Pathan on 19/06/2014 for PL ticket #536
+                        , userId: uId    // Added by Sohel Pathan on 19/06/2014 for PL ticket #536
                     },
                     success: function (data) {
                         // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
@@ -481,7 +481,7 @@
                 //Modified by Brad Gray on 07/24/2015 for PL#1373,1374 WorkFront template integration
                 $.ajax({
                     type: 'POST',
-                    url: '@Url.Content("~/Home/CheckUserId/")?UserId=' + $(window).attr('name'),
+                    url: '@Url.Content("~/Home/CheckUserId/")?UserId=' + '@Sessions.User.UserId',
                     success: function (data) {
                         if (data.returnURL == '#') {
                             $.ajax({

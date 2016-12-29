@@ -405,7 +405,7 @@ namespace RevenuePlanner.Models
     public class PlanMainDHTMLXGridHomeGrid
     {
         public List<PlanDHTMLXGridDataModelHomeGrid> rows { get; set; }
-        public List<PlanHead> head { get; set; }
+        public List<PlanGridHead> head { get; set; }
     }
 
     public class PlanGridFilters
@@ -745,6 +745,25 @@ namespace RevenuePlanner.Models
         public string id { get; set; }
         public string sort { get; set; }
     }
+    
+    public class PlanGridHead
+    {
+        public List<PlanGridOptions> options { get; set; }
+        public string value { get; set; }
+        public int width { get; set; }
+        public string align { get; set; }
+        public string type { get; set; }
+        public string id { get; set; }
+        public string sort { get; set; }
+    }
+
+    // Added for Ticket #2955 to handle guid ids.
+    public class PlanGridOptions
+    {
+        public string id { get; set; } 
+        public string value { get; set; }
+    }
+
     public class PlanOptions
     {
         public int id { get; set; } //generid id field including user ID but all are integers - zz

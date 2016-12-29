@@ -6153,8 +6153,13 @@ namespace RevenuePlanner.Controllers
             List<int> dependantcustomfieldid = new List<int>();
             List<CustomfieldIDValues> customfieldidvalues = new List<CustomfieldIDValues>();
             try
-            {
+            {             
                 Common.RemoveGridCacheObject();
+                // Get UserId Integer Id from Guid Ticket #2955
+                if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
+                {
+                    UpdateVal = Convert.ToString(Common.GetIntegerUserId(new Guid(UpdateVal)));
+                } 
                 #region update Plan Detail
                 if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.plan.ToString())
                 {

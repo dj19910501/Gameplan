@@ -871,7 +871,7 @@ namespace RevenuePlanner.Test.Controllers
 
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            var result = objHomeController.CheckUserId(Sessions.User.ID) as JsonResult;
+            var result = objHomeController.CheckUserId(Sessions.User.UserId) as JsonResult;
             var serializedData = new RouteValueDictionary(result.Data);
             var resultvalue = serializedData["returnURL"];
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());

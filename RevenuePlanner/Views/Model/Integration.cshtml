@@ -444,7 +444,7 @@
         });
 
         function SaveAllIntegration(integrationInstanceId) {
-            var uId = $(window).attr('name');
+            var uId = '@Sessions.User.UserId';
             var ModelId = lastModelId;
             $.ajax({
                 type: 'POST',
@@ -452,7 +452,7 @@
                 data: {
                     modelId: ModelId,
                     integrationId: integrationInstanceId,
-                    UserId: uId
+                    userId: uId
                 },
                 dataType: "json",
                 success: function (r) {

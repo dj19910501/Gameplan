@@ -16,6 +16,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Mvc;
 using System.Xml.Linq;
 
 namespace RevenuePlanner.Services
@@ -250,7 +251,7 @@ namespace RevenuePlanner.Services
                 });
             }
             // Generate header columns for grid
-            List<PlanHead> ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle, ref HiddenColumns, ref UserDefinedColumns, ref customColumnslist, UserId, ref IsUserView, objUserView);
+            List<PlanGridHead> ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle, ref HiddenColumns, ref UserDefinedColumns, ref customColumnslist, UserId, ref IsUserView, objUserView);
                 List<GridDefaultModel> GridDataList=new List<GridDefaultModel>();
                 List<GridDefaultModel> GridHireachyData = new List<GridDefaultModel>();
                 if(IsFromCache)
@@ -511,19 +512,19 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Create header of custom fields for plan grid
         /// </summary>
-        private List<PlanHead> GridCustomHead(List<GridCustomFields> lstCustomFields, List<string> customColumnslist)
+        private List<PlanGridHead> GridCustomHead(List<GridCustomFields> lstCustomFields, List<string> customColumnslist)
         {
-            List<PlanHead> ListHead = new List<PlanHead>();
+            List<PlanGridHead> ListHead = new List<PlanGridHead>();
             // Set Column management icon on grid view header
             string manageviewicon = Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon);
-            PlanHead headobj = new PlanHead();
+            PlanGridHead headobj = new PlanGridHead();
             foreach (string customFieldId in customColumnslist)
             {
                 GridCustomFields CustomfieldDetail = lstCustomFields.Where(a => a.CustomFieldId == int.Parse(customFieldId)).FirstOrDefault();
 
                 if (CustomfieldDetail != null)
                 {
-                    headobj = new PlanHead();
+                    headobj = new PlanGridHead();
                     // Check custom field type is Text box or Dropdown
                     if (string.Compare(CustomfieldDetail.CustomFieldType, Convert.ToString(Enums.CustomFieldType.TextBox), true) == 0)
                     {
@@ -571,9 +572,9 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Create Plan Grid header for default columns
         /// </summary>
-        private List<PlanHead> GenerateJsonHeader(string MQLTitle, ref List<string> HiddenColumns, ref List<string> UserDefinedColumns, ref List<string> customColumnslist, int UserId, ref bool IsUserView, User_CoulmnView userview)
+        private List<PlanGridHead> GenerateJsonHeader(string MQLTitle, ref List<string> HiddenColumns, ref List<string> UserDefinedColumns, ref List<string> customColumnslist, int UserId, ref bool IsUserView, User_CoulmnView userview)
         {
-            List<PlanHead> headobjlist = new List<PlanHead>(); // List of headers detail of plan grid
+            List<PlanGridHead> headobjlist = new List<PlanGridHead>(); // List of headers detail of plan grid
             // Get user column view
             //User_CoulmnView userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
             // Add Default and hidden required columns into list
@@ -587,9 +588,9 @@ namespace RevenuePlanner.Services
             {
                 IsUserView = false;
                 // Set option values for dropdown columns like Tactic type/ Owner/ Asset type
-                List<PlanHead> lstDefaultColumns = new List<PlanHead>();
+                List<PlanGridHead> lstDefaultColumns = new List<PlanGridHead>();
                 string MqlString = MQLTitle + Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon); // set client wise mql title and column management icon;
-                Dictionary<string, PlanHead> DictDefaultCoulmns = lstHomeGrid_Default_Columns();
+                Dictionary<string, PlanGridHead> DictDefaultCoulmns = lstHomeGrid_Default_Columns();
                 DictDefaultCoulmns.Where(a => a.Key == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL)).FirstOrDefault().Value.value = MqlString;
                 lstDefaultColumns.AddRange(DictDefaultCoulmns.Select(a => a.Value).ToList());
                 // Update UserDefinedColumns variable with default columns list
@@ -603,9 +604,9 @@ namespace RevenuePlanner.Services
                 {
                     IsUserView = false;
                     // Set option values for dropdown columns like Tactic type/ Owner/ Asset type
-                    List<PlanHead> lstDefaultColumns = new List<PlanHead>();
+                    List<PlanGridHead> lstDefaultColumns = new List<PlanGridHead>();
                     string MqlString = MQLTitle + Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon); // set client wise mql title and column management icon;
-                    Dictionary<string, PlanHead> DictDefaultCoulmns = lstHomeGrid_Default_Columns();
+                    Dictionary<string, PlanGridHead> DictDefaultCoulmns = lstHomeGrid_Default_Columns();
                     DictDefaultCoulmns.Where(a => a.Key == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL)).FirstOrDefault().Value.value = MqlString;
                     lstDefaultColumns.AddRange(DictDefaultCoulmns.Select(a => a.Value).ToList());
                     // Update UserDefinedColumns variable with default columns list
@@ -635,11 +636,11 @@ namespace RevenuePlanner.Services
         }
 
         // Below dictionary for default columns list of home grid // We are set the dhtmlx header properties 
-        private Dictionary<string, PlanHead> lstHomeGrid_Default_Columns()
+        private Dictionary<string, PlanGridHead> lstHomeGrid_Default_Columns()
         {
-            Dictionary<string, PlanHead> lstColumns = new Dictionary<string, PlanHead>();
+            Dictionary<string, PlanGridHead> lstColumns = new Dictionary<string, PlanGridHead>();
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate), new PlanGridHead
             {
                 type = "dhxCalendar",
                 align = "center",
@@ -649,7 +650,7 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.StartDate) + ColumnManagmentIcon
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate), new PlanGridHead
             {
                 type = "dhxCalendar",
                 align = "center",
@@ -659,7 +660,7 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.EndDate) + ColumnManagmentIcon
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Status), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Status), new PlanGridHead
             {
                 type = "ro",
                 align = "center",
@@ -669,7 +670,7 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Status) + ColumnManagmentIcon
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost), new PlanGridHead
             {
                 type = "edn",
                 align = "center",
@@ -689,7 +690,7 @@ namespace RevenuePlanner.Services
             //    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.AssetType) + ColumnManagmentIcon
             //});
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType), new PlanGridHead
             {
                 type = "coro",
                 align = "center",
@@ -699,7 +700,7 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.TacticType) + ColumnManagmentIcon
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Owner), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Owner), new PlanGridHead
             {
                 type = "coro",
                 align = "center",
@@ -710,7 +711,7 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Owner) + ColumnManagmentIcon
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal), new PlanGridHead
             {
                 type = "ed",
                 align = "center",
@@ -720,7 +721,7 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal) + ColumnManagmentIcon
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL), new PlanGridHead
             {
                 type = "ron",
                 align = "center",
@@ -730,7 +731,7 @@ namespace RevenuePlanner.Services
                 value = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL) // Here we not set ColumnManagmentIcon because MQl Title will be different for clients it will be set when list get
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue), new PlanGridHead
             {
                 type = "ron",
                 align = "center",
@@ -744,11 +745,11 @@ namespace RevenuePlanner.Services
         }
 
         // Below dictionary list default for every user. it's user have is any specific view or not.
-        private Dictionary<string, PlanHead> lstHomeGrid_Hidden_And_Default_Columns()
+        private Dictionary<string, PlanGridHead> lstHomeGrid_Hidden_And_Default_Columns()
         {
-            Dictionary<string, PlanHead> lstColumns = new Dictionary<string, PlanHead>();
+            Dictionary<string, PlanGridHead> lstColumns = new Dictionary<string, PlanGridHead>();
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType), new PlanGridHead
             {
                 type = "ro",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType),
@@ -757,7 +758,7 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.ActivityType)
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode), new PlanGridHead
             {
                 type = "ro",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode),
@@ -766,7 +767,7 @@ namespace RevenuePlanner.Services
                 value = string.Empty
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName), new PlanGridHead
             {
                 type = "ro",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName),
@@ -775,7 +776,7 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.MachineName)
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName), new PlanGridHead
             {
                 type = "tree",
                 align = "left",
@@ -786,7 +787,7 @@ namespace RevenuePlanner.Services
                 value = "Activity"
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), new PlanGridHead
             {
                 type = "ro",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),
@@ -795,7 +796,7 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.id)
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add), new PlanHead
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add), new PlanGridHead
             {
                 type = "ro",
                 align = "center",
@@ -811,9 +812,9 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Set default columns header values and it's properties
         /// </summary>
-        private List<PlanHead> GetUserDefaultColumnsProp(List<AttributeDetail> items, string MQLTitle, ref List<string> UserDefinedColumns)
+        private List<PlanGridHead> GetUserDefaultColumnsProp(List<AttributeDetail> items, string MQLTitle, ref List<string> UserDefinedColumns)
         {
-            List<PlanHead> lstDefaultCols = new List<PlanHead>();
+            List<PlanGridHead> lstDefaultCols = new List<PlanGridHead>();
 
             // Get the default common column list except custom fields columns
             List<string> UserSelctedDefaultcolumnsList = items
@@ -1557,6 +1558,11 @@ namespace RevenuePlanner.Services
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
                     objPlanData.style = cellTextColor;
+                    // Get guid user id from int id Ticket #2955
+                    if (columnName == Enums.HomeGrid_Default_Hidden_Columns.Owner)
+                    {
+                        objPlanData.value = Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(RowData.Owner)));
+                    }
                 }
                 objPlanData.style = cellTextColor;
                 objPlanData.value = (objPlanData.value == null ? string.Empty : objPlanData.value);
@@ -2257,7 +2263,7 @@ namespace RevenuePlanner.Services
         /// This is owner list (client wise) used in plan grid, this list will be bind in grid header and will be available at the time of cell editing
         /// </summary>
         /// <returns></returns>
-        private List<PlanOptions> GetOwnerListForHeader()
+        private List<PlanGridOptions> GetOwnerListForHeader()
         {
             IBDSService objAuthService = new BDSServiceClient();
             List<User> lstUsers = objAuthService.GetUserListByClientIdEx(_ClientId);
@@ -2266,11 +2272,11 @@ namespace RevenuePlanner.Services
             //Added following Code for #2784 on 22/11/2016  Following method is called to match user with user application table and 
             //also checked Deleted user should not be return in this list.   
             lstClientUsers = objAuthService.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, Sessions.ApplicationId).Select(w => w.ID).ToList(); //PL #1532 Dashrath Prajapati                   
-            return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new PlanOptions
+            return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new PlanGridOptions
             {
-                id = owner.ID,             
+                id = owner.UserId.ToString(),             
                 value = string.Format("{0} {1}",owner.FirstName,owner.LastName)
-            }).OrderBy(tactype => tactype.value).ToList(); ;
+            }).OrderBy(tactype => tactype.value).ToList();
         }
         /// <summary>
         /// This is tactic type list (client wise) used in plan grid

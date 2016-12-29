@@ -1720,9 +1720,11 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="UserId">user id</param>
         /// <returns>returns json result with redirect url.</returns>
-        public ActionResult CheckUserId(int UserId)
+        public ActionResult CheckUserId(Guid UserId = new Guid())
         {
-            if (Sessions.User.ID == UserId)
+            // Get UserId Integer Id from Guid Ticket #2955
+            int Id = Common.GetIntegerUserId(UserId);
+            if (Sessions.User.ID.Equals(Id))
             {
                 return Json(new { returnURL = "#" }, JsonRequestBehavior.AllowGet);
             }

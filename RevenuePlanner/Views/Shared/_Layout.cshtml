@@ -352,7 +352,7 @@
     function CheckUserSession(Sender, isSender) {
         $.ajax({
             type: 'GET',
-            url: '@Url.Content("~/Home/CheckUserId/")?UserId=' + $(window).attr('name'),
+            url: '@Url.Content("~/Home/CheckUserId/")?UserId=' + '@Sessions.User.UserId',
             success: function (data) {
                 reason = 'callback';
                 if (data.returnURL == '#') {

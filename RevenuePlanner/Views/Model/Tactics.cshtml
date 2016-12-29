@@ -628,11 +628,11 @@
                 }
             }
             //// Start - Modified by Sohel Pathan on 31/12/2014 for PL ticket #1063
-            var uId = $(window).attr('name');
+            var uId = '@Sessions.User.UserId';
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/saveAllTactic/")',
-                data: 'ids=' + ids + '&rejids=' + rejid + '&ModelId=' + ModelId + '&isModelPublished=' + isPublishToo + '&EffectiveDate=' + $("#EffectiveDate").val() + '&UserId=' + uId,
+                data: 'ids=' + ids + '&rejids=' + rejid + '&ModelId=' + ModelId + '&isModelPublished=' + isPublishToo + '&EffectiveDate=' + $("#EffectiveDate").val() + '&userId=' + uId,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';

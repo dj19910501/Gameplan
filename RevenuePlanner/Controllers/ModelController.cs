@@ -1093,12 +1093,14 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">model id</param>
         /// <param name="UserId">logged in user id</param>
         /// <returns>returns json object</returns>
-        public JsonResult deleteModel(int id, int UserId = 0)
+        public JsonResult deleteModel(int id, Guid userId = new Guid())
         {
+            // Get UserId Integer Id from Guid Ticket #2955
+            int Id = Common.GetIntegerUserId(userId);
             //// Check for cross user login request
-            if (UserId != 0)
+            if (Id != 0)
             {
-                if (Sessions.User.ID != UserId)
+                if (!Sessions.User.ID.Equals(Id))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1567,13 +1569,15 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult DeleteTactic(int id = 0, int UserId = 0)
+        public ActionResult DeleteTactic(int id = 0, Guid userId = new Guid())
         {
+            // Get UserId Integer Id from Guid Ticket #2955
+            int Id = Common.GetIntegerUserId(userId);
             //// Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
             //// Cross client user login check
-            if (UserId != 0)
+            if (Id != 0)
             {
-                if (Sessions.User.ID != UserId)
+                if (!Sessions.User.ID.Equals(Id))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1898,13 +1902,15 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns json object</returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult saveAllTactic(string ids, string rejids, int ModelId, bool isModelPublished, string EffectiveDate, int UserId = 0)
+        public ActionResult saveAllTactic(string ids, string rejids, int ModelId, bool isModelPublished, string EffectiveDate, Guid userId = new Guid())
         {
+            // Get UserId Integer Id from Guid Ticket #2955
+            int Id = Common.GetIntegerUserId(userId);
             //// Start - Added by Sohel Pathan on 31/12/2014 for PL ticket #1063
             //// Check cross user login
-            if (UserId != 0)
+            if (Id != 0)
             {
-                if (Sessions.User.ID != UserId)
+                if (!Sessions.User.ID.Equals(Id))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2353,12 +2359,14 @@ namespace RevenuePlanner.Controllers
         /// <param name="integrationId">integration instance id</param>
         /// <param name="UserId">legged in user id</param>
         /// <returns>returns json result object</returns>
-        public JsonResult SaveAllIntegration(int modelId, int integrationId, int UserId = 0)
+        public JsonResult SaveAllIntegration(int modelId, int integrationId, Guid userId = new Guid())
         {
+            // Get UserId Integer Id from Guid Ticket #2955
+            int Id = Common.GetIntegerUserId(userId);
             //// Cross user login check
-            if (UserId != 0)
+            if (Id != 0)
             {
-                if (Sessions.User.ID != UserId)
+                if (!Sessions.User.ID.Equals(Id))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);

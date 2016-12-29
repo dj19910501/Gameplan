@@ -152,7 +152,7 @@ else
     //End
     @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
     $(document).on('click', '.delete-temp-program', function (e) {
-        var uId = $(window).attr('name');
+        var uId = '@Sessions.User.UserId';
         if (confirm($("#Confirmationmessage").val())) {
             e.stopPropagation();
             var id = $(this).parent().parent().attr("id");
@@ -160,7 +160,7 @@ else
                 $.ajax({
                     type: 'GET',
                     url: '@Url.Content("~/Model/deleteModel")',
-                    data: { id: id, UserId: uId },
+                    data: { id: id, userId: uId },
                     dataType: "json",
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
