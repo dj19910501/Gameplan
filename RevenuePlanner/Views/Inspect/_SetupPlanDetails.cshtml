@@ -183,7 +183,7 @@
             $('#conjuntionWord').html('to deliver ');
         }
 
-        $('#nl-form #divPlanDefinationEnabled .nl-field ul li').each(function () {
+        $('#nl-form #divPlanDefinationEnabled .nl-field:first-child ul li').each(function () {
             var EncodeString = $(this).text();
             $(this).text(htmlDecode(EncodeString));
         });
