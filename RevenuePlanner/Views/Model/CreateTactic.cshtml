@@ -481,7 +481,7 @@
                 //Modified by Brad Gray on 07/24/2015 for PL#1373,1374 WorkFront template integration
                 $.ajax({
                     type: 'POST',
-                    url: '@Url.Content("~/Home/CheckUserId/")?UserId=' + '@Sessions.User.UserId',
+                    url: '@Url.Content("~/Home/CheckUserId/")?userId=' + '@Sessions.User.UserId',
                     success: function (data) {
                         if (data.returnURL == '#') {
                             $.ajax({

@@ -1096,11 +1096,11 @@ namespace RevenuePlanner.Controllers
         public JsonResult deleteModel(int id, Guid userId = new Guid())
         {
             // Get UserId Integer Id from Guid Ticket #2955
-            int Id = Common.GetIntegerUserId(userId);
+            int uId = Common.GetIntegerUserId(userId);
             //// Check for cross user login request
-            if (Id != 0)
+            if (uId != 0)
             {
-                if (!Sessions.User.ID.Equals(Id))
+                if (!Sessions.User.ID.Equals(uId))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1572,12 +1572,12 @@ namespace RevenuePlanner.Controllers
         public ActionResult DeleteTactic(int id = 0, Guid userId = new Guid())
         {
             // Get UserId Integer Id from Guid Ticket #2955
-            int Id = Common.GetIntegerUserId(userId);
+            int uId = Common.GetIntegerUserId(userId);
             //// Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
             //// Cross client user login check
-            if (Id != 0)
+            if (uId != 0)
             {
-                if (!Sessions.User.ID.Equals(Id))
+                if (!Sessions.User.ID.Equals(uId))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1905,12 +1905,12 @@ namespace RevenuePlanner.Controllers
         public ActionResult saveAllTactic(string ids, string rejids, int ModelId, bool isModelPublished, string EffectiveDate, Guid userId = new Guid())
         {
             // Get UserId Integer Id from Guid Ticket #2955
-            int Id = Common.GetIntegerUserId(userId);
+            int uId = Common.GetIntegerUserId(userId);
             //// Start - Added by Sohel Pathan on 31/12/2014 for PL ticket #1063
             //// Check cross user login
-            if (Id != 0)
+            if (uId != 0)
             {
-                if (!Sessions.User.ID.Equals(Id))
+                if (!Sessions.User.ID.Equals(uId))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2362,11 +2362,11 @@ namespace RevenuePlanner.Controllers
         public JsonResult SaveAllIntegration(int modelId, int integrationId, Guid userId = new Guid())
         {
             // Get UserId Integer Id from Guid Ticket #2955
-            int Id = Common.GetIntegerUserId(userId);
+            int uId = Common.GetIntegerUserId(userId);
             //// Cross user login check
-            if (Id != 0)
+            if (uId != 0)
             {
-                if (!Sessions.User.ID.Equals(Id))
+                if (!Sessions.User.ID.Equals(uId))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);

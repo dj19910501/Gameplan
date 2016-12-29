@@ -1718,12 +1718,12 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Action Method to check user id of logged in use
         /// </summary>
-        /// <param name="UserId">user id</param>
+        /// <param name="userId">user id</param>
         /// <returns>returns json result with redirect url.</returns>
-        public ActionResult CheckUserId(Guid UserId = new Guid())
+        public ActionResult CheckUserId(Guid userId = new Guid())
         {
             // Get UserId Integer Id from Guid Ticket #2955
-            int Id = Common.GetIntegerUserId(UserId);
+            int Id = Common.GetIntegerUserId(userId);
             if (Sessions.User.ID.Equals(Id))
             {
                 return Json(new { returnURL = "#" }, JsonRequestBehavior.AllowGet);
