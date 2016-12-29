@@ -701,13 +701,13 @@
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/DeleteSection")',
                  data: {
-                     ID: ProgramId
-                     , DeleteType: '@Enums.DuplicationModule.Program'
-                     , UserGuid: uId
+                     id: ProgramId
+                     , deleteType: '@Enums.DuplicationModule.Program'
+                     , userGuid: uId
                      , closedTask: arrClosedTaskString
-                     , CalledFromBudget: '@CalledFromBudget'
-                        , IsIndex: '@isIndex'
-                        , RedirectType: '@RedirectTypeMode'
+                     , calledFromBudget: '@CalledFromBudget'
+                        , isIndex: '@isIndex'
+                        , redirectType: '@RedirectTypeMode'
                     },
                  success: function (data) {
                      if (data.returnURL != 'undefined' && data.returnURL == '#') {

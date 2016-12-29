@@ -74,15 +74,16 @@ namespace RevenuePlanner.Test.MockHelpers
             string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
             Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
             string singlehash = DataHelper.ComputeSingleHash(password);
-            double DefaultPlanExchangeRate = 1;
-
 
             HttpContext.Current = MockHelpers.FakeHttpContext();
 
             HttpContext.Current.Session["User"] = objBDSServiceClient.ValidateUser(applicationId, userName, singlehash);
 
             List<BDSService.User> ClientUsers = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
-            HttpContext.Current.Session["dictUserIds"] = ClientUsers.ToDictionary(a => a.UserId, a => a.ID);
+            if (ClientUsers != null && ClientUsers.Count > 0)
+            {
+                HttpContext.Current.Session["dictUserIds"] = ClientUsers.ToDictionary(a => a.UserId, a => a.ID);
+            }
 
             HttpContext.Current.Session["Permission"] = objBDSServiceClient.GetPermission(applicationId, ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).RoleId);
             Message msg = new Message();
@@ -138,7 +139,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <returns></returns>
         public static int GetMultiYearPlanId()
         {
-            return db.Plan_Campaign.Where(c => (c.EndDate.Year - c.StartDate.Year) > 0 && c.IsDeleted==false && c.Plan.IsDeleted==false).Select(c => c.PlanId).FirstOrDefault();
+            return db.Plan_Campaign.Where(c => (c.EndDate.Year - c.StartDate.Year) > 0 && c.IsDeleted == false && c.Plan.IsDeleted == false).Select(c => c.PlanId).FirstOrDefault();
             //return db.Plans.Where(p => p.IsDeleted == false && p.Plan_Campaign.Where(c=>(c.EndDate.Year- c.StartDate.Year)>0)).Select(p => p.PlanId).FirstOrDefault();
         }
 
@@ -182,8 +183,8 @@ namespace RevenuePlanner.Test.MockHelpers
         /// 
         public static string GetPlanYear(int planId)
         {
-            
-            return Convert.ToString(db.Plans.Where(p => p.IsDeleted == false && p.PlanId==planId).Select(p => p.Year).FirstOrDefault());
+
+            return Convert.ToString(db.Plans.Where(p => p.IsDeleted == false && p.PlanId == planId).Select(p => p.Year).FirstOrDefault());
         }
 
         /// <summary>
@@ -453,7 +454,7 @@ namespace RevenuePlanner.Test.MockHelpers
             else
             {
                 ClientId = (from i in db.Models
-                            where i.IsDeleted == false && i.ModelId==ModelId
+                            where i.IsDeleted == false && i.ModelId == ModelId
                             select i.ClientId).FirstOrDefault();
             }
             return ClientId;

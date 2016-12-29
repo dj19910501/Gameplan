@@ -720,7 +720,7 @@
             type: 'POST',
             async: false,
             url: '@Url.Content("~/Inspect/SaveCampaign")',
-            data: formData + '&UserGuid=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues) + '&planId=@Model.PlanId',
+            data: formData + '&userGuid=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues) + '&planId=@Model.PlanId',
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

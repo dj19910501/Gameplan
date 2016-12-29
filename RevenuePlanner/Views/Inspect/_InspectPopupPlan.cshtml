@@ -501,13 +501,13 @@
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/DeleteSection")',
                 data: {
-                    ID: planId,
-                    DeleteType: '@Enums.DuplicationModule.Plan',
-                    UserGuid: uId,
+                    id: planId,
+                    deleteType: '@Enums.DuplicationModule.Plan',
+                    userGuid: uId,
                     closedTask: arrClosedTaskString,
-                    CalledFromBudget: '@CalledFromBudget',
-                    IsIndex: '@isIndex',
-                    RedirectType: '@RedirectTypeMode'
+                    calledFromBudget: '@CalledFromBudget',
+                    isIndex: '@isIndex',
+                    redirectType: '@RedirectTypeMode'
                 },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -570,8 +570,8 @@
             type: 'POST',
             url: '@Url.Content("~/Plan/PublishPlan/")',
             data: {
-                UserGuid: uId,
-                PlanId: planId
+                userGuid: uId,
+                planId: planId
             },
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {

@@ -949,7 +949,7 @@
             type: 'POST',
             url: '@Url.Content("~/Inspect/SetupSaveTactic")',
             async: false,
-            data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserGuid=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&resubmission=' + resubmission,
+            data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&userGuid=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&resubmission=' + resubmission,
             success: function (data) {                
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';

@@ -417,7 +417,7 @@
             function LoadUserImage(userid) {
                 $.ajax({
                     url: '@Url.Content("~/user/LoadUserImage")', type: "GET",
-                    data: { UserGuid: userid, width: 60, height: 60, src: 'myteam' },
+                    data: { userGuid: userid, width: 60, height: 60, src: 'myteam' },
                     async: false,
                     cache: false,
                     contentType: "application/json; charset=utf-8",

@@ -851,7 +851,7 @@
             type: 'POST',
             async: false,
             url: '@Url.Content("~/Inspect/SaveLineitem")',
-            data: $("form").serialize() + '&title=' + escape(lineItemTitle) + '&FieldMappingValues=' + escape(_FieldMappingValues) + '&customFieldInputs=' + escape(_customFieldValues) + '&tacticId=@Model.PlanTacticId' + '&UserGuid=' + uId,
+            data: $("form").serialize() + '&title=' + escape(lineItemTitle) + '&fieldMappingValues=' + escape(_FieldMappingValues) + '&customFieldInputs=' + escape(_customFieldValues) + '&tacticId=@Model.PlanTacticId' + '&userGuid=' + uId,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

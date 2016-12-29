@@ -109,6 +109,81 @@ namespace RevenuePlanner.Controllers
 
         #endregion  NoModel
 
+        #region Calculate Plan Budget
+        /// <summary>
+        /// Calculate Plan budget based on goal type selected
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>15/07/2014</CreatedDate>
+        /// <param name="modelId">Model id of selected plan</param>
+        /// <param name="goalType">goal type of selected plan</param>
+        /// <param name="goalValue">goal value for goal type of selected plan</param>
+        /// <returns>returns json result object</returns>
+        public JsonResult CalculateBudget(int modelId, string goalType, string goalValue)
+        {
+            string msg1 = "", msg2 = "";
+            string input1 = "0", input2 = "0";
+            double ADS = 0;
+            PlanExchangeRate = Sessions.PlanExchangeRate;
+            try
+            {
+                if (modelId != 0)
+                {
+                    double ADSValue = db.Models.FirstOrDefault(m => m.ModelId == modelId).AverageDealSize;
+                    ADS = ADSValue;
+                }
+
+                if (goalType.ToString() != "")
+                {
+                    BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();
+                    // Start - Modified by Sohel Pathan on 09/12/2014 for PL ticket #975
+                    bool isGoalValueExists = false;
+                    goalValue = goalValue.Replace(",", "");
+                    if (goalValue != "" && Convert.ToDouble(goalValue) != 0)
+                    {
+                        isGoalValueExists = true;
+                        objBudgetAllocationModel = Common.CalculateBudgetInputs(modelId, goalType, goalValue, ADS);
+                    }
+
+                    List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
+
+                    //// Set Input & Message based on GoalType value.
+                    if (goalType.ToString().ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower())
+                    {
+                        msg1 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        msg2 = " in revenue";
+                        input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                        //input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objBudgetAllocationModel.RevenueValue)), PlanExchangeRate).ToString();
+
+                    }
+                    else if (goalType.ToString().ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
+                    {
+                        msg1 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        msg2 = " in revenue";
+                        input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                        //input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objBudgetAllocationModel.RevenueValue)), PlanExchangeRate).ToString();
+
+                    }
+                    else if (goalType.ToString().ToLower() == Enums.PlanGoalType.Revenue.ToString().ToLower())
+                    {
+                        msg1 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        msg2 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                    }
+                    // End - Modified by Sohel Pathan on 09/12/2014 for PL ticket #975
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { msg1 = msg1, msg2 = msg2, input1 = input1, input2 = input2, ADS = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(ADS)), PlanExchangeRate) }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
         #endregion Create
 
         #region Switch Model for Plan
@@ -951,17 +1026,16 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns ApplyToCalendar action result.</returns>
         [HttpPost]
         //Modified By Komal Rawal for new UI
-        public ActionResult PublishPlan(Guid UserGuid = new Guid(), int PlanId = 0)
+        public ActionResult PublishPlan(Guid userGuid = new Guid(), int planId = 0)
         {
-            int IntPlanId = PlanId;
             // Get UserId Integer Id from Guid Ticket #2954
-            int UserId = Common.GetIntegerUserId(UserGuid);
+            int userId = Common.GetIntegerUserId(userGuid);
             try
             {
                 //// Check cross user login check
-                if (UserId != 0)
+                if (userId != 0)
                 {
-                    if (Sessions.User.ID != UserId)
+                    if (Sessions.User.ID != userId)
                     {
                         TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                         return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -969,9 +1043,9 @@ namespace RevenuePlanner.Controllers
                 }
 
                 //// Update Plan status to Published.
-                if (IntPlanId == 0)
-                    IntPlanId = Sessions.PlanId;
-                var plan = db.Plans.FirstOrDefault(p => p.PlanId.Equals(IntPlanId));
+                if (planId == 0)
+                    planId = Sessions.PlanId;
+                var plan = db.Plans.FirstOrDefault(p => p.PlanId.Equals(planId));
                 plan.Status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
                 plan.ModifiedBy = Sessions.User.ID;
                 plan.ModifiedDate = DateTime.Now;

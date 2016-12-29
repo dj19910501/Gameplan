@@ -298,14 +298,14 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param> Added by Sohel Pathan on 07/08/2014 for PL ticket #672
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SavePlanDetails(InspectModel objPlanModel, Guid UserGuid = new Guid())
+        public JsonResult SavePlanDetails(InspectModel objPlanModel, Guid userGuid = new Guid())
         {
             // Get UserId Integer Id from Guid Ticket #2954
-            int UserId = Common.GetIntegerUserId(UserGuid);
+            int userId = Common.GetIntegerUserId(userGuid);
             //// check whether UserId is current loggined user or not.
-            if (UserId != 0)
+            if (userId != 0)
             {
-                if (Sessions.User.ID != UserId)
+                if (Sessions.User.ID != userId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1169,14 +1169,14 @@ namespace RevenuePlanner.Controllers
         /// <param name="planId"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string title, string customFieldInputs, Guid UserGuid = new Guid(), int planId = 0)
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string title, string customFieldInputs, Guid userGuid = new Guid(), int planId = 0)
         {
             // Get UserId Integer Id from Guid Ticket #2954
-            int UserId = Common.GetIntegerUserId(UserGuid);
+            int userId = Common.GetIntegerUserId(userGuid);
             //// check whether UserId is current loggined user or not.
-            if (UserId != 0)
+            if (userId != 0)
             {
-                if (Sessions.User.ID != UserId)
+                if (Sessions.User.ID != userId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1739,14 +1739,14 @@ namespace RevenuePlanner.Controllers
         /// <param name="title">Title of Program.</param>
         /// <returns>Returns Save/Error message.</returns>
         [HttpPost]
-        public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, Guid UserGuid = new Guid(), string title = "")
+        public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, Guid userGuid = new Guid(), string title = "")
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
             // Get UserId Integer Id from Guid Ticket #2954
-            int UserId = Common.GetIntegerUserId(UserGuid);
-            if (UserId != 0)
+            int userId = Common.GetIntegerUserId(userGuid);
+            if (userId != 0)
             {
-                if (Sessions.User.ID != UserId)
+                if (Sessions.User.ID != userId)
                 {
                     return Json(new { IsSaved = false, errormsg = Common.objCached.LoginWithSameSession }, JsonRequestBehavior.AllowGet);
                 }
@@ -4075,15 +4075,15 @@ namespace RevenuePlanner.Controllers
         /// <param name="strDescription"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, Guid UserGuid = new Guid(), string strDescription = "", bool resubmission = false)
+        public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, Guid userGuid = new Guid(), string strDescription = "", bool resubmission = false)
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
             // Get UserId Integer Id from Guid Ticket #2954
-            int UserId = Common.GetIntegerUserId(UserGuid);
+            int userId = Common.GetIntegerUserId(userGuid);
             //// check whether UserId is current loggined user or not.
-            if (UserId != 0)
+            if (userId != 0)
             {
-                if (Sessions.User.ID != UserId)
+                if (Sessions.User.ID != userId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -6708,15 +6708,15 @@ namespace RevenuePlanner.Controllers
         /// <param name="title"></param>
         /// <returns>Returns Partial View Of edit Setup Tab.</returns>
         [HttpPost]
-        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues, string customFieldInputs, Guid UserGuid = new Guid(), int tacticId = 0)
+        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string fieldMappingValues, string customFieldInputs, Guid userGuid = new Guid(), int tacticId = 0)
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
             // Get UserId Integer Id from Guid Ticket #2954
-            int UserId = Common.GetIntegerUserId(UserGuid);
+            int userId = Common.GetIntegerUserId(userGuid);
             //// Check whether current user is loggined user or not.
-            if (UserId != 0)
+            if (userId != 0)
             {
-                if (Sessions.User.ID != UserId)
+                if (Sessions.User.ID != userId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -6941,7 +6941,7 @@ namespace RevenuePlanner.Controllers
                                 }
 
                                 #region Save Field Mapping Details
-                                var MappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(FieldMappingValues);
+                                var MappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(fieldMappingValues);
                                 LineItem_Budget LineitemBudgetMapping = new LineItem_Budget();
                                 if (MappingFields.Count > 0)
                                 {
@@ -7001,7 +7001,7 @@ namespace RevenuePlanner.Controllers
                                 if (LinkedTacticId != null)
                                 {
                                     #region Save Field Mapping Details
-                                    var LinkedMappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(FieldMappingValues);
+                                    var LinkedMappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(fieldMappingValues);
                                     LineItem_Budget LineitemBudgetMappingobj = new LineItem_Budget();
                                     if (LinkedMappingFields.Count > 0)
                                     {
@@ -7228,7 +7228,7 @@ namespace RevenuePlanner.Controllers
                                 #region Save Field Mapping Details
                                 List<LineItem_Budget> ExistingValues = db.LineItem_Budget.Where(a => a.PlanLineItemId == form.PlanLineItemId).ToList();
                                 ExistingValues.ForEach(Field => db.Entry(Field).State = EntityState.Deleted);
-                                var MappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(FieldMappingValues);
+                                var MappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(fieldMappingValues);
 
                                 LineItem_Budget LineitemBudgetMapping = new LineItem_Budget();
 
@@ -7511,7 +7511,7 @@ namespace RevenuePlanner.Controllers
                                     #region Save Field Mapping Details
                                     List<LineItem_Budget> LinkedExistingValues = db.LineItem_Budget.Where(a => a.PlanLineItemId == LinkedLineitemId).ToList();
                                     LinkedExistingValues.ForEach(Field => db.Entry(Field).State = EntityState.Deleted);
-                                    var LinkedMappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(FieldMappingValues);
+                                    var LinkedMappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(fieldMappingValues);
 
                                     LineItem_Budget LinkedLineitemBudgetMapping = new LineItem_Budget();
 
@@ -10230,18 +10230,18 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Delete Plan,Tactic,Campaign,Program by Section.
         /// </summary>
-        /// <param name="DeleteType"></param>
+        /// <param name="deleteType"></param>
         /// <param name="id"></param>
         /// <param name="UserId"></param>
         /// <param name="closedTask"></param>
-        /// <param name="CalledFromBudget"></param>
-        /// <param name="IsIndex"></param>
-        /// <param name="RedirectType"></param>
+        /// <param name="calledFromBudget"></param>
+        /// <param name="isIndex"></param>
+        /// <param name="redirectType"></param>
         /// <returns></returns>
-        public ActionResult DeleteSection(int id = 0, string DeleteType = "", Guid UserGuid = new Guid(), string closedTask = null, string CalledFromBudget = "", bool IsIndex = false, bool RedirectType = false)
+        public ActionResult DeleteSection(int id = 0, string deleteType = "", Guid userGuid = new Guid(), string closedTask = null, string calledFromBudget = "", bool isIndex = false, bool redirectType = false)
         {
             // Get UserId Integer Id from Guid Ticket #2954
-            int UserId = Common.GetIntegerUserId(UserGuid);
+            int UserId = Common.GetIntegerUserId(userGuid);
             //// check whether UserId is currently loggined user or not.
             if (UserId != 0)
             {
@@ -10266,11 +10266,11 @@ namespace RevenuePlanner.Controllers
                         int tid = 0;
                         int tempLocalVariable = 0;
                         int planid = 0;
-                        bool IsPlan = (DeleteType == Enums.Section.Plan.ToString()) ? true : false; // Added by Sohel Pathan on 12/11/2014 for PL ticket #933
-                        bool IsCampaign = (DeleteType == Enums.Section.Campaign.ToString()) ? true : false;
-                        bool IsProgram = (DeleteType == Enums.Section.Program.ToString()) ? true : false;
-                        bool IsTactic = (DeleteType == Enums.Section.Tactic.ToString()) ? true : false;
-                        bool IsLineItem = (DeleteType == Enums.Section.LineItem.ToString()) ? true : false;
+                        bool IsPlan = (deleteType == Enums.Section.Plan.ToString()) ? true : false; // Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+                        bool IsCampaign = (deleteType == Enums.Section.Campaign.ToString()) ? true : false;
+                        bool IsProgram = (deleteType == Enums.Section.Program.ToString()) ? true : false;
+                        bool IsTactic = (deleteType == Enums.Section.Tactic.ToString()) ? true : false;
+                        bool IsLineItem = (deleteType == Enums.Section.LineItem.ToString()) ? true : false;
                         #endregion
                         //Added By Komal Rawal for LinkedLineItem change PL ticket #1853
                         Plan_Campaign_Program_Tactic_LineItem Lineitemobj = new Plan_Campaign_Program_Tactic_LineItem();
@@ -10430,34 +10430,34 @@ namespace RevenuePlanner.Controllers
                             ViewBag.ProgramID = pid;
                             ViewBag.TacticID = tid;
 
-                            if (!string.IsNullOrEmpty(CalledFromBudget))
+                            if (!string.IsNullOrEmpty(calledFromBudget))
                             {
                                 TempData["SuccessMessage"] = strMessage;
                                 // Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                                 if (IsPlan)
                                 {
                                     TempData["SuccessMessageDeletedPlan"] = strMessage;
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("PlanSelector", "Plan", new { PlanId = planid, type = CalledFromBudget }) });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("PlanSelector", "Plan", new { PlanId = planid, type = calledFromBudget }) });
                                 }
                                 // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                                 else if (IsCampaign)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { PlanId = planid, type = CalledFromBudget }) });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { PlanId = planid, type = calledFromBudget }) });
                                 }
                                 else if (IsProgram)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { PlanId = planid, type = CalledFromBudget }), expand = "campaign" + cid.ToString() });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { PlanId = planid, type = calledFromBudget }), expand = "campaign" + cid.ToString() });
                                 }
                                 else if (IsTactic)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { PlanId = planid, type = CalledFromBudget }), expand = "program" + pid.ToString() });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { PlanId = planid, type = calledFromBudget }), expand = "program" + pid.ToString() });
                                 }
                                 else if (IsLineItem)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { PlanId = planid, type = CalledFromBudget }), expand = "tactic" + tid.ToString() });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { PlanId = planid, type = calledFromBudget }), expand = "tactic" + tid.ToString() });
                                 }
                             }
-                            else if (IsIndex)
+                            else if (isIndex)
                             {
                                 //Modified by Mitesh Vaishnav for PL ticket 966
                                 TempData["SuccessMessageDeletedPlan"] = "";
@@ -10466,7 +10466,7 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 TempData["SuccessMessageDeletedPlan"] = strMessage;
-                                if (RedirectType)
+                                if (redirectType)
                                 {
                                     if (closedTask != null)
                                     {

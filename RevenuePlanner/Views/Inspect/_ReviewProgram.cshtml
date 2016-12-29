@@ -83,7 +83,7 @@
             {
                 <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
                     <div style="float: left; width: 10%;">
-                        <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { UserGuid = item.CreatedByGuid })" alt="User avatar" />
+                        <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { userGuid = item.CreatedByGuid })" alt="User avatar" />
                     </div>
                     <div style="float: left; width: 90%;">
                         <span class="commentedby-color">@item.CommentedBy</span>

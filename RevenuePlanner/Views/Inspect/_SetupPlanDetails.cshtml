@@ -377,7 +377,7 @@
                 type: 'POST',
                 async: false,
                 url: '@Url.Content("~/Inspect/SavePlanDetails")',
-                data: formData + '&UserGuid=' + uId,
+                data: formData + '&userGuid=' + uId,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';

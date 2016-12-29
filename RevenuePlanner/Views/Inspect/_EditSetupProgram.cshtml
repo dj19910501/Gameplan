@@ -665,7 +665,7 @@
             type: 'POST',
             async: false,
             url: '@Url.Content("~/Inspect/SetupSaveProgram")',
-            data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserGuid=' + uId + '&title=' + escape(title),
+            data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&userGuid=' + uId + '&title=' + escape(title),
             success: function (data) {
                 if (data.IsSaved) {
                     isDataModified = true;

@@ -4,11 +4,9 @@ using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using RevenuePlanner.Test.MockHelpers;
 using System;
-//using System.Web;
 using System.Linq;
 using System.Web.Mvc;
 using System.Collections.Generic;
-using Moq;
 using System.Web;
 using System.Web.Routing;
 using RevenuePlanner.Services.Transactions;
@@ -100,7 +98,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
-            Guid UserID = Sessions.User.UserId;
+            Guid userID = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             List<int> PlanIds = new List<int>();
@@ -114,7 +112,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.Now;
             Form.PlanId = PlanID;
-            var result = objInspectController.SaveCampaign(Form, Title, "[]", UserID, PlanID) as JsonResult;
+            var result = objInspectController.SaveCampaign(Form, Title, "[]", userID, PlanID) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -135,7 +133,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             string Title = db.Plan_Campaign.Where(id => id.PlanId == PlanID).Select(campaign => campaign.Title).FirstOrDefault();
@@ -147,7 +145,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.Now;
             Form.PlanId = PlanID;
 
-            var result = objInspectController.SaveCampaign(Form, Title, "[]", UserID, PlanID) as JsonResult;
+            var result = objInspectController.SaveCampaign(Form, Title, "[]", userId, PlanID) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result :  " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -169,7 +167,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
             int PlanID = DataHelper.GetPlanId();
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             Sessions.PlanId = PlanID;
             List<int> PlanIds = new List<int>();
             PlanIds.Add(PlanID);
@@ -183,7 +181,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.Now;
             Form.PlanId = PlanID;
 
-            var result = objInspectController.SaveCampaign(Form, Title, "[]", UserID, PlanID) as JsonResult;
+            var result = objInspectController.SaveCampaign(Form, Title, "[]", userId, PlanID) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
 
@@ -286,7 +284,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanID = DataHelper.GetPlanId();
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             string Title = "Test Program" + "_ " + DateTime.Now;
             Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
@@ -299,7 +297,7 @@ namespace RevenuePlanner.Test.Controllers
             List<int> PlanIds = new List<int>();
             PlanIds.Add(PlanID);
             Sessions.PlanPlanIds = PlanIds;
-            var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
+            var result = objInspectController.SetupSaveProgram(Form, "[]", userId, Title) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  \n The Assert Value result :  " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -321,7 +319,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
             int PlanID = DataHelper.GetPlanId();
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             string Title = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.Title).FirstOrDefault();
             Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
@@ -332,7 +330,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.Now;
             Form.PlanCampaignId = PlanCampaignId;
-            var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
+            var result = objInspectController.SetupSaveProgram(Form, "[]", userId, Title) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
 
@@ -357,7 +355,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int PlanID = DataHelper.GetPlanId();
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             List<int> PlanIds = new List<int>();
             PlanIds.Add(PlanID);
@@ -371,7 +369,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.Now;
             Form.PlanCampaignId = PlanCampaignId;
 
-            var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
+            var result = objInspectController.SetupSaveProgram(Form, "[]", userId, Title) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
 
@@ -471,7 +469,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
 
             int PlanID = DataHelper.GetPlanId();
             int ModelId = db.Plans.Where(pl => pl.PlanId == PlanID).Select(pl => pl.ModelId).FirstOrDefault();
@@ -497,7 +495,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.Now;
             Form.Cost = 20;
 
-            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
+            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", userId, "", false) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -513,7 +511,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectController objInspectController = new InspectController(_transaction);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             var planTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted == false && a.LinkedTacticId != null).FirstOrDefault();
 
             int PlanID = planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
@@ -541,7 +539,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.Now;
             Form.Cost = 20;
 
-            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
+            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", userId, "", false) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -735,7 +733,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
             InspectController objInspectController = new InspectController(_transaction);
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
@@ -751,7 +749,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.Now;
 
 
-            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
+            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", userId, "", false) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -777,7 +775,7 @@ namespace RevenuePlanner.Test.Controllers
 
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
 
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             int ModelId = DataHelper.GetModelId();
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
@@ -801,7 +799,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.Now;
             Form.Cost = 500;
 
-            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
+            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", userId, "", false) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -947,7 +945,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.IsDeleted == false && id.LinkedTacticId != null).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
             int LineitemTypeId = db.LineItemTypes.Where(id => id.ModelId == ModelId).Select(Lineitem => Lineitem.LineItemTypeId).FirstOrDefault();
             List<int> PlanIds = new List<int>();
@@ -960,7 +958,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.Now;
             Form.Cost = 20;
-            var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
+            var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", userId, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -979,7 +977,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             //int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
             //int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             //int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
@@ -1001,7 +999,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.Now;
             Form.Cost = Cost + 100;
-            var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
+            var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", userId, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
 
@@ -1025,7 +1023,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectController objInspectController = new InspectController(_transaction);
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
@@ -1041,7 +1039,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.Now;
 
-            var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
+            var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", userId, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -1065,7 +1063,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
-            Guid UserID = Sessions.User.UserId;
+            Guid userId = Sessions.User.UserId;
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
@@ -1085,7 +1083,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.Now;
             Form.Cost = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanTacticId == PlanTacticId).Select(tactic => tactic.Cost).FirstOrDefault();
 
-            var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
+            var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", userId, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
         }

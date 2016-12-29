@@ -1188,13 +1188,13 @@ namespace RevenuePlanner.Controllers
         /// <param name="height">height of photo</param>
         /// <param name="src">Load Team Member Image</param>
         /// <returns>Return User Image file</returns>
-        public ActionResult LoadUserImage(Guid UserGuid = new Guid(), int width = 35, int height = 35, string src = null)
+        public ActionResult LoadUserImage(Guid userGuid = new Guid(), int width = 35, int height = 35, string src = null)
         {
             int userId = 0;
             byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
             try
             {
-                userId = Common.GetIntegerUserId(UserGuid);//called method to get interger userid from GUID
+                userId = Common.GetIntegerUserId(userGuid);//called method to get interger userid from GUID
                 if (userId != 0)
                 {
                     

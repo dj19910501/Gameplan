@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RevenuePlanner.BDSService;
 using RevenuePlanner.Controllers;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
@@ -10,9 +9,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Configuration;
 
 namespace RevenuePlanner.Test.Controllers
@@ -375,6 +371,34 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(result);
         }
 
+        #endregion
+
+        #region Calculate Budget
+
+        /// <summary>
+        /// To check to Calculate Budget for plan with passing all parameters
+        /// <author>Rahul Shah</author>
+        /// <createddate>29June2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Calculate_Budget_With_All_Params()
+        {
+            Console.WriteLine("To check to Calculate Budget for plan with passing all parameters\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController objPlanController = new PlanController();
+            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            var PlanData = db.Plans.Where(plan => plan.PlanId == PlanId).FirstOrDefault();
+            string goalType = PlanData.GoalType;
+            string goalValue = PlanData.GoalValue.ToString();
+            int ModelId = PlanData.ModelId;
+            var result = objPlanController.CalculateBudget(ModelId, goalType, goalValue) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+
+        }
         #endregion
 
         #region Get Plan List

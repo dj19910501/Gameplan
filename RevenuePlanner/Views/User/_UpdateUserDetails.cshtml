@@ -92,7 +92,7 @@
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.ProfilePhoto)
             <div class="container-img">
-                <img id="userImage" src="@Url.Action("LoadUserImage", "User", new { UserGuid = Model.UserGuid, width = 60, height = 60 })" class="pull-left">
+                <img id="userImage" src="@Url.Action("LoadUserImage", "User", new { userGuid = Model.UserGuid, width = 60, height = 60 })" class="pull-left">
                 <div class="pull-left">
                     <div class="btn-group">
                         <input name="file" id="filePrev" type="file" style="display: inline-block; width: 200px;" />
