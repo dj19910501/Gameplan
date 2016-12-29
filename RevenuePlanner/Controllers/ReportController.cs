@@ -27,6 +27,7 @@ using RevenuePlanner.BAL;
 using System.Web.Caching;
 using System.Reflection;
 using Newtonsoft.Json;
+using static RevenuePlanner.Helpers.Enums;
 
 namespace RevenuePlanner.Controllers
 {
@@ -55,7 +56,7 @@ namespace RevenuePlanner.Controllers
         private const double _PlotBandToValue = 5;
         private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-        CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
+        Helpers.CacheObject objCache = new Helpers.CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
         public double PlanExchangeRate = Sessions.PlanExchangeRate;
         // Add By Nishant Sheth
@@ -94,23 +95,28 @@ namespace RevenuePlanner.Controllers
             {
                 if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"])))
                 {
-                    Guid newGuid;
-                    if (Guid.TryParse(Convert.ToString(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"]), out newGuid))
-                    {
-                        MeasureAppId = Guid.Parse(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"]);
-                    }
+                    //Guid newGuid;
+                    Guid.TryParse(Convert.ToString(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"]), out MeasureAppId);
+                    //if (Guid.TryParse(Convert.ToString(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"]), out newGuid))
+                    //{
+                    //    MeasureAppId = Guid.Parse(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"]);
+                    //}
                 }
             }
-            var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
-            Sessions.User.RoleId = RoleId;
-            var AppMenus = objBDSServiceClient.GetAllMenu(AppId, Sessions.User.RoleId);
+            Sessions.User.RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
+            //Sessions.User.RoleId = RoleId;
+            List<Menu> AppMenus = objBDSServiceClient.GetAllMenu(AppId, Sessions.User.RoleId);
 
-            var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
-            var Menuitem = AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper());
-            if (Menuitem != null && !isAuthorized)
+            bool isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
+
+            if (!isAuthorized)
             {
-                AppMenus.Remove(Menuitem);
+                AppMenus.Remove(AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper()));
             }
+            //if (Menuitem != null && !isAuthorized)
+            //{
+            //    AppMenus.Remove(Menuitem);
+            //}
 
             Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
 
@@ -172,17 +178,21 @@ namespace RevenuePlanner.Controllers
 
                 if (Sessions.AppMenus != null)
                 {
-                    foreach (var item in lstMenu)
+                    if (lstMenu != null && lstMenu.Count > 0)
                     {
-                        Sessions.AppMenus.Add(item);
+                        Sessions.AppMenus.AddRange(lstMenu);
                     }
+                    //foreach (var item in lstMenu)
+                    //{
+
+                    //}
                 }
                 else
                 {
                     Sessions.AppMenus = lstMenu;
                 }
             }
-
+            
             if (Sessions.AppMenus != null && Sessions.AppMenus.Count > 0)
             {
                 if (Sessions.AppMenus.Count == lstMenu.Count)
@@ -324,17 +334,20 @@ namespace RevenuePlanner.Controllers
             }
             //End
             //// Set Report PlanId in Session.
-            if (Sessions.PlanId > 0)
-            {
-                Sessions.PlanId = planid;// Add By Nishant Seth #1489
-                Sessions.ReportPlanIds.Add(Sessions.PlanId);
-            }
-            else
-            {
+            //if (Sessions.PlanId > 0)
+            //{
+            //    Sessions.PlanId = planid;// Add By Nishant Seth #1489
+            //    Sessions.ReportPlanIds.Add(Sessions.PlanId);
+            //}
+            //else
+            //{
 
-                Sessions.PlanId = planid;// Add By Nishant Seth #1489
-                Sessions.ReportPlanIds.Add(planid);
-            }
+            //    Sessions.PlanId = planid;// Add By Nishant Seth #1489
+            //    Sessions.ReportPlanIds.Add(planid);
+            //}
+            Sessions.PlanId = planid;// Add By Nishant Seth #1489
+            Sessions.ReportPlanIds.Add(Sessions.PlanId);
+
             //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
             //// List of Tab - Parent
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
@@ -408,7 +421,7 @@ namespace RevenuePlanner.Controllers
             // Add By Nishant Sheth
             // Desc ::  To get dimension list and it's values
             List<string> DefaultDimensionList = Common.GetDefaultDimensionList();
-            List<Dimension> ListDimension = new List<Dimension>();
+            List<Models.Dimension> ListDimension = new List<Models.Dimension>();
             List<DimensionValue> ListDimensionVaule = new List<DimensionValue>();
             List<string> listCustomFieldDimension = new List<string>();
             List<int> listDimensionIds = new List<int>();
@@ -416,7 +429,7 @@ namespace RevenuePlanner.Controllers
 
             ListDimension = db.Dimensions.Where(a => listCustomFieldDimension.Contains(a.Name) || DefaultDimensionList.Contains(a.Name)
                 && a.IsDeleted == false).ToList();
-            if (ListDimension.Count > 0 && ListDimension != null)
+            if (ListDimension != null && ListDimension.Count > 0  )
             {
                 listDimensionIds = ListDimension.Select(a => a.id).ToList();
                 ListDimensionVaule = db.DimensionValues.Where(a => listDimensionIds.Contains(a.DimensionID)).ToList();
@@ -502,19 +515,14 @@ namespace RevenuePlanner.Controllers
 
             List<int> yearlist = PlanYears;// Modify BY Nishant Sheth #1821
             SelectListItem objYear = new SelectListItem();
-
+           
+            //Modified By Preet Shah on 29/12/2016. For #2959
             foreach (int years in yearlist)
             {
                 string yearname = Convert.ToString(years);
-                objYear = new SelectListItem();
-
-                objYear.Text = years.ToString();
-
-                objYear.Value = yearname;
-                objYear.Selected = SelectedYearList.Contains(yearname) ? true : false;
+                objYear = new SelectListItem(){ Text = yearname, Value = yearname, Selected = SelectedYearList.Contains(yearname) ? true : false };
                 lstYear.Add(objYear);
             }
-
             //End
 
 
@@ -570,7 +578,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
             ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
             ViewBag.ApiUrl = ApiUrl;
-
+            
             return View("Index");
         }
 
@@ -775,7 +783,7 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
             List<int> planIds = new List<int>();
             List<int> ownerIds = new List<int>();
-            List<int> TactictypeIds = new List<int>();
+            List<int> tactictypeIds = new List<int>();
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
                 planIds = Sessions.ReportPlanIds;
@@ -834,8 +842,8 @@ namespace RevenuePlanner.Controllers
 
             if (Sessions.ReportTacticTypeIds != null && Sessions.ReportTacticTypeIds.Count > 0)
             {
-                TactictypeIds = Sessions.ReportTacticTypeIds;
-                tacticList = tacticList.Where(tactic => TactictypeIds.Contains(tactic.TacticTypeId)
+                tactictypeIds = Sessions.ReportTacticTypeIds;
+                tacticList = tacticList.Where(tactic => tactictypeIds.Contains(tactic.TacticTypeId)
                                                               ).ToList();
 
             }
@@ -852,7 +860,7 @@ namespace RevenuePlanner.Controllers
                 tacticids = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, tacticids);
                 tacticList = tacticList.Where(tactic => tacticids.Contains(tactic.PlanTacticId)).ToList();
             }
-
+            
             return tacticList;
         }
 
@@ -2396,7 +2404,7 @@ namespace RevenuePlanner.Controllers
                         MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType, url);
 
                         string notificationShareReport = Enums.Custom_Notification.ShareReport.ToString();
-                        Notification notification = (Notification)mrp.Notifications.FirstOrDefault(notfctn => notfctn.NotificationInternalUseOnly.Equals(notificationShareReport));
+                        Models.Notification notification = (Models.Notification)mrp.Notifications.FirstOrDefault(notfctn => notfctn.NotificationInternalUseOnly.Equals(notificationShareReport));
                         //// Added by Sohel on 2nd April for PL#398 to decode the optionalMessage text
                         optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
                         ////
@@ -5617,41 +5625,43 @@ namespace RevenuePlanner.Controllers
             ReportOverviewModel objReportOverviewModel = new ReportOverviewModel();
             RevenueOverviewModel objRevenueOverviewModel = new RevenueOverviewModel();
             ConversionOverviewModel objConversionOverviewModel = new ConversionOverviewModel();
-            List<Plan_Campaign_Program_Tactic_Actual> ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
-            List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
-            List<TacticwiseOverviewModel> OverviewModelList = new List<TacticwiseOverviewModel>();
+            List<Plan_Campaign_Program_Tactic_Actual> actualList = new List<Plan_Campaign_Program_Tactic_Actual>();
+            List<ProjectedTrendModel> projectedTrendList = new List<ProjectedTrendModel>();
+            List<TacticwiseOverviewModel> overviewModelList = new List<TacticwiseOverviewModel>();
             lineChartData objLineChartData = new lineChartData();
             Projected_Goal objProjectedGoal = new Projected_Goal();
-            List<conversion_Projected_Goal_LineChart> Projected_Goal_LineChartList = new List<conversion_Projected_Goal_LineChart>();
+            List<conversion_Projected_Goal_LineChart> projected_Goal_LineChartList = new List<conversion_Projected_Goal_LineChart>();
             conversion_Projected_Goal_LineChart objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
-            List<Stage_Benchmark> StageBenchmarkList = new List<Stage_Benchmark>();
-            string strMQLStageCode = Enums.InspectStage.MQL.ToString();
-            string strCWStageCode = Enums.InspectStage.CW.ToString();
+            List<Stage_Benchmark> stageBenchmarkList = new List<Stage_Benchmark>();
+            string strMQLStageCode = InspectStage.MQL.ToString();
+            string strCWStageCode = InspectStage.CW.ToString();
             double _Benchmark = 0, _inqActual = 0, _mqlActual = 0, _cwActual = 0, stageVolumePercntg = 0, _stageVolumepercentage = 0;
             bool IsQuarterly = true;
-            string revStageCode = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-            string inqStageCode = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
-            string mqlStageCode = Enums.InspectStageValues[strMQLStageCode].ToString();
-            string cwStageCode = Enums.InspectStageValues[strCWStageCode].ToString();
-            List<string> ActualStageCodeList = new List<string>();
-            ActualStageCodeList.Add(revStageCode);
-            ActualStageCodeList.Add(inqStageCode);
-            ActualStageCodeList.Add(mqlStageCode);
-            ActualStageCodeList.Add(cwStageCode);
-            List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
-            List<ActualTrendModel> ActualTacticTrendList = new List<ActualTrendModel>();
-            bool IsTillCurrentMonth = true;
-            string[] ListYear;
+            string revStageCode = InspectStageValues[InspectStage.Revenue.ToString()].ToString();
+            string inqStageCode = InspectStageValues[InspectStage.ProjectedStageValue.ToString()].ToString();
+            string mqlStageCode = InspectStageValues[strMQLStageCode].ToString();
+            string cwStageCode = InspectStageValues[strCWStageCode].ToString();
+            List<string> actualStageCodeList = new List<string>();
+            actualStageCodeList.Add(revStageCode);
+            actualStageCodeList.Add(inqStageCode);
+            actualStageCodeList.Add(mqlStageCode);
+            actualStageCodeList.Add(cwStageCode);
+            List<ActualTacticListByStage> actualTacticStageList = new List<ActualTacticListByStage>();
+            List<ActualTrendModel> actualTacticTrendList = new List<ActualTrendModel>();
+            bool isTillCurrentMonth = true;
+            string[] listYear;
             string currentyear = DateTime.Now.Year.ToString();
             #endregion
             try
             {
-                if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(Enums.ViewByAllocated.Monthly.ToString()))
+                if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(ViewByAllocated.Monthly.ToString()))
+                {
                     IsQuarterly = false;
+                }
                 // Add By Nishant Sheth 
                 // Desc :: Report should be displayed based on the plan selections - #1957
                 timeframeOption = Common.GetTimeFrameOption(timeframeOption, null); // Change By Nishant Sheth for #1957 Codereview points
-                ListYear = timeframeOption.Split(',');
+                listYear = timeframeOption.Split(',');
                 Common.GetselectedYearList(timeframeOption, ref selectedYearList);// Add By Nishant Sheth #1838
                 // End By Nishant Sheth
                 //// get tactic list
@@ -5678,8 +5688,10 @@ namespace RevenuePlanner.Controllers
                 List<ViewByModel> CustomFieldList = new List<ViewByModel>();
                 //List<int> campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
                 //List<int> programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
-                List<int> campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
-                List<int> programlist = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
+                List<int> campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false)
+                    .Select(camp => camp.PlanCampaignId).ToList();
+                List<int> programlist = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false)
+                    .Select(camp => camp.PlanProgramId).ToList();
                 CustomFieldList = CustomFieldList.Where(s => !string.IsNullOrEmpty(s.Text)).ToList();
                 var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
                 CustomFieldList = CustomFieldList.Concat(lstCustomFields).ToList();
@@ -5701,93 +5713,110 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IsPlanExistToShowReport = true;
 
                     List<string> includeMonth = GetMonthListForReport(timeframeOption);
-                    ActualTacticStageList = GetActualListInTacticInterval(Tacticdata, timeframeOption, ActualStageCodeList, IsTillCurrentMonth);
-                    List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(Tacticdata, ActualTacticStageList, timeframeOption);
-                    ActualTacticTrendModelList = ActualTacticTrendModelList.Select(tac => new
+                    actualTacticStageList = GetActualListInTacticInterval(Tacticdata, timeframeOption, actualStageCodeList, isTillCurrentMonth);
+                    List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(Tacticdata, actualTacticStageList, timeframeOption);
+                    ActualTacticTrendModelList = ActualTacticTrendModelList.Select(tac => new ActualTrendModel
                     {
-                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
-                        TacticId = tac.PlanTacticId,
+                        Month = PeriodPrefix + (Convert.ToInt32(tac.Month.Replace("Y", "")) > 12 ? 1:0),
+                        Year = tac.StartDate.Year + (Convert.ToInt32(tac.Month.Replace("Y", "")) / 13),
+                        PlanTacticId = tac.PlanTacticId,
                         Value = tac.Value,
-                        StartYear = tac.StartDate.Year,
                         StageCode = tac.StageCode,
                         StartDate = tac.StartDate,
                         EndDate = tac.EndDate,
                         Trend = (tac.StartDate.Month > Convert.ToInt32(tac.Month.Replace("Y", "")) ? tac.Value : tac.Trend) // Add By Nishant Sheth Desc : To Resolve match overview value with tabs value
-                    }).ToList().Select(tac => new
-                    {
-                        Period = tac.Period,
-                        NumPeriod = (tac.Period / 13),
-                        TacticId = tac.TacticId,
-                        Value = tac.Value,
-                        StartYear = tac.StartYear,
-                        StageCode = tac.StageCode,
-                        StartDate = tac.StartDate,
-                        EndDate = tac.EndDate,
-                        Trend = tac.Trend
-                    }).ToList().Select(tact => new ActualTrendModel
-                    {
-                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                        Year = tact.StartYear + tact.NumPeriod,
-                        PlanTacticId = tact.TacticId,
-                        Value = tact.Value,
-                        StageCode = tact.StageCode,
-                        StartDate = tact.StartDate,
-                        EndDate = tact.EndDate,
-                        Trend = tact.Trend
-                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+                    }).Where(tac => listYear.Contains(Convert.ToString(tac.Year))).ToList();
+                    //Updated version of Below method By Preet Shah 28/12/2016 #2959.
+
+                    //ActualTacticTrendModelList = ActualTacticTrendModelList.Select(tac => new
+                    //{
+                    //    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                    //    TacticId = tac.PlanTacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartDate.Year,
+                    //    StageCode = tac.StageCode,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    Trend = (tac.StartDate.Month > Convert.ToInt32(tac.Month.Replace("Y", "")) ? tac.Value : tac.Trend) // Add By Nishant Sheth Desc : To Resolve match overview value with tabs value
+                    //}).ToList().Select(tac => new
+                    //{
+                    //    Period = tac.Period,
+                    //    NumPeriod = (tac.Period / 13),
+                    //    TacticId = tac.TacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartYear,
+                    //    StageCode = tac.StageCode,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    Trend = tac.Trend
+                    //}).ToList().Select(tact => new ActualTrendModel
+                    //{
+                    //    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                    //    Year = tact.StartYear + tact.NumPeriod,
+                    //    PlanTacticId = tact.TacticId,
+                    //    Value = tact.Value,
+                    //    StageCode = tact.StageCode,
+                    //    StartDate = tact.StartDate,
+                    //    EndDate = tact.EndDate,
+                    //    Trend = tact.Trend
+                    //}).Where(tac => listYear.Contains(Convert.ToString(tac.Year))).ToList();
                     #region "Revenue related Code"
 
                     #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(revStageCode)).ToList();
-                    ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, revStageCode);
-                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
-                    {
-                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
-                        TacticId = tac.PlanTacticId,
-                        Value = tac.Value,
-                        StartYear = tac.StartDate.Year,
-                        StartDate = tac.StartDate,
-                        EndDate = tac.EndDate,
-                        NoTacticMonths = tac.NoTacticMonths,
-                        TrendValue = tac.TrendValue
-                    }).ToList().Select(tac => new
-                    {
-                        Period = tac.Period,
-                        NumPeriod = (tac.Period / 13),
-                        TacticId = tac.TacticId,
-                        Value = tac.Value,
-                        StartYear = tac.StartDate.Year,
-                        StartDate = tac.StartDate,
-                        EndDate = tac.EndDate,
-                        NoTacticMonths = tac.NoTacticMonths,
-                        TrendValue = tac.TrendValue
-                    }).ToList().Select(tact => new ProjectedTrendModel
-                    {
-                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                        Year = tact.StartYear + tact.NumPeriod,
-                        PlanTacticId = tact.TacticId,
-                        Value = tact.Value,
-                        StartDate = tact.StartDate,
-                        EndDate = tact.EndDate,
-                        NoTacticMonths = tact.NoTacticMonths,
-                        TrendValue = tact.TrendValue
-                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
-                    OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
+                    actualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(revStageCode)).ToList();
+                    projectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, revStageCode);
+
+                    projectedTrendList = FilterProjectedTrendList(projectedTrendList, listYear);
+                    //Updated version of Below method By Preet Shah 28/12/2016 #2959.
+
+                    //projectedTrendList = projectedTrendList.Select(tac => new
+                    //{
+                    //    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                    //    TacticId = tac.PlanTacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartDate.Year,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    NoTacticMonths = tac.NoTacticMonths,
+                    //    TrendValue = tac.TrendValue
+                    //}).ToList().Select(tac => new
+                    //{
+                    //    Period = tac.Period,
+                    //    NumPeriod = (tac.Period / 13),
+                    //    TacticId = tac.TacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartDate.Year,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    NoTacticMonths = tac.NoTacticMonths,
+                    //    TrendValue = tac.TrendValue
+                    //}).ToList().Select(tact => new ProjectedTrendModel
+                    //{
+                    //    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                    //    Year = tact.StartYear + tact.NumPeriod,
+                    //    PlanTacticId = tact.TacticId,
+                    //    Value = tact.Value,
+                    //    StartDate = tact.StartDate,
+                    //    EndDate = tact.EndDate,
+                    //    NoTacticMonths = tact.NoTacticMonths,
+                    //    TrendValue = tact.TrendValue
+                    //}).Where(tac => listYear.Contains(Convert.ToString(tac.Year))).ToList();
+                    overviewModelList = GetTacticwiseActualProjectedRevenueList(actualTacticTrendList, projectedTrendList);
                     #endregion
 
                     #region "Get Basic Model"
-                    BasicModel objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeframeOption, IsQuarterly);
+                    BasicModel objBasicModel = GetValuesListByTimeFrame(actualTacticTrendList, projectedTrendList, timeframeOption, IsQuarterly);
                     #endregion
 
                     #region "Set Linechart & Revenue Overview data to model"
                     objLineChartData = GetLineChartData(objBasicModel);
-                    objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
+                    objProjectedGoal = GetRevenueOverviewData(overviewModelList, timeframeOption);
                     objRevenueOverviewModel.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
                     objRevenueOverviewModel.projected_goal = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
                     #endregion
 
                     #region "Get SparklineChart Data"
-                    List<Enums.TOPRevenueType> RevenueTypeList = Enum.GetValues(typeof(Enums.TOPRevenueType)).Cast<Enums.TOPRevenueType>().ToList();
+                    List<TOPRevenueType> RevenueTypeList = Enum.GetValues(typeof(TOPRevenueType)).Cast<TOPRevenueType>().ToList();
                     List<sparkLineCharts> SparkLineChartsData = GetRevenueSparkLineChartData(selectedCustomFieldValue, timeframeOption, RevenueTypeList, true);
                     objRevenueOverviewModel.SparkLineChartsData = SparkLineChartsData;
                     #endregion
@@ -5799,104 +5828,112 @@ namespace RevenuePlanner.Controllers
                     #region "Calculate ProjVsGoal for INQ"
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
 
-                    ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                    ProjectedTrendList = new List<ProjectedTrendModel>();
-                    OverviewModelList = new List<TacticwiseOverviewModel>();
-                    ActualTacticTrendList = new List<ActualTrendModel>();
-                    ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(inqStageCode)).ToList();
-                    ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, inqStageCode);
-                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
-                    {
-                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
-                        TacticId = tac.PlanTacticId,
-                        Value = tac.Value,
-                        StartYear = tac.StartDate.Year,
-                        StartDate = tac.StartDate,
-                        EndDate = tac.EndDate,
-                        NoTacticMonths = tac.NoTacticMonths,
-                        TrendValue = tac.TrendValue
-                    }).ToList().Select(tac => new
-                    {
-                        Period = tac.Period,
-                        NumPeriod = (tac.Period / 13),
-                        TacticId = tac.TacticId,
-                        Value = tac.Value,
-                        StartYear = tac.StartDate.Year,
-                        StartDate = tac.StartDate,
-                        EndDate = tac.EndDate,
-                        NoTacticMonths = tac.NoTacticMonths,
-                        TrendValue = tac.TrendValue
-                    }).ToList().Select(tact => new ProjectedTrendModel
-                    {
-                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                        Year = tact.StartYear + tact.NumPeriod,
-                        PlanTacticId = tact.TacticId,
-                        Value = tact.Value,
-                        StartDate = tact.StartDate,
-                        EndDate = tact.EndDate,
-                        NoTacticMonths = tact.NoTacticMonths,
-                        TrendValue = tact.TrendValue
-                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
-                    OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
+                    actualList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                    projectedTrendList = new List<ProjectedTrendModel>();
+                    overviewModelList = new List<TacticwiseOverviewModel>();
+                    actualTacticTrendList = new List<ActualTrendModel>();
+                    actualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(inqStageCode)).ToList();
+                    projectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, inqStageCode);
+
+                    projectedTrendList = FilterProjectedTrendList(projectedTrendList, listYear);
+                    //Updated version of Below method By Preet Shah 28/12/2016 #2959.
+
+                    //projectedTrendList = projectedTrendList.Select(tac => new
+                    //{
+                    //    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                    //    TacticId = tac.PlanTacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartDate.Year,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    NoTacticMonths = tac.NoTacticMonths,
+                    //    TrendValue = tac.TrendValue
+                    //}).ToList().Select(tac => new
+                    //{
+                    //    Period = tac.Period,
+                    //    NumPeriod = (tac.Period / 13),
+                    //    TacticId = tac.TacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartDate.Year,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    NoTacticMonths = tac.NoTacticMonths,
+                    //    TrendValue = tac.TrendValue
+                    //}).ToList().Select(tact => new ProjectedTrendModel
+                    //{
+                    //    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                    //    Year = tact.StartYear + tact.NumPeriod,
+                    //    PlanTacticId = tact.TacticId,
+                    //    Value = tact.Value,
+                    //    StartDate = tact.StartDate,
+                    //    EndDate = tact.EndDate,
+                    //    NoTacticMonths = tact.NoTacticMonths,
+                    //    TrendValue = tact.TrendValue
+                    //}).Where(tac => listYear.Contains(Convert.ToString(tac.Year))).ToList();
+                    overviewModelList = GetTacticwiseActualProjectedRevenueList(actualTacticTrendList, projectedTrendList);
                     #endregion
 
                     #region "Conversion : Set Linechart & Revenue Overview data to model"
                     string INQStageLabel = Common.GetLabel(Common.StageModeINQ);
                     objProjectedGoal = new Projected_Goal();
-                    objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
+                    objProjectedGoal = GetRevenueOverviewData(overviewModelList, timeframeOption);
                     objProjectedGoal.Name = !string.IsNullOrEmpty(INQStageLabel) ? INQStageLabel : inqStageCode;
                     objProjected_Goal_LineChart.linechartdata = new lineChartData();
                     objProjected_Goal_LineChart.projected_goal = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
                     objProjected_Goal_LineChart.StageCode = inqStageCode;
-                    Projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
-                    objConversionOverviewModel.Projected_LineChartList = Projected_Goal_LineChartList != null ? Projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
-                    if (ActualTacticTrendList != null)
-                        _inqActual = ActualTacticTrendList.Sum(actual => actual.Value);
+                    projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
+                    objConversionOverviewModel.Projected_LineChartList = projected_Goal_LineChartList != null ? projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
+                    if (actualTacticTrendList != null)
+                        _inqActual = actualTacticTrendList.Sum(actual => actual.Value);
                     #endregion
                     #endregion
 
                     #region "Calculate ProjVsGoal, Linechart & Benchmarck for MQL"
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
 
-                    ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                    ProjectedTrendList = new List<ProjectedTrendModel>();
-                    OverviewModelList = new List<TacticwiseOverviewModel>();
-                    ActualTacticTrendList = new List<ActualTrendModel>();
-                    ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
-                    ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, mqlStageCode);
-                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
-                    {
-                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
-                        TacticId = tac.PlanTacticId,
-                        Value = tac.Value,
-                        StartYear = tac.StartDate.Year,
-                        StartDate = tac.StartDate,
-                        EndDate = tac.EndDate,
-                        NoTacticMonths = tac.NoTacticMonths,
-                        TrendValue = tac.TrendValue
-                    }).ToList().Select(tac => new
-                    {
-                        Period = tac.Period,
-                        NumPeriod = (tac.Period / 13),
-                        TacticId = tac.TacticId,
-                        Value = tac.Value,
-                        StartYear = tac.StartDate.Year,
-                        StartDate = tac.StartDate,
-                        EndDate = tac.EndDate,
-                        NoTacticMonths = tac.NoTacticMonths,
-                        TrendValue = tac.TrendValue
-                    }).ToList().Select(tact => new ProjectedTrendModel
-                    {
-                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                        Year = tact.StartYear + tact.NumPeriod,
-                        PlanTacticId = tact.TacticId,
-                        Value = tact.Value,
-                        StartDate = tact.StartDate,
-                        EndDate = tact.EndDate,
-                        NoTacticMonths = tact.NoTacticMonths,
-                        TrendValue = tact.TrendValue
-                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
-                    OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
+                    actualList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                    projectedTrendList = new List<ProjectedTrendModel>();
+                    overviewModelList = new List<TacticwiseOverviewModel>();
+                    actualTacticTrendList = new List<ActualTrendModel>();
+                    actualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
+                    projectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, mqlStageCode);
+
+                    projectedTrendList =FilterProjectedTrendList(projectedTrendList, listYear);
+                    //Updated version of Below method By Preet Shah 28/12/2016 #2959.
+
+                    //projectedTrendList = projectedTrendList.Select(tac => new
+                    //{
+                    //    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                    //    TacticId = tac.PlanTacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartDate.Year,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    NoTacticMonths = tac.NoTacticMonths,
+                    //    TrendValue = tac.TrendValue
+                    //}).ToList().Select(tac => new
+                    //{
+                    //    Period = tac.Period,
+                    //    NumPeriod = (tac.Period / 13),
+                    //    TacticId = tac.TacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartDate.Year,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    NoTacticMonths = tac.NoTacticMonths,
+                    //    TrendValue = tac.TrendValue
+                    //}).ToList().Select(tact => new ProjectedTrendModel
+                    //{
+                    //    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                    //    Year = tact.StartYear + tact.NumPeriod,
+                    //    PlanTacticId = tact.TacticId,
+                    //    Value = tact.Value,
+                    //    StartDate = tact.StartDate,
+                    //    EndDate = tact.EndDate,
+                    //    NoTacticMonths = tact.NoTacticMonths,
+                    //    TrendValue = tact.TrendValue
+                    //}).Where(tac => listYear.Contains(Convert.ToString(tac.Year))).ToList();
+                    overviewModelList = GetTacticwiseActualProjectedRevenueList(actualTacticTrendList, projectedTrendList);
                     #endregion
 
                     #region "Conversion: GetStgewise Benchmark"
@@ -5904,12 +5941,12 @@ namespace RevenuePlanner.Controllers
                     List<string> StageCodeList = new List<string>();
                     StageCodeList.Add(strMQLStageCode);
                     StageCodeList.Add(strCWStageCode);
-                    StageBenchmarkList = GetStagewiseBenchmark(Tacticdata, StageCodeList);
+                    stageBenchmarkList = GetStagewiseBenchmark(Tacticdata, StageCodeList);
                     #endregion
 
                     #region "Get Basic Model"
                     objBasicModel = new BasicModel();
-                    objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeframeOption, IsQuarterly);
+                    objBasicModel = GetValuesListByTimeFrame(actualTacticTrendList, projectedTrendList, timeframeOption, IsQuarterly);
                     #endregion
 
                     #region "Conversion : Set Linechart & Revenue Overview data to model"
@@ -5917,7 +5954,7 @@ namespace RevenuePlanner.Controllers
                     objLineChartData = new lineChartData();
                     objLineChartData = GetLineChartData(objBasicModel);
                     objProjectedGoal = new Projected_Goal();
-                    objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
+                    objProjectedGoal = GetRevenueOverviewData(overviewModelList, timeframeOption);
                     objProjectedGoal.Name = !string.IsNullOrEmpty(MQLStageLabel) ? MQLStageLabel : mqlStageCode;
                     objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
                     objProjected_Goal_LineChart.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
@@ -5926,14 +5963,14 @@ namespace RevenuePlanner.Controllers
 
                     #region "MQL: Set Benchmark Model data"
                     _Benchmark = stageVolumePercntg = 0;
-                    if (ActualTacticTrendList != null)
+                    if (actualTacticTrendList != null)
                     {
-                        _mqlActual = ActualTacticTrendList.Sum(actual => actual.Value);
+                        _mqlActual = actualTacticTrendList.Sum(actual => actual.Value);
                         stageVolumePercntg = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
                         _stageVolumepercentage = stageVolumePercntg * 100; //PL #1483 Reports overview - MQL and CW conversion % -Dashrath Prajapati
                     }
 
-                    _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strMQLStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
+                    _Benchmark = stageBenchmarkList.Where(stage => stage.StageCode.Equals(strMQLStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
                     Conversion_Benchmark_Model mqlStageBenchmarkmodel = new Conversion_Benchmark_Model();
                     mqlStageBenchmarkmodel.stagename = MQLStageLabel.ToString();
                     mqlStageBenchmarkmodel.stageVolume = _stageVolumepercentage.ToString();
@@ -5944,59 +5981,63 @@ namespace RevenuePlanner.Controllers
                     #endregion
                     objProjected_Goal_LineChart.Stage_Benchmark = mqlStageBenchmarkmodel;
 
-                    Projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
-                    objConversionOverviewModel.Projected_LineChartList = Projected_Goal_LineChartList != null ? Projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
+                    projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
+                    objConversionOverviewModel.Projected_LineChartList = projected_Goal_LineChartList != null ? projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
                     #endregion
                     #endregion
 
                     #region "Calculate ProjVsGoal, LineChart & Benchmark for CW"
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
 
-                    ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                    ProjectedTrendList = new List<ProjectedTrendModel>();
-                    OverviewModelList = new List<TacticwiseOverviewModel>();
-                    ActualTacticTrendList = new List<ActualTrendModel>();
-                    ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(cwStageCode)).ToList();
-                    ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, cwStageCode);
-                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
-                    {
-                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
-                        TacticId = tac.PlanTacticId,
-                        Value = tac.Value,
-                        StartYear = tac.StartDate.Year,
-                        StartDate = tac.StartDate,
-                        EndDate = tac.EndDate,
-                        NoTacticMonths = tac.NoTacticMonths,
-                        TrendValue = tac.TrendValue
-                    }).ToList().Select(tac => new
-                    {
-                        Period = tac.Period,
-                        NumPeriod = (tac.Period / 13),
-                        TacticId = tac.TacticId,
-                        Value = tac.Value,
-                        StartYear = tac.StartDate.Year,
-                        StartDate = tac.StartDate,
-                        EndDate = tac.EndDate,
-                        NoTacticMonths = tac.NoTacticMonths,
-                        TrendValue = tac.TrendValue
-                    }).ToList().Select(tact => new ProjectedTrendModel
-                    {
-                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                        Year = tact.StartYear + tact.NumPeriod,
-                        PlanTacticId = tact.TacticId,
-                        Value = tact.Value,
-                        StartDate = tact.StartDate,
-                        EndDate = tact.EndDate,
-                        NoTacticMonths = tact.NoTacticMonths,
-                        TrendValue = tact.TrendValue
-                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
-                    OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
+                    actualList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                    projectedTrendList = new List<ProjectedTrendModel>();
+                    overviewModelList = new List<TacticwiseOverviewModel>();
+                    actualTacticTrendList = new List<ActualTrendModel>();
+                    actualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(cwStageCode)).ToList();
+                    projectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, cwStageCode);
+
+                    projectedTrendList= FilterProjectedTrendList(projectedTrendList,listYear);
+                    //Updated version of Below method By Preet Shah 28/12/2016 #2959.
+
+                    //projectedTrendList = projectedTrendList.Select(tac => new
+                    //{
+                    //    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                    //    TacticId = tac.PlanTacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartDate.Year,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    NoTacticMonths = tac.NoTacticMonths,
+                    //    TrendValue = tac.TrendValue
+                    //}).ToList().Select(tac => new
+                    //{
+                    //    Period = tac.Period,
+                    //    NumPeriod = (tac.Period / 13),
+                    //    TacticId = tac.TacticId,
+                    //    Value = tac.Value,
+                    //    StartYear = tac.StartDate.Year,
+                    //    StartDate = tac.StartDate,
+                    //    EndDate = tac.EndDate,
+                    //    NoTacticMonths = tac.NoTacticMonths,
+                    //    TrendValue = tac.TrendValue
+                    //}).ToList().Select(tact => new ProjectedTrendModel
+                    //{
+                    //    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                    //    Year = tact.StartYear + tact.NumPeriod,
+                    //    PlanTacticId = tact.TacticId,
+                    //    Value = tact.Value,
+                    //    StartDate = tact.StartDate,
+                    //    EndDate = tact.EndDate,
+                    //    NoTacticMonths = tact.NoTacticMonths,
+                    //    TrendValue = tact.TrendValue
+                    //}).Where(tac => listYear.Contains(Convert.ToString(tac.Year))).ToList();
+                    overviewModelList = GetTacticwiseActualProjectedRevenueList(actualTacticTrendList, projectedTrendList);
                     #endregion
 
 
                     #region "Get Basic Model"
                     objBasicModel = new BasicModel();
-                    objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeframeOption, IsQuarterly);
+                    objBasicModel = GetValuesListByTimeFrame(actualTacticTrendList, projectedTrendList, timeframeOption, IsQuarterly);
                     #endregion
 
                     #region "Conversion : Set Linechart & Revenue Overview data to model"
@@ -6004,7 +6045,7 @@ namespace RevenuePlanner.Controllers
                     objLineChartData = new lineChartData();
                     objLineChartData = GetLineChartData(objBasicModel);
                     objProjectedGoal = new Projected_Goal();
-                    objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
+                    objProjectedGoal = GetRevenueOverviewData(overviewModelList, timeframeOption);
                     objProjectedGoal.Name = !string.IsNullOrEmpty(CWStageLabel) ? CWStageLabel : cwStageCode;
                     objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
                     objProjected_Goal_LineChart.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
@@ -6013,14 +6054,14 @@ namespace RevenuePlanner.Controllers
 
                     #region "CW: Set Benchmark Model data"
                     stageVolumePercntg = _stageVolumepercentage = 0;
-                    if (ActualTacticTrendList != null)
+                    if (actualTacticTrendList != null)
                     {
-                        _cwActual = ActualTacticTrendList.Sum(actual => actual.Value);
+                        _cwActual = actualTacticTrendList.Sum(actual => actual.Value);
                         stageVolumePercntg = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
                         _stageVolumepercentage = stageVolumePercntg * 100; //PL #1483 Reports overview - MQL and CW conversion % -Dashrath Prajapati
                     }
                     _Benchmark = 0;
-                    _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strCWStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
+                    _Benchmark = stageBenchmarkList.Where(stage => stage.StageCode.Equals(strCWStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
                     Conversion_Benchmark_Model cwStageBenchmarkmodel = new Conversion_Benchmark_Model();
                     cwStageBenchmarkmodel.stagename = CWStageLabel;
                     cwStageBenchmarkmodel.stageVolume = _stageVolumepercentage.ToString();
@@ -6031,8 +6072,8 @@ namespace RevenuePlanner.Controllers
                     #endregion
                     objProjected_Goal_LineChart.Stage_Benchmark = cwStageBenchmarkmodel;
 
-                    Projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
-                    objConversionOverviewModel.Projected_LineChartList = Projected_Goal_LineChartList != null ? Projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
+                    projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
+                    objConversionOverviewModel.Projected_LineChartList = projected_Goal_LineChartList != null ? projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
                     #endregion
                     #endregion
 
@@ -6049,7 +6090,7 @@ namespace RevenuePlanner.Controllers
                     //List<Plan_Campaign_Program_Tactic_Cost> _tacCostList = new List<Plan_Campaign_Program_Tactic_Cost>();
 
                     //List<Plan_Campaign_Program_Tactic_Budget> _tacBudgetList = new List<Plan_Campaign_Program_Tactic_Budget>();
-                    string RevenueStageType = Enums.InspectStage.Revenue.ToString();
+                    string RevenueStageType = InspectStage.Revenue.ToString();
                     List<string> categories = new List<string>();
                     #endregion
 
@@ -6069,26 +6110,36 @@ namespace RevenuePlanner.Controllers
                     // Add By Nishant Sheth
                     // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
                     var _planBudgetList = db.Plan_Budget.Where(plan => lstPlanIds.Contains(plan.PlanId)).ToList()
-                                         .Select(tac => new
-                                         {
-                                             Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
-                                             TacticId = tac.PlanId,
-                                             Value = tac.Value,
-                                             StartYear = tac.Plan.Year
-                                         }).ToList().Select(tac => new
-                                         {
-                                             Period = tac.Period,
-                                             NumPeriod = (tac.Period / 13),
-                                             TacticId = tac.TacticId,
-                                             Value = objCurrency.GetValueByExchangeRate(tac.Value, PlanExchangeRate),// Modified By Nishant Sheth #2507
-                                             StartYear = int.Parse(tac.StartYear.ToString())
-                                         }).ToList().Select(tact => new
-                                         {
-                                             Period = PeriodPrefix + Common.ReportMultiyearMonth(tact.Period, tact.NumPeriod),
-                                             Year = tact.StartYear + tact.NumPeriod,
-                                             TacticId = tact.TacticId,
-                                             Value = tact.Value
-                                         }).ToList();
+                        .Select(tac => new
+                        {
+                            Period = PeriodPrefix + Common.ReportMultiyearMonth(Convert.ToInt32(tac.Period.Replace("Y", "")), (Convert.ToInt32(tac.Period.Replace("Y", ""))) / 13),
+                            Year = int.Parse(tac.Plan.Year.ToString()) + ((Convert.ToInt32(tac.Period.Replace("Y", ""))) / 13),
+                            TacticId = tac.PlanId,
+                            Value = objCurrency.GetValueByExchangeRate(tac.Value, PlanExchangeRate)
+                        }).ToList();
+                    //Updated version of Below method By Preet Shah 28/12/2016 #2959.
+
+                    //var _planBudgetList = db.Plan_Budget.Where(plan => lstPlanIds.Contains(plan.PlanId)).ToList()
+                    //                     .Select(tac => new
+                    //                     {
+                    //                         Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
+                    //                         TacticId = tac.PlanId,
+                    //                         Value = tac.Value,
+                    //                         StartYear = tac.Plan.Year
+                    //                     }).ToList().Select(tac => new
+                    //                     {
+                    //                         Period = tac.Period,
+                    //                         NumPeriod = (tac.Period / 13),
+                    //                         TacticId = tac.TacticId,
+                    //                         Value = objCurrency.GetValueByExchangeRate(tac.Value, PlanExchangeRate),// Modified By Nishant Sheth #2507
+                    //                         StartYear = int.Parse(tac.StartYear.ToString())
+                    //                     }).ToList().Select(tact => new
+                    //                     {
+                    //                         Period = PeriodPrefix + Common.ReportMultiyearMonth(tact.Period, tact.NumPeriod),
+                    //                         Year = tact.StartYear + tact.NumPeriod,
+                    //                         TacticId = tact.TacticId,
+                    //                         Value = tact.Value
+                    //                     }).ToList();
 
                     // Modified By Nishant Sheth // Reg::#2432 Show a plan allocated budget instead of tactic allocated budget
                     //_TacticTotalBudget = _tacBudgetList != null && _tacBudgetList.Count > 0 ? _tacBudgetList.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
@@ -6098,7 +6149,7 @@ namespace RevenuePlanner.Controllers
                         .Sum(plan => objCurrency.GetValueByExchangeRate(plan.Budget, PlanExchangeRate));
                     //objFinanceModel.TotalBudgetAllocated = _TacticTotalBudget;
                     //objFinanceModel.TotalBudgetUnAllocated = _PlanBudget - _TacticTotalBudget;
-                    _PlanTotalBudget = _planBudgetList != null && _planBudgetList.Count > 0 ? _planBudgetList.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
+                    _PlanTotalBudget = _planBudgetList != null && _planBudgetList.Count > 0 ? _planBudgetList.Where(tac => listYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
                     objFinanceModel.TotalBudgetAllocated = _PlanTotalBudget;
                     objFinanceModel.TotalBudgetUnAllocated = _PlanBudget - _PlanTotalBudget;
                     // End By Nishant Sheth
@@ -6116,7 +6167,7 @@ namespace RevenuePlanner.Controllers
                     var tacCostListData = Common.CalculatePlannedCostTacticslist(_tacticCostIdList);
                     // Modified By Nishant Sheth
                     // #2507 : Summary report chanages to apply multicurrency
-                    objFinanceModel.PlannedCostvsBudget = tacCostListData.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).
+                    objFinanceModel.PlannedCostvsBudget = tacCostListData.Where(tac => listYear.Contains(Convert.ToString(tac.Year))).
                         Sum(tacCost => objCurrency.GetValueByExchangeRate(tacCost.Value, PlanExchangeRate));
 
                     List<TacticActualCostModel> TacticActualCostList = new List<TacticActualCostModel>();
@@ -6131,7 +6182,9 @@ namespace RevenuePlanner.Controllers
 
                     double _ActualCostvsBudget = 0;
                     if (TacticActualCostList != null)
+                    { 
                         TacticActualCostList.ForEach(tac => _ActualCostvsBudget += tac.ActualList.Sum(actual => actual.Value));
+                    }
                     objFinanceModel.ActualCostvsBudet = _ActualCostvsBudget;
 
                     #region "Calculate Barchart data for PlanCost & ActualCost"
@@ -6145,15 +6198,15 @@ namespace RevenuePlanner.Controllers
                     {
                         //categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
                         // Modified By Nishant Sheth #1838
-                        foreach (var YearName in ListYear)
+                        foreach (string yearName in listYear)
                         {
-                            if ((ListYear.Length == 1 || (ListYear.Length > 1 && YearName == currentyear)) || (YearName == ListYear.Min().ToString() && !ListYear.Contains(currentyear)))
+                            if ((listYear.Length == 1 || (listYear.Length > 1 && yearName == currentyear)) || (yearName == listYear.Min().ToString() && !listYear.Contains(currentyear)))
                             {
                                 categories.Add("Q1"); categories.Add("Q2"); categories.Add("Q3"); categories.Add("Q4");
                             }
                             else
                             {
-                                categories.Add(YearName);
+                                categories.Add(yearName);
                             }
                         }
                         // End By Nishant Sheth
@@ -6170,7 +6223,22 @@ namespace RevenuePlanner.Controllers
                     List<double> btmPlannedCostList = new List<double>();
                     List<double> btmActualCostList = new List<double>();
                     List<double> btmBudgetCostList = new List<double>();
-                    double _PlannedCostValue = 0, _ActualCostValue = 0, _BudgetCostValue = 0;
+                    double _plannedCostValue = 0, _actualCostValue = 0, _budgetCostValue = 0;
+
+                    List<double> serPlannedData = new List<double>();
+                    BarChartSeries plannedSeries = new BarChartSeries();
+                    plannedSeries.name = "Planned Cost";
+
+                    List<double> serBudgetData = new List<double>();
+                    BarChartSeries budgetSeries = new BarChartSeries();
+                    budgetSeries.name = "Budget";
+
+                    List<double> scatterData = new List<double>();
+                    BarChartSeries objSeriesScatter = new BarChartSeries();
+                    objSeriesScatter.name = "Actual Cost";
+                    objSeriesScatter.type = "scatter";
+
+                    bool isMonthList = false;
 
                     if (IsQuarterly)
                     {
@@ -6178,21 +6246,7 @@ namespace RevenuePlanner.Controllers
                         List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
                         List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
                         List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-
-                        List<double> serPlannedData = new List<double>();
-                        BarChartSeries plannedSeries = new BarChartSeries();
-                        plannedSeries.name = "Planned Cost";
-
-                        List<double> serBudgetData = new List<double>();
-                        BarChartSeries budgetSeries = new BarChartSeries();
-                        budgetSeries.name = "Budget";
-
-                        List<double> scatterData = new List<double>();
-                        BarChartSeries objSeriesScatter = new BarChartSeries();
-                        objSeriesScatter.name = "Actual Cost";
-                        objSeriesScatter.type = "scatter";
-
-
+                        
                         List<double> PlannedCostList = new List<double>();
                         List<double> ActualCostList = new List<double>();
                         List<double> BudgetCostList = new List<double>();
@@ -6285,7 +6339,7 @@ namespace RevenuePlanner.Controllers
                         // Add By Nishant Sheth #1838
                         #endregion
 
-                        bool isMonthList = false;
+                        
                         var Quarterbase = 1;
                         for (int i = 1; i <= categories.Count; i++)
                         {
@@ -6293,7 +6347,7 @@ namespace RevenuePlanner.Controllers
                             bool isNumeric = int.TryParse(categories[i - 1], out year);
                             if (!(isNumeric) && isMonthList == false)
                             {
-                                year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : Convert.ToInt32(ListYear.Min());
+                                year = listYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : Convert.ToInt32(listYear.Min());
                                 DateTime TFstartDate = new DateTime(year, 1, 1);
                                 DateTime TFendDate = new DateTime(year, 12, 31);
                                 for (int k = 1; k <= 4; k++)
@@ -6301,14 +6355,14 @@ namespace RevenuePlanner.Controllers
                                     List<string> Quarters = new List<string>() { PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++) };
                                     PlannedCostList = new List<double>();
                                     BudgetCostList = new List<double>();
-                                    _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
+                                    _plannedCostValue = _actualCostValue = _budgetCostValue = 0;
                                     // Modified By Nishant Sheth
                                     // #2507 : Summary report chanages to apply multicurrency
                                     PlannedCostList = tacCostListData.Where(plancost => Quarters.Contains(plancost.Period)
                                         && plancost.Year == year)
                                         .Select(plancost =>
                                             objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate)).ToList();
-                                    TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Quarters.Contains(actual.Period) && actual.Year == year).Sum(actual => actual.Value));
+                                    TacticActualCostList.ForEach(tactic => _actualCostValue += tactic.ActualList.Where(actual => Quarters.Contains(actual.Period) && actual.Year == year).Sum(actual => actual.Value));
                                     // Modified By Nishant Sheth
                                     // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
                                     // Modified By Nishant Sheth
@@ -6318,17 +6372,17 @@ namespace RevenuePlanner.Controllers
                                         .Select(budgtcost =>
                                             objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate)).ToList();
 
-                                    _PlannedCostValue = PlannedCostList.Sum(val => val);
-                                    serPlannedData.Add(_PlannedCostValue);
+                                    _plannedCostValue = PlannedCostList.Sum(val => val);
+                                    serPlannedData.Add(_plannedCostValue);
 
-                                    _BudgetCostValue = BudgetCostList.Sum(val => val);
-                                    serBudgetData.Add(_BudgetCostValue);
+                                    _budgetCostValue = BudgetCostList.Sum(val => val);
+                                    serBudgetData.Add(_budgetCostValue);
 
-                                    scatterData.Add(_ActualCostValue);
+                                    scatterData.Add(_actualCostValue);
 
-                                    btmPlannedCostList.Add(_PlannedCostValue);
-                                    btmActualCostList.Add(_ActualCostValue);
-                                    btmBudgetCostList.Add(_BudgetCostValue);
+                                    btmPlannedCostList.Add(_plannedCostValue);
+                                    btmActualCostList.Add(_actualCostValue);
+                                    btmBudgetCostList.Add(_budgetCostValue);
                                 }
                                 isMonthList = true;
                             }
@@ -6337,47 +6391,50 @@ namespace RevenuePlanner.Controllers
 
                                 PlannedCostList = new List<double>();
                                 BudgetCostList = new List<double>();
-                                _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
 
                                 string Year = Convert.ToString(categories[i - 1]);
 
-                                List<string> periodlist = new List<string>();
-                                int baseyear = 12;
-                                for (int k = 1; k <= baseyear; k++)
-                                {
-                                    periodlist.Add(PeriodPrefix + k);
-                                }
+                                //Added By Preet Shah on 29/12/2016. For Code Refactoring #2959
+                                GetCostForNumericCategory(Year, tacCostListData,TacticActualCostList, _planBudgetList,
+                                    ref serPlannedData, ref serBudgetData, ref scatterData, ref btmPlannedCostList,ref btmActualCostList, ref btmBudgetCostList);
 
-                                //_PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+                                //List<string> periodlist = new List<string>();
+                                //int baseyear = 12;
+                                //for (int k = 1; k <= baseyear; k++)
+                                //{
+                                //    periodlist.Add(PeriodPrefix + k);
+                                //}
+
+                                ////_PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+                                ////    && plancost.Year == Convert.ToInt32(Year))
+                                ////    .Select(plancost => plancost.Value).FirstOrDefault();
+
+                                //// Modified By Nishant Sheth
+                                //// Desc :: #2052 finance calulation wrong with quarters and monthly
+                                //// Modified By Nishant Sheth
+                                //// #2507 : Summary report chanages to apply multicurrency
+                                //_plannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
                                 //    && plancost.Year == Convert.ToInt32(Year))
-                                //    .Select(plancost => plancost.Value).FirstOrDefault();
+                                //    .Sum(plancost =>
+                                //        objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));
 
-                                // Modified By Nishant Sheth
-                                // Desc :: #2052 finance calulation wrong with quarters and monthly
-                                // Modified By Nishant Sheth
-                                // #2507 : Summary report chanages to apply multicurrency
-                                _PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
-                                    && plancost.Year == Convert.ToInt32(Year))
-                                    .Sum(plancost =>
-                                        objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));
+                                //TacticActualCostList.ForEach(tactic => _actualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
+                                //// Modified By Nishant Sheth
+                                //// Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                                //// Modified By Nishant Sheth
+                                //// #2507 : Summary report chanages to apply multicurrency
+                                //_budgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
+                                //    && budgtcost.Year == Convert.ToInt32(Year))
+                                //    .Sum(budgtcost =>
+                                //        objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
 
-                                TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
-                                // Modified By Nishant Sheth
-                                // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
-                                // Modified By Nishant Sheth
-                                // #2507 : Summary report chanages to apply multicurrency
-                                _BudgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
-                                    && budgtcost.Year == Convert.ToInt32(Year))
-                                    .Sum(budgtcost =>
-                                        objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
+                                //serPlannedData.Add(_plannedCostValue);
+                                //serBudgetData.Add(_budgetCostValue);
+                                //scatterData.Add(_actualCostValue);
 
-                                serPlannedData.Add(_PlannedCostValue);
-                                serBudgetData.Add(_BudgetCostValue);
-                                scatterData.Add(_ActualCostValue);
-
-                                btmPlannedCostList.Add(_PlannedCostValue);
-                                btmActualCostList.Add(_ActualCostValue);
-                                btmBudgetCostList.Add(_BudgetCostValue);
+                                //btmPlannedCostList.Add(_plannedCostValue);
+                                //btmActualCostList.Add(_actualCostValue);
+                                //btmBudgetCostList.Add(_budgetCostValue);
                             }
                         }
                         plannedSeries.data = serPlannedData;
@@ -6392,19 +6449,7 @@ namespace RevenuePlanner.Controllers
                     else
                     {
                         string curntPeriod = string.Empty;
-                        List<double> serPlannedData = new List<double>();
-                        BarChartSeries plannedSeries = new BarChartSeries();
-                        plannedSeries.name = "Planned Cost";
-
-                        List<double> serBudgetData = new List<double>();
-                        BarChartSeries budgetSeries = new BarChartSeries();
-                        budgetSeries.name = "Budget";
-
-                        List<double> scatterData = new List<double>();
-                        BarChartSeries objSeriesScatter = new BarChartSeries();
-                        objSeriesScatter.name = "Actual Cost";
-                        objSeriesScatter.type = "scatter";
-                        bool isMonthList = false;
+                       
                         for (int i = 1; i <= categories.Count; i++)
                         {
                             // Add & Modified By Nishant Sheth #1838
@@ -6412,80 +6457,88 @@ namespace RevenuePlanner.Controllers
                             bool isNumeric = int.TryParse(categories[i - 1], out year);
                             if (!(isNumeric) && isMonthList == false)
                             {
-                                year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : Convert.ToInt32(ListYear.Min());
+                                year = listYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : Convert.ToInt32(listYear.Min());
                                 for (int k = 1; k <= 12; k++)
                                 {
-                                    _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0; // Add By Nishant Sheth // #2052 observation for diffrent value with quarter and month
+                                    _plannedCostValue = _actualCostValue = _budgetCostValue = 0; // Add By Nishant Sheth // #2052 observation for diffrent value with quarter and month
 
                                     curntPeriod = PeriodPrefix + k;
                                     // Modified By Nishant Sheth
                                     // #2507 : Summary report chanages to apply multicurrency
-                                    _PlannedCostValue = tacCostListData.Where(plancost => plancost.Period.Equals(curntPeriod) && plancost.Year == year)
+                                    _plannedCostValue = tacCostListData.Where(plancost => plancost.Period.Equals(curntPeriod) && plancost.Year == year)
                                         .Sum(plancost =>
                                             objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));// Modified by nishant sheth #2052
-                                    TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod) && actual.Year == year).Sum(actual => actual.Value));
+                                    TacticActualCostList.ForEach(tactic => _actualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod) && actual.Year == year).Sum(actual => actual.Value));
                                     // Modified By Nishant Sheth
                                     // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
                                     // Modified By Nishant Sheth
                                     // #2507 : Summary report chanages to apply multicurrency
-                                    _BudgetCostValue = _planBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year)
+                                    _budgetCostValue = _planBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year)
                                         .Sum(budgtcost =>
                                             objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));// Modified by nishant sheth #2052
 
-                                    serPlannedData.Add(_PlannedCostValue);
-                                    serBudgetData.Add(_BudgetCostValue);
-                                    scatterData.Add(_ActualCostValue);
+                                    serPlannedData.Add(_plannedCostValue);
+                                    serBudgetData.Add(_budgetCostValue);
+                                    scatterData.Add(_actualCostValue);
 
-                                    btmPlannedCostList.Add(_PlannedCostValue);
-                                    btmActualCostList.Add(_ActualCostValue);
-                                    btmBudgetCostList.Add(_BudgetCostValue);
+                                    btmPlannedCostList.Add(_plannedCostValue);
+                                    btmActualCostList.Add(_actualCostValue);
+                                    btmBudgetCostList.Add(_budgetCostValue);
                                 }
                                 isMonthList = true;
                             }
                             else if (isNumeric)
                             {
-                                //var PlanYear = Convert.ToInt32(_tacCostList.Select(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year).FirstOrDefault());
-                                //if (PlanYear != null)
-                                //{
+                                //_plannedCostValue = _actualCostValue = _budgetCostValue = 0; // Add By Nishant Sheth // #2052 observation for diffrent value with quarter and month
+
                                 string Year = Convert.ToString(categories[i - 1]);
-                                //int YearDiffrence = (Convert.ToInt32(categories[i - 1]) - PlanYear);
-                                //if (YearDiffrence > 0)
+
+                                //Added By Preet Shah on 29/12/2016. For Code Refactoring #2959
+                                GetCostForNumericCategory(Year, tacCostListData, TacticActualCostList, _planBudgetList,
+                                    ref serPlannedData, ref serBudgetData, ref scatterData, ref btmPlannedCostList, ref btmActualCostList, ref btmBudgetCostList);
+
+                                ////var PlanYear = Convert.ToInt32(_tacCostList.Select(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year).FirstOrDefault());
+                                ////if (PlanYear != null)
+                                ////{
+
+                                ////int YearDiffrence = (Convert.ToInt32(categories[i - 1]) - PlanYear);
+                                ////if (YearDiffrence > 0)
+                                ////{
+                                ////DateTime TFstartDate = new DateTime(PlanYear, 1, 1);
+                                ////DateTime TFendDate = new DateTime(PlanYear, 12, 31);
+                                //List<string> periodlist = new List<string>();
+                                //int baseyear = 12;
+                                //for (int k = 1; k <= baseyear; k++)
                                 //{
-                                //DateTime TFstartDate = new DateTime(PlanYear, 1, 1);
-                                //DateTime TFendDate = new DateTime(PlanYear, 12, 31);
-                                List<string> periodlist = new List<string>();
-                                int baseyear = 12;
-                                for (int k = 1; k <= baseyear; k++)
-                                {
-                                    periodlist.Add(PeriodPrefix + k);
-                                }
-                                _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0; // Add By Nishant Sheth // #2052 observation for diffrent value with quarter and month
+                                //    periodlist.Add(PeriodPrefix + k);
+                                //}
 
-                                //_PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+
+                                ////_PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+                                ////    && plancost.Year == Convert.ToInt32(Year))
+                                ////    .Select(plancost => plancost.Value).FirstOrDefault();
+
+                                //// Modified By Nishant Sheth
+                                //// Desc :: #2052 finance calulation wrong with quarters and monthly
+                                //_plannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
                                 //    && plancost.Year == Convert.ToInt32(Year))
-                                //    .Select(plancost => plancost.Value).FirstOrDefault();
+                                //    .Sum(plancost => objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));
+                                //TacticActualCostList.ForEach(tactic => _actualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
+                                //// Modified By Nishant Sheth
+                                //// Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                                //_budgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
+                                //    && budgtcost.Year == Convert.ToInt32(Year))
+                                //    .Sum(budgtcost => objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
 
-                                // Modified By Nishant Sheth
-                                // Desc :: #2052 finance calulation wrong with quarters and monthly
-                                _PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
-                                    && plancost.Year == Convert.ToInt32(Year))
-                                    .Sum(plancost => objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));
-                                TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
-                                // Modified By Nishant Sheth
-                                // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
-                                _BudgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
-                                    && budgtcost.Year == Convert.ToInt32(Year))
-                                    .Sum(budgtcost => objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
+                                //serPlannedData.Add(_plannedCostValue);
+                                //serBudgetData.Add(_budgetCostValue);
+                                //scatterData.Add(_actualCostValue);
 
-                                serPlannedData.Add(_PlannedCostValue);
-                                serBudgetData.Add(_BudgetCostValue);
-                                scatterData.Add(_ActualCostValue);
-
-                                btmPlannedCostList.Add(_PlannedCostValue);
-                                btmActualCostList.Add(_ActualCostValue);
-                                btmBudgetCostList.Add(_BudgetCostValue);
-                                //}
-                                //}
+                                //btmPlannedCostList.Add(_plannedCostValue);
+                                //btmActualCostList.Add(_actualCostValue);
+                                //btmBudgetCostList.Add(_budgetCostValue);
+                                ////}
+                                ////}
                             }
                             //End By Nishant Sheth
                         }
@@ -6534,7 +6587,65 @@ namespace RevenuePlanner.Controllers
             DateTime dt1 = DateTime.Now;
             return PartialView("_Overview", objReportOverviewModel);
         }
+        //Added By Preet Shah for #2959
+        public void GetCostForNumericCategory(string year,List<MultiYearModel> tacCostListData,List<TacticActualCostModel> TacticActualCostList,
+            IEnumerable<dynamic> _planBudgetList,ref List<double> serPlannedData,ref List<double> serBudgetData,ref List<double> scatterData,
+            ref List<double> btmPlannedCostList, ref List<double> btmActualCostList, ref List<double> btmBudgetCostList)
+        {
+            //string Year = Convert.ToString(categories[i - 1]);
+            double _plannedCostValue = 0;
+            double _actualCostValue = 0;
+            double _budgetCostValue = 0;
 
+            List<string> periodlist = new List<string>();
+            for (int k = 1; k <= 12; k++)
+            {
+                periodlist.Add(PeriodPrefix + k);
+            }
+            //_PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+            //    && plancost.Year == Convert.ToInt32(Year))
+            //    .Select(plancost => plancost.Value).FirstOrDefault();
+
+            // Modified By Nishant Sheth
+            // Desc :: #2052 finance calulation wrong with quarters and monthly
+            // Modified By Nishant Sheth
+            // #2507 : Summary report chanages to apply multicurrency
+            _plannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+                && plancost.Year == Convert.ToInt32(year))
+                .Sum(plancost =>
+                    objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));
+            TacticActualCostList.ForEach(tactic => _actualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(year)).Sum(actual => actual.Value));
+            // Modified By Nishant Sheth
+            // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+            // Modified By Nishant Sheth
+            // #2507 : Summary report chanages to apply multicurrency
+            _budgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
+                && budgtcost.Year == Convert.ToInt32(year))
+                .Sum(budgtcost =>
+                    objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
+            serPlannedData.Add(_plannedCostValue);
+            serBudgetData.Add(_budgetCostValue);
+            scatterData.Add(_actualCostValue);
+
+            btmPlannedCostList.Add(_plannedCostValue);
+            btmActualCostList.Add(_actualCostValue);
+            btmBudgetCostList.Add(_budgetCostValue);
+        }
+        //Added By Preet Shah for #2959
+        public List<ProjectedTrendModel> FilterProjectedTrendList(List<ProjectedTrendModel> projectedTrendModelList,string[] listYear)
+        {
+            return projectedTrendModelList = projectedTrendModelList.Select(tac => new ProjectedTrendModel
+            {
+                Month = PeriodPrefix + (Convert.ToInt32(tac.Month.Replace("Y", "")) > 12 ? 1 : 0),
+                Year = tac.StartDate.Year + (Convert.ToInt32(tac.Month.Replace("Y", "")) / 13),
+                PlanTacticId = tac.PlanTacticId,
+                Value = tac.Value,
+                StartDate = tac.StartDate,
+                EndDate = tac.EndDate,
+                NoTacticMonths = tac.NoTacticMonths,
+                TrendValue = tac.TrendValue
+            }).Where(tac => listYear.Contains(Convert.ToString(tac.Year))).ToList();
+        }
         #region "Revenue report related functions"
         /// <summary>
         /// This function will return the Master data of RevenueOverviewModel.
@@ -7907,7 +8018,7 @@ namespace RevenuePlanner.Controllers
                 {
                     string CR = Enums.StageType.CR.ToString();
                     string stageINQ = Enums.Stage.INQ.ToString();
-                    List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted.Equals(false)).Select(stage => stage).ToList();
+                    List<Models.Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted.Equals(false)).Select(stage => stage).ToList();
 
                     int levelINQ = stageList.Where(s => s.Code.Equals(stageINQ)).Select(s => s.Level.Value).FirstOrDefault();
                     string stageMQL = Enums.Stage.MQL.ToString();
