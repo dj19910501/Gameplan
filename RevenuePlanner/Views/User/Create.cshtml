@@ -75,6 +75,7 @@
 
                     @Html.TextBoxFor(model => model.FirstName, new { id = "txtFirstName" })
                     @Html.ValidationMessageFor(model => model.FirstName)
+                    @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblFNameInvalid", For = "txtFirstName", style = "display:none; float: left" })                    
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
@@ -82,6 +83,7 @@
 
                     @Html.TextBoxFor(model => model.LastName, new { id = "txtLastName" })
                     @Html.ValidationMessageFor(model => model.LastName)
+                    @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblLNameInvalid", For = "txtLastName", style = "display:none; float: left" })
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
@@ -239,6 +241,22 @@
             myApp.showPleaseWait();
             }
             var isValid = true;
+            // Check for insert HTML tags ("<", ">") in input
+            if (CheckHtmlTag($("#txtFirstName").val()) == false) {
+                $("#lblFNameInvalid").show();
+                $("#txtFirstName").addClass("error");
+                isValid = false;
+            }
+            if (CheckHtmlTag($("#txtLastName").val()) == false) {
+                $("#lblLNameInvalid").show();
+                $("#txtLastName").addClass("error");
+                isValid = false;
+            }
+            if (CheckHtmlTag($("#txtJobTitle").val()) == false) {
+                $("#lblJobtitleInvalid").show();
+                $("#txtJobTitle").addClass("error");
+                isValid = false;
+            }
 
             //ClientId Dropdown Required Validtion
             if (($("#ClientId option").eq(0).val() == "" && $("#ClientId").val() == "")) {
