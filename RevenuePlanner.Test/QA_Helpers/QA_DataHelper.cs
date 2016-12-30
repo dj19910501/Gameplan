@@ -14,7 +14,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 
-namespace RevenuePlanner.Test.QA
+namespace RevenuePlanner.Test.QA_Helpers
 {
     public static class QA_DataHelper
     {
@@ -67,7 +67,7 @@ namespace RevenuePlanner.Test.QA
         //Get all client specific stages
         public static List<Stage> GetAllClientStages(int clientId)
         {
-            List<Stage> clientStages= new List<Stage>();
+            List<Stage> clientStages = new List<Stage>();
             clientStages = db.Stages.Where(pl => pl.ClientId == clientId && pl.IsDeleted == false).ToList();
             return clientStages;
         }
@@ -95,6 +95,6 @@ namespace RevenuePlanner.Test.QA
             return objTactic;
         }
 
-       
+
     }
 }

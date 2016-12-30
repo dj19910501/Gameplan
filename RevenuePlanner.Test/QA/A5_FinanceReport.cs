@@ -1,15 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RevenuePlanner.Controllers;
-using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
-using RevenuePlanner.Test.IntegrationHelpers;
-using RevenuePlanner.Test.MockHelpers;
+using RevenuePlanner.Test.QA_Helpers;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace RevenuePlanner.Test.QA

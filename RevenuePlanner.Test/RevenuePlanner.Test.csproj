@@ -156,7 +156,6 @@
     <None Include="Properties\DataSources\RevenuePlanner.BDSService.User.datasource" />
     <None Include="Properties\DataSources\RevenuePlanner.BDSService.UserApplicationPermission.datasource" />
     <None Include="Properties\DataSources\RevenuePlanner.BDSService.UserHierarchy.datasource" />
-    <None Include="Resource\GamePlan_Data-1.xls" />
     <None Include="Resource\GamePlan_Data.xls" />
     <None Include="Resource\Login.xls" />
     <None Include="Resource\MeasureReportData.xls" />

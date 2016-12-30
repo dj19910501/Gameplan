@@ -9,9 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using RevenuePlanner.Test.MockHelpers;
 
-namespace RevenuePlanner.Test.IntegrationHelpers
+namespace RevenuePlanner.Test.QA_Helpers
 {
-
     public class PlanCommonFunctions
     {
         Hive9CommonFunctions ObjCommonFunctions = new Hive9CommonFunctions();

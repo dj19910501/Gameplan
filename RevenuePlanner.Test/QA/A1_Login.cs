@@ -9,7 +9,7 @@ using System.Web.Routing;
 using System.Linq;
 using System.Configuration;
 using RevenuePlanner.Test.MockHelpers;
-using RevenuePlanner.Test.QA;
+using RevenuePlanner.Test.QA_Helpers;
 using System.Data;
 namespace RevenuePlanner.Test.QA
 {

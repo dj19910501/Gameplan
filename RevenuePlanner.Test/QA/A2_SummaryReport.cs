@@ -2,11 +2,9 @@
 using RevenuePlanner.Controllers;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
-using RevenuePlanner.Test.IntegrationHelpers;
-using RevenuePlanner.Test.MockHelpers;
+using RevenuePlanner.Test.QA_Helpers;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,10 +50,10 @@ namespace RevenuePlanner.Test.QA
                     Console.WriteLine("\n ----------------------------------------------------------------------");
                     Console.WriteLine("\n Testing ReportController - GetOverviewData Method");
 
-                    //Console.WriteLine("\n -------------- INQ Waterfall Report Number Validation --------------");
-                    //ObjPlanCommonFunctions.SetSessionData();
-                    //var task1 = Task.Run(async () => await INQSummaryReport());
-                    //task1.Wait();
+                    Console.WriteLine("\n -------------- INQ Waterfall Report Number Validation --------------");
+                    ObjPlanCommonFunctions.SetSessionData();
+                    var task1 = Task.Run(async () => await INQSummaryReport());
+                    task1.Wait();
 
                     Console.WriteLine("\n ----------------------------------------------------------------------");
                     Console.WriteLine("\n -------------- TQL Waterfall Report Number Validation --------------");

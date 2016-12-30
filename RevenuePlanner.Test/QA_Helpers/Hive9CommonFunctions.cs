@@ -17,9 +17,7 @@ using RevenuePlanner.Models;
 using System.Reflection;
 using System.IO;
 
-
-
-namespace RevenuePlanner.Test.QA
+namespace RevenuePlanner.Test.QA_Helpers
 {
 
     public class Hive9CommonFunctions
