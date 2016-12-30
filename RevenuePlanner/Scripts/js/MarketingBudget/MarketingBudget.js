@@ -350,13 +350,14 @@ function GetGridData(budgetId) {
             budgetgrid.setColumnHidden(colIdIndex, true)            // Hide the "Id" column by enable the DHTMLXTreeGrid property "setColumnHidden".
             HideShowColumns();  // Show/Hide the BudgetGrid columns to show default columns while load Grid 1st time.
 
-
             
-
+            
             //Added By Jaymin Modi at 01/Dec/2016 For Saving Open and Close States.Ticket:-2806 
             var cookieBudgetgridState = dhtmlXGridObject.prototype.getCookie("budgetgridState", "gridOpen");
             if (cookieBudgetgridState == null) {
-                budgetgrid.expandAll();
+                //    budgetgrid.expandAll();
+                var firstRowId = budgetgrid.getRowId(0);    // Open First Row by default if no saved view.
+                budgetgrid.openItem(firstRowId);
             }
             budgetgrid.attachEvent("onOpenEnd", function () {
                 budgetgrid.saveOpenStates("budgetgridState");
