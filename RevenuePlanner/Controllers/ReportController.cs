@@ -27,7 +27,7 @@ using RevenuePlanner.BAL;
 using System.Web.Caching;
 using System.Reflection;
 using Newtonsoft.Json;
-using static RevenuePlanner.Helpers.Enums;
+//using static RevenuePlanner.Helpers.Enums;
 
 namespace RevenuePlanner.Controllers
 {
@@ -5643,14 +5643,14 @@ namespace RevenuePlanner.Controllers
             List<conversion_Projected_Goal_LineChart> projected_Goal_LineChartList = new List<conversion_Projected_Goal_LineChart>();
             conversion_Projected_Goal_LineChart objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
             List<Stage_Benchmark> stageBenchmarkList = new List<Stage_Benchmark>();
-            string strMQLStageCode = InspectStage.MQL.ToString();
-            string strCWStageCode = InspectStage.CW.ToString();
+            string strMQLStageCode = RevenuePlanner.Helpers.Enums.InspectStage.MQL.ToString();
+            string strCWStageCode = RevenuePlanner.Helpers.Enums.InspectStage.CW.ToString();
             double _Benchmark = 0, _inqActual = 0, _mqlActual = 0, _cwActual = 0, stageVolumePercntg = 0, _stageVolumepercentage = 0;
             bool IsQuarterly = true;
-            string revStageCode = InspectStageValues[InspectStage.Revenue.ToString()].ToString();
-            string inqStageCode = InspectStageValues[InspectStage.ProjectedStageValue.ToString()].ToString();
-            string mqlStageCode = InspectStageValues[strMQLStageCode].ToString();
-            string cwStageCode = InspectStageValues[strCWStageCode].ToString();
+            string revStageCode = RevenuePlanner.Helpers.Enums.InspectStageValues[RevenuePlanner.Helpers.Enums.InspectStage.Revenue.ToString()].ToString();
+            string inqStageCode = RevenuePlanner.Helpers.Enums.InspectStageValues[RevenuePlanner.Helpers.Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
+            string mqlStageCode = RevenuePlanner.Helpers.Enums.InspectStageValues[strMQLStageCode].ToString();
+            string cwStageCode = RevenuePlanner.Helpers.Enums.InspectStageValues[strCWStageCode].ToString();
             List<string> actualStageCodeList = new List<string>();
             actualStageCodeList.Add(revStageCode);
             actualStageCodeList.Add(inqStageCode);
@@ -5664,7 +5664,7 @@ namespace RevenuePlanner.Controllers
             #endregion
             try
             {
-                if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(ViewByAllocated.Monthly.ToString()))
+                if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(RevenuePlanner.Helpers.Enums.ViewByAllocated.Monthly.ToString()))
                 {
                     IsQuarterly = false;
                 }
@@ -5759,7 +5759,7 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region "Get SparklineChart Data"
-                    List<TOPRevenueType> RevenueTypeList = Enum.GetValues(typeof(TOPRevenueType)).Cast<TOPRevenueType>().ToList();
+                    List<RevenuePlanner.Helpers.Enums.TOPRevenueType> RevenueTypeList = Enum.GetValues(typeof(RevenuePlanner.Helpers.Enums.TOPRevenueType)).Cast<RevenuePlanner.Helpers.Enums.TOPRevenueType>().ToList();
                     List<sparkLineCharts> SparkLineChartsData = GetRevenueSparkLineChartData(selectedCustomFieldValue, timeframeOption, RevenueTypeList, true);
                     objRevenueOverviewModel.SparkLineChartsData = SparkLineChartsData;
                     #endregion
@@ -5935,7 +5935,7 @@ namespace RevenuePlanner.Controllers
                     List<int> _TacticIds = new List<int>();
                     List<Plan_Campaign_Program_Tactic> _tacList = new List<Plan_Campaign_Program_Tactic>();
                     
-                    string RevenueStageType = InspectStage.Revenue.ToString();
+                    string RevenueStageType = RevenuePlanner.Helpers.Enums.InspectStage.Revenue.ToString();
                     List<string> categories = new List<string>();
                     #endregion
 
