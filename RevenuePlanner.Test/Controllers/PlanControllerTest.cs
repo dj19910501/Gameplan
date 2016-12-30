@@ -15,7 +15,7 @@ namespace RevenuePlanner.Test.Controllers
 {
     [TestClass]
     public class PlanControllerTest
-    {
+    { 
         PlanController objPlanController;
         [TestInitialize]
         public void LoadCacheMessage()
@@ -121,96 +121,11 @@ namespace RevenuePlanner.Test.Controllers
             // data object should not be null in json result
             Assert.IsNotNull(result.Data);
 
-        }
-
-        /// <summary>
-        /// To check to allocate budget to campaign having quarterly allocated plan
-        /// <author>Arpita Soni</author>
-        /// <createddate>25May2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void GetBudgetAllocationCampaignData_With_Plan_Quarter_Allocated()
-        {
-            Console.WriteLine("To check to allocate budget to campaign having quarterly allocated plan\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
-
-            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            Plan_Campaign campaign = db.Plan_Campaign.Where(a => a.Plan.Model.ClientId == Sessions.User.CID && a.IsDeleted == false && a.Plan.AllocatedBy.ToLower() != "quarter").OrderBy(a => Guid.NewGuid()).FirstOrDefault();
-            int CampaignId = 0;
-            if (campaign != null)
-            {
-                CampaignId = campaign.PlanCampaignId;
-            }
-            var result = objPlanController.GetBudgetAllocationCampaignData(CampaignId);
-            var serializedData = new RouteValueDictionary(result.Data);
-            var budgetData = serializedData["budgetData"];
-            var planRemainingBudget = serializedData["planRemainingBudget"];
-            // data object should not be null in json result
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value budgetData:  " + budgetData);
-            Assert.IsNotNull(budgetData);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value planRemainingBudget:  " + planRemainingBudget);
-            Assert.IsNotNull(planRemainingBudget);
-        }
-        /// <summary>
-        /// To check to allocate budget to campaign without having quarterly allocated plan
-        /// <author>Arpita Soni</author>
-        /// <createddate>25May2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void GetBudgetAllocationCampaignData_Without_Plan_Quarter_Allocated()
-        {
-            Console.WriteLine("To check to allocate budget to campaign without having quarterly allocated plan\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
-
-            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            Plan_Campaign campaign = DataHelper.GetPlanCampaign(Sessions.User.CID);
-            int CampaignId = 0;
-            if (campaign != null)
-            {
-                CampaignId = campaign.PlanCampaignId;
-            }
-            var result = objPlanController.GetBudgetAllocationCampaignData(CampaignId);
-            var serializedData = new RouteValueDictionary(result.Data);
-            var budgetData = serializedData["budgetData"];
-            var planRemainingBudget = serializedData["planRemainingBudget"];
-            // data object should not be null in json result
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value budgetData:  " + budgetData);
-            Assert.IsNotNull(budgetData);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value planRemainingBudget:  " + planRemainingBudget);
-            Assert.IsNotNull(planRemainingBudget);
-        }
+        }        
         #endregion
 
         #region Grid View
-        /// To Get Improvement Tactic for the grid
-        /// <author>Komal Rawal</author>
-        /// <createdDate>11thAugust2015</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void GetImprovementTactic()
-        {
-            Console.WriteLine("To Get Improvement Tactic for the grid.\n");
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int PlanId = DataHelper.GetPlanId();
-            var result = controller.GetImprovementTactic(PlanId) as JsonResult;
-
-            // data object should not be null in json result
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-        }
-
+        
         /// <summary>
         /// Add By Nishant Sheth
         /// To get home grid data with pass all parameters
@@ -236,7 +151,6 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(result);
         }
 
-
         /// <summary>
         /// Add By Nishant Sheth
         /// To get home grid data with out pass paramters
@@ -254,7 +168,6 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
             Assert.IsNotNull(result);
         }
-
         #endregion
 
         #region "Feature: Copy or Link Tactic/Program/Campaign between Plan"
@@ -348,31 +261,6 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
-        #region NoModel
-        /// <summary>
-        /// To check to No Model Method.
-        /// <author>Rahul Shah</author>
-        /// <createddate>29June2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void No_Model()
-        {
-            Console.WriteLine("To check to create plan with passing all parameters\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
-
-            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            var result = objPlanController.NoModel() as ActionResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-        }
-
-        #endregion
-
         #region Calculate Budget
 
         /// <summary>
@@ -397,69 +285,6 @@ namespace RevenuePlanner.Test.Controllers
             var result = objPlanController.CalculateBudget(ModelId, goalType, goalValue) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
-
-        }
-        #endregion
-
-        #region Get Plan List
-
-        /// <summary>
-        /// To check to get Plan List.
-        /// <author>Rahul Shah</author>
-        /// <createddate>29June2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void get_Plan_List()
-        {
-            Console.WriteLine("To check to get Plan List.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
-
-            var result = objPlanController.PlanList() as PartialViewResult;
-
-            if (!(result.ViewName.Equals("_ApplytoCalendarPlanList")))
-            {
-                Assert.Fail();
-            }
-            else if (result.ViewName.Equals("_ApplytoCalendarPlanList"))
-            {
-                Assert.IsNotNull(result.Model);
-            }
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
-            Assert.IsNotNull(result.ViewName);
-
-        }
-        #endregion
-
-        #region Get Gantt Data
-        /// <summary>
-        /// To check to get Gantt Data
-        /// <author>Rahul Shah</author>
-        /// <createddate>29June2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void get_Gantt_Data_of_Plan()
-        {
-            Console.WriteLine("To check to get Gantt Data.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
-            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            string Year = db.Plans.Where(plan => plan.PlanId == PlanId).Select(pl => pl.Year).FirstOrDefault();
-            var result = objPlanController.GetGanttData(PlanId, Year) as JsonResult;
-
-            Assert.IsNotNull(result.Data);
-            var serializedData = new RouteValueDictionary(result.Data);
-            var resultvalue = serializedData["planYear"];
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + resultvalue.ToString());
-            Assert.IsNotNull(resultvalue.ToString());
-
-
 
         }
         #endregion
@@ -706,61 +531,6 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
-        #region "Load Improvement Tactic Grid Data"
-        /// <summary>
-        /// To Check to Load Improvement Tactic Grid Data
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Load_Improvement_Grid()
-        {
-            Console.WriteLine("To Check to Load Improvement Tactic Grid Data.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-
-            int EntityId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(EntityId);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
-            if (TaskData != null)
-            {
-                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-                var result = controller.LoadImprovementGrid(PlanId) as PartialViewResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.ViewName);
-                Assert.IsNotNull(result.ViewName);
-            }
-
-        }
-        #endregion
-
-        #region "Load Add Actual Data"
-        /// <summary>
-        /// To Check to Load Add Actual Data
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Load_Add_Actual_Grid()
-        {
-            Console.WriteLine("To Check to Load Add Actual Data.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
-            string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
-            string singlehash = DataHelper.ComputeSingleHash(password);
-            RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
-            Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
-
-            int EntityId = DataHelper.GetPlanId();
-            bool isGridview = true;
-            var result = controller.AddActual(EntityId, isGridview) as ActionResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-        }
-        #endregion
-
         #region "Get Actual Line Item data for Plan Budget Tab"
         /// <summary>
         /// To Check to Get Actual Line Item data for Plan Budget Tab
@@ -779,26 +549,6 @@ namespace RevenuePlanner.Test.Controllers
             var result = controller.GetActualsLineitemData(EntityId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
-        }
-        #endregion
-
-        #region "Get Budget Plan List"
-        ///<summary>
-        /// To Check to Get Budget Plan List.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Budget_Plan_List()
-        {
-            Console.WriteLine("Get Budget Plan List.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-
-            var result = controller.BudgetPlanList() as PartialViewResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
-            Assert.IsNotNull(result.ViewName);
         }
         #endregion
 
@@ -858,277 +608,6 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region "Get Budget Allocation Plan Data For Plan Budget Tab"
-        ///<summary>
-        /// To Check to Get Budget Allocation Plan Data For Plan Budget Tab
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Budget_Allocation_Plan_Data()
-        {
-            Console.WriteLine("Get Budget Allocation Plan Data For Plan Budget Tab.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int EntityId = DataHelper.GetPlanId();
-
-            var result = controller.GetBudgetAllocationPlanData(EntityId) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-        }
-        #endregion
-
-        #region "Get Allocated Budget Data for Plan"
-        ///<summary>
-        /// To Check to Get Allocated Budget Data for Plan.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Allocated_Budget_Data_For_Plan()
-        {
-            Console.WriteLine("Get Allocated Budget Data for Plan.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            var TaskData = DataHelper.GetPlan(Sessions.User.CID);
-            int EntityId = TaskData.PlanId;
-            string allocatedBy = TaskData.CreatedBy.ToString();
-            var result = controller.GetAllocatedBudgetForPlan(EntityId, allocatedBy) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-        }
-        #endregion
-
-        #region "Delete Suggested Box Improvement Tactic"
-        ///<summary>
-        /// To Check Delete Suggested Box Improvement Tactic.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Delete_Suggested_Box_Improvement_Tactic()
-        {
-            Console.WriteLine("Delete Suggested Box Improvement Tactic.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID);
-            string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-
-            int allocatedBy = Sessions.User.ID;
-            var result = controller.DeleteSuggestedBoxImprovementTactic(EntityId, allocatedBy) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-        }
-        #endregion
-
-        #region "Get Conversion Improvement Tactic Type"
-        ///<summary>
-        /// To Check Get Conversion Improvement Tactic Type.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Conversion_Improvement_TacticType()
-        {
-            Console.WriteLine("Get Conversion Improvement Tactic Type.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID);
-            if (TaskData != null && TaskData.Count > 0)
-            {
-                string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
-                Sessions.PlanId = PlanId;
-                var result = controller.GetConversionImprovementTacticType(EntityId) as JsonResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-                Assert.IsNotNull(result.Data);
-            }
-
-        }
-        #endregion
-
-        #region "Get Header Value For Suggested Improvement"
-        ///<summary>
-        /// To Check Get Header Value For Suggested Improvement.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Header_Value_For_Suggested_Improvement()
-        {
-            Console.WriteLine("Get_HeaderValue_For_Suggested_Improvement.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID);
-            if (TaskData != null && TaskData.Count > 0)
-            {
-                string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
-                Sessions.PlanId = PlanId;
-                var result = controller.GetHeaderValueForSuggestedImprovement(EntityId) as JsonResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-                Assert.IsNotNull(result.Data);
-            }
-
-
-        }
-        #endregion
-
-        #region "Get_ADS_Improvement_TacticType"
-        ///<summary>
-        /// To Check Get ADS Improvement TacticType.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_ADS_Improvement_TacticType()
-        {
-            Console.WriteLine("Get ADS Improvement TacticType.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID);
-            if (TaskData != null && TaskData.Count > 0)
-            {
-                string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
-                Sessions.PlanId = PlanId;
-                var result = controller.GetADSImprovementTacticType(EntityId) as JsonResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-                Assert.IsNotNull(result.Data);
-            }
-
-        }
-        #endregion
-
-        #region "Add Suggested Improvement Tactic"
-        ///<summary>
-        /// To Check Add Suggested Improvement Tactic
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Add_Suggested_Improvement_Tactic()
-        {
-            Console.WriteLine("Get ADS Improvement TacticType.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
-            if (TaskData != null)
-            {
-                int EntityId = TaskData.ImprovementPlanProgramId;
-                int TacticTypeId = TaskData.ImprovementTacticTypeId;
-                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-                Sessions.PlanId = PlanId;
-                var result = controller.AddSuggestedImprovementTactic(EntityId, TacticTypeId) as JsonResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-                Assert.IsNotNull(result.Data);
-            }
-
-
-        }
-        #endregion
-
-        #region "Get Recommended Improvement TacticType"
-        ///<summary>
-        /// To Check Get Recommended Improvement TacticType
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Recommended_Improvement_TacticType()
-        {
-            Console.WriteLine("Get Recommended Improvement TacticType.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
-            if (TaskData != null)
-            {
-                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-                Sessions.PlanId = PlanId;
-                var result = controller.GetRecommendedImprovementTacticType() as JsonResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-                Assert.IsNotNull(result.Data);
-            }
-
-        }
-        #endregion
-
-        #region "Get Improvement Container Value"
-        ///<summary>
-        /// To Check Get Improvement Container Value
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Improvement_Container_Value()
-        {
-            Console.WriteLine("Get Recommended Improvement TacticType.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
-            if (TaskData != null)
-            {
-                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-                Sessions.PlanId = PlanId;
-                var result = controller.GetImprovementContainerValue() as JsonResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-                Assert.IsNotNull(result.Data);
-            }
-
-        }
-        #endregion
-
-        #region "Show Delete Improvement Tactic"
-        ///<summary>
-        /// To Check to Show Delete Improvement Tactic
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Show_Delete_Improvement_Tactic()
-        {
-            Console.WriteLine("Show Delete Improvement Tactic.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
-            if (TaskData != null)
-            {
-                int EntityId = TaskData.ImprovementPlanTacticId;
-                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-                Sessions.PlanId = PlanId;
-                var result = controller.ShowDeleteImprovementTactic(EntityId) as PartialViewResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
-                Assert.IsNotNull(result.ViewName);
-            }
-
-        }
-        #endregion
-
         #region "Delete Improvement Tactic From Grid"
         ///<summary>
         /// To Check to Delete Improvement Tactic From Grid.
@@ -1161,117 +640,7 @@ namespace RevenuePlanner.Test.Controllers
 
         }
         #endregion
-
-        #region "Delete Improvement Tactic"
-        ///<summary>
-        /// To Check to Delete Improvement Tactic.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Delete_Improvement_Tactic()
-        {
-            Console.WriteLine("Delete Improvement Tactic.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
-            if (TaskData != null)
-            {
-                int EntityId = TaskData.ImprovementPlanTacticId;
-                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-                Sessions.PlanId = PlanId;
-                var result = controller.DeleteImprovementTactic(EntityId) as JsonResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-                Assert.IsNotNull(result.Data);
-            }
-
-        }
-        #endregion
-
-        #region "Update Effective Date Improvement"
-        ///<summary>
-        /// To Check to Update Effective Date Improvement.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Update_Effective_Date_Improvement()
-        {
-            Console.WriteLine("Update Effective Date Improvement.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
-            if (TaskData != null)
-            {
-                int EntityId = TaskData.ImprovementPlanTacticId;
-                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-                Sessions.PlanId = PlanId;
-                string updatedDate = DateTime.Now.ToString();
-                var result = controller.UpdateEffectiveDateImprovement(EntityId, updatedDate) as JsonResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-                Assert.IsNotNull(result.Data);
-            }
-
-
-        }
-        #endregion
-
-        #region "Get Years Tab for Plan"
-        ///<summary>
-        /// To Check to Get Years Tab for Plan
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Years_Tab()
-        {
-            Console.WriteLine("Get Years Tab for Plan.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            var result = controller.GetYearsTab() as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-        }
-        #endregion
-
-        #region "Get Campaign"
-        ///<summary>
-        /// To Check to Get Campaign
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Campaign()
-        {
-            Console.WriteLine("Get Campaign.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            var result = controller.GetCampaign() as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-        }
-        #endregion
-
+        
         #region "Load TacticType Value"
         ///<summary>
         /// To Check to Load TacticType Value.
@@ -1295,219 +664,7 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(result.Data);
         }
         #endregion
-
-        #region "Plan Selector"
-        ///<summary>
-        /// To Check to get Selected Plan
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Plan_Selector()
-        {
-            Console.WriteLine("to get Selected Plan.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            var result = controller.PlanSelector() as ActionResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-        }
-        #endregion
-
-        #region "Get Plan Selector Data"
-        ///<summary>
-        /// To Check to Get Plan Selector Data for Passing Year
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Plan_Selector_Data()
-        {
-            Console.WriteLine("to get Selected Plan.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            string Year = DateTime.Now.Year.ToString();
-            var result = controller.GetPlanSelectorData(Year) as ActionResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-        }
-        #endregion
-
-        #region "Update StartDate And EndDate"
-        ///<summary>
-        /// To Check to Update StartDate And EndDate of Campaign
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Update_StartDate_And_EndDate_Campaign()
-        {
-            Console.WriteLine("Update StartDate And EndDate of Campaign.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            var TaskData = DataHelper.GetPlanCampaign(Sessions.User.CID);
-            int EntityId = TaskData.PlanCampaignId;
-            string startDate = TaskData.StartDate.ToString();
-            double Duration = 50.0;
-            bool isCamp = true;
-            bool isProg = false;
-            bool isTact = false;
-
-            var result = controller.UpdateStartEndDate(EntityId, startDate, Duration, isCamp, isProg, isTact) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-        }
-
-        ///<summary>
-        /// To Check to Update StartDate And EndDate of Program
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Update_StartDate_And_EndDate_Program()
-        {
-            Console.WriteLine("Update StartDate And EndDate of Program.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            var TaskData = DataHelper.GetPlanProgram(Sessions.User.CID);
-            int EntityId = TaskData.PlanProgramId;
-            string startDate = TaskData.StartDate.ToString();
-            double Duration = 50.0;
-            bool isCamp = false;
-            bool isProg = true;
-            bool isTact = false;
-
-            var result = controller.UpdateStartEndDate(EntityId, startDate, Duration, isCamp, isProg, isTact) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-        }
-
-
-        ///<summary>
-        /// To Check to Update StartDate And EndDate of Tactic
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Update_StartDate_And_EndDate_Tactic()
-        {
-            Console.WriteLine("Update StartDate And EndDate of Tactic.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            var TaskData = DataHelper.GetPlanTactic(Sessions.User.CID);
-            int EntityId = TaskData.PlanTacticId;
-            string startDate = TaskData.StartDate.ToString();
-            double Duration = 50.0;
-            bool isCamp = false;
-            bool isProg = false;
-            bool isTact = true;
-
-            var result = controller.UpdateStartEndDate(EntityId, startDate, Duration, isCamp, isProg, isTact) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-        }
-        #endregion
-
-        #region "Apply To Calendar"
-        ///<summary>
-        /// To Check to Apply To Calendar without passing Parameter.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Apply_To_Calendar_Without_Passing_Parameter()
-        {
-            Console.WriteLine("Apply To Calendar without passing Parameter.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
-            var result = controller.ApplyToCalendar() as ActionResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-        }
-
-        ///<summary>
-        /// To Check to Apply To Calendar with passing Parameter.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Apply_To_Calendar_With_Passing_Parameter()
-        {
-            Console.WriteLine("Apply To Calendar without passing Parameter.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            string msg = "Apply To Calendar";
-            bool isError = false;
-
-            var result = controller.ApplyToCalendar(msg, isError) as ActionResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-        }
-
-        #endregion
-
-        #region "Assortment"
-        ///<summary>
-        /// To Check to get Assortment with passing campaign id as Parameter.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Campaign_Program_Tacic_Assortment()
-        {
-            Console.WriteLine("Campaign Assortment.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int PlanId = DataHelper.GetPlanId();
-            var TaskData = DataHelper.GetPlanTactic(Sessions.User.CID);
-            int TacticId = TaskData.PlanTacticId;
-            int ProgramId = TaskData.PlanProgramId;
-            int CampaignId = TaskData.Plan_Campaign_Program.PlanCampaignId;
-            controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
-            controller.ControllerContext.HttpContext.Session.Add("CampaignID", "123");
-            Sessions.PlanId = PlanId;
-            string updatedDate = DateTime.Now.ToString();
-            var result = controller.Assortment(CampaignId, ProgramId, TacticId) as ActionResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-        }
-
-        #endregion
-
+        
         #region "Create Clone"
         ///<summary>
         /// To Check to Create a Clone of LineItem.
@@ -1637,46 +794,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
         }
-        #endregion
-
-        #region Save Budget Allocation.
-        /// <summary>
-        /// To check to Save Budget Allocation.
-        /// <author>Rahul Shah</author>
-        /// <createddate>29June2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void Save_Budget_Allocation()
-        {
-            var routes = new RouteCollection();
-            Console.WriteLine("Save Budget Allocation.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
-            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objPlanController.Url = new UrlHelper(
-    new RequestContext(
-        objPlanController.HttpContext, new RouteData()
-    ),
-    routes
-);
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-            List<string> lstinputs = new List<string>();
-            {
-                for (int i = 0; i < 12; i++)
-                {
-                    lstinputs.Add("1000");
-                }
-            }
-            string Inputs = string.Join(",", lstinputs);
-            var result = objPlanController.SaveBudgetAllocation(PlanId, Inputs) as ActionResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-
-        }
-        #endregion
+        #endregion       
 
         #region get plan grid data
          /// <summary>
@@ -1862,8 +980,6 @@ namespace RevenuePlanner.Test.Controllers
         //}
         #endregion
 
-
-
         #region "Import data for plan budget"
         /// <summary>
         /// To Check to import data for plan budget
@@ -1880,8 +996,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
         }
-        #endregion
-
+        #endregion        
     }
 }
 

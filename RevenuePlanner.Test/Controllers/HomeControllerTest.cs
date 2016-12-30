@@ -122,52 +122,6 @@ namespace RevenuePlanner.Test.Controllers
 
         #region PL#1144 Multi select: Add actuals page changes for custom fields
 
-        #region Add Actual view
-        /// <summary>
-        /// To check to retrieve Add actual view
-        /// </summary>
-        /// <auther>Sohel Pathan</auther>
-        /// <createddate>23Jan2015</createddate>
-        [TestMethod]
-        public void Get_Add_Actual_View()
-        {
-            Console.WriteLine("To check to retrieve Add actual view.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call AddActual method
-            PlanController objHomeController = new PlanController();
-            Sessions.PlanId = DataHelper.GetPlanId();
-            string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
-            string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
-            string singlehash = DataHelper.ComputeSingleHash(password);
-            RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
-            Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews;
-            var result = objHomeController.AddActual(Convert.ToInt32(Sessions.PlanId)) as ViewResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.AreEqual("AddActual", result.ViewName);
-
-                Assert.IsNotNull(result.Model);
-                HomePlanModel objModel = (HomePlanModel)result.Model;
-                Assert.IsNotNull(objModel);
-                Assert.IsTrue(true);
-                Assert.IsNotNull(result.ViewBag.IsPlanEditable);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value:  " + result.ViewBag.IsPlanEditable);
-            }
-            else
-            {
-                Assert.IsTrue(false);
-                //Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.IsPlanEditable);
-            }
-        }
-        #endregion
-
         #region Add actual tactics with no filter paramater for OpenTactic tab
         /// <summary>
         /// To check to retrieve add actual tactics with no filter paramters for open tactic tab
@@ -264,60 +218,6 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(result.Data);
         }
         #endregion
-
-        #endregion
-
-        #region HeaderSection
-
-        #region Get Header Data
-        [TestMethod]
-        public void Get_HeaderData_With_PlanId()
-        {
-            Console.WriteLine("To check to retrieve Header Data.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            PlanController objPlanController = new PlanController();
-            int planId = DataHelper.GetPlanId();
-            var result = objPlanController.GetPlanByPlanID(planId) as Task<JsonResult>;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Status:  " + result.Status);
-            Assert.IsNotNull(result.Status);
-            
-        }
-        // As we have deleted method from Plancontroller
-        //[TestMethod]
-        //public void Get_HeaderData_With_MultiplePlanIds()
-        //{
-        //    Console.WriteLine("To check to retrieve Header Data with multiple planids.\n");
-        //    MRPEntities db = new MRPEntities();
-        //    //// Set session value
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-
-        //    //// Call index method
-        //    PlanController objPlanController = new PlanController();
-        //    string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-        //    string Year = DataHelper.GetYear();
-        //    int planId = DataHelper.GetPlanId();
-        //    Sessions.User.CID = DataHelper.GetClientId(planId);
-        //    Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.ID).ToList();
-        //    var result = objPlanController.GetPlanByMultiplePlanIDs(CommaSeparatedPlanId, Enums.ActiveMenu.Home.ToString(), Year) as JsonResult;
-
-        //    if (result != null)
-        //    {
-        //        //// Json result data should not be null
-        //        Assert.IsNotNull(result.Data);
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value:  " + result.Data);
-        //    }
-        //    else
-        //    {
-
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-        //    }
-        //}
-        #endregion
-
-        
 
         #endregion
 
