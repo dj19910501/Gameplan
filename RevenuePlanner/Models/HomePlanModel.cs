@@ -862,6 +862,8 @@ namespace RevenuePlanner.Models
         public long? PlanId { get; set; }
         public int? PYear { get; set; }
         public bool? IsRowPermission { get; set; }
+
+        public string guidUserId { get; set; }
     }
 
     public class SearchParentDetail

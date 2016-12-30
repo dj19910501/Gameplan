@@ -1881,7 +1881,7 @@ namespace RevenuePlanner.Services
 
             StringBuilder addColumn = new StringBuilder();
             addColumn.Append(@" <div class=grid_Search id=Plan onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" + grid_add);
-            addColumn.Append("<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Select' id=Plan TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.Owner));
+            addColumn.Append("<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Select' id=Plan TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(Row.Owner))));
             addColumn.Append("' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode + "' altId=" + Row.TaskId);
             addColumn.Append(" per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>");
             return addColumn;
@@ -1901,7 +1901,7 @@ namespace RevenuePlanner.Services
             StringBuilder addColumn = new StringBuilder();
             addColumn.Append(@" <div class=grid_Search id=CP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" + grid_add);
             addColumn.Append("<div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '");
-            addColumn.Append(Convert.ToString(Row.Owner) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")));
+            addColumn.Append(Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(Row.Owner))) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")));
             addColumn.Append("' altId=" + Row.TaskId + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + "' taskId= " + Row.EntityId + " csvId=Campaign_" + Row.EntityId + "></div>");
             return addColumn;
         }
@@ -1919,7 +1919,7 @@ namespace RevenuePlanner.Services
             }
             StringBuilder addColumn = new StringBuilder();
             addColumn.Append(@" <div class=grid_Search id=PP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" + grid_add);
-            addColumn.Append(" <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.Owner));
+            addColumn.Append(" <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(Row.Owner))));
             addColumn.Append("'  TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "'  altId= " + Row.TaskId);
             addColumn.Append(" per=" + Row.IsCreatePermission.ToString().ToLower() + "'  taskId= " + Row.EntityId + " csvId=Program_" + Row.EntityId + "></div>");
             return addColumn;
@@ -1941,7 +1941,7 @@ namespace RevenuePlanner.Services
             addColumn.Append(@" <div class=grid_Search id=TP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" + grid_add);
             addColumn.Append(" <div class=honeycombbox-icon-gantt id=Tactic onclick=javascript:AddRemoveEntity(this)  title = 'Select' anchortacticid='" + Row.AnchorTacticID + "' roitactictype='" + Row.AssetType);
             addColumn.Append("' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode);
-            addColumn.Append("'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.Owner) + "' altId=" + Row.TaskId);
+            addColumn.Append("'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(Row.Owner))) + "' altId=" + Row.TaskId);
             addColumn.Append(" per=" + Row.IsCreatePermission.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>");
             return addColumn;
         }
@@ -2166,6 +2166,11 @@ namespace RevenuePlanner.Services
 
             #endregion
 
+
+            #endregion
+
+            #region Change Created by Id to Guid.
+            lstCalendarDataModel.ForEach(data => data.guidUserId = Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(data.CreatedBy))));
 
             #endregion
 

@@ -141,7 +141,7 @@ namespace RevenuePlanner.Controllers
             lstUserHierarchy = objBDSServiceClient.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
             var lstUsersData = lstUserHierarchy.Select(u => new
             {
-                key = u.UID.ToString(),
+                key = u.UserId.ToString(),
                 value = Convert.ToString(HttpUtility.HtmlEncode(u.FirstName + " " + u.LastName))
             }).ToList(); // Get User list by Client ID.           
             ViewBag.OwnerList = lstUsersData;
@@ -1723,8 +1723,8 @@ namespace RevenuePlanner.Controllers
         public ActionResult CheckUserId(Guid userId = new Guid())
         {
             // Get UserId Integer Id from Guid Ticket #2955
-            int Id = Common.GetIntegerUserId(userId);
-            if (Sessions.User.ID.Equals(Id))
+            int uId = Common.GetIntegerUserId(userId);
+            if (Sessions.User.ID.Equals(uId))
             {
                 return Json(new { returnURL = "#" }, JsonRequestBehavior.AllowGet);
             }

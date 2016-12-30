@@ -519,7 +519,7 @@ namespace RevenuePlanner.Services
 
                 // HoneyComb Button
                 IconsData += " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title=Select  id=Plan  TacticType= " + doubledesh;
-                IconsData += " OwnerName= '" + Convert.ToString(ownerName) + "' TaskName='" + Title + "' altId=" + Convert.ToString(dhtmlxGridRowId);
+                IconsData += " OwnerName= '" + Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(ownerName))) + "' TaskName='" + Title + "' altId=" + Convert.ToString(dhtmlxGridRowId);
                 IconsData += " per=" + Convert.ToString(isAddEntityRights).ToLower() + " ColorCode=" + Convert.ToString(entity.ColorCode) + " taskId=" + Convert.ToString(entity.Id);
                 IconsData += string.Concat(" csvId=Plan_", Convert.ToString(entity.Id), " ></div>");
             }
@@ -537,7 +537,7 @@ namespace RevenuePlanner.Services
 
                 // HoneyComb Button
                 IconsData += " <div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title=Select   TacticType= " + doubledesh;
-                IconsData += " OwnerName= '" + Convert.ToString(ownerName) + "' TaskName='" + Title;
+                IconsData += " OwnerName= '" + Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(ownerName))) + "' TaskName='" + Title;
                 IconsData += "' altId=" + Convert.ToString(dhtmlxGridRowId) + " per=" + Convert.ToString(isAddEntityRights).ToLower();
                 IconsData += " ColorCode=" + Convert.ToString(entity.ColorCode) + " taskId= " + Convert.ToString(entity.Id) + " csvId=Campaign_" + entity.Id + "></div>";
             }
@@ -555,7 +555,7 @@ namespace RevenuePlanner.Services
 
                 // HoneyComb Button
                 IconsData += " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this) title=Select  TacticType= " + doubledesh;
-                IconsData += " OwnerName= '" + Convert.ToString(ownerName) + "' TaskName='" + Title;
+                IconsData += " OwnerName= '" + Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(ownerName))) + "' TaskName='" + Title;
                 IconsData += "' altId=" + Convert.ToString(dhtmlxGridRowId) + " ColorCode=" + Convert.ToString(entity.ColorCode);
                 IconsData += string.Concat(" per=", Convert.ToString(isAddEntityRights).ToLower(), " taskId=", Convert.ToString(entity.Id), " csvId=Program_", Convert.ToString(entity.Id), " ></div>");
             }
@@ -578,7 +578,7 @@ namespace RevenuePlanner.Services
 
                 // HoneyComb Button
                 IconsData += " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title=Select  id=Tactic ";
-                IconsData += string.Concat(" TacticType= '", Convert.ToString(tacticType), "' OwnerName= '", Convert.ToString(ownerName), "' roitactictype='",
+                IconsData += string.Concat(" TacticType= '", Convert.ToString(tacticType), "' OwnerName= '", Convert.ToString(Common.GetGuidUserId(Convert.ToInt32(ownerName))), "' roitactictype='",
                                 entity.AssetType, "' anchortacticid='", entity.AnchorTacticID, "'  ");
                 IconsData += " TaskName='" + Title;
                 IconsData += "' altId=" + Convert.ToString(dhtmlxGridRowId) + " ColorCode=" + Convert.ToString(entity.ColorCode);
