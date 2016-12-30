@@ -1330,7 +1330,8 @@ namespace RevenuePlanner.Controllers
                     string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                     /*--------------------------------------------------------------------------------------------*/
 
-                    if (objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID, SingleHash_CurrentPassword))
+                    //if (objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID, SingleHash_CurrentPassword))
+                    if (objBDSServiceClient.CheckCurrentPasswordWithEmail(objPasswordResetRequest.UserId, objUser.Email, SingleHash_CurrentPassword))
                     {
                         ModelState.AddModelError("", "New and current password cannot be same.");
                     }
@@ -1397,12 +1398,14 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 //Get User Data using Password RequestId
                 RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(requestId);
+                var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(objPasswordResetRequest.UID, Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]));
                 /* ------------------------------- single hash current password ------------------------------*/
                 string SingleHash_CurrentPassword = Common.ComputeSingleHash(currentPassword.ToString().Trim());
                 /*--------------------------------------------------------------------------------------------*/
                 try
                 {
-                    isValid = objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID, SingleHash_CurrentPassword);
+                    //isValid = objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID,SingleHash_CurrentPassword);
+                    isValid = objBDSServiceClient.CheckCurrentPasswordWithEmail(objPasswordResetRequest.UserId, objUser.Email, SingleHash_CurrentPassword);
                 }
                 catch (Exception e)
                 {
