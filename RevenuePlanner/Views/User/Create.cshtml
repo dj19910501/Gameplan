@@ -97,7 +97,8 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.Password)
 
-                    @Html.TextBoxFor(model => model.Password, new { maxlength = "50", placeholder = "Password (8 char. min)", type = "password" })
+                    @Html.TextBoxFor(model => model.Password, new { maxlength = "50", placeholder = "Password (8 char. min)", type = "password", autocomplete = "off" })
+                    @*<input type="password" maxlength="50" placeholder="Password (8 char. min)" name="Password"/>*@
                     <span id="result"></span>
                     @Html.ValidationMessageFor(model => model.Password)
                 </div>
@@ -105,7 +106,7 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.ConfirmPassword)
 
-                    @Html.TextBoxFor(model => model.ConfirmPassword, new { maxlength = "50", placeholder = "Confirm Password (8 char. min)", type = "password" })
+                    @Html.TextBoxFor(model => model.ConfirmPassword, new { maxlength = "50", placeholder = "Confirm Password (8 char. min)", type = "password", autocomplete = "off" })
                     <span id="match"></span>
                     @Html.ValidationMessageFor(model => model.ConfirmPassword)
                 </div>
@@ -198,8 +199,8 @@
 <script type="text/javascript">
     $(document).ready(function () {
         myApp.hidePleaseWait();
-        $("#Password").val("");
-        $("#ConfirmPassword").val("");
+        $('#Password').attr("value", "");
+        $('#ConfirmPassword').attr("value", "");
         $('#lblClientIdRequired').hide();
         $('#lblRoleIdRequired').hide();
         $('#lblManagerIdRequired').hide();

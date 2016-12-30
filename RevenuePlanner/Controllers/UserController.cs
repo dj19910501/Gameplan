@@ -540,10 +540,14 @@ namespace RevenuePlanner.Controllers
                         else if (retValMsg == "UserDuplicate")
                         {
                             TempData["ErrorMessage"] = Common.objCached.UserDuplicate;
+                            form.Password = "";
+                            form.ConfirmPassword = "";
                         }
                         else if (retValMsg == "Error")
                         {
                             TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                            form.Password = "";
+                            form.ConfirmPassword = "";
                         }
                     }
                 }
@@ -561,6 +565,8 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                    form.Password = "";
+                    form.ConfirmPassword = "";
                 }
             }
             return View(form);
