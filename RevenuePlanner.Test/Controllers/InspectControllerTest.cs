@@ -28,59 +28,119 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
         }
+
+
+        #region Budget Related Method
+        /// <summary>
+        /// Added By Jaymin Modi for Load Budget Dropdown 
+        /// </summary>
+        [TestMethod]
+        public void Test_LoadBudgetDropdown()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Load Budget Dropdown.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController(_transaction);
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            int PlanLineItemID = db.Plan_Campaign_Program_Tactic_LineItem.Where(m => m.IsDeleted == false).Select(m => m.PlanLineItemId).FirstOrDefault();
+            int CID = Sessions.User.CID;
+            int BudgetId = db.Budgets.Where(m => m.IsDeleted == false && m.ClientId == CID).Select(m => m.Id).FirstOrDefault();
+            var result = objInspectController.LoadBudgetDropdown(BudgetId, PlanLineItemID) as JsonResult;
+            Assert.IsNotNull(result.Data);
+            var SerializeData = new RouteValueDictionary(result.Data);
+            var SerializeData1 = new RouteValueDictionary(SerializeData);
+            var resultData = new RouteValueDictionary(SerializeData1.Values);
+            Assert.IsTrue(resultData.Values.Count > 0);
+        }
+
+        #endregion
+
         #region Save Plan
         ///// <summary>
         ///// To Save the Plan
         ///// </summary>
         ///// <auther>Komal Rawal</auther>
         ///// <createddate>29June2015</createddate>
-        //[TestMethod]
-        //public void Save_Plan()
-        //{
-        //    Console.WriteLine("To Save the Plan.\n");
-        //    MRPEntities db = new MRPEntities();
-        //    //// Set session value
-        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    //// Call index method
-        //    //base.Initialize(System.Web.HttpContext.Current.r);
-        //    InspectController objInspectController = new InspectController();
+        /// <summary>
+        /// Modified By Jaymin Modi to Add Year Field in object
+        /// </summary>
+        [TestMethod]
+        public void Save_Plan()
+        {
+            Console.WriteLine("To Save the Plan.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            //base.Initialize(System.Web.HttpContext.Current.r);
+            InspectController objInspectController = new InspectController(_transaction);
 
-        //    InspectModel objPlanModel = new InspectModel();
-        //    objPlanModel.GoalType = Enums.PlanGoalType.MQL.ToString();
-        //    objPlanModel.GoalValue = "0";
-        //    objPlanModel.Title = "test plan #975";
-        //    objPlanModel.ModelId = DataHelper.GetModelId();
-        //    objPlanModel.StartDate = DateTime.Now;
-        //    objPlanModel.EndDate = DateTime.MaxValue;
-        //    objPlanModel.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-        //    objPlanModel.PlanId = db.Plans.Where(plan => plan.Title == objPlanModel.Title && plan.ModelId == objPlanModel.ModelId).Select(plan => plan.PlanId).FirstOrDefault();
-        //    List<int> PlanIds = new List<int>();
-        //    PlanIds.Add(objPlanModel.PlanId);
-        //    Sessions.PlanPlanIds = PlanIds;
-        //    int UserID = Sessions.User.ID;
-        //    string planBudget = "50000";
+            InspectModel objPlanModel = new InspectModel();
+            objPlanModel.GoalType = Enums.PlanGoalType.MQL.ToString();
+            objPlanModel.GoalValue = "0";
+            objPlanModel.Title = "test plan #975";
+            objPlanModel.ModelId = DataHelper.GetModelId();
+            objPlanModel.StartDate = DateTime.Now;
+            objPlanModel.EndDate = DateTime.MaxValue;
+            objPlanModel.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
+            objPlanModel.OwnerGuid = Sessions.User.UserId;
+            objPlanModel.Year = DateTime.Now.Year.ToString();//Added By Jaymin Modi
+            objPlanModel.PlanId = db.Plans.Where(plan => plan.Title == objPlanModel.Title && plan.ModelId == objPlanModel.ModelId).Select(plan => plan.PlanId).FirstOrDefault();
+            List<int> PlanIds = new List<int>();
+            PlanIds.Add(objPlanModel.PlanId);
+            Sessions.PlanPlanIds = PlanIds;
+            Guid UserID = Sessions.User.UserId;
+            string planBudget = "50000";
 
-        //    string Budgetvalues = GetBudgetValues(objPlanModel.AllocatedBy);
+            string Budgetvalues = GetBudgetValues(objPlanModel.AllocatedBy);
 
-        //    var result = objInspectController.SavePlanDetails(objPlanModel, Budgetvalues, planBudget, "", UserID) as JsonResult;
+            var result = objInspectController.SavePlanDetails(objPlanModel, UserID) as JsonResult;
 
-        //    if (result != null)
-        //    {
-        //        //// ViewResult shoud not be null and should match with viewName
-        //        Assert.IsNotNull(result.Data);
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
-        //    }
-        //    else
-        //    {
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            }
+            else
+            {
 
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-        //    }
-        //}
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+        }
 
 
         #endregion
 
         #region Campaign Related Methods
+
+        #region Create Campaign
+
+        /// <summary>
+        /// Added By Jaymin Modi For Create Campaign
+        /// </summary>
+        [TestMethod]
+        public void Create_Campaign()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To Open the Campaign Screen.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController(_transaction);
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int planIdint = DataHelper.GetPlanId();
+            var result = objInspectController.CreateCampaign(planIdint) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_EditSetupCampaign", result.ViewName);
+
+
+        }
+
+        #endregion
 
         #region Save Campaign
         /// <summary>
@@ -264,6 +324,29 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #region Program Related Methods
+
+        #region Load Setup Program view
+        /// <summary>
+        /// Added by Jaymin Modi For Load program view
+        /// </summary>
+        [TestMethod]
+        public void Test_LoadSetupProgram()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To Load program view.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController(_transaction);
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int PlanProgramId = DataHelper.GetPlanProgram(Sessions.User.CID).PlanProgramId;
+            var result = objInspectController.LoadSetupProgram(PlanProgramId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_SetupProgram", result.ViewName);
+
+
+        }
+        #endregion
 
         #region Save Program
         /// <summary>
@@ -449,6 +532,28 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #endregion
+        #region Load Setup
+
+        /// <summary>
+        /// Added By Jaymin Modi For Test Load Setup method
+        /// </summary>
+        [TestMethod]
+        public void Test_LoadSetup()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To open Plan Tactic view.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController(_transaction);
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int PlanTacticId = DataHelper.GetPlanTactic(Sessions.User.CID).PlanTacticId;
+            var result = objInspectController.LoadSetup(PlanTacticId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("SetUp", result.ViewName);
+        }
+
+        #endregion
 
         #region Tactic Related Methods
 
@@ -546,6 +651,30 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #region LoadSetup
+        /// <summary>
+        /// Added By Jaymin Modi
+        /// </summary>
+        [TestMethod]
+        public void LoadActualTacticData()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To Get Actual Tactic Data.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController(_transaction);
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            //set PlanTacticId
+            int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted == false && a.LinkedTacticId != null).FirstOrDefault().PlanTacticId;
+            var result = objInspectController.GetActualTacticData(PlanTacticId) as JsonResult;
+            Assert.IsNotNull(result);
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultValue = serializedData.Values.Count;
+            Assert.IsTrue(resultValue > 0);
+
+        }
+
         [TestMethod]
         public void LoadImprovementSetupEditMode()
         {
@@ -599,21 +728,26 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_EditSetupProgram", result.ViewName);
         }
-        //[TestMethod]
-        //public void LoadActuals()
-        //{
-        //    Console.WriteLine("To load actuals of tactic.\n");
-        //    MRPEntities db = new MRPEntities();
-        //    //// Set session value
-        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    //// Call index method
-        //    InspectController objInspectController = new InspectController();
-        //    objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-        //    objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
-        //    int tacticId = db.Plan_Campaign_Program_Tactic_Actual.Where(a => a.Plan_Campaign_Program_Tactic.IsDeleted == false).Select(a => a.PlanTacticId).FirstOrDefault();
-        //    var result = objInspectController.LoadActuals(tacticId) as PartialViewResult;
-        //    Assert.AreEqual("Actual", result.ViewName);
-        //}
+
+        /// <summary>
+        /// Modified By Jaymin Modi for Load Actuals
+        /// </summary>
+
+        [TestMethod]
+        public void LoadActuals()
+        {
+            Console.WriteLine("To load actuals of tactic.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController(_transaction);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            int PlanTacticId = DataHelper.GetPlanTactic(Sessions.User.CID).PlanTacticId;
+            var result = objInspectController.LoadActuals(PlanTacticId) as PartialViewResult;
+            Assert.AreEqual("Actual", result.ViewName);
+        }
         [TestMethod]
         public void LoadReviewCampaign()
         {
