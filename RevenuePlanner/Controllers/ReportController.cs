@@ -164,16 +164,16 @@ namespace RevenuePlanner.Controllers
 
                 string url = ApiUrl + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
                 string result = string.Empty;
-                try
-                {
-                    ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                    result = client.DownloadString(url);
-                    lstMenu = JsonConvert.DeserializeObject<List<Menu>>(result);
-                }
-                catch (Exception ex)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(ex);
-                }
+                //try
+                //{
+                //    ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+                //    result = client.DownloadString(url);
+                //    lstMenu = JsonConvert.DeserializeObject<List<Menu>>(result);
+                //}
+                //catch (Exception ex)
+                //{
+                //    ErrorSignal.FromCurrentContext().Raise(ex);
+                //}
                 //Added by kausha somaiya on 29/12/2016 for ticket no 2961
                 //We will get measure Application URL from webConfig and will redirect to that Url when click on Measure Tab
                 string measureApplicationUrl = string.Empty;
