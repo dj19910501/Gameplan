@@ -182,7 +182,7 @@ namespace RevenuePlanner.Controllers
                                 else
                                 {
                                     //ModelState.AddModelError("", "You have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
-                                    ModelState.AddModelError("", "Consistent attempts with wrong creadetials will lock your account.");
+                                    ModelState.AddModelError("", "Consistent attempts with wrong credentials will lock your account.");
                                 }
                             }
                             TempData.Keep(form.UserEmail);
@@ -201,7 +201,7 @@ namespace RevenuePlanner.Controllers
                         IsEmailInvalid = true;
                         //Below Message Changed By Jaymin Modi for PL ticket #2896
                         ModelState.AddModelError("", Common.objCached.InvalidLogin);
-                        ModelState.AddModelError("", "Consistent attempts with wrong creadetials will lock your account.");
+                        ModelState.AddModelError("", "Consistent attempts with wrong credentials will lock your account.");
                         obj = null;
 
                         //Modified By Komal Rawal for #2181 to check current version before returning form incase of wrong attempt
@@ -1330,8 +1330,7 @@ namespace RevenuePlanner.Controllers
                     string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                     /*--------------------------------------------------------------------------------------------*/
 
-                    //if (objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID, SingleHash_CurrentPassword))
-                    if (objBDSServiceClient.CheckCurrentPasswordWithEmail(objPasswordResetRequest.UserId, objUser.Email, SingleHash_CurrentPassword))
+                    if (objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID, SingleHash_CurrentPassword))
                     {
                         ModelState.AddModelError("", "New and current password cannot be same.");
                     }
@@ -1398,14 +1397,12 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 //Get User Data using Password RequestId
                 RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(requestId);
-                var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(objPasswordResetRequest.UID, Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]));
                 /* ------------------------------- single hash current password ------------------------------*/
                 string SingleHash_CurrentPassword = Common.ComputeSingleHash(currentPassword.ToString().Trim());
                 /*--------------------------------------------------------------------------------------------*/
                 try
                 {
-                    //isValid = objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID,SingleHash_CurrentPassword);
-                    isValid = objBDSServiceClient.CheckCurrentPasswordWithEmail(objPasswordResetRequest.UserId, objUser.Email, SingleHash_CurrentPassword);
+                    isValid = objBDSServiceClient.CheckCurrentPasswordEx(objPasswordResetRequest.UID, SingleHash_CurrentPassword);
                 }
                 catch (Exception e)
                 {
