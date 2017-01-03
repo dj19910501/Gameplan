@@ -6399,10 +6399,20 @@ namespace RevenuePlanner.Controllers
             // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
             // Modified By Nishant Sheth
             // #2507 : Summary report chanages to apply multicurrency
-            _budgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
-                && budgtcost.Year == Convert.ToInt32(year))
-                .Sum(budgtcost =>
-                    objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
+
+            //_budgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
+            //    && budgtcost.Year == Convert.ToInt32(year))
+            //    .Sum(budgtcost =>
+            //        objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
+
+            foreach (var item in _planBudgetList)
+            {
+                if (periodlist.Contains(item.Period) && item.Year == Convert.ToInt32(year))
+                {
+                    _budgetCostValue += objCurrency.GetValueByExchangeRate(item.Value, PlanExchangeRate);
+                }
+            }
+
             serPlannedData.Add(_plannedCostValue);
             serBudgetData.Add(_budgetCostValue);
             scatterData.Add(_actualCostValue);
