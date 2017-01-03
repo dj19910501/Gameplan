@@ -92,13 +92,13 @@ namespace RevenuePlanner.Models
         public string IsDeleted { get; set; }
 
         // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-        public int ManagerId { get; set; }
+        public Guid ManagerId { get; set; }
 
         public string ManagerName { get; set; }
 
         public bool IsManager { get; set; }
 
-        public int NewManagerId { get; set; }
+        public Guid NewManagerId { get; set; }
 
         [Display(Name = "Phone")]
         [RegularExpression(@"^[0-9-+ #*]+", ErrorMessage = "Please enter proper phone number.")]

@@ -520,7 +520,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
 
-                        objUser.MID = form.ManagerId;
+                        objUser.MID = Common.GetIntegerUserId(form.ManagerId);
 
                         //// Create User with default Permissions.
                         //int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.ID);
@@ -731,7 +731,7 @@ namespace RevenuePlanner.Controllers
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     objUserModel.IsManager = objUser.IsManager;
                     if (objUser.MID != 0)
-                        objUserModel.ManagerId = objUser.MID;
+                        objUserModel.ManagerId = new Guid(objUser.ManagerId.ToString());
                     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     LoadEditModeComponents(objUserModel.ClientId, src);
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
@@ -921,7 +921,7 @@ namespace RevenuePlanner.Controllers
                                 objUser.IsDeleted = true;
                                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                                 objUser.IsManager = form.IsManager;
-                                objUser.NewMID = form.NewManagerId;
+                                objUser.NewMID = Common.GetIntegerUserId(form.NewManagerId);
                                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                             }
                             else
@@ -961,13 +961,13 @@ namespace RevenuePlanner.Controllers
                             if (objRole != null)
                             {
                                 objUser.RoleCode = objRole.Code;
-                                objUser.MID = form.ManagerId;
+                                objUser.MID = Common.GetIntegerUserId(form.ManagerId);
                                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                             }
                         }
 
                         // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
-                        if (form.ManagerId == 0)
+                        if (Common.GetIntegerUserId(form.ManagerId) == 0)
                             form.ManagerName = "N/A";
 
                         //// Update User details.
@@ -1362,7 +1362,7 @@ namespace RevenuePlanner.Controllers
             if (Sessions.ApplicationId != Guid.Empty && Sessions.ApplicationId != null)
             {
                 var UserList = objBDSServiceClient.GetManagerListEx(ClientId, Sessions.ApplicationId, UserId);
-                var ManagerList = UserList.Select(a => new UserModel { ManagerId = a.ID, ManagerName = a.ManagerName }).ToList();
+                var ManagerList = UserList.Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.ManagerName }).ToList();
                 return ManagerList.OrderBy(a => a.ManagerName, new AlphaNumericComparer()).ToList();
             }
             return null;
