@@ -9,7 +9,7 @@
     ViewBag.ModuleTitle = "MyProfile";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     string SiteKey = Common.SiteKeyRecaptcha;
 }
-
+<script src="//www.google.com/recaptcha/api.js" async defer></script>
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 
@@ -98,4 +98,3 @@
     });
 </script>
 
-<script src="//www.google.com/recaptcha/api.js" async defer></script>

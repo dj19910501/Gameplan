@@ -24,7 +24,7 @@
     ViewBag.ModuleTitle = "Organization";
     string SiteKey = Common.SiteKeyRecaptcha;
 }
-
+<script src="//www.google.com/recaptcha/api.js" async defer></script> 
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 @Html.AntiForgeryToken()
@@ -448,4 +448,3 @@
             }
             @* End - Added by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
         </script>
-<script src="//www.google.com/recaptcha/api.js" async defer></script> 

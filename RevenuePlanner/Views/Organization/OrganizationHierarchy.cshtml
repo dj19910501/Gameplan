@@ -13,9 +13,9 @@
     string ViewPermissionURL = varUrlnew + "?UserGuid=" + Sessions.User.UserId + "&Mode=MyPermission";
     ViewBag.PageTitle = "OrganizationHierarchy";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     ViewBag.ModuleTitle = "Organization";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
-
+    string SiteKey = Common.SiteKeyRecaptcha;
 }
-
+<script src="//www.google.com/recaptcha/api.js" async defer></script>
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 
@@ -264,6 +264,11 @@
                         $("#dvEditUserDetails").html(data);
                         LoadUserImage(userid);
                     }
+                    var widgetId;
+                    widgetId = grecaptcha.render('dvEditUserRecaptcha', {
+                        'sitekey': '@SiteKey',
+                        'theme': 'light'
+                    });
                 }
             }
         });
