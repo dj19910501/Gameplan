@@ -164,7 +164,7 @@ namespace RevenuePlanner.Controllers
                     measureApplicationUrl = Convert.ToString(ConfigurationManager.AppSettings["MeasureApplicationUrl"]);
                     Menu objMeasureMenu = new Menu();
                     objMeasureMenu.Code = "measure";
-                    objMeasureMenu.Name = "Measure";
+                    objMeasureMenu.Name = "Measure Reports";
                     objMeasureMenu.ActionName = string.Format("{0}login/MeasureReports", measureApplicationUrl);
                     Sessions.AppMenus.Add(objMeasureMenu);
                 }
