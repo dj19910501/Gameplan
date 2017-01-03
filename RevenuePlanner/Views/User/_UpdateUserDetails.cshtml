@@ -5,9 +5,10 @@
     Guid currentUserId = ViewBag.CurrentUserId;
     string SiteKey = Common.SiteKeyRecaptcha;
 }
+<script src="//www.google.com/recaptcha/api.js" async defer></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
-<script src="//www.google.com/recaptcha/api.js" async defer></script>
+
 
 <div class="span10 content-colum-info-user">
     @using (Html.BeginForm("Edit", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -238,7 +239,7 @@
                             {
                             <div class="cf inputs-aligned-horizontal">
                                 @Html.Label("Please check the check box")
-                                <div id="reCaptcha" class="g-recaptcha recaptcha" data-callback="recaptchaCallback" data-sitekey=@SiteKey></div>
+                                <div id="dvEditUserRecaptcha" class="g-recaptcha recaptcha"></div>
                                 @Html.ValidationMessage("captcha", "You can't leave Captcha Code empty.", new { @class = "field-validation-error", id = "lblRecaptchaRequired" })
                                 <br />
                             </div>

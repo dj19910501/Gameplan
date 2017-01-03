@@ -22,6 +22,7 @@
     string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
     ViewBag.PageTitle = "TeamMember";
     ViewBag.ModuleTitle = "Organization";
+    string SiteKey = Common.SiteKeyRecaptcha;
 }
 
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
@@ -406,6 +407,12 @@
                                 $("#hdrEditUser").css('display', 'block');
                                 $("#dvEditUser").css('display', 'block');
                                 $("#dvEditUserDetails").html(data);
+                                
+                                var widgetId;
+                                widgetId = grecaptcha.render('dvEditUserRecaptcha', {
+                                    'sitekey': '@SiteKey',
+                                    'theme': 'light',
+                                });
                                 LoadUserImage(userid);
                             }
                         }
@@ -441,3 +448,4 @@
             }
             @* End - Added by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
         </script>
+<script src="//www.google.com/recaptcha/api.js" async defer></script> 

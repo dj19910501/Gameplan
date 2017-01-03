@@ -2,11 +2,12 @@
 
 @{
     var currentUserId = Sessions.User.ID;
-        ViewBag.Title = "My Account";
+    ViewBag.Title = "My Account";
     ViewBag.PageTitle = "Edit";
-    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref; 
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.ModuleTitle = "MyProfile";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
+    string SiteKey = Common.SiteKeyRecaptcha;
 }
 
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
@@ -83,9 +84,18 @@
             else if (response == '{"redirectto":"index"}') {
                 window.location = '@Url.Content("~/User/Index")';
             }
+
+            var widgetId;
+            widgetId = grecaptcha.render('dvEditUserRecaptcha', {
+                'sitekey': '@SiteKey',
+                'theme': 'light'
+            });
+
         });
     });
     $('#btn-close').click(function () {
         $('#divpartialsharetactic1').addClass('hide');
     });
 </script>
+
+<script src="//www.google.com/recaptcha/api.js" async defer></script>
